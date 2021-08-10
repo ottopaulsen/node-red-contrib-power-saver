@@ -1,114 +1,24 @@
-const expect = require("expect");
 const cloneDeep = require("lodash.clonedeep");
-
+const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const powerSaver = require("../power-saver.js");
+const { DateTime } = require("luxon");
 
-const prices = {
-  raw_today: [
-    {
-      start: "2021-06-20T00:00:00+02:00",
-      end: "2021-06-20T01:00:00+02:00",
-      value: 0.3,
-    },
-    {
-      start: "2021-06-20T01:00:00+02:00",
-      end: "2021-06-20T02:00:00+02:00",
-      value: 0.4,
-    },
-    {
-      start: "2021-06-20T02:00:00+02:00",
-      end: "2021-06-20T03:00:00+02:00",
-      value: 0.8,
-    },
-    {
-      start: "2021-06-20T03:00:00+02:00",
-      end: "2021-06-20T04:00:00+02:00",
-      value: 0.9,
-    },
-    {
-      start: "2021-06-20T04:00:00+02:00",
-      end: "2021-06-20T05:00:00+02:00",
-      value: 0.7,
-    },
-    {
-      start: "2021-06-20T05:00:00+02:00",
-      end: "2021-06-20T06:00:00+02:00",
-      value: 0.6,
-    },
-    {
-      start: "2021-06-20T06:00:00+02:00",
-      end: "2021-06-20T07:00:00+02:00",
-      value: 0.5,
-    },
-    {
-      start: "2021-06-20T07:00:00+02:00",
-      end: "2021-06-20T08:00:00+02:00",
-      value: 0.75,
-    },
-    {
-      start: "2021-06-20T08:00:00+02:00",
-      end: "2021-06-20T09:00:00+02:00",
-      value: 0.2,
-    },
-    {
-      start: "2021-06-20T09:00:00+02:00",
-      end: "2021-06-21T00:00:00+02:00",
-      value: 0.85,
-    },
+const prices = require("./data/prices");
+const schedule = {
+  schedule: [
+    { time: "2021-06-20T01:50:00.000+02:00", value: false },
+    { time: "2021-06-20T01:50:00.010+02:00", value: true },
+    { time: "2021-06-20T01:50:00.020+02:00", value: false },
+    { time: "2021-06-20T01:50:00.050+02:00", value: true },
+    { time: "2021-06-20T01:50:00.070+02:00", value: false },
+    { time: "2021-06-20T01:50:00.100+02:00", value: false },
+    { time: "2021-06-20T01:50:00.110+02:00", value: true },
+    { time: "2021-06-20T01:50:00.120+02:00", value: false },
+    { time: "2021-06-20T01:50:00.150+02:00", value: true },
+    { time: "2021-06-20T01:50:00.170+02:00", value: false },
   ],
-  raw_tomorrow: [
-    {
-      start: "2021-06-20T00:00:00+02:00",
-      end: "2021-06-21T01:00:00+02:00",
-      value: 0.3,
-    },
-    {
-      start: "2021-06-21T01:00:00+02:00",
-      end: "2021-06-21T02:00:00+02:00",
-      value: 0.4,
-    },
-    {
-      start: "2021-06-21T02:00:00+02:00",
-      end: "2021-06-21T03:00:00+02:00",
-      value: 0.8,
-    },
-    {
-      start: "2021-06-21T03:00:00+02:00",
-      end: "2021-06-21T04:00:00+02:00",
-      value: 0.9,
-    },
-    {
-      start: "2021-06-21T04:00:00+02:00",
-      end: "2021-06-21T05:00:00+02:00",
-      value: 0.7,
-    },
-    {
-      start: "2021-06-21T05:00:00+02:00",
-      end: "2021-06-21T06:00:00+02:00",
-      value: 0.6,
-    },
-    {
-      start: "2021-06-21T06:00:00+02:00",
-      end: "2021-06-21T07:00:00+02:00",
-      value: 0.5,
-    },
-    {
-      start: "2021-06-21T07:00:00+02:00",
-      end: "2021-06-21T08:00:00+02:00",
-      value: 0.75,
-    },
-    {
-      start: "2021-06-21T08:00:00+02:00",
-      end: "2021-06-21T09:00:00+02:00",
-      value: 0.2,
-    },
-    {
-      start: "2021-06-21T09:00:00+02:00",
-      end: "2021-06-22T00:00:00+02:00",
-      value: 0.85,
-    },
-  ],
+  time: "2021-06-20T01:50:00+02:00",
 };
 
 helper.init(require.resolve("node-red"));
@@ -173,24 +83,45 @@ describe("power-saver Node", function () {
         id: "n1",
         type: "power-saver",
         name: "test name",
-        wires: [[], [], ["n2"]],
+        wires: [["n3"], ["n4"], ["n2"]],
       },
       { id: "n2", type: "helper" },
+      { id: "n3", type: "helper" },
+      { id: "n4", type: "helper" },
     ];
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", {
-          schedule: {
-            today: [],
-            tomorrow: [],
-          },
-        });
+        expect(msg).toHaveProperty("payload", schedule.schedule);
         n1.warn.should.not.be.called;
-        done();
+        // done();
+        setTimeout(() => {
+          done();
+        }, 500);
       });
-      n1.receive({ payload: cloneDeep(prices) });
+      n3.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", true);
+      });
+      n4.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", false);
+      });
+      payload = cloneDeep(prices);
+      payload.time = schedule.time;
+      let entryTime = DateTime.fromISO(payload.time);
+      payload.raw_today.forEach((e) => {
+        e.start = entryTime.toISO();
+        entryTime = entryTime.plus({ milliseconds: 10 });
+        e.end = entryTime.toISO();
+      });
+      payload.raw_tomorrow.forEach((e) => {
+        e.start = entryTime.toISO();
+        entryTime = entryTime.plus({ milliseconds: 10 });
+        e.end = entryTime.toISO();
+      });
+      n1.receive({ payload });
     });
   });
 });
