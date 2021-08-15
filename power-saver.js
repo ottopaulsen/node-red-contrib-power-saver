@@ -3,17 +3,16 @@ const { DateTime } = require("luxon");
 let schedulingTimeout = null;
 
 // TODO
-// Fix so tomorrow does not repeat switch off (false) when already off the day before
-// Make sure tomorrows schedule depends on todays schedule
-// Check if the today/tomorrow logic is necessary now when there is only one resulting schedule.
-// Save data for the date. Use complete start-time as key for testing to work.
-// Check what output on out1 and out1 needs to be.
 // Add topics to output. Maybe configurable on the node.
 // Make node config values.
 
 module.exports = function (RED) {
   function PowerSaverNode(config) {
     RED.nodes.createNode(this, config);
+    this.maxHoursToSavePerDay = config.maxHoursToSavePerDay;
+    this.maxHoursToSaveInSequence = config.maxHoursToSaveInSequence;
+    this.minHoursOnAfterMaxSequenceSaved =
+      config.minHoursOnAfterMaxSequenceSaved;
     const node = this;
     const nodeContext = node.context();
     const powerData = readPowerDataFromStorage(nodeContext);
@@ -24,23 +23,31 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      // console.log("Got input: ", msg);
       if (!validateInput(node, msg)) {
         return;
       }
 
+      clearTimeout(schedulingTimeout);
+
       const rawToday = msg.payload.raw_today;
       const rawTomorrow = msg.payload.raw_tomorrow;
       const todaysDate = DateTime.fromISO(rawToday[0].start.substr(0, 10));
-      const yesterdayDate = todaysDate.plus({ days: -1 }).toISODate();
+      const yesterdayDate = todaysDate.plus({ days: -1 });
+      const tomorrowDate = todaysDate.plus({ days: 1 });
 
-      const scheduleToday =
-        loadSavedSchedule(todaysDate) ??
-        makeSchedule(rawToday, loadSavedSchedule(yesterdayDate) ?? []);
-      const scheduleTomorrow =
-        rawTomorrow.length > 0 ? makeSchedule(rawTomorrow) : [];
+      const dataToday = loadDayData(node, todaysDate);
+      const dataYesterday = loadDayData(node, yesterdayDate);
 
-      const schedule = [...scheduleToday, ...scheduleTomorrow];
+      const scheduleToday = makeSchedule(node, rawToday, dataYesterday);
+      const scheduleTomorrow = makeSchedule(node, rawTomorrow, scheduleToday);
+
+      saveDayData(node, todaysDate, scheduleToday);
+      saveDayData(node, tomorrowDate, scheduleTomorrow);
+
+      const schedule = [
+        ...scheduleToday.onOffSchedule,
+        ...scheduleTomorrow.onOffSchedule,
+      ];
 
       let output1 = null;
       let output2 = null;
@@ -62,36 +69,53 @@ module.exports = function (RED) {
         output2 = currentValue ? null : { payload: false };
       }
 
-      deleteSavedScheduleBefore(yesterdayDate);
-      console.log(schedule);
+      deleteSavedScheduleBefore(node, yesterdayDate);
+      // console.log(schedule);
       node.send([output1, output2, output3]);
       schedulingTimeout = runSchedule(node, schedule, time);
     });
   }
+
   RED.nodes.registerType("power-saver", PowerSaverNode);
 };
 
-function loadSavedSchedule(date) {
+function loadDayData(node, date) {
   // Load saved schedule for the date (YYYY-MM-DD)
   // Return null if not found
-  return null;
+  const key = date.toISO();
+  return (
+    node.context().get(key) || {
+      highestSelected: [],
+      onOffSchedule: [],
+    }
+  );
 }
 
-function deleteSavedScheduleBefore(day) {}
+function saveDayData(node, date, data) {
+  const key = date.toISO();
+  node.context().set(key, data);
+}
 
-function makeSchedule(dayData, dayBeforeSchedule) {
+function deleteSavedScheduleBefore(node, day) {
+  let date = day;
+  do {
+    date = date.plus({ days: -1 });
+    data = node.context().get(date.toISO());
+  } while (data);
+}
+
+function makeSchedule(node, dayData, dayBeforeData) {
   const values = dayData.map((d) => d.value);
-  const savingSelected = highestSelected(values, 12, 3, 2);
+  const savingSelected = highestSelected(
+    values,
+    node.maxHoursToSavePerDay || 12,
+    node.maxHoursToSaveInSequence || 3,
+    node.minHoursOnAfterMaxSequenceSaved || 2,
+    dayBeforeData.highestSelected
+  );
   const startTimes = dayData.map((d) => d.start);
   const onOffSchedule = makeOnOffSchedule(startTimes, savingSelected);
-  // console.log({
-  //   dayData,
-  //   dayBeforeSchedule,
-  //   values,
-  //   savingSelected,
-  //   onOffSchedule,
-  // });
-  return onOffSchedule;
+  return { onOffSchedule, highestSelected: savingSelected };
 }
 
 function validateInput(node, msg) {
@@ -222,7 +246,8 @@ function highestSelected(
   values,
   maxSelectedCount,
   maxSelectedInARow,
-  minCountAfterMaxInARow
+  minCountAfterMaxInARow,
+  highestSelectedDayBefore
 ) {
   const sorted = sortedIndex(values);
   const res = new Array(values.length).fill(false);
@@ -231,8 +256,13 @@ function highestSelected(
   while (i < values.length && count < maxSelectedCount) {
     const index = sorted[i];
     res[index] = true;
+    const dataToCheck = [...highestSelectedDayBefore, ...res];
     if (
-      !isTrueFalseSequencesOk(res, maxSelectedInARow, minCountAfterMaxInARow)
+      !isTrueFalseSequencesOk(
+        dataToCheck,
+        maxSelectedInARow,
+        minCountAfterMaxInARow
+      )
     ) {
       res[index] = false;
     }

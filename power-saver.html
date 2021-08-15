@@ -3,7 +3,10 @@
         category: 'function',
         color: '#a6bbcf',
         defaults: {
-            name: {value:""}
+            name: {value: ""},
+            maxHoursToSavePerDay: {value: "12", required: true},
+            maxHoursToSaveInSequence: {value: "3", required: true},
+            minHoursOnAfterMaxSequenceSaved: {value: "2", required: true}
         },
         inputs:1,
         outputs:3,
@@ -18,6 +21,18 @@
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxHoursToSavePerDay"><i class="fa fa-tag"></i> Max per day</label>
+        <input type="number" id="node-input-maxHoursToSavePerDay" placeholder="Max hours to save in a day">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-tag"></i> Max per sequence</label>
+        <input type="number" id="node-input-maxHoursToSaveInSequence" placeholder="Max hours to save in sequence">
+    </div>
+    <div class="form-row">
+        <label for="node-input-minHoursOnAfterMaxSequenceSaved"><i class="fa fa-tag"></i> Min recover</label>
+        <input type="number" id="node-input-minHoursOnAfterMaxSequenceSaved" placeholder="Min hours on after a max sequence">
     </div>
 </script>
 
