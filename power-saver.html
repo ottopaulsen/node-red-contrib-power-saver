@@ -3,14 +3,16 @@
         category: 'function',
         color: '#a6bbcf',
         defaults: {
-            name: {value: ""},
-            maxHoursToSavePerDay: {value: "12", required: true},
-            maxHoursToSaveInSequence: {value: "3", required: true},
-            minHoursOnAfterMaxSequenceSaved: {value: "2", required: true}
+            name: {value: "Power Saver"},
+            maxHoursToSavePerDay: {value: 12, required: true, validate: RED.validators.number()},
+            maxHoursToSaveInSequence: {value: 3, required: true, validate: RED.validators.number()},
+            minHoursOnAfterMaxSequenceSaved: {value: 2, required: true, validate: RED.validators.number()},
+            sendCurrentValueWhenRescheduling: {value: true, required: true, validate: RED.validators.number(), align: 'left'}
         },
         inputs:1,
         outputs:3,
-        icon: "file.png",
+        icon: "font-awesome/fa-eur",
+        color: "#FFCC66",
         label: function() {
             return this.name||"power-saver";
         }
@@ -23,21 +25,45 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-maxHoursToSavePerDay"><i class="fa fa-tag"></i> Max per day</label>
-        <input type="number" id="node-input-maxHoursToSavePerDay" placeholder="Max hours to save in a day">
+        <label for="node-input-maxHoursToSavePerDay"><i class="fa fa-align-justify"></i> Max per day</label>
+        <input type="text" id="node-input-maxHoursToSavePerDay" placeholder="Max hours to save in a day">
     </div>
     <div class="form-row">
-        <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-tag"></i> Max per sequence</label>
-        <input type="number" id="node-input-maxHoursToSaveInSequence" placeholder="Max hours to save in sequence">
+        <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-arrows-h"></i> Max per sequence</label>
+        <input type="text" id="node-input-maxHoursToSaveInSequence" placeholder="Max hours to save in sequence">
     </div>
     <div class="form-row">
-        <label for="node-input-minHoursOnAfterMaxSequenceSaved"><i class="fa fa-tag"></i> Min recover</label>
-        <input type="number" id="node-input-minHoursOnAfterMaxSequenceSaved" placeholder="Min hours on after a max sequence">
+        <label for="node-input-minHoursOnAfterMaxSequenceSaved"><i class="fa fa-ellipsis-h"></i> Min recover</label>
+        <input type="text" id="node-input-minHoursOnAfterMaxSequenceSaved" placeholder="Min hours on after a max sequence">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sendCurrentValueWhenRescheduling">Output</label>
+        <label for="node-input-sendCurrentValueWhenRescheduling" style="width:70%">
+        <input type="checkbox" id="node-input-sendCurrentValueWhenRescheduling" style="display:inline-block; width:22px; vertical-align:top;" autocomplete="off"><span>Send when rescheduling</span>
+        </label>
+    </div>
+
+
+    <div>
+        <p>
+            <strong>Max per day</strong> is the maximum number of hours that can be saved (turned off) during a day.
+        </p>
+        <p>
+            <strong>Max per sequence</strong> is the maximum number of hours that can be saved (turned off) in a sequence.
+        </p>
+        <p>            
+            <strong>Min recover</strong> If power is saved the maximum number of hours that is allowed (Max per sequence), it must be followed by a period of not saving power that is minimum <em>Min recover</em> hours.
+        </p>
+        <p>
+            Check <strong>Send when rescheduling</strong> to make sure the correct value for the current time is sent on output 1 or output 2, when a new schedule is calculated. The new schedule is sent to output 3 anyway.
+        </p>
     </div>
 </script>
 
 <script type="text/html" data-help-name="power-saver">
-    <p>A node to turn on and off a switch based on power prices.</p>
+    <p>A node you can use to save money by turning off and on a switch based on power prices.</p>
+    <p>You can use it to control for example a heater, a water heater or any other power consumer that is acceptable to turn off now and then.</p>
+    <p>It is designed to be used with Home Assistant, and to use the prices as produced by the <a href="https://github.com/custom-components/nordpool">nordpool</a> custom component, but can be used without as long as you can provide input in the correct format.</p>
     <h3>Input</h3>
     <dl class="message-properties">
         <dt>payload

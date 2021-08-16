@@ -94,7 +94,7 @@ describe("power-saver Node", function () {
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", schedule.schedule);
+        expect(msg.payload).toHaveProperty("schedule", schedule.schedule);
         n1.warn.should.not.be.called;
         // done();
         setTimeout(() => {

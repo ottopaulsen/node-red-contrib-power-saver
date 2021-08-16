@@ -9,13 +9,16 @@ let schedulingTimeout = null;
 module.exports = function (RED) {
   function PowerSaverNode(config) {
     RED.nodes.createNode(this, config);
+
+    // Save config in node
     this.maxHoursToSavePerDay = config.maxHoursToSavePerDay;
     this.maxHoursToSaveInSequence = config.maxHoursToSaveInSequence;
     this.minHoursOnAfterMaxSequenceSaved =
       config.minHoursOnAfterMaxSequenceSaved;
+    this.sendCurrentValueWhenRescheduling =
+      config.sendCurrentValueWhenRescheduling;
+
     const node = this;
-    const nodeContext = node.context();
-    const powerData = readPowerDataFromStorage(nodeContext);
 
     node.on("close", function () {
       node.log("Clearing timeout");
@@ -29,49 +32,64 @@ module.exports = function (RED) {
 
       clearTimeout(schedulingTimeout);
 
+      // Get input data from msg
       const rawToday = msg.payload.raw_today;
       const rawTomorrow = msg.payload.raw_tomorrow;
+
+      // Set dates
       const todaysDate = DateTime.fromISO(rawToday[0].start.substr(0, 10));
       const yesterdayDate = todaysDate.plus({ days: -1 });
       const tomorrowDate = todaysDate.plus({ days: 1 });
 
-      const dataToday = loadDayData(node, todaysDate);
+      // Load data from yesterday
       const dataYesterday = loadDayData(node, yesterdayDate);
 
+      // Make new schedule
       const scheduleToday = makeSchedule(node, rawToday, dataYesterday);
       const scheduleTomorrow = makeSchedule(node, rawTomorrow, scheduleToday);
 
+      // Save schedule
       saveDayData(node, todaysDate, scheduleToday);
       saveDayData(node, tomorrowDate, scheduleTomorrow);
 
+      // Combine schedule for today and tomorrow
       const schedule = [
         ...scheduleToday.onOffSchedule,
         ...scheduleTomorrow.onOffSchedule,
       ];
 
+      // Prepare output
       let output1 = null;
       let output2 = null;
       let output3 = {
-        payload: schedule,
+        payload: {
+          today: scheduleToday.highestSelected,
+          tomorrow: scheduleTomorrow.highestSelected,
+          schedule,
+        },
       };
 
-      //
+      // Find current output, and set output (if configured to do)
       const time = msg.payload.time
         ? DateTime.fromISO(msg.payload.time)
         : DateTime.now();
       const pastSchedule = schedule.filter(
         (entry) => DateTime.fromISO(entry.time) <= time
       );
-      const outputCurrent = true;
+      const outputCurrent = node.sendCurrentValueWhenRescheduling;
       if (outputCurrent && pastSchedule.length > 0) {
         const currentValue = pastSchedule[pastSchedule.length - 1].value;
         output1 = currentValue ? { payload: true } : null;
         output2 = currentValue ? null : { payload: false };
       }
 
+      // Delete old data
       deleteSavedScheduleBefore(node, yesterdayDate);
-      // console.log(schedule);
+
+      // Send output
       node.send([output1, output2, output3]);
+
+      // Run schedule
       schedulingTimeout = runSchedule(node, schedule, time);
     });
   }
@@ -105,6 +123,9 @@ function deleteSavedScheduleBefore(node, day) {
 }
 
 function makeSchedule(node, dayData, dayBeforeData) {
+  node.log(
+    `Making schedule with maxHoursToSavePerDay=${node.maxHoursToSavePerDay}, maxHoursToSaveInSequence=${node.maxHoursToSaveInSequence} and minHoursOnAfterMaxSequenceSaved=${node.minHoursOnAfterMaxSequenceSaved}`
+  );
   const values = dayData.map((d) => d.value);
   const savingSelected = highestSelected(
     values,
@@ -118,19 +139,24 @@ function makeSchedule(node, dayData, dayBeforeData) {
   return { onOffSchedule, highestSelected: savingSelected };
 }
 
+function validationFailure(node, message) {
+  node.status({ fill: "red", shape: "ring", text: message });
+  node.warn(message);
+}
+
 function validateInput(node, msg) {
   if (!msg.payload) {
-    node.warn("Payload missing");
+    validationFailure(node, "Payload missing");
     return false;
   }
   const payload = msg.payload;
   if (typeof payload !== "object") {
-    node.warn("Payload must be an object");
+    validationFailure(node, "Payload must be an object");
     return false;
   }
   ["raw_today", "raw_tomorrow"].forEach((arr) => {
     if (!payload[arr]) {
-      node.warn(`Payload is missing ${arr} array`);
+      validationFailure(node, `Payload is missing ${arr} array`);
       return false;
     }
     if (
@@ -142,31 +168,18 @@ function validateInput(node, msg) {
         );
       })
     ) {
-      node.warn(
+      validationFailure(
+        node,
         `Malformed entries in payload.${arr}. All entries must contain start, end and value.`
       );
     }
   });
   if (!payload.raw_today.length && !payload.raw_today.length) {
-    node.warn("Payload has no data");
+    validationFailure(node, "Payload has no data");
     return false;
   }
 
   return true;
-}
-
-function readPowerDataFromStorage(context) {
-  const powerData = {
-    prices: {
-      today: undefined,
-      tomorrow: undefined,
-    },
-    schedule: {
-      today: undefined,
-      tomorrow: undefined,
-    },
-  };
-  return powerData;
 }
 
 /**
@@ -187,32 +200,6 @@ function sortedIndex(valueArr) {
     return 0;
   });
   return sorted.map((p) => p.i);
-}
-
-function sequenceLengths(onOffArr) {
-  if (onOffArr.length === 0) {
-    return [];
-  }
-  const res = new Array(onOffArr.length);
-  let start = 0;
-  let count = 1;
-  let val = onOffArr[0];
-  while (start + count < onOffArr.length) {
-    if (onOffArr[start + count] !== val) {
-      for (let i = start; i < start + count; i++) {
-        res[i] = count;
-      }
-      start = start + count;
-      count = 1;
-      val = onOffArr[start];
-    } else {
-      count++;
-    }
-  }
-  for (let i = start; i < start + count; i++) {
-    res[i] = count;
-  }
-  return res;
 }
 
 function isTrueFalseSequencesOk(sequences, maxTrue, minFalseAfterTrue) {
@@ -293,6 +280,7 @@ function makeOnOffSchedule(startTimes, savingSelected, initial = undefined) {
  * When the time is out, send the relaed value and start timer for next time.
  * @param {*} node
  * @param {*} schedule
+ * @param {*} time
  */
 function runSchedule(node, schedule, time) {
   let currentTime = time;
@@ -305,6 +293,10 @@ function runSchedule(node, schedule, time) {
     const wait = nextTime - currentTime;
     const onOff = entry.value ? "on" : "off";
     node.log("Switching " + onOff + " in " + wait + " milliseconds");
+    const statusMessage = `Scheduled ${
+      remainingSchedule.length
+    } changes. Next: ${remainingSchedule[0].value ? "on" : "off"}`;
+    node.status({ fill: "green", shape: "dot", text: statusMessage });
     return setTimeout(() => {
       const output1 = entry.value ? { payload: true } : null;
       const output2 = entry.value ? null : { payload: false };
@@ -312,6 +304,8 @@ function runSchedule(node, schedule, time) {
       schedulingTimeout = runSchedule(node, remainingSchedule, nextTime);
     }, wait);
   } else {
-    node.warn("No more schedule");
+    const message = "No schedule";
+    node.warn(message);
+    node.status({ fill: "red", shape: "dot", text: message });
   }
 }
