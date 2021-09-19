@@ -55,7 +55,7 @@ function getDiffToNextOn(values, onOff, nextOn = null) {
  *                   to use for the last hours.
  * @returns Array with how much you save on the off-hours, null on the others.
  */
-function getSavings(values, onOff, nextOn) {
+function getSavings(values, onOff, nextOn = null) {
   return getDiffToNextOn(values, onOff, nextOn).map((v, i) =>
     onOff[i] ? null : v
   );

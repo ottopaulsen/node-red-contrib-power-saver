@@ -1,5 +1,10 @@
 const { DateTime } = require("luxon");
-const { sortedIndex, countAtEnd, makeSchedule } = require("./utils");
+const {
+  sortedIndex,
+  countAtEnd,
+  makeSchedule,
+  getSavings,
+} = require("./utils");
 const mostSavedStrategy = require("./mostSavedStrategy");
 
 let schedulingTimeout = null;
@@ -156,11 +161,13 @@ function makePlan(node, values, startTimes, onOffBefore) {
       : [];
 
   const schedule = makeSchedule(onOff, startTimes, lastValueDayBefore);
+  const savings = getSavings(values, onOff);
   return {
     values,
     onOff,
     startTimes,
     schedule,
+    savings,
   };
 }
 
@@ -205,38 +212,6 @@ function validateInput(node, msg) {
   }
 
   return true;
-}
-
-function highestSelected(
-  values,
-  maxSelectedCount,
-  maxSelectedInARow,
-  minCountAfterMaxInARow,
-  highestSelectedDayBefore
-) {
-  const sorted = sortedIndex(values);
-  const res = new Array(values.length).fill(false);
-  let i = 0;
-  let count = 0;
-  while (i < values.length && count < maxSelectedCount) {
-    const index = sorted[i];
-    res[index] = true;
-    const dataToCheck = [...highestSelectedDayBefore, ...res];
-    if (
-      !isTrueFalseSequencesOk(
-        dataToCheck,
-        maxSelectedInARow,
-        minCountAfterMaxInARow
-      )
-    ) {
-      res[index] = false;
-    }
-    count = res.reduce((sum, val) => {
-      return sum + (val ? 1 : 0);
-    }, 0);
-    i++;
-  }
-  return res;
 }
 
 /**
