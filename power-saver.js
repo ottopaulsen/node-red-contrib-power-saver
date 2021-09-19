@@ -1,14 +1,20 @@
 const { DateTime } = require("luxon");
+const { sortedIndex, countAtEnd, makeSchedule } = require("./utils");
+const mostSavedStrategy = require("./mostSavedStrategy");
 
 let schedulingTimeout = null;
 
 // TODO
 // Add topics to output. Maybe configurable on the node.
 // Make node config values.
+// Set status icon green when on, grey when off (red when error)
+// Make a savings-output that for each hour off, shows the price saved
+// compared to the next hour that is on.
 
 module.exports = function (RED) {
   function PowerSaverNode(config) {
     RED.nodes.createNode(this, config);
+    const node = this;
 
     // Save config in node
     this.maxHoursToSavePerDay = config.maxHoursToSavePerDay;
@@ -17,8 +23,6 @@ module.exports = function (RED) {
       config.minHoursOnAfterMaxSequenceSaved;
     this.sendCurrentValueWhenRescheduling =
       config.sendCurrentValueWhenRescheduling;
-
-    const node = this;
 
     node.on("close", function () {
       node.log("Clearing timeout");
@@ -44,28 +48,40 @@ module.exports = function (RED) {
       // Load data from yesterday
       const dataYesterday = loadDayData(node, yesterdayDate);
 
-      // Make new schedule
-      const scheduleToday = makeSchedule(node, rawToday, dataYesterday);
-      const scheduleTomorrow = makeSchedule(node, rawTomorrow, scheduleToday);
+      // Make plan
+      const valuesToday = rawToday.map((d) => d.value);
+      const valuesTomorrow = rawTomorrow.map((d) => d.value);
+      const startTimesToday = rawToday.map((d) => d.start);
+      const startTimesTomorrow = rawTomorrow.map((d) => d.start);
+
+      planToday = makePlan(
+        node,
+        valuesToday,
+        startTimesToday,
+        dataYesterday.onOff
+      );
+      planTomorrow = makePlan(
+        node,
+        valuesTomorrow,
+        startTimesTomorrow,
+        planToday.onOff
+      );
 
       // Save schedule
-      saveDayData(node, todaysDate, scheduleToday);
-      saveDayData(node, tomorrowDate, scheduleTomorrow);
+      saveDayData(node, todaysDate, planToday);
+      saveDayData(node, tomorrowDate, planTomorrow);
 
-      // Combine schedule for today and tomorrow
-      const schedule = [
-        ...scheduleToday.onOffSchedule,
-        ...scheduleTomorrow.onOffSchedule,
-      ];
+      // Combine data for today and tomorrow
+      const schedule = [...planToday.schedule, ...planTomorrow.schedule];
+      const savings = [...planToday.savings, ...planTomorrow.savings];
 
       // Prepare output
       let output1 = null;
       let output2 = null;
       let output3 = {
         payload: {
-          today: scheduleToday.highestSelected,
-          tomorrow: scheduleTomorrow.highestSelected,
           schedule,
+          savings,
         },
       };
 
@@ -103,15 +119,16 @@ function loadDayData(node, date) {
   const key = date.toISO();
   return (
     node.context().get(key) || {
-      highestSelected: [],
-      onOffSchedule: [],
+      values: [],
+      onOff: [],
+      startTimes: [],
     }
   );
 }
 
-function saveDayData(node, date, data) {
+function saveDayData(node, date, values, onOff, startTimes) {
   const key = date.toISO();
-  node.context().set(key, data);
+  node.context().set(key, { values, onOff, startTimes });
 }
 
 function deleteSavedScheduleBefore(node, day) {
@@ -122,21 +139,29 @@ function deleteSavedScheduleBefore(node, day) {
   } while (data);
 }
 
-function makeSchedule(node, dayData, dayBeforeData) {
-  node.log(
-    `Making schedule with maxHoursToSavePerDay=${node.maxHoursToSavePerDay}, maxHoursToSaveInSequence=${node.maxHoursToSaveInSequence} and minHoursOnAfterMaxSequenceSaved=${node.minHoursOnAfterMaxSequenceSaved}`
-  );
-  const values = dayData.map((d) => d.value);
-  const savingSelected = highestSelected(
+function makePlan(node, values, startTimes, onOffBefore) {
+  const strategy = "mostSaved"; // TODO: Get from node settings
+  const lastValueDayBefore = onOffBefore[onOffBefore.length - 1];
+  const lastCountDayBefore = countAtEnd(onOffBefore, lastValueDayBefore);
+  const onOff =
+    strategy === "mostSaved"
+      ? mostSavedStrategy.calculate(
+          values,
+          node.maxHoursToSavePerDay,
+          node.maxHoursToSaveInSequence,
+          node.minHoursOnAfterMaxSequenceSaved,
+          lastValueDayBefore,
+          lastCountDayBefore
+        )
+      : [];
+
+  const schedule = makeSchedule(onOff, startTimes, lastValueDayBefore);
+  return {
     values,
-    node.maxHoursToSavePerDay || 12,
-    node.maxHoursToSaveInSequence || 3,
-    node.minHoursOnAfterMaxSequenceSaved || 2,
-    dayBeforeData.highestSelected
-  );
-  const startTimes = dayData.map((d) => d.start);
-  const onOffSchedule = makeOnOffSchedule(startTimes, savingSelected);
-  return { onOffSchedule, highestSelected: savingSelected };
+    onOff,
+    startTimes,
+    schedule,
+  };
 }
 
 function validationFailure(node, message) {
@@ -182,53 +207,6 @@ function validateInput(node, msg) {
   return true;
 }
 
-/**
- * Sort values in array and return array with index of original array
- * in sorted order. Highes value first.
- */
-function sortedIndex(valueArr) {
-  const mapped = valueArr.map((v, i) => {
-    return { i, value: v };
-  });
-  const sorted = mapped.sort((a, b) => {
-    if (a.value > b.value) {
-      return -1;
-    }
-    if (a.value < b.value) {
-      return 1;
-    }
-    return 0;
-  });
-  return sorted.map((p) => p.i);
-}
-
-function isTrueFalseSequencesOk(sequences, maxTrue, minFalseAfterTrue) {
-  let trueCount = 0;
-  let falseCount = 0;
-  let reachedMaxTrue = false;
-  for (let i = 0; i < sequences.length; i++) {
-    if (sequences[i]) {
-      if (reachedMaxTrue) {
-        return false;
-      }
-      trueCount++;
-      falseCount = 0;
-      if (trueCount === maxTrue) {
-        reachedMaxTrue = true;
-      }
-    } else {
-      if (reachedMaxTrue) {
-        falseCount++;
-        if (falseCount === minFalseAfterTrue) {
-          reachedMaxTrue = false;
-        }
-      }
-      trueCount = 0;
-    }
-  }
-  return true;
-}
-
 function highestSelected(
   values,
   maxSelectedCount,
@@ -257,20 +235,6 @@ function highestSelected(
       return sum + (val ? 1 : 0);
     }, 0);
     i++;
-  }
-  return res;
-}
-
-function makeOnOffSchedule(startTimes, savingSelected, initial = undefined) {
-  const res = [];
-  let prev = initial;
-  for (let i = 0; i < startTimes.length; i++) {
-    const value = !savingSelected[i];
-    if (value !== prev) {
-      const time = startTimes[i];
-      res.push({ time, value });
-      prev = value;
-    }
   }
   return res;
 }
