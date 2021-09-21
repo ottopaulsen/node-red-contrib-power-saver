@@ -42,8 +42,10 @@ module.exports = function (RED) {
       clearTimeout(schedulingTimeout);
 
       // Get input data from msg
-      const rawToday = msg.payload.raw_today;
-      const rawTomorrow = msg.payload.raw_tomorrow;
+      const rawToday =
+        msg.payload.raw_today ?? msg.data.new_state.attributes.raw_today;
+      const rawTomorrow =
+        msg.payload.raw_tomorrow ?? msg.data.new_state.attributes.raw_tomorrow;
 
       // Set dates
       const todaysDate = DateTime.fromISO(rawToday[0].start.substr(0, 10));
@@ -177,11 +179,11 @@ function validationFailure(node, message) {
 }
 
 function validateInput(node, msg) {
-  if (!msg.payload) {
+  if (!msg.payload && !msg.data?.new_state?.attributes) {
     validationFailure(node, "Payload missing");
     return false;
   }
-  const payload = msg.payload;
+  const payload = msg.payload ?? msg.data.new_state.attributes;
   if (typeof payload !== "object") {
     validationFailure(node, "Payload must be an object");
     return false;
@@ -206,7 +208,7 @@ function validateInput(node, msg) {
       );
     }
   });
-  if (!payload.raw_today.length && !payload.raw_today.length) {
+  if (!payload.raw_today.length && !payload.raw_tomorrow.length) {
     validationFailure(node, "Payload has no data");
     return false;
   }

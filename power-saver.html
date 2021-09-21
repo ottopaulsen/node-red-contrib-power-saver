@@ -69,10 +69,13 @@
         <dt>payload
             <span class="property-type">object</span>
         </dt>
-        <dd> The payload should be an object with two arrays: raw_today and raw_tomorrow.
+        <dd>The payload should be an object with two arrays: <code>raw_today</code> and <code>raw_tomorrow</code>. 
             Each array shall contain one object per hour, with attributes start, end and value.
             <br>
-            This is exactly what is received by the ??? node, so just put the output from that node to the input of this node.
+            The <code>raw_today</code> and <code>raw_tomorrow</code> may alternatively be in the
+            <code>data.new_state.attributes</code> part of the message.
+            This is exactly what is delivered by the sensor given by the nordpool custom component,
+            so just put the output from that sensor to the input of this node.
         </dd>
     </dl>
 
@@ -81,35 +84,170 @@
          <li>Output 1
              <dl class="message-properties">
                  <dt>payload <span class="property-type">string</span></dt>
-                 <dd>A payload is sent to this output when the power shall be turned on.</dd>
+                 <dd>A payload containing <code>true</code> is sent to this output when the power shall be turned on.</dd>
              </dl>
          </li>
          <li>Output 2
              <dl class="message-properties">
                  <dt>payload <span class="property-type">string</span></dt>
-                 <dd>A payload is sent to this output when the power shall be turned off.</dd>
+                 <dd>A payload containing <code>false</code> is sent to this output when the power shall be turned off.</dd>
              </dl>
          </li>
          <li>Output 3
              <dl class="message-properties">
                  <dt>payload <span class="property-type">string</span></dt>
-                 <dd>A complete schedule is sent to this output whenever it is set or changed.</dd>
+                 <dd>When the schedule is created or changed, a payload containing information about the schedule is sent to this output.</dd>
              </dl>
          </li>
      </ol>
 
 <h3>Details</h3>
-    <p><code>msg.payload</code> is used as the payload of the published message.
-    If it contains an Object it will be converted to a JSON string before being sent.
-    If it contains a binary Buffer the message will be published as-is.</p>
-    <p>The topic used can be configured in the node or, if left blank, can be set
-    by <code>msg.topic</code>.</p>
-    <p>Likewise the QoS and retain values can be configured in the node or, if left
-    blank, set by <code>msg.qos</code> and <code>msg.retain</code> respectively.</p>
-
+<p>
+  Set up the Home Assistants <em>events: state</em> node to receive state changes on the nordpool sensor.
+  Example of entity id: <code>sensor.nordpool_kwh_trheim_nok_3_095_025</code>, but you must check what your sensor id is.
+</p>
+<p>
+  Connect the nordpool sensor output directly to the input on this node. Connect output 1 to a node that can turn the power switch on,
+  and output 2 to a node that can turn the power switch off. The values are true and false,
+  so they may be connected to the same node, and use the value to turn on or off.
+</p>
+<p>You may use output 3 to display the schedule.</p>
+    <p><strong>Input payload example</strong><br/>
+        <pre>
+{
+  raw_today:[ 
+    {
+      start: "2021-06-20T00:00:00+02:00",
+      end: "2021-06-20T01:00:00+02:00",
+      value: 0.37,
+    },
+    {
+      start: "2021-06-20T01:00:00+02:00",
+      end: "2021-06-20T02:00:00+02:00",
+      value: 0.4,
+    },
+    {
+      start: "2021-06-20T02:00:00+02:00",
+      end: "2021-06-20T03:00:00+02:00",
+      value: 0.35,
+    },
+    {
+      start: "2021-06-20T03:00:00+02:00",
+      end: "2021-06-20T04:00:00+02:00",
+      value: 0.65,
+    },
+    // One entry per hour, 24 hours
+  ],
+  raw_tomorrow: [
+    {
+      start: "2021-06-20T00:00:00+02:00",
+      end: "2021-06-21T01:00:00+02:00",
+      value: 1.5,
+    },
+    {
+        start: "2021-06-21T01:00:00+02:00",
+        end: "2021-06-21T02:00:00+02:00",
+        value: 1.4,
+    },
+    {
+        start: "2021-06-21T02:00:00+02:00",
+        end: "2021-06-21T03:00:00+02:00",
+        value: 0.8,
+    },
+    // One entry per hour, 24 hours
+  ],
+};
+        </pre>
+    </p>
+    <p><strong>Output 3 payload example</strong><br/>
+        <pre>
+{
+  "schedule": [
+    {
+      "time": "2021-09-21T19:37:48.787+02:00",
+      "value": true
+    },
+    {
+      "time": "2021-09-21T19:37:54.787+02:00",
+      "value": false
+    },
+    {
+      "time": "2021-09-21T19:37:56.787+02:00",
+      "value": true
+    },
+    {
+      "time": "2021-09-21T19:38:00.787+02:00",
+      "value": false
+    },
+    {
+      "time": "2021-09-21T19:38:04.787+02:00",
+      "value": true
+    },
+    {
+      "time": "2021-09-21T19:38:14.787+02:00",
+      "value": false
+    },
+    {
+      "time": "2021-09-21T19:38:16.787+02:00",
+      "value": true
+    },
+    {
+      "time": "2021-09-21T19:38:20.787+02:00",
+      "value": false
+    },
+    {
+      "time": "2021-09-21T19:38:24.787+02:00",
+      "value": true
+    }
+  ],
+  "savings": [
+    null,
+    null,
+    null,
+    0.20000000000000007,
+    null,
+    null,
+    0.3,
+    0.55,
+    null,
+    null,
+    null,
+    null,
+    null,
+    0.20000000000000007,
+    null,
+    null,
+    0.3,
+    0.55,
+    null,
+    null
+  ]
+}
+        </pre>
+    </p>
+    <p>
+      The <code>value</code> in <code>schedule</code> is <code>true</code> to turn on and <code>false</code> to turn off.
+    </p>
+    <p>
+      The <code>savings</code> array shows the price per kWh saved that hour, only for hours that are turned off.
+      Hours that are turned on has <code>null</code> as saving.
+    </p>
+<h3>Algorithm</h3>
+<p>
+  Currently there is only one algorithm / strategy for saving power. It is the <strong>most saved</strong> strategy.
+  In this strategy it is assumed that when the power has been off for some time, the consumer will catch up by consuming
+  power as soon as the power is turned on again. Based on this assumption, the algorithm will turn off those hours
+  that has the highest difference between the hour that is off and the next hour that is on, and by this, turn off
+  the hours where it is most to save. This would be a good fit for turning off a heater controlled by a thermostat.
+</p>
+<p>
+  Other strategies are planned, but not yet implemented.
+</p>
 <h3>References</h3>
     <ul>
-        <li><a>Twitter API docs</a> - full description of <code>msg.tweet</code> property</li>
-        <li><a>GitHub</a> - the nodes github repository</li>
+        <li><a href="https://github.com/ottopaulsen/node-red-contrib-power-saver">
+            node-red-contrib-power-saver</a>  on GitHub</li>
+        <li>The <a href="https://github.com/custom-components/nordpool">
+            nordpool</a>  custom component for Home Assistant</li>
     </ul>    
 </script>
