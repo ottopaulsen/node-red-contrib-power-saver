@@ -5,7 +5,7 @@ const prices = require("./data/prices");
 
 describe("mostSavedStrategy", () => {
   it("saves correct hours", () => {
-    const values = prices.raw_today.map((p) => p.value);
+    const values = prices.today.map((p) => p.value);
     expect(mostSavedStrategy.calculate(values, 6, 3, 1)).toEqual([
       true,
       true,
@@ -66,7 +66,7 @@ describe("mostSavedStrategy", () => {
       true,
       true,
     ]);
-    const values2 = prices.raw_tomorrow.map((p) => p.value);
+    const values2 = prices.tomorrow.map((p) => p.value);
     expect(mostSavedStrategy.calculate(values2, 5, 2, 1, true, 1)).toEqual([
       false,
       false,

@@ -1,5 +1,5 @@
 module.exports = {
-  raw_today: [
+  today: [
     {
       start: "2021-06-20T00:00:00+02:00",
       end: "2021-06-20T01:00:00+02:00",
@@ -51,7 +51,7 @@ module.exports = {
       value: 0.85,
     },
   ],
-  raw_tomorrow: [
+  tomorrow: [
     {
       start: "2021-06-20T00:00:00+02:00",
       end: "2021-06-21T01:00:00+02:00",

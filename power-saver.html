@@ -1,253 +1,270 @@
 <script type="text/javascript">
-    RED.nodes.registerType('power-saver',{
-        category: 'function',
-        color: '#a6bbcf',
-        defaults: {
-            name: {value: "Power Saver"},
-            maxHoursToSavePerDay: {value: 12, required: true, validate: RED.validators.number()},
-            maxHoursToSaveInSequence: {value: 3, required: true, validate: RED.validators.number()},
-            minHoursOnAfterMaxSequenceSaved: {value: 2, required: true, validate: RED.validators.number()},
-            sendCurrentValueWhenRescheduling: {value: true, required: true, validate: RED.validators.number(), align: 'left'}
-        },
-        inputs:1,
-        outputs:3,
-        icon: "font-awesome/fa-eur",
-        color: "#FFCC66",
-        label: function() {
-            return this.name||"power-saver";
-        }
-    });
+  RED.nodes.registerType("power-saver", {
+    category: "function",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Power Saver" },
+      maxHoursToSavePerDay: {
+        value: 12,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      maxHoursToSaveInSequence: {
+        value: 3,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      minHoursOnAfterMaxSequenceSaved: {
+        value: 2,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      minSaving: {
+        value: 0.01,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      sendCurrentValueWhenRescheduling: {
+        value: true,
+        required: true,
+        validate: RED.validators.number(),
+        align: "left",
+      },
+      outputIfNoSchedule: { value: true, required: true, align: "left" },
+    },
+    inputs: 1,
+    outputs: 3,
+    icon: "font-awesome/fa-eur",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "power-saver";
+    },
+  });
 </script>
 
 <script type="text/html" data-template-name="power-saver">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-maxHoursToSavePerDay"><i class="fa fa-align-justify"></i> Max per day</label>
-        <input type="text" id="node-input-maxHoursToSavePerDay" placeholder="Max hours to save in a day">
-    </div>
-    <div class="form-row">
-        <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-arrows-h"></i> Max per sequence</label>
-        <input type="text" id="node-input-maxHoursToSaveInSequence" placeholder="Max hours to save in sequence">
-    </div>
-    <div class="form-row">
-        <label for="node-input-minHoursOnAfterMaxSequenceSaved"><i class="fa fa-ellipsis-h"></i> Min recover</label>
-        <input type="text" id="node-input-minHoursOnAfterMaxSequenceSaved" placeholder="Min hours on after a max sequence">
-    </div>
-    <div class="form-row">
-        <label for="node-input-sendCurrentValueWhenRescheduling">Output</label>
-        <label for="node-input-sendCurrentValueWhenRescheduling" style="width:70%">
-        <input type="checkbox" id="node-input-sendCurrentValueWhenRescheduling" style="display:inline-block; width:22px; vertical-align:top;" autocomplete="off"><span>Send when rescheduling</span>
-        </label>
-    </div>
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-maxHoursToSavePerDay"><i class="fa fa-align-justify"></i> Max per day</label>
+      <input type="text" id="node-input-maxHoursToSavePerDay" placeholder="Max hours to save in a day">
+  </div>
+  <div class="form-row">
+      <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-arrows-h"></i> Max per sequence</label>
+      <input type="text" id="node-input-maxHoursToSaveInSequence" placeholder="Max hours to save in sequence">
+  </div>
+  <div class="form-row">
+      <label for="node-input-minHoursOnAfterMaxSequenceSaved"><i class="fa fa-ellipsis-h"></i> Min recover</label>
+      <input type="text" id="node-input-minHoursOnAfterMaxSequenceSaved" placeholder="Min hours on after a max sequence">
+  </div>
+  <div class="form-row">
+      <label for="node-input-minSaving"><i class="fa fa-ellipsis-h"></i> Min saving</label>
+      <input type="text" id="node-input-minSaving" placeholder="Minimum to save for turning off">
+  </div>
+  <div class="form-row">
+      <label for="node-input-sendCurrentValueWhenRescheduling">Output</label>
+      <label for="node-input-sendCurrentValueWhenRescheduling" style="width:70%">
+      <input type="checkbox" id="node-input-sendCurrentValueWhenRescheduling" style="display:inline-block; width:22px; vertical-align:top;" autocomplete="off"><span>Send when rescheduling</span>
+      </label>
+  </div>
+  <div class="form-row">
+      <label for="node-input-outputIfNoSchedule">Output when no schedule</label>
+      <select id="node-input-outputIfNoSchedule">
+        <option value=true>On</option>
+        <option value=false>Off</option>
+      </select>
+      </label>
+  </div>
 
 
-    <div>
-        <p>
-            <strong>Max per day</strong> is the maximum number of hours that can be saved (turned off) during a day.
-        </p>
-        <p>
-            <strong>Max per sequence</strong> is the maximum number of hours that can be saved (turned off) in a sequence.
-        </p>
-        <p>            
-            <strong>Min recover</strong> If power is saved the maximum number of hours that is allowed (Max per sequence), it must be followed by a period of not saving power that is minimum <em>Min recover</em> hours.
-        </p>
-        <p>
-            Check <strong>Send when rescheduling</strong> to make sure the correct value for the current time is sent on output 1 or output 2, when a new schedule is calculated. The new schedule is sent to output 3 anyway.
-        </p>
-    </div>
+  <div>
+      <p>
+          <strong>Max per day</strong> is the maximum number of hours that can be saved (turned off) during a day.
+      </p>
+      <p>
+          <strong>Max per sequence</strong> is the maximum number of hours that can be saved (turned off) in a sequence.
+      </p>
+      <p>
+          <strong>Min recover</strong> If power is saved the maximum number of hours that is allowed (Max per sequence), it must be followed by a period of not saving power that is minimum <em>Min recover</em> hours.
+      </p>
+      <p>
+          <strong>Min saving</strong> The minimum price that must be saved in order to turn off an hour.
+      </p>
+      <p>
+          Check <strong>Send when rescheduling</strong> to make sure the correct value for the current time is sent on output 1 or output 2, when a new schedule is calculated. The new schedule is sent to output 3 anyway.
+      </p>
+      <p>
+          <strong>Output when no schedule</strong> Select if the output shall be set to on or off when there is no valid schedule.
+      </p>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="power-saver">
-    <p>A node you can use to save money by turning off and on a switch based on power prices.</p>
-    <p>You can use it to control for example a heater, a water heater or any other power consumer that is acceptable to turn off now and then.</p>
-    <p>It is designed to be used with Home Assistant, and to use the prices as produced by the <a href="https://github.com/custom-components/nordpool">nordpool</a> custom component, but can be used without as long as you can provide input in the correct format.</p>
-    <h3>Input</h3>
-    <dl class="message-properties">
-        <dt>payload
-            <span class="property-type">object</span>
-        </dt>
-        <dd>The payload should be an object with two arrays: <code>raw_today</code> and <code>raw_tomorrow</code>. 
-            Each array shall contain one object per hour, with attributes start, end and value.
-            <br>
-            The <code>raw_today</code> and <code>raw_tomorrow</code> may alternatively be in the
-            <code>data.new_state.attributes</code> part of the message.
-            This is exactly what is delivered by the sensor given by the nordpool custom component,
-            so just put the output from that sensor to the input of this node.
-        </dd>
-    </dl>
+        <p>A node you can use to save money by turning off and on a switch based on power prices.</p>
+        <p>You can use it to control for example a heater, a water heater or any other power consumer that is acceptable to turn off now and then.</p>
+        <p>It is designed to be used with Home Assistant, and to use the prices as produced by the <a href="https://github.com/custom-components/nordpool">nordpool</a> custom component, but can be used without as long as you can provide input in the correct format.</p>
+        <h3>Input</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">object</span>
+            </dt>
+            <dd>The payload should be an object with two arrays: <code>raw_today</code> and <code>raw_tomorrow</code>.
+                Each array shall contain one object per hour, with attributes start, end and value.
+                <br>
+                The <code>raw_today</code> and <code>raw_tomorrow</code> may alternatively be in the
+                <code>data.new_state.attributes</code> part of the message.
+                This is exactly what is delivered by the sensor given by the nordpool custom component,
+                so just put the output from that sensor to the input of this node.
+            </dd>
+        </dl>
 
- <h3>Outputs</h3>
-     <ol class="node-ports">
-         <li>Output 1
-             <dl class="message-properties">
-                 <dt>payload <span class="property-type">string</span></dt>
-                 <dd>A payload containing <code>true</code> is sent to this output when the power shall be turned on.</dd>
-             </dl>
-         </li>
-         <li>Output 2
-             <dl class="message-properties">
-                 <dt>payload <span class="property-type">string</span></dt>
-                 <dd>A payload containing <code>false</code> is sent to this output when the power shall be turned off.</dd>
-             </dl>
-         </li>
-         <li>Output 3
-             <dl class="message-properties">
-                 <dt>payload <span class="property-type">string</span></dt>
-                 <dd>When the schedule is created or changed, a payload containing information about the schedule is sent to this output.</dd>
-             </dl>
-         </li>
-     </ol>
+     <h3>Outputs</h3>
+         <ol class="node-ports">
+             <li>Output 1
+                 <dl class="message-properties">
+                     <dt>payload <span class="property-type">string</span></dt>
+                     <dd>A payload containing <code>true</code> is sent to this output when the power shall be turned on.</dd>
+                 </dl>
+             </li>
+             <li>Output 2
+                 <dl class="message-properties">
+                     <dt>payload <span class="property-type">string</span></dt>
+                     <dd>A payload containing <code>false</code> is sent to this output when the power shall be turned off.</dd>
+                 </dl>
+             </li>
+             <li>Output 3
+                 <dl class="message-properties">
+                     <dt>payload <span class="property-type">string</span></dt>
+                     <dd>When the schedule is created or changed, a payload containing information about the schedule is sent to this output.</dd>
+                 </dl>
+             </li>
+         </ol>
 
-<h3>Details</h3>
-<p>
-  Set up the Home Assistants <em>events: state</em> node to receive state changes on the nordpool sensor.
-  Example of entity id: <code>sensor.nordpool_kwh_trheim_nok_3_095_025</code>, but you must check what your sensor id is.
-</p>
-<p>
-  Connect the nordpool sensor output directly to the input on this node. Connect output 1 to a node that can turn the power switch on,
-  and output 2 to a node that can turn the power switch off. The values are true and false,
-  so they may be connected to the same node, and use the value to turn on or off.
-</p>
-<p>You may use output 3 to display the schedule.</p>
-    <p><strong>Input payload example</strong><br/>
-        <pre>
-{
-  raw_today:[ 
-    {
-      start: "2021-06-20T00:00:00+02:00",
-      end: "2021-06-20T01:00:00+02:00",
-      value: 0.37,
-    },
-    {
-      start: "2021-06-20T01:00:00+02:00",
-      end: "2021-06-20T02:00:00+02:00",
-      value: 0.4,
-    },
-    {
-      start: "2021-06-20T02:00:00+02:00",
-      end: "2021-06-20T03:00:00+02:00",
-      value: 0.35,
-    },
-    {
-      start: "2021-06-20T03:00:00+02:00",
-      end: "2021-06-20T04:00:00+02:00",
-      value: 0.65,
-    },
-    // One entry per hour, 24 hours
-  ],
-  raw_tomorrow: [
-    {
-      start: "2021-06-20T00:00:00+02:00",
-      end: "2021-06-21T01:00:00+02:00",
-      value: 1.5,
-    },
-    {
-        start: "2021-06-21T01:00:00+02:00",
-        end: "2021-06-21T02:00:00+02:00",
-        value: 1.4,
-    },
-    {
-        start: "2021-06-21T02:00:00+02:00",
-        end: "2021-06-21T03:00:00+02:00",
-        value: 0.8,
-    },
-    // One entry per hour, 24 hours
-  ],
-};
-        </pre>
-    </p>
-    <p><strong>Output 3 payload example</strong><br/>
-        <pre>
-{
-  "schedule": [
-    {
-      "time": "2021-09-21T19:37:48.787+02:00",
-      "value": true
-    },
-    {
-      "time": "2021-09-21T19:37:54.787+02:00",
-      "value": false
-    },
-    {
-      "time": "2021-09-21T19:37:56.787+02:00",
-      "value": true
-    },
-    {
-      "time": "2021-09-21T19:38:00.787+02:00",
-      "value": false
-    },
-    {
-      "time": "2021-09-21T19:38:04.787+02:00",
-      "value": true
-    },
-    {
-      "time": "2021-09-21T19:38:14.787+02:00",
-      "value": false
-    },
-    {
-      "time": "2021-09-21T19:38:16.787+02:00",
-      "value": true
-    },
-    {
-      "time": "2021-09-21T19:38:20.787+02:00",
-      "value": false
-    },
-    {
-      "time": "2021-09-21T19:38:24.787+02:00",
-      "value": true
-    }
-  ],
-  "savings": [
-    null,
-    null,
-    null,
-    0.20000000000000007,
-    null,
-    null,
-    0.3,
-    0.55,
-    null,
-    null,
-    null,
-    null,
-    null,
-    0.20000000000000007,
-    null,
-    null,
-    0.3,
-    0.55,
-    null,
-    null
-  ]
-}
-        </pre>
+    <h3>Details</h3>
+    <p>
+      Set up the Home Assistants <em>events: state</em> node to receive state changes on the nordpool sensor.
+      Example of entity id: <code>sensor.nordpool_kwh_trheim_nok_3_095_025</code>, but you must check what your sensor id is.
     </p>
     <p>
-      The <code>value</code> in <code>schedule</code> is <code>true</code> to turn on and <code>false</code> to turn off.
+      Connect the nordpool sensor output directly to the input on this node. Connect output 1 to a node that can turn the power switch on,
+      and output 2 to a node that can turn the power switch off. The values are true and false,
+      so they may be connected to the same node, and use the value to turn on or off.
+    </p>
+    <p>You may use output 3 to display the schedule.</p>
+        <p><strong>Input payload example</strong><br/>
+            <pre>
+    {
+      raw_today:[
+        {
+          start: "2021-06-20T00:00:00+02:00",
+          end: "2021-06-20T01:00:00+02:00",
+          value: 0.37,
+        },
+        {
+          start: "2021-06-20T01:00:00+02:00",
+          end: "2021-06-20T02:00:00+02:00",
+          value: 0.4,
+        },
+        {
+          start: "2021-06-20T02:00:00+02:00",
+          end: "2021-06-20T03:00:00+02:00",
+          value: 0.35,
+        },
+        {
+          start: "2021-06-20T03:00:00+02:00",
+          end: "2021-06-20T04:00:00+02:00",
+          value: 0.65,
+        },
+        // One entry per hour, 24 hours
+      ],
+      raw_tomorrow: [
+        {
+          start: "2021-06-20T00:00:00+02:00",
+          end: "2021-06-21T01:00:00+02:00",
+          value: 1.5,
+        },
+        {
+            start: "2021-06-21T01:00:00+02:00",
+            end: "2021-06-21T02:00:00+02:00",
+            value: 1.4,
+        },
+        {
+            start: "2021-06-21T02:00:00+02:00",
+            end: "2021-06-21T03:00:00+02:00",
+            value: 0.8,
+        },
+        // One entry per hour, 24 hours
+      ],
+    };
+            </pre>
+        </p>
+        <p><strong>Output 3 payload example</strong><br/>
+            <pre>
+  {
+    "schedule": [
+      {
+        "time": "2021-09-30T09:00:00.000+02:00",
+        "value": false
+      },
+      {
+        "time": "2021-09-30T10:00:00.000+02:00",
+        "value": true
+      },
+      {
+        "time": "2021-09-30T21:00:00.000+02:00",
+        "value": false
+      },
+      // ...
+    ],
+    "hours": [
+      {
+        "price": 0.6243,
+        "onOff": true,
+        "start": "2021-09-30T00:00:00.000+02:00",
+        "saving": null
+      },
+      {
+        "price": 0.6236,
+        "onOff": true,
+        "start": "2021-09-30T01:00:00.000+02:00",
+        "saving": null
+      },
+      {
+        "price": 0.623,
+        "onOff": true,
+        "start": "2021-09-30T02:00:00.000+02:00",
+        "saving": null
+      },
+      // ...
+    ]
+  }
+            </pre>
+        </p>
+        <p>
+          The <code>value</code> in <code>schedule</code> is <code>true</code> to turn on and <code>false</code> to turn off.
+        </p>
+        <p>
+          The <code>savings</code> array shows the price per kWh saved that hour, only for hours that are turned off.
+          Hours that are turned on has <code>null</code> as saving.
+        </p>
+    <h3>Algorithm</h3>
+    <p>
+      Currently there is only one algorithm / strategy for saving power. It is the <strong>most saved</strong> strategy.
+      In this strategy it is assumed that when the power has been off for some time, the consumer will catch up by consuming
+      power as soon as the power is turned on again. Based on this assumption, the algorithm will turn off those hours
+      that has the highest difference between the hour that is off and the next hour that is on, and by this, turn off
+      the hours where it is most to save. This would be a good fit for turning off a heater controlled by a thermostat.
     </p>
     <p>
-      The <code>savings</code> array shows the price per kWh saved that hour, only for hours that are turned off.
-      Hours that are turned on has <code>null</code> as saving.
+      Other strategies are planned, but not yet implemented.
     </p>
-<h3>Algorithm</h3>
-<p>
-  Currently there is only one algorithm / strategy for saving power. It is the <strong>most saved</strong> strategy.
-  In this strategy it is assumed that when the power has been off for some time, the consumer will catch up by consuming
-  power as soon as the power is turned on again. Based on this assumption, the algorithm will turn off those hours
-  that has the highest difference between the hour that is off and the next hour that is on, and by this, turn off
-  the hours where it is most to save. This would be a good fit for turning off a heater controlled by a thermostat.
-</p>
-<p>
-  Other strategies are planned, but not yet implemented.
-</p>
-<h3>References</h3>
-    <ul>
-        <li><a href="https://github.com/ottopaulsen/node-red-contrib-power-saver">
-            node-red-contrib-power-saver</a>  on GitHub</li>
-        <li>The <a href="https://github.com/custom-components/nordpool">
-            nordpool</a>  custom component for Home Assistant</li>
-    </ul>    
+    <h3>References</h3>
+        <ul>
+            <li><a href="https://github.com/ottopaulsen/node-red-contrib-power-saver">
+                node-red-contrib-power-saver</a>  on GitHub</li>
+            <li>The <a href="https://github.com/custom-components/nordpool">
+                nordpool</a>  custom component for Home Assistant</li>
+        </ul>
 </script>

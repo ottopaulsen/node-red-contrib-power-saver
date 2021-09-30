@@ -29,11 +29,11 @@ module.exports = {
     maxOffCount,
     maxOffInARow,
     minOnAfterMaxOffInARow,
+    minSaving,
     lastValueDayBefore = undefined,
     lastCountDayBefore = 0
   ) {
     const dayBefore = fillArray(lastValueDayBefore, lastCountDayBefore);
-    let minSave = 0.001;
     let foundImprovement;
     const onOff = values.map((v) => true); // Start with all on
     if (maxOffCount <= 0) {
@@ -43,7 +43,7 @@ module.exports = {
       foundImprovement = false;
       const diffToNextOn = getDiffToNextOn(values, onOff);
       const sorted = sortedIndex(diffToNextOn).filter(
-        (v) => onOff[v] && diffToNextOn[v] >= minSave
+        (v) => onOff[v] && diffToNextOn[v] >= minSaving
       );
       let tryToTurnOffIndex = 0;
       while (tryToTurnOffIndex < sorted.length && !foundImprovement) {

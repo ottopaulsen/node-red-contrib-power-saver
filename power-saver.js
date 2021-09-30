@@ -1,20 +1,19 @@
 const { DateTime } = require("luxon");
-const {
-  sortedIndex,
-  countAtEnd,
-  makeSchedule,
-  getSavings,
-} = require("./utils");
+const { convertMsg, countAtEnd, makeSchedule, getSavings } = require("./utils");
 const mostSavedStrategy = require("./mostSavedStrategy");
 
 let schedulingTimeout = null;
 
 // TODO
-// Add topics to output. Maybe configurable on the node.
-// Make node config values.
-// Set status icon green when on, grey when off (red when error)
-// Make a savings-output that for each hour off, shows the price saved
-// compared to the next hour that is on.
+
+// Round savings
+// Add min saving
+// Put all output in one array with price, start, saving and onOff.
+
+// Accept input directly from tibber, nordpool and payload with converted values.
+// Make tests for all these.
+// Update doc with Tibber.
+// Make examples.
 
 module.exports = function (RED) {
   function PowerSaverNode(config) {
@@ -26,29 +25,32 @@ module.exports = function (RED) {
     this.maxHoursToSaveInSequence = config.maxHoursToSaveInSequence;
     this.minHoursOnAfterMaxSequenceSaved =
       config.minHoursOnAfterMaxSequenceSaved;
+    this.minSaving = config.minSaving;
     this.sendCurrentValueWhenRescheduling =
       config.sendCurrentValueWhenRescheduling;
+    this.outputIfNoSchedule = config.outputIfNoSchedule === "true";
 
     node.on("close", function () {
-      node.log("Clearing timeout");
       clearTimeout(schedulingTimeout);
     });
 
     node.on("input", function (msg) {
-      if (!validateInput(node, msg)) {
+      if (!validateMsg(node, msg)) {
         return;
       }
 
+      const input = convertMsg(msg);
+      if (!validateInput(node, input)) {
+        return;
+      }
+
+      const today = input.today;
+      const tomorrow = input.tomorrow;
+
       clearTimeout(schedulingTimeout);
 
-      // Get input data from msg
-      const rawToday =
-        msg.payload.raw_today ?? msg.data.new_state.attributes.raw_today;
-      const rawTomorrow =
-        msg.payload.raw_tomorrow ?? msg.data.new_state.attributes.raw_tomorrow;
-
       // Set dates
-      const todaysDate = DateTime.fromISO(rawToday[0].start.substr(0, 10));
+      const todaysDate = DateTime.fromISO(today[0].start.substr(0, 10));
       const yesterdayDate = todaysDate.plus({ days: -1 });
       const tomorrowDate = todaysDate.plus({ days: 1 });
 
@@ -56,10 +58,10 @@ module.exports = function (RED) {
       const dataYesterday = loadDayData(node, yesterdayDate);
 
       // Make plan
-      const valuesToday = rawToday.map((d) => d.value);
-      const valuesTomorrow = rawTomorrow.map((d) => d.value);
-      const startTimesToday = rawToday.map((d) => d.start);
-      const startTimesTomorrow = rawTomorrow.map((d) => d.start);
+      const valuesToday = today.map((d) => d.value);
+      const valuesTomorrow = tomorrow.map((d) => d.value);
+      const startTimesToday = today.map((d) => d.start);
+      const startTimesTomorrow = tomorrow.map((d) => d.start);
 
       planToday = makePlan(
         node,
@@ -80,7 +82,7 @@ module.exports = function (RED) {
 
       // Combine data for today and tomorrow
       const schedule = [...planToday.schedule, ...planTomorrow.schedule];
-      const savings = [...planToday.savings, ...planTomorrow.savings];
+      const hours = [...planToday.hours, ...planTomorrow.hours];
 
       // Prepare output
       let output1 = null;
@@ -88,7 +90,7 @@ module.exports = function (RED) {
       let output3 = {
         payload: {
           schedule,
-          savings,
+          hours,
         },
       };
 
@@ -100,6 +102,7 @@ module.exports = function (RED) {
         (entry) => DateTime.fromISO(entry.time) <= time
       );
       const outputCurrent = node.sendCurrentValueWhenRescheduling;
+
       if (outputCurrent && pastSchedule.length > 0) {
         const currentValue = pastSchedule[pastSchedule.length - 1].value;
         output1 = currentValue ? { payload: true } : null;
@@ -129,13 +132,15 @@ function loadDayData(node, date) {
       values: [],
       onOff: [],
       startTimes: [],
+      schedule: [],
+      savings: [],
     }
   );
 }
 
-function saveDayData(node, date, values, onOff, startTimes) {
+function saveDayData(node, date, plan) {
   const key = date.toISO();
-  node.context().set(key, { values, onOff, startTimes });
+  node.context().set(key, plan);
 }
 
 function deleteSavedScheduleBefore(node, day) {
@@ -157,6 +162,7 @@ function makePlan(node, values, startTimes, onOffBefore) {
           node.maxHoursToSavePerDay,
           node.maxHoursToSaveInSequence,
           node.minHoursOnAfterMaxSequenceSaved,
+          node.minSaving,
           lastValueDayBefore,
           lastCountDayBefore
         )
@@ -164,12 +170,16 @@ function makePlan(node, values, startTimes, onOffBefore) {
 
   const schedule = makeSchedule(onOff, startTimes, lastValueDayBefore);
   const savings = getSavings(values, onOff);
+  const hours = values.map((v, i) => ({
+    price: v,
+    onOff: onOff[i],
+    start: startTimes[i],
+    saving: savings[i],
+  }));
   return {
-    values,
-    onOff,
-    startTimes,
+    hours,
     schedule,
-    savings,
+    onOff,
   };
 }
 
@@ -178,7 +188,7 @@ function validationFailure(node, message) {
   node.warn(message);
 }
 
-function validateInput(node, msg) {
+function validateMsg(node, msg) {
   if (!msg.payload && !msg.data?.new_state?.attributes) {
     validationFailure(node, "Payload missing");
     return false;
@@ -188,27 +198,23 @@ function validateInput(node, msg) {
     validationFailure(node, "Payload must be an object");
     return false;
   }
-  ["raw_today", "raw_tomorrow"].forEach((arr) => {
-    if (!payload[arr]) {
-      validationFailure(node, `Payload is missing ${arr} array`);
-      return false;
-    }
+  return true;
+}
+
+function validateInput(node, input) {
+  ["today", "tomorrow"].forEach((arr) => {
     if (
-      payload[arr].some((day) => {
-        return (
-          day.start === undefined ||
-          day.end === undefined ||
-          day.value === undefined
-        );
+      input[arr].some((day) => {
+        return day.start === undefined || day.value === undefined;
       })
     ) {
       validationFailure(
         node,
-        `Malformed entries in payload.${arr}. All entries must contain start, end and value.`
+        `Malformed entries in payload.${arr}. All entries must contain start and value.`
       );
     }
   });
-  if (!payload.raw_today.length && !payload.raw_tomorrow.length) {
+  if (!input.today.length && !input.tomorrow.length) {
     validationFailure(node, "Payload has no data");
     return false;
   }
@@ -239,14 +245,19 @@ function runSchedule(node, schedule, time) {
     } changes. Next: ${remainingSchedule[0].value ? "on" : "off"}`;
     node.status({ fill: "green", shape: "dot", text: statusMessage });
     return setTimeout(() => {
-      const output1 = entry.value ? { payload: true } : null;
-      const output2 = entry.value ? null : { payload: false };
-      node.send([output1, output2, null]);
+      sendSwitch(node, entry.value);
       schedulingTimeout = runSchedule(node, remainingSchedule, nextTime);
     }, wait);
   } else {
     const message = "No schedule";
     node.warn(message);
     node.status({ fill: "red", shape: "dot", text: message });
+    sendSwitch(node, node.outputIfNoSchedule);
   }
+}
+
+function sendSwitch(node, onOff) {
+  const output1 = onOff ? { payload: true } : null;
+  const output2 = onOff ? null : { payload: false };
+  node.send([output1, output2, null]);
 }

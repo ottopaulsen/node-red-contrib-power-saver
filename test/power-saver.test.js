@@ -46,24 +46,18 @@ describe("power-saver Node", function () {
       n1.warn.should.be.calledWithExactly("Payload missing");
       n1.receive({ payload: "Error" });
       n1.warn.should.be.calledWithExactly("Payload must be an object");
-      n1.receive({ payload: {} });
-      n1.warn.should.be.calledWithExactly("Payload is missing raw_today array");
-      n1.receive({ payload: { raw_today: [] } });
-      n1.warn.should.be.calledWithExactly(
-        "Payload is missing raw_tomorrow array"
-      );
-      n1.receive({ payload: { raw_today: [], raw_tomorrow: [] } });
+      n1.receive({ payload: { today: [], tomorrow: [] } });
       n1.warn.should.be.calledWithExactly("Payload has no data");
 
-      ["start", "end", "value"].forEach((attr) => {
+      ["start", "value"].forEach((attr) => {
         const testData1 = {
-          raw_today: cloneDeep(prices.raw_today),
-          raw_tomorrow: cloneDeep(prices.raw_tomorrow),
+          today: cloneDeep(prices.today),
+          tomorrow: cloneDeep(prices.tomorrow),
         };
-        delete testData1.raw_today[3][attr];
+        delete testData1.today[3][attr];
         n1.receive({ payload: testData1 });
         n1.warn.should.be.calledWithExactly(
-          "Malformed entries in payload.raw_today. All entries must contain start, end and value."
+          "Malformed entries in payload.today. All entries must contain start and value."
         );
       });
 
@@ -106,17 +100,16 @@ describe("power-saver Node", function () {
       payload = cloneDeep(prices);
       payload.time = plan.time;
       let entryTime = DateTime.fromISO(payload.time);
-      payload.raw_today.forEach((e) => {
+      payload.today.forEach((e) => {
         e.start = entryTime.toISO();
         entryTime = entryTime.plus({ milliseconds: 10 });
         e.end = entryTime.toISO();
       });
-      payload.raw_tomorrow.forEach((e) => {
+      payload.tomorrow.forEach((e) => {
         e.start = entryTime.toISO();
         entryTime = entryTime.plus({ milliseconds: 10 });
         e.end = entryTime.toISO();
       });
-      console.log("payload:", payload);
       n1.receive({ payload });
     });
   });

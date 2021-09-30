@@ -1,4 +1,47 @@
 /**
+ * Get today and tomorrow data out of the input message.
+ * Can accept 3 types of messages: Tibber, Nordpool or plain payload with data already converted.
+ * @param {*} msg
+ */
+function convertMsg(msg) {
+  let today = [];
+  let tomorrow = [];
+  let source = "Unknown";
+
+  if (msg.payload?.viewer?.homes[0]?.currentSubscription?.priceInfo?.today) {
+    source = "Tibber";
+    today = msg.payload.viewer.homes[0].currentSubscription.priceInfo.today.map(
+      (v) => ({ value: v.total, start: v.startsAt })
+    );
+  } else if (msg.data?.new_state?.attributes?.raw_today) {
+    source = "Nordpool";
+    today = msg.data.new_state.attributes.raw_today.map((v) => ({
+      value: v.value,
+      start: v.start,
+    }));
+  } else {
+    source = "Other";
+    today = msg.payload?.today || [];
+  }
+
+  if (msg.payload?.viewer?.homes[0]?.currentSubscription?.priceInfo?.tomorrow) {
+    tomorrow =
+      msg.payload.viewer.homes[0].currentSubscription.priceInfo.tomorrow.map(
+        (v) => ({ value: v.total, start: v.startsAt })
+      );
+  } else if (msg.data?.new_state?.attributes?.raw_tomorrow) {
+    tomorrow = msg.data.new_state.attributes.raw_tomorrow.map((v) => ({
+      value: v.value,
+      start: v.start,
+    }));
+  } else {
+    tomorrow = msg.payload?.tomorrow || [];
+  }
+
+  return { today, tomorrow, source };
+}
+
+/**
  * Sort values in array and return array with index of original array
  * in sorted order. Highest value first.
  */
@@ -15,7 +58,6 @@ function sortedIndex(valueArr) {
     }
     return 0;
   });
-  // console.log("map 5");
   return sorted.map((p) => p.i);
 }
 
@@ -165,4 +207,5 @@ module.exports = {
   countAtEnd,
   makeSchedule,
   fillArray,
+  convertMsg,
 };
