@@ -2,7 +2,7 @@
 
 A Node-RED node to save money by turning off power when the power price is highest.
 
-![Normal flow](doc/node-red-contrib-power-saver-flow.png)
+![Normal flow](https://github.com/ottopaulsen/node-red-contrib-power-saver/blob/main/doc/node-red-contrib-power-saver-flow.png?raw=true)
 
 You can use it to control for example a heater, a water heater or any other power consumer that is acceptable to turn off now and then.
 
@@ -150,7 +150,7 @@ You can configure the following:
 Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [Tibber](https://tibber.com/)? If so, there is a module for MM called [MMM-Tibber](https://github.com/ottopaulsen/MMM-Tibber), that easily can be used to show savings from this node. 
 
 
-![Show savings in MMM-Tibber](doc/MMM-Tibber-screenshot-savings-graph.png)
+![Show savings in MMM-Tibber](https://github.com/ottopaulsen/MMM-Tibber/blob/master/doc/MMM-Tibber-screenshot-savings-graph.png?raw=true)
 
 The purple lines show savings.
 
