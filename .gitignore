@@ -4,3 +4,4 @@
 /coverage/
 install.sh
 .gitignore
+.DS_Store

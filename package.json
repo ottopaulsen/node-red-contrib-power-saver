@@ -8,6 +8,9 @@
   },
   "author": "Otto Paulsen <ottpau@gmail.com>",
   "license": "MIT",
+  "keywords": [
+    "node-red"
+  ],
   "node-red": {
     "nodes": {
       "power-saver": "power-saver.js"
