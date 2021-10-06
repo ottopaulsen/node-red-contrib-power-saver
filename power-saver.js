@@ -4,17 +4,6 @@ const mostSavedStrategy = require("./mostSavedStrategy");
 
 let schedulingTimeout = null;
 
-// TODO
-
-// Round savings
-// Add min saving
-// Put all output in one array with price, start, saving and onOff.
-
-// Accept input directly from tibber, nordpool and payload with converted values.
-// Make tests for all these.
-// Update doc with Tibber.
-// Make examples.
-
 module.exports = function (RED) {
   function PowerSaverNode(config) {
     RED.nodes.createNode(this, config);
@@ -63,13 +52,13 @@ module.exports = function (RED) {
       const startTimesToday = today.map((d) => d.start);
       const startTimesTomorrow = tomorrow.map((d) => d.start);
 
-      planToday = makePlan(
+      const planToday = makePlan(
         node,
         valuesToday,
         startTimesToday,
         dataYesterday.onOff
       );
-      planTomorrow = makePlan(
+      const planTomorrow = makePlan(
         node,
         valuesTomorrow,
         startTimesTomorrow,
@@ -193,7 +182,7 @@ function validateMsg(node, msg) {
     validationFailure(node, "Payload missing");
     return false;
   }
-  const payload = msg.payload ?? msg.data.new_state.attributes;
+  const payload = msg.data?.new_state?.attributes ?? msg.payload;
   if (typeof payload !== "object") {
     validationFailure(node, "Payload must be an object");
     return false;

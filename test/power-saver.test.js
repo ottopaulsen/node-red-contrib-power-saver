@@ -72,6 +72,7 @@ describe("power-saver Node", function () {
         id: "n1",
         type: "power-saver",
         name: "test name",
+        minSaving: 0.001,
         wires: [["n3"], ["n4"], ["n2"]],
       },
       { id: "n2", type: "helper" },
@@ -84,6 +85,8 @@ describe("power-saver Node", function () {
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
+        console.log(JSON.stringify(msg, null, 2));
+        console.log(JSON.stringify(plan.schedule, null, 2));
         expect(msg.payload).toHaveProperty("schedule", plan.schedule);
         n1.warn.should.not.be.called;
         // done();
