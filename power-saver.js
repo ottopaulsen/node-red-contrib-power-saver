@@ -35,6 +35,7 @@ module.exports = function (RED) {
 
       const today = input.today;
       const tomorrow = input.tomorrow;
+      const source = input.source;
 
       clearTimeout(schedulingTimeout);
 
@@ -80,6 +81,7 @@ module.exports = function (RED) {
         payload: {
           schedule,
           hours,
+          source,
         },
       };
 
