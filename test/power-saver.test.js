@@ -67,29 +67,15 @@ describe("power-saver Node", function () {
     });
   });
   it("should send new schedule on output 3", function (done) {
-    const flow = [
-      {
-        id: "n1",
-        type: "power-saver",
-        name: "test name",
-        minSaving: 0.001,
-        wires: [["n3"], ["n4"], ["n2"]],
-      },
-      { id: "n2", type: "helper" },
-      { id: "n3", type: "helper" },
-      { id: "n4", type: "helper" },
-    ];
+    const flow = makeFlow();
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        console.log(JSON.stringify(msg, null, 2));
-        console.log(JSON.stringify(plan.schedule, null, 2));
         expect(msg.payload).toHaveProperty("schedule", plan.schedule);
         n1.warn.should.not.be.called;
-        // done();
         setTimeout(() => {
           done();
         }, 500);
@@ -100,20 +86,123 @@ describe("power-saver Node", function () {
       n4.on("input", function (msg) {
         expect(msg).toHaveProperty("payload", false);
       });
-      payload = cloneDeep(prices);
-      payload.time = plan.time;
-      let entryTime = DateTime.fromISO(payload.time);
-      payload.today.forEach((e) => {
-        e.start = entryTime.toISO();
-        entryTime = entryTime.plus({ milliseconds: 10 });
-        e.end = entryTime.toISO();
+      n1.receive({ payload: makePayload(prices, plan.time) });
+    });
+  });
+
+  it("can schedule one day", function (done) {
+    const values = [1, 1, 1, 1, 1, 1, 1, 5, 4, 3];
+    const schedule = [
+      {
+        time: "2021-06-20T01:50:00.000+02:00",
+        value: true,
+      },
+      {
+        time: "2021-06-20T01:50:00.070+02:00",
+        value: false,
+      },
+      {
+        time: "2021-06-20T01:50:00.090+02:00",
+        value: true,
+      },
+    ];
+    const flow = makeFlow(12, 4, 2);
+    helper.load(powerSaver, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        console.log(JSON.stringify(msg, null, 2));
+        expect(msg.payload).toHaveProperty("schedule", schedule);
+        // n1.warn.should.not.be.called;
+        setTimeout(() => {
+          done();
+        }, 500);
       });
-      payload.tomorrow.forEach((e) => {
-        e.start = entryTime.toISO();
-        entryTime = entryTime.plus({ milliseconds: 10 });
-        e.end = entryTime.toISO();
+      const mPrices = cloneDeep(prices);
+      delete mPrices.tomorrow;
+      for (i = 0; i < mPrices.today.length; i++) {
+        mPrices.today[i].value = values[i];
+      }
+      const payload = makePayload(mPrices, plan.time);
+      n1.receive({ payload });
+    });
+  });
+
+  it("should schedule over midnight", function (done) {
+    const values1 = [1, 1, 1, 1, 1, 1, 1, 5, 4, 3];
+    const values2 = [2, 1, 5, 5, 5, 5, 5, 5, 5, 5];
+    const schedule = [
+      {
+        time: "2021-06-20T01:50:00.000+02:00",
+        value: true,
+      },
+      {
+        time: "2021-06-20T01:50:00.070+02:00",
+        value: false,
+      },
+      {
+        time: "2021-06-20T01:50:00.110+02:00",
+        value: true,
+      },
+    ];
+    const flow = makeFlow(12, 4, 2);
+    helper.load(powerSaver, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        console.log(JSON.stringify(msg, null, 2));
+        expect(msg.payload).toHaveProperty("schedule", schedule);
+        // n1.warn.should.not.be.called;
+        setTimeout(() => {
+          done();
+        }, 500);
       });
+      const mPrices = cloneDeep(prices);
+      for (i = 0; i < mPrices.today.length; i++) {
+        mPrices.today[i].value = values1[i];
+        mPrices.tomorrow[i].value = values2[i];
+      }
+      const payload = makePayload(mPrices, plan.time);
       n1.receive({ payload });
     });
   });
 });
+
+function makeFlow(
+  maxHoursToSavePerDay,
+  maxHoursToSaveInSequence,
+  minHoursOnAfterMaxSequenceSaved
+) {
+  return [
+    {
+      id: "n1",
+      type: "power-saver",
+      name: "test name",
+      maxHoursToSavePerDay,
+      maxHoursToSaveInSequence,
+      minHoursOnAfterMaxSequenceSaved,
+      minSaving: 0.001,
+      wires: [["n3"], ["n4"], ["n2"]],
+    },
+    { id: "n2", type: "helper" },
+    { id: "n3", type: "helper" },
+    { id: "n4", type: "helper" },
+  ];
+}
+
+function makePayload(prices, time) {
+  const payload = cloneDeep(prices);
+  payload.time = time;
+  let entryTime = DateTime.fromISO(payload.time);
+  payload.today.forEach((e) => {
+    e.start = entryTime.toISO();
+    entryTime = entryTime.plus({ milliseconds: 10 });
+    e.end = entryTime.toISO();
+  });
+  payload.tomorrow?.forEach((e) => {
+    e.start = entryTime.toISO();
+    entryTime = entryTime.plus({ milliseconds: 10 });
+    e.end = entryTime.toISO();
+  });
+  return payload;
+}

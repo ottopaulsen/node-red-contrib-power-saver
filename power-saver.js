@@ -57,7 +57,8 @@ module.exports = function (RED) {
         node,
         valuesToday,
         startTimesToday,
-        dataYesterday.onOff
+        dataYesterday.onOff,
+        valuesTomorrow[0]
       );
       const planTomorrow = makePlan(
         node,
@@ -142,7 +143,7 @@ function deleteSavedScheduleBefore(node, day) {
   } while (data);
 }
 
-function makePlan(node, values, startTimes, onOffBefore) {
+function makePlan(node, values, startTimes, onOffBefore, firstValueNextDay) {
   const strategy = "mostSaved"; // TODO: Get from node settings
   const lastValueDayBefore = onOffBefore[onOffBefore.length - 1];
   const lastCountDayBefore = countAtEnd(onOffBefore, lastValueDayBefore);
@@ -155,7 +156,8 @@ function makePlan(node, values, startTimes, onOffBefore) {
           node.minHoursOnAfterMaxSequenceSaved,
           node.minSaving,
           lastValueDayBefore,
-          lastCountDayBefore
+          lastCountDayBefore,
+          firstValueNextDay
         )
       : [];
 

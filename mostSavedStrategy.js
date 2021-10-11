@@ -31,7 +31,8 @@ module.exports = {
     minOnAfterMaxOffInARow,
     minSaving,
     lastValueDayBefore = undefined,
-    lastCountDayBefore = 0
+    lastCountDayBefore = 0,
+    firstValueNextDay
   ) {
     const dayBefore = fillArray(lastValueDayBefore, lastCountDayBefore);
     let foundImprovement;
@@ -41,7 +42,7 @@ module.exports = {
     }
     do {
       foundImprovement = false;
-      const diffToNextOn = getDiffToNextOn(values, onOff);
+      const diffToNextOn = getDiffToNextOn(values, onOff, firstValueNextDay);
       const sorted = sortedIndex(diffToNextOn).filter(
         (v) => onOff[v] && diffToNextOn[v] >= minSaving
       );

@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-power-saver",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A module for Node-RED that you can use to turn on and off a switch based on power prices",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,12 @@
   "author": "Otto Paulsen <ottpau@gmail.com>",
   "license": "MIT",
   "keywords": [
-    "node-red"
+    "node-red",
+    "tibber",
+    "energy",
+    "smarthome",
+    "home-automation",
+    "power"
   ],
   "node-red": {
     "nodes": {
