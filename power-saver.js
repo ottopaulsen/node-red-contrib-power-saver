@@ -162,7 +162,7 @@ function makePlan(node, values, startTimes, onOffBefore, firstValueNextDay) {
       : [];
 
   const schedule = makeSchedule(onOff, startTimes, lastValueDayBefore);
-  const savings = getSavings(values, onOff);
+  const savings = getSavings(values, onOff, firstValueNextDay);
   const hours = values.map((v, i) => ({
     price: v,
     onOff: onOff[i],

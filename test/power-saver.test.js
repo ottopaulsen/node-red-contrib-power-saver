@@ -5,6 +5,7 @@ const powerSaver = require("../power-saver.js");
 const { DateTime } = require("luxon");
 
 const prices = require("./data/prices");
+
 const plan = {
   schedule: [
     { time: "2021-06-20T01:50:00.000+02:00", value: true },
@@ -164,6 +165,24 @@ describe("power-saver Node", function () {
       }
       const payload = makePayload(mPrices, plan.time);
       n1.receive({ payload });
+    });
+  });
+  it("works for Tibber data", function (done) {
+    const tibberData = require("./data/tibber.json");
+    const tibberSchedule = require("./data/tibber_schedule.json");
+    // console.log(JSON.stringify(tibberData, null, 2));
+    const flow = makeFlow(12, 4, 2);
+    helper.load(powerSaver, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        console.log(JSON.stringify(msg, null, 2));
+        expect(msg).toHaveProperty("payload", tibberSchedule.payload);
+        setTimeout(() => {
+          done();
+        }, 500);
+      });
+      n1.receive({ ...tibberData });
     });
   });
 });

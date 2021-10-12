@@ -155,3 +155,7 @@ Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [
 The purple lines show savings.
 
 Read more about this in the [MMM-Tibber documentation](https://github.com/ottopaulsen/MMM-Tibber#show-savings).
+
+## Change Log
+
+[Change Log](CHANGELOG.md)
