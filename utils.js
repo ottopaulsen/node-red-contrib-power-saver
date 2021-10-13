@@ -81,10 +81,10 @@ function getDiffToNextOn(values, onOff, nextOn = null) {
   const res = values.map((p, i, a) => {
     for (let n = i + 1; n < a.length; n++) {
       if (onOff[n]) {
-        return values[i] - values[n];
+        return Math.round((values[i] - values[n]) * 10000) / 10000;
       }
     }
-    return p - nextOnValue;
+    return Math.round((p - nextOnValue) * 10000) / 10000;
   });
   return res;
 }
