@@ -9,10 +9,16 @@ const prices = require("./data/prices");
 const plan = {
   schedule: [
     { time: "2021-06-20T01:50:00.000+02:00", value: true },
-    { time: "2021-06-20T01:50:00.070+02:00", value: false },
+    { time: "2021-06-20T01:50:00.020+02:00", value: false },
+    { time: "2021-06-20T01:50:00.040+02:00", value: true },
+    { time: "2021-06-20T01:50:00.050+02:00", value: false },
     { time: "2021-06-20T01:50:00.080+02:00", value: true },
-    { time: "2021-06-20T01:50:00.110+02:00", value: false },
+    { time: "2021-06-20T01:50:00.100+02:00", value: false },
     { time: "2021-06-20T01:50:00.120+02:00", value: true },
+    { time: "2021-06-20T01:50:00.130+02:00", value: false },
+    { time: "2021-06-20T01:50:00.140+02:00", value: true },
+    { time: "2021-06-20T01:50:00.150+02:00", value: false },
+    { time: "2021-06-20T01:50:00.180+02:00", value: true },
   ],
   time: "2021-06-20T01:50:00+02:00",
 };
@@ -68,7 +74,7 @@ describe("power-saver Node", function () {
     });
   });
   it("should send new schedule on output 3", function (done) {
-    const flow = makeFlow();
+    const flow = makeFlow(12, 3, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -77,9 +83,7 @@ describe("power-saver Node", function () {
       n2.on("input", function (msg) {
         expect(msg.payload).toHaveProperty("schedule", plan.schedule);
         n1.warn.should.not.be.called;
-        setTimeout(() => {
-          done();
-        }, 500);
+        done();
       });
       n3.on("input", function (msg) {
         expect(msg).toHaveProperty("payload", true);
@@ -112,12 +116,9 @@ describe("power-saver Node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        console.log(JSON.stringify(msg, null, 2));
         expect(msg.payload).toHaveProperty("schedule", schedule);
-        // n1.warn.should.not.be.called;
-        setTimeout(() => {
-          done();
-        }, 500);
+        n1.warn.should.not.be.called;
+        done();
       });
       const mPrices = cloneDeep(prices);
       delete mPrices.tomorrow;
@@ -151,12 +152,9 @@ describe("power-saver Node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        console.log(JSON.stringify(msg, null, 2));
         expect(msg.payload).toHaveProperty("schedule", schedule);
-        // n1.warn.should.not.be.called;
-        setTimeout(() => {
-          done();
-        }, 500);
+        n1.warn.should.not.be.called;
+        done();
       });
       const mPrices = cloneDeep(prices);
       for (i = 0; i < mPrices.today.length; i++) {
@@ -170,7 +168,6 @@ describe("power-saver Node", function () {
   it("works for Tibber data", function (done) {
     const tibberData = require("./data/tibber.json");
     const tibberSchedule = require("./data/tibber_schedule.json");
-    // console.log(JSON.stringify(tibberData, null, 2));
     const flow = makeFlow(12, 4, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
@@ -178,9 +175,7 @@ describe("power-saver Node", function () {
       n2.on("input", function (msg) {
         console.log(JSON.stringify(msg, null, 2));
         expect(msg).toHaveProperty("payload", tibberSchedule.payload);
-        setTimeout(() => {
-          done();
-        }, 500);
+        done();
       });
       n1.receive({ ...tibberData });
     });

@@ -1,3 +1,5 @@
+const { DateTime } = require("luxon");
+
 /**
  * Get today and tomorrow data out of the input message.
  * Can accept 3 types of messages: Tibber, Nordpool or plain payload with data already converted.
@@ -198,6 +200,19 @@ function fillArray(value, count) {
   return res;
 }
 
+function extractPlanForDate(plan, day) {
+  const part = {};
+  part.hours = plan.hours.filter((h) => isSameDate(day, h.start));
+  part.schedule = plan.schedule.filter((s) => isSameDate(day, s.time));
+  return part;
+}
+
+function isSameDate(date1, date2) {
+  return (
+    DateTime.fromISO(date1).toISODate() === DateTime.fromISO(date2).toISODate()
+  );
+}
+
 module.exports = {
   sortedIndex,
   getDiffToNextOn,
@@ -208,4 +223,6 @@ module.exports = {
   makeSchedule,
   fillArray,
   convertMsg,
+  extractPlanForDate,
+  isSameDate,
 };

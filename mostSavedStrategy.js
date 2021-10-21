@@ -16,9 +16,9 @@ const {
  * 4. If something was turned off, repeat from 1.
  *
  * @param {*} values Array of prices
- * @param {*} maxOffCount Max number of hours that can be saved in total
  * @param {*} maxOffInARow Max number of hours that can be saved in a row
  * @param {*} minOnAfterMaxOffInARow Min number of hours that must be on after maxOffInARow is saved
+ * @param {*} minSaving Minimum amount that must be saved in order to turn off
  * @param {*} lastValueDayBefore Value of the last hour the day before
  * @param {*} lastCountDayBefore Number of lastValueDayBefore in a row
  * @returns Array with same number of values as in values array, where true is on, false is off
@@ -26,23 +26,22 @@ const {
 module.exports = {
   calculate: function (
     values,
-    maxOffCount,
     maxOffInARow,
     minOnAfterMaxOffInARow,
     minSaving,
     lastValueDayBefore = undefined,
-    lastCountDayBefore = 0,
-    firstValueNextDay
+    lastCountDayBefore = 0
   ) {
     const dayBefore = fillArray(lastValueDayBefore, lastCountDayBefore);
     let foundImprovement;
     const onOff = values.map((v) => true); // Start with all on
-    if (maxOffCount <= 0) {
-      return onOff;
-    }
     do {
       foundImprovement = false;
-      const diffToNextOn = getDiffToNextOn(values, onOff, firstValueNextDay);
+      const diffToNextOn = getDiffToNextOn(
+        values,
+        onOff,
+        values[values.length - 1]
+      );
       const sorted = sortedIndex(diffToNextOn).filter(
         (v) => onOff[v] && diffToNextOn[v] >= minSaving
       );
@@ -62,7 +61,7 @@ module.exports = {
           tryToTurnOffIndex++;
         }
       }
-    } while (foundImprovement && onOff.filter((v) => !v).length < maxOffCount);
+    } while (foundImprovement);
 
     return onOff;
   },

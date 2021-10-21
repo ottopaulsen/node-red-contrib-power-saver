@@ -1,5 +1,11 @@
 const { DateTime } = require("luxon");
-const { convertMsg, countAtEnd, makeSchedule, getSavings } = require("./utils");
+const {
+  convertMsg,
+  countAtEnd,
+  makeSchedule,
+  getSavings,
+  extractPlanForDate,
+} = require("./utils");
 const mostSavedStrategy = require("./mostSavedStrategy");
 
 let schedulingTimeout = null;
@@ -10,7 +16,6 @@ module.exports = function (RED) {
     const node = this;
 
     // Save config in node
-    this.maxHoursToSavePerDay = config.maxHoursToSavePerDay;
     this.maxHoursToSaveInSequence = config.maxHoursToSaveInSequence;
     this.minHoursOnAfterMaxSequenceSaved =
       config.minHoursOnAfterMaxSequenceSaved;
@@ -33,56 +38,34 @@ module.exports = function (RED) {
         return;
       }
 
-      const today = input.today;
-      const tomorrow = input.tomorrow;
-      const source = input.source;
+      const priceData = [...input.today, ...input.tomorrow];
 
       clearTimeout(schedulingTimeout);
 
-      // Set dates
-      const todaysDate = DateTime.fromISO(today[0].start.substr(0, 10));
-      const yesterdayDate = todaysDate.plus({ days: -1 });
-      const tomorrowDate = todaysDate.plus({ days: 1 });
+      const dates = [
+        ...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate())),
+      ];
 
-      // Load data from yesterday
-      const dataYesterday = loadDayData(node, yesterdayDate);
+      // Load data from day before
+      const dateDayBefore = DateTime.fromISO(dates[0]).plus({ days: -1 });
+      const dataDayBefore = loadDayData(node, dateDayBefore);
 
       // Make plan
-      const valuesToday = today.map((d) => d.value);
-      const valuesTomorrow = tomorrow.map((d) => d.value);
-      const startTimesToday = today.map((d) => d.start);
-      const startTimesTomorrow = tomorrow.map((d) => d.start);
-
-      const planToday = makePlan(
-        node,
-        valuesToday,
-        startTimesToday,
-        dataYesterday.onOff,
-        valuesTomorrow[0]
-      );
-      const planTomorrow = makePlan(
-        node,
-        valuesTomorrow,
-        startTimesTomorrow,
-        planToday.onOff
-      );
+      const values = priceData.map((d) => d.value);
+      const startTimes = priceData.map((d) => d.start);
+      const plan = makePlan(node, values, startTimes, dataDayBefore.onOff);
 
       // Save schedule
-      saveDayData(node, todaysDate, planToday);
-      saveDayData(node, tomorrowDate, planTomorrow);
-
-      // Combine data for today and tomorrow
-      const schedule = [...planToday.schedule, ...planTomorrow.schedule];
-      const hours = [...planToday.hours, ...planTomorrow.hours];
+      dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
       // Prepare output
       let output1 = null;
       let output2 = null;
       let output3 = {
         payload: {
-          schedule,
-          hours,
-          source,
+          schedule: plan.schedule,
+          hours: plan.hours,
+          source: input.source,
         },
       };
 
@@ -90,7 +73,7 @@ module.exports = function (RED) {
       const time = msg.payload.time
         ? DateTime.fromISO(msg.payload.time)
         : DateTime.now();
-      const pastSchedule = schedule.filter(
+      const pastSchedule = plan.schedule.filter(
         (entry) => DateTime.fromISO(entry.time) <= time
       );
       const outputCurrent = node.sendCurrentValueWhenRescheduling;
@@ -102,13 +85,13 @@ module.exports = function (RED) {
       }
 
       // Delete old data
-      deleteSavedScheduleBefore(node, yesterdayDate);
+      deleteSavedScheduleBefore(node, dateDayBefore);
 
       // Send output
       node.send([output1, output2, output3]);
 
       // Run schedule
-      schedulingTimeout = runSchedule(node, schedule, time);
+      schedulingTimeout = runSchedule(node, plan.schedule, time);
     });
   }
 
@@ -131,8 +114,7 @@ function loadDayData(node, date) {
 }
 
 function saveDayData(node, date, plan) {
-  const key = date.toISO();
-  node.context().set(key, plan);
+  node.context().set(date, plan);
 }
 
 function deleteSavedScheduleBefore(node, day) {
@@ -151,13 +133,11 @@ function makePlan(node, values, startTimes, onOffBefore, firstValueNextDay) {
     strategy === "mostSaved"
       ? mostSavedStrategy.calculate(
           values,
-          node.maxHoursToSavePerDay,
           node.maxHoursToSaveInSequence,
           node.minHoursOnAfterMaxSequenceSaved,
           node.minSaving,
           lastValueDayBefore,
-          lastCountDayBefore,
-          firstValueNextDay
+          lastCountDayBefore
         )
       : [];
 

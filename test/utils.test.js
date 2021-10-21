@@ -1,3 +1,4 @@
+const { DateTime } = require("luxon");
 const expect = require("expect");
 const {
   sortedIndex,
@@ -9,6 +10,8 @@ const {
   makeSchedule,
   fillArray,
   convertMsg,
+  extractPlanForDate,
+  isSameDate,
 } = require("../utils");
 
 describe("utils", () => {
@@ -231,5 +234,109 @@ describe("utils", () => {
       source: "Other",
       ...msgStdTodayOnly.payload,
     });
+  });
+
+  it("can compare dates", () => {
+    const date1 = "2021-06-20T01:50:00.000+02:00";
+    expect(isSameDate(date1, "2021-06-20T01:50:00.000+02:00")).toBeTruthy();
+    expect(isSameDate(date1, "2021-06-21T01:50:00.000+02:00")).toBeFalsy();
+    expect(isSameDate(date1, "2021-06-20")).toBeTruthy();
+    expect(isSameDate(date1, "2021-06-21")).toBeFalsy();
+  });
+
+  it("can extract plan for a date", () => {
+    const plan = {
+      hours: [
+        {
+          price: 0.3,
+          onOff: true,
+          start: "2021-06-20T01:50:00.000+02:00",
+          saving: 1,
+        },
+        {
+          price: 0.4,
+          onOff: false,
+          start: "2021-06-20T01:50:00.010+02:00",
+          saving: 2,
+        },
+        {
+          price: 0.2,
+          onOff: false,
+          start: "2021-06-21T01:50:00.180+02:00",
+          saving: 3,
+        },
+        {
+          price: 0.85,
+          onOff: true,
+          start: "2021-06-21T01:50:00.190+02:00",
+          saving: null,
+        },
+      ],
+      schedule: [
+        {
+          time: "2021-06-20T01:50:00.000+02:00",
+          value: true,
+        },
+        {
+          time: "2021-06-21T01:50:00.020+02:00",
+          value: false,
+        },
+        {
+          time: "2021-06-21T01:50:00.040+02:00",
+          value: false,
+        },
+      ],
+    };
+    const part1 = {
+      hours: [
+        {
+          price: 0.3,
+          onOff: true,
+          start: "2021-06-20T01:50:00.000+02:00",
+          saving: 1,
+        },
+        {
+          price: 0.4,
+          onOff: false,
+          start: "2021-06-20T01:50:00.010+02:00",
+          saving: 2,
+        },
+      ],
+      schedule: [
+        {
+          time: "2021-06-20T01:50:00.000+02:00",
+          value: true,
+        },
+      ],
+    };
+    const part2 = {
+      hours: [
+        {
+          price: 0.2,
+          onOff: false,
+          start: "2021-06-21T01:50:00.180+02:00",
+          saving: 3,
+        },
+        {
+          price: 0.85,
+          onOff: true,
+          start: "2021-06-21T01:50:00.190+02:00",
+          saving: null,
+        },
+      ],
+      schedule: [
+        {
+          time: "2021-06-21T01:50:00.020+02:00",
+          value: false,
+        },
+        {
+          time: "2021-06-21T01:50:00.040+02:00",
+          value: false,
+        },
+      ],
+    };
+    expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).toEqual(
+      part1
+    );
   });
 });
