@@ -2,8 +2,10 @@
 
 List the most significant changes, starting in version 1.0.9.
 
-## 1.0.10
+## 2.0.0
 
+* New and better algorithm to calculates savings, resulting in a better schedule.
+* Removed possibility to configure maximum hours to save per day, as this does not really make much sense.
 * Round savings to 4 decimals.
 * Set last savings hour to null when 0.
 

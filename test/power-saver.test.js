@@ -5,6 +5,7 @@ const powerSaver = require("../power-saver.js");
 const { DateTime } = require("luxon");
 
 const prices = require("./data/prices");
+const result = require("./data/result");
 
 const plan = {
   schedule: [
@@ -74,14 +75,14 @@ describe("power-saver Node", function () {
     });
   });
   it("should send new schedule on output 3", function (done) {
-    const flow = makeFlow(12, 3, 2);
+    const flow = makeFlow(3, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", plan.schedule);
+        expect(msg).toHaveProperty("payload", result);
         n1.warn.should.not.be.called;
         done();
       });
@@ -111,7 +112,7 @@ describe("power-saver Node", function () {
         value: true,
       },
     ];
-    const flow = makeFlow(12, 4, 2);
+    const flow = makeFlow(4, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -147,7 +148,7 @@ describe("power-saver Node", function () {
         value: true,
       },
     ];
-    const flow = makeFlow(12, 4, 2);
+    const flow = makeFlow(4, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -166,15 +167,15 @@ describe("power-saver Node", function () {
     });
   });
   it("works for Tibber data", function (done) {
-    const tibberData = require("./data/tibber.json");
-    const tibberSchedule = require("./data/tibber_schedule.json");
-    const flow = makeFlow(12, 4, 2);
+    const tibberData = require("./data/tibber_prices.json");
+    const tibberResult = require("./data/tibber_result.json");
+    const flow = makeFlow(4, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         console.log(JSON.stringify(msg, null, 2));
-        expect(msg).toHaveProperty("payload", tibberSchedule.payload);
+        expect(msg).toHaveProperty("payload", tibberResult);
         done();
       });
       n1.receive({ ...tibberData });
@@ -182,17 +183,12 @@ describe("power-saver Node", function () {
   });
 });
 
-function makeFlow(
-  maxHoursToSavePerDay,
-  maxHoursToSaveInSequence,
-  minHoursOnAfterMaxSequenceSaved
-) {
+function makeFlow(maxHoursToSaveInSequence, minHoursOnAfterMaxSequenceSaved) {
   return [
     {
       id: "n1",
       type: "power-saver",
       name: "test name",
-      maxHoursToSavePerDay,
       maxHoursToSaveInSequence,
       minHoursOnAfterMaxSequenceSaved,
       minSaving: 0.001,

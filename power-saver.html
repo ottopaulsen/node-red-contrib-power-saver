@@ -4,11 +4,6 @@
     color: "#a6bbcf",
     defaults: {
       name: { value: "Power Saver" },
-      maxHoursToSavePerDay: {
-        value: 12,
-        required: true,
-        validate: RED.validators.number(),
-      },
       maxHoursToSaveInSequence: {
         value: 3,
         required: true,
@@ -48,10 +43,6 @@
       <input type="text" id="node-input-name" placeholder="Name">
   </div>
   <div class="form-row">
-      <label for="node-input-maxHoursToSavePerDay"><i class="fa fa-align-justify"></i> Max per day</label>
-      <input type="text" id="node-input-maxHoursToSavePerDay" placeholder="Max hours to save in a day">
-  </div>
-  <div class="form-row">
       <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-arrows-h"></i> Max per sequence</label>
       <input type="text" id="node-input-maxHoursToSaveInSequence" placeholder="Max hours to save in sequence">
   </div>
@@ -80,9 +71,6 @@
 
 
   <div>
-      <p>
-          <strong>Max per day</strong> is the maximum number of hours that can be saved (turned off) during a day.
-      </p>
       <p>
           <strong>Max per sequence</strong> is the maximum number of hours that can be saved (turned off) in a sequence.
       </p>

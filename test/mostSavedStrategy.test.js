@@ -33,9 +33,9 @@ describe("mostSavedStrategy", () => {
     expect(mostSavedStrategy.calculate(values, 2, 1, 0.001)).toEqual([
       true,
       true,
-      false,
-      false,
       true,
+      false,
+      false,
       true,
       false,
       false,
@@ -57,9 +57,9 @@ describe("mostSavedStrategy", () => {
     expect(mostSavedStrategy.calculate(values, 2, 0, 0.001)).toEqual([
       true,
       true,
-      false,
-      false,
       true,
+      false,
+      false,
       true,
       false,
       false,

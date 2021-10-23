@@ -21,6 +21,12 @@ function convertMsg(msg) {
       value: v.value,
       start: v.start,
     }));
+  } else if (msg.data?.attributes?.raw_today) {
+    source = "Nordpool";
+    today = msg.data.attributes.raw_today.map((v) => ({
+      value: v.value,
+      start: v.start,
+    }));
   } else {
     source = "Other";
     today = msg.payload?.today || [];
