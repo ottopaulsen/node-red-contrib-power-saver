@@ -174,7 +174,6 @@ describe("power-saver Node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        console.log(JSON.stringify(msg, null, 2));
         expect(msg).toHaveProperty("payload", tibberResult);
         done();
       });

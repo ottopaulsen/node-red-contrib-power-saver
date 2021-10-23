@@ -19,7 +19,7 @@ module.exports = function (RED) {
     this.maxHoursToSaveInSequence = config.maxHoursToSaveInSequence;
     this.minHoursOnAfterMaxSequenceSaved =
       config.minHoursOnAfterMaxSequenceSaved;
-    this.minSaving = config.minSaving;
+    this.minSaving = parseFloat(config.minSaving);
     this.sendCurrentValueWhenRescheduling =
       config.sendCurrentValueWhenRescheduling;
     this.outputIfNoSchedule = config.outputIfNoSchedule === "true";
@@ -58,6 +58,14 @@ module.exports = function (RED) {
       // Save schedule
       dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
+      const config = {
+        maxHoursToSaveInSequence: this.maxHoursToSaveInSequence,
+        minHoursOnAfterMaxSequenceSaved: this.minHoursOnAfterMaxSequenceSaved,
+        minSaving: this.minSaving,
+        sendCurrentValueWhenRescheduling: this.sendCurrentValueWhenRescheduling,
+        outputIfNoSchedule: this.outputIfNoSchedule,
+      };
+
       // Prepare output
       let output1 = null;
       let output2 = null;
@@ -66,6 +74,7 @@ module.exports = function (RED) {
           schedule: plan.schedule,
           hours: plan.hours,
           source: input.source,
+          config,
         },
       };
 

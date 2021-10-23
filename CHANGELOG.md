@@ -2,6 +2,11 @@
 
 List the most significant changes, starting in version 1.0.9.
 
+## 2.0.1
+
+* Fix bug that caused no schedule
+* Add config to output
+
 ## 2.0.0
 
 * New and better algorithm to calculates savings, resulting in a better schedule.

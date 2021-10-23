@@ -160,4 +160,10 @@ module.exports = {
     },
   ],
   source: "Other",
+  config: {
+    maxHoursToSaveInSequence: 3,
+    minHoursOnAfterMaxSequenceSaved: 2,
+    minSaving: 0.001,
+    outputIfNoSchedule: false,
+  },
 };

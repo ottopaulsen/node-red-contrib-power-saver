@@ -347,5 +347,11 @@
       "saving": null
     }
   ],
-  "source": "Tibber"
+  "source": "Tibber",
+  "config": {
+    "maxHoursToSaveInSequence": 4,
+    "minHoursOnAfterMaxSequenceSaved": 2,
+    "minSaving": 0.001,
+    "outputIfNoSchedule": false
+  }
 }

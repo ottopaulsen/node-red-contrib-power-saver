@@ -46,6 +46,7 @@ module.exports = {
         }
         if (
           saving > minSaving * count &&
+          hour + count <= last &&
           values[hour] > values[hour + count] + minSaving
         ) {
           savingsList.push({ hour, count, saving });
