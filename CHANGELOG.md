@@ -2,6 +2,10 @@
 
 List the most significant changes, starting in version 1.0.9.
 
+## 2.0.5
+
+* Update links to examples
+
 ## 2.0.4
 
 * Update doc and add examples

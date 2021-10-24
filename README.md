@@ -67,7 +67,7 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
 
 Send the result from the `tibber-query` node with the query above directly to the `power-saver` node. Make sure it is refreshed when new prices are ready. Prices for the next day are normally ready at 13:00, but refreshing every hour can be a good idea.
 
-[See example with Tibber, a switch and MQTT](doc/example-tibber-mqtt)
+[See example with Tibber, a switch and MQTT](doc/example-tibber-mqtt.md)
 
 
 ### Nordpool input
@@ -76,9 +76,9 @@ This is especially designed to work for Home Assistant (HA), and the [Nordpool c
 
 Data can be sent from both the `current state` node or the `events: state` node.
 
-[See example with Nordpool and `current state` node](doc/example-nordpool-current-state)
+[See example with Nordpool and `current state` node](doc/example-nordpool-current-state.md)
 
-[See example with Nordpool and `events: state` node](doc/example-nordpool-events-state)
+[See example with Nordpool and `events: state` node](doc/example-nordpool-events-state.md)
 
 
 ### Other input
