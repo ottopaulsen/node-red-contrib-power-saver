@@ -1,20 +1,34 @@
 # node-red-contrib-power-saver
 
-A Node-RED node to save money by turning off power when the power price is highest.
+A Node-RED node to save money when power prices are changing. Saving is done by postponing power consumption until the price is lower.
+
+You can configure maximum number of hours to save in a sequence, and minimum time to recover after a maximum saving period.
 
 ![Normal flow](https://github.com/ottopaulsen/node-red-contrib-power-saver/blob/main/doc/node-red-contrib-power-saver-flow.png?raw=true)
 
 You can use it to control for example a heater, a water heater or any other power consumer that is acceptable to turn off now and then.
 
-The node takes power prices per hour as input, and sends output to turn a switch on or off based on the power price. It also outputs the schedule that is planned, as well as how much you save per kWh for each of the hours that are turned off, assuming that the same power is used as soon as the power is tuened on.
+The node takes power prices per hour as input, and sends output to turn a switch on or off based on the power price. It also outputs the schedule that is planned, as well as how much you save per kWh for each of the hours that are turned off, assuming that the same power is used as soon as the power is turned on.
 
 Power prices may be received from Tibber, Nordpool or any other source that gives price per hour for today and optionally tomorrow. It is primarily made to be used together with Home Assistant (HA), but there is no dependency to HA, so it can just as well be used by itself.
 
-The node can also be used in combination with MagicMirror with the MMM-MQTT and MMM-Tibber modules, in order to get the savings displayed on the MM screen in the MMM-Tibber module:
+The node can also be used in combination with MagicMirror with the MMM-MQTT and MMM-Tibber modules, in order to get the savings displayed on the MM screen in the MMM-Tibber module.
 
-NB! WIP
+**NB! WIP**
 
-This node is currently very new, and has hardly been tried. Feel free to try it, and report back problems or ideas as Github issues.
+This node is currently rather new, and has been tried for a few weeks, enough to come in a version two with improved savings plan.
+
+Feel free to try it, and report back problems or ideas as [Github issues](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues).
+
+## Installation
+
+Install in Node-RED via the Manage Palette menu.
+
+May also be installed via npm:
+
+`npm install node-red-contrib-power-saver`
+
+Make sure that you also upgrade now and then to get the latest version. See [changelog](CHANGELOG) for changes.
 
 ## Input
 
@@ -53,11 +67,19 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
 
 Send the result from the `tibber-query` node with the query above directly to the `power-saver` node. Make sure it is refreshed when new prices are ready. Prices for the next day are normally ready at 13:00, but refreshing every hour can be a good idea.
 
+[See example with Tibber, a switch and MQTT](doc/example-tibber-mqtt)
+
+
 ### Nordpool input
 
 This is especially designed to work for Home Assistant (HA), and the [Nordpool custom component](https://github.com/custom-components/nordpool). The Nordpool component provides a *sensor* that gives price per hour for today and tomorrow (after 13:00). Send the output from this sensor directly to the `power-saver` node. Make sure this is done whenever the node is updated, as well as when the system starts up.
 
-NB! I myself have trouble with my Nordpool sensor in HA. It is not updating properly. Please give feedback how you experience this, preferably as Github issues.
+Data can be sent from both the `current state` node or the `events: state` node.
+
+[See example with Nordpool and `current state` node](doc/example-nordpool-current-state)
+
+[See example with Nordpool and `events: state` node](doc/example-nordpool-events-state)
+
 
 ### Other input
 
@@ -127,7 +149,15 @@ Example of output:
       "saving": null
     },
     ...
-  ]
+  ],
+  "source": "Nordpool",
+  "config": {
+    "maxHoursToSaveInSequence": 3,
+    "minHoursOnAfterMaxSequenceSaved": "1",
+    "minSaving": 0.001,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": false
+  }
 }
 ```
 
@@ -139,10 +169,10 @@ Currently there is only one strategy for saving. This is the *mostSaved* strateg
 
 You can configure the following:
 
-* Maximum number of hours to turn off during a day (24 hours).
 * Maximum number of hours to turn off in a sequence.
 * Minimum hours to turn on immediately after a period when turned off the maximum number of hours that is allowed to be turned off.
-* Minimum amount to save per kWh in order to bother turning it off.
+* Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it?
+* Wether to send on/off just after a reschedule is done without waiting until the next scheduled switch.
 * What to do if there is no valid schedule any more (turn on or off).
 
 ## Integration with MagicMirror
@@ -152,10 +182,14 @@ Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [
 
 ![Show savings in MMM-Tibber](https://github.com/ottopaulsen/MMM-Tibber/blob/master/doc/MMM-Tibber-screenshot-savings-graph.png?raw=true)
 
-The purple lines show savings.
+The purple lines show savings per kWh.
 
 Read more about this in the [MMM-Tibber documentation](https://github.com/ottopaulsen/MMM-Tibber#show-savings).
 
 ## Change Log
 
-[Change Log](CHANGELOG.md)
+See [CHANGELOG.md](CHANGELOG.md)
+
+## Contribute
+
+Contributions are welcome. Please start by creating a Github Issue with suggested changes, and state what you would like to do.

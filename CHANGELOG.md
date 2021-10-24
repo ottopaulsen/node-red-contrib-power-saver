@@ -2,6 +2,14 @@
 
 List the most significant changes, starting in version 1.0.9.
 
+## 2.0.4
+
+* Update doc and add examples
+
+## 2.0.3
+
+* Bugfix
+
 ## 2.0.2
 
 * Fix so Nordpool data can be read directly from the current state node
