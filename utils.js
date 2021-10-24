@@ -43,7 +43,7 @@ function convertMsg(msg) {
       start: v.start,
     }));
   } else if (msg.data?.attributes?.raw_tomorrow) {
-    today = msg.data.attributes.raw_tomorrow.map((v) => ({
+    tomorrow = msg.data.attributes.raw_tomorrow.map((v) => ({
       value: v.value,
       start: v.start,
     }));
