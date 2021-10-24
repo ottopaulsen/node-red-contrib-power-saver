@@ -2,6 +2,10 @@
 
 List the most significant changes, starting in version 1.0.9.
 
+## 2.0.2
+
+* Fix so Nordpool data can be read directly from the current state node
+
 ## 2.0.1
 
 * Fix bug that caused no schedule
@@ -9,7 +13,7 @@ List the most significant changes, starting in version 1.0.9.
 
 ## 2.0.0
 
-* New and better algorithm to calculates savings, resulting in a better schedule.
+* New and better algorithm to calculate savings, resulting in a better schedule.
 * Removed possibility to configure maximum hours to save per day, as this does not really make much sense.
 * Round savings to 4 decimals.
 * Set last savings hour to null when 0.

@@ -175,7 +175,8 @@ function validateMsg(node, msg) {
     validationFailure(node, "Payload missing");
     return false;
   }
-  const payload = msg.data?.new_state?.attributes ?? msg.payload;
+  const payload =
+    msg.data?.new_state?.attributes ?? msg.data?.attributes ?? msg.payload;
   if (typeof payload !== "object") {
     validationFailure(node, "Payload must be an object");
     return false;
