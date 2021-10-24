@@ -42,6 +42,11 @@ function convertMsg(msg) {
       value: v.value,
       start: v.start,
     }));
+  } else if (msg.data?.attributes?.raw_tomorrow) {
+    today = msg.data.attributes.raw_tomorrow.map((v) => ({
+      value: v.value,
+      start: v.start,
+    }));
   } else {
     tomorrow = msg.payload?.tomorrow || [];
   }
