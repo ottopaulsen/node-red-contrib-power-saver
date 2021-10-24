@@ -2,6 +2,10 @@
 
 List the most significant changes, starting in version 1.0.9.
 
+## Next
+
+* Fix dropdown for config value for selecting output when there is no schedule
+
 ## 2.0.5
 
 * Update links to examples

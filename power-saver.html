@@ -34,6 +34,20 @@
     label: function () {
       return this.name || "power-saver";
     },
+    outputLabels: ["on", "off", "schedule"],
+    oneditprepare: function () {
+      $("#node-input-outputIfNoSchedule").typedInput({
+        types: [
+          {
+            value: "onoff",
+            options: [
+              { value: true, label: "On" },
+              { value: false, label: "Off" },
+            ],
+          },
+        ],
+      });
+    },
   });
 </script>
 
@@ -62,10 +76,7 @@
   </div>
   <div class="form-row">
       <label for="node-input-outputIfNoSchedule">Output when no schedule</label>
-      <select id="node-input-outputIfNoSchedule">
-        <option value=true>On</option>
-        <option value=false>Off</option>
-      </select>
+      <input type="boolean" id="node-input-outputIfNoSchedule">
       </label>
   </div>
 
