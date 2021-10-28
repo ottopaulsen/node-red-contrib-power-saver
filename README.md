@@ -175,6 +175,42 @@ You can configure the following:
 * Wether to send on/off just after a reschedule is done without waiting until the next scheduled switch.
 * What to do if there is no valid schedule any more (turn on or off).
 
+### Dynamic config
+
+It is possible to change config dynamically by sending a config message to the node. The config messages has a payload with a config object like this example:
+
+```json
+"payload": {
+  "config": {
+    "maxHoursToSaveInSequence": 4,
+    "minHoursOnAfterMaxSequenceSaved": 2,
+    "minSaving": 0.02,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": true
+  }
+}
+```
+
+All the variables in the config object are optional. You can send only those you want to change.
+
+The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
+
+When a config is sent like this, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
+
+## Algorithm
+
+The calculation that decides what hours to turn off works as follows:
+
+1. A matrix (x * y) is created where x is the number of hours we have price information for, and y is the configured maximum number of hours to turn off in a sequence.
+2. The matrix is filled with how much you save by turning off hour x for y hours.
+3. The matrix is processed calculating all possibilities for turning off a number of hours in a sequence and by that saving money. In this process all non-saving sequences are discarded. Also, if the average saving per hour is less than what you have configured as minimum amount to save per kWh, the sequence is discarded.
+4. The remaining sequences are sorted by how much that is saved, in descending order.
+5. Next, a table with one value per hour is created, with all hours in state "on".
+6. Then the saving sequences is applied one by one, turning off the hours in each sequence, discarding sequences that lead to any violation of the rules set by the config. 
+7. When all sequences are processed, the resulting table shows a pretty good savings plan, that in most cases would be the optimal plan.
+
+I say "in most cases", because there is a chance that a group of two or more sequences combined can give a better plan than a single sequence preceeding those two, but where the selection of the one sequence causes the group to be discarded. If anyone encounters this situation, I would be happy to receive the price data set, and try to improve the algorithm even further.
+
 ## Integration with MagicMirror
 
 Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [Tibber](https://tibber.com/)? If so, there is a module for MM called [MMM-Tibber](https://github.com/ottopaulsen/MMM-Tibber), that easily can be used to show savings from this node. 

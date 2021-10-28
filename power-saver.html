@@ -22,7 +22,7 @@
       sendCurrentValueWhenRescheduling: {
         value: true,
         required: true,
-        validate: RED.validators.number(),
+        // validate: RED.validators.number(),
         align: "left",
       },
       outputIfNoSchedule: { value: true, required: true, align: "left" },
@@ -54,56 +54,67 @@
 <script type="text/html" data-template-name="power-saver">
   <div class="form-row">
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-      <input type="text" id="node-input-name" placeholder="Name">
+      <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
   </div>
+  <h2>Rules</h2>
   <div class="form-row">
       <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-arrows-h"></i> Max per sequence</label>
-      <input type="text" id="node-input-maxHoursToSaveInSequence" placeholder="Max hours to save in sequence">
+      <input type="text" id="node-input-maxHoursToSaveInSequence" style="width: 80px" placeholder="Max hours to save in sequence">
   </div>
   <div class="form-row">
       <label for="node-input-minHoursOnAfterMaxSequenceSaved"><i class="fa fa-ellipsis-h"></i> Min recover</label>
-      <input type="text" id="node-input-minHoursOnAfterMaxSequenceSaved" placeholder="Min hours on after a max sequence">
+      <input type="text"
+             id="node-input-minHoursOnAfterMaxSequenceSaved"
+             style="width: 80px"
+             placeholder="Min hours on after a max sequence">
   </div>
   <div class="form-row">
       <label for="node-input-minSaving"><i class="fa fa-ellipsis-h"></i> Min saving</label>
-      <input type="text" id="node-input-minSaving" placeholder="Minimum to save for turning off">
+      <input type="text" id="node-input-minSaving" placeholder="Minimum to save for turning off" style="width: 80px">
   </div>
+  <h2>Output</h2>
   <div class="form-row">
-      <label for="node-input-sendCurrentValueWhenRescheduling">Output</label>
-      <label for="node-input-sendCurrentValueWhenRescheduling" style="width:70%">
-      <input type="checkbox" id="node-input-sendCurrentValueWhenRescheduling" style="display:inline-block; width:22px; vertical-align:top;" autocomplete="off"><span>Send when rescheduling</span>
+      <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">
+      <input type="checkbox"
+             id="node-input-sendCurrentValueWhenRescheduling"
+             style="display:inline-block; width:22px; vertical-align:top;"
+             autocomplete="off"><span>Send when rescheduling</span>
       </label>
   </div>
   <div class="form-row">
-      <label for="node-input-outputIfNoSchedule">Output when no schedule</label>
-      <input type="boolean" id="node-input-outputIfNoSchedule">
+      <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
+      <input type="boolean" id="node-input-outputIfNoSchedule" style="width: 80px">
       </label>
-  </div>
-
-
-  <div>
-      <p>
-          <strong>Max per sequence</strong> is the maximum number of hours that can be saved (turned off) in a sequence.
-      </p>
-      <p>
-          <strong>Min recover</strong> If power is saved the maximum number of hours that is allowed (Max per sequence), it must be followed by a period of not saving power that is minimum <em>Min recover</em> hours.
-      </p>
-      <p>
-          <strong>Min saving</strong> The minimum price that must be saved in order to turn off an hour.
-      </p>
-      <p>
-          Check <strong>Send when rescheduling</strong> to make sure the correct value for the current time is sent on output 1 or output 2, when a new schedule is calculated. The new schedule is sent to output 3 anyway.
-      </p>
-      <p>
-          <strong>Output when no schedule</strong> Select if the output shall be set to on or off when there is no valid schedule.
-      </p>
   </div>
 </script>
 
 <script type="text/html" data-help-name="power-saver">
           <p>A node you can use to save money by turning off and on a switch based on power prices.</p>
-          <p>You can use it to control for example a heater, a water heater or any other power consumer that is acceptable to turn off now and then.</p>
-          <p>It is designed to be used with Home Assistant, and to use the prices as produced by the <a href="https://github.com/custom-components/nordpool">nordpool</a> custom component, but can be used without as long as you can provide input in the correct format.</p>
+          <p>You can use it to control for example a heater, a water heater or any other power consumer that is
+            acceptable to turn off now and then.</p>
+          <p>It is designed to be used with Home Assistant, and to use the prices as produced by the
+            <a href="https://github.com/custom-components/nordpool">nordpool</a> custom component,
+            but can be used without as long as you can provide input in the correct format.</p>
+          <h3>Configuration</h3>
+            <p>
+                <strong>Max per sequence</strong> is the maximum number of hours that can be saved (turned off) in a sequence.
+            </p>
+            <p>
+                <strong>Min recover</strong> If power is saved the maximum number of hours that is allowed (Max per sequence),
+                it must be followed by a period of not saving power that is minimum <em>Min recover</em> hours.
+            </p>
+            <p>
+                <strong>Min saving</strong> The minimum price that must be saved per kWh per hour, in order to turn off an hour.
+                For a sequence of multiple hours, the average per hour is evaluated against this value.
+            </p>
+            <p>
+                Check <strong>Send when rescheduling</strong> to make sure the correct value for the current
+                time is sent on output 1 or output 2,
+                when a new schedule is calculated. The new schedule is sent to output 3 anyway.
+            </p>
+            <p>
+                <strong>If no schedule, send</strong> Select if the output shall be set to on or off when there is no valid schedule.
+            </p>
           <h3>Input</h3>
           <dl class="message-properties">
               <dt>payload

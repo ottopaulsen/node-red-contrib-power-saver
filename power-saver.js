@@ -15,30 +15,30 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const node = this;
 
-    // Save config in node
-    this.maxHoursToSaveInSequence = config.maxHoursToSaveInSequence;
-    this.minHoursOnAfterMaxSequenceSaved =
-      config.minHoursOnAfterMaxSequenceSaved;
-    this.minSaving = parseFloat(config.minSaving);
-    this.sendCurrentValueWhenRescheduling =
-      config.sendCurrentValueWhenRescheduling;
-    this.outputIfNoSchedule = config.outputIfNoSchedule === "true";
+    const originalConfig = {
+      maxHoursToSaveInSequence: config.maxHoursToSaveInSequence,
+      minHoursOnAfterMaxSequenceSaved: config.minHoursOnAfterMaxSequenceSaved,
+      minSaving: parseFloat(config.minSaving),
+      sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
+      outputIfNoSchedule: config.outputIfNoSchedule === "true",
+    };
+    node.context().set("config", originalConfig);
 
     node.on("close", function () {
       clearTimeout(schedulingTimeout);
     });
 
     node.on("input", function (msg) {
-      if (!validateMsg(node, msg)) {
+      const effectiveConfig = getEffectiveConfig(node, msg);
+      const priceData = getPriceData(node, msg);
+      if (!priceData) {
         return;
       }
 
-      const input = convertMsg(msg);
-      if (!validateInput(node, input)) {
-        return;
-      }
-
-      const priceData = [...input.today, ...input.tomorrow];
+      // Store config variables in node
+      Object.keys(effectiveConfig).forEach(
+        (key) => (node[key] = effectiveConfig[key])
+      );
 
       clearTimeout(schedulingTimeout);
 
@@ -58,14 +58,6 @@ module.exports = function (RED) {
       // Save schedule
       dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
-      const config = {
-        maxHoursToSaveInSequence: this.maxHoursToSaveInSequence,
-        minHoursOnAfterMaxSequenceSaved: this.minHoursOnAfterMaxSequenceSaved,
-        minSaving: this.minSaving,
-        sendCurrentValueWhenRescheduling: this.sendCurrentValueWhenRescheduling,
-        outputIfNoSchedule: this.outputIfNoSchedule,
-      };
-
       // Prepare output
       let output1 = null;
       let output2 = null;
@@ -73,8 +65,8 @@ module.exports = function (RED) {
         payload: {
           schedule: plan.schedule,
           hours: plan.hours,
-          source: input.source,
-          config,
+          source: priceData.source,
+          config: effectiveConfig,
         },
       };
 
@@ -107,19 +99,52 @@ module.exports = function (RED) {
   RED.nodes.registerType("power-saver", PowerSaverNode);
 };
 
+function getEffectiveConfig(node, msg) {
+  const res = node.context().get("config");
+  const isConfigMsg = !!msg?.payload?.config;
+  if (isConfigMsg) {
+    const inputConfig = msg.payload.config;
+    Object.keys(inputConfig).forEach((key) => {
+      res[key] = inputConfig[key];
+    });
+    node.context().set("config", res);
+  }
+  return res;
+}
+
+function getPriceData(node, msg) {
+  const isConfigMsg = !!msg?.payload?.config;
+  if (isConfigMsg) {
+    return node.context().get("lastPriceData");
+  } else {
+    if (!validateMsg(node, msg)) {
+      return null;
+    }
+
+    const input = convertMsg(msg);
+    if (!validateInput(node, input)) {
+      return null;
+    }
+    priceData = [...input.today, ...input.tomorrow];
+    priceData.source = input.source;
+    node.context().set("lastPriceData", priceData);
+    return priceData;
+  }
+}
+
 function loadDayData(node, date) {
   // Load saved schedule for the date (YYYY-MM-DD)
   // Return null if not found
   const key = date.toISO();
-  return (
-    node.context().get(key) || {
-      values: [],
-      onOff: [],
-      startTimes: [],
-      schedule: [],
-      savings: [],
-    }
-  );
+  const saved = node.context().get(key);
+  const res = saved ?? {
+    values: [],
+    onOff: [],
+    startTimes: [],
+    schedule: [],
+    savings: [],
+  };
+  return res;
 }
 
 function saveDayData(node, date, plan) {

@@ -6,3 +6,4 @@ install.sh
 .gitignore
 .DS_Store
 mostSavedStrategy_v1.js
+mostSavedStrategy_v2.js
