@@ -12,6 +12,7 @@ const {
   convertMsg,
   extractPlanForDate,
   isSameDate,
+  getStartAtIndex,
 } = require("../utils");
 
 describe("utils", () => {
@@ -338,5 +339,52 @@ describe("utils", () => {
     expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).toEqual(
       part1
     );
+  });
+
+  it("can get the correct startAt index", () => {
+    const config = { scheduleOnlyFromCurrentTime: true };
+    const time = DateTime.fromISO("2021-06-20T01:50:00.012+02:00");
+    const priceData = [
+      {
+        start: "2021-06-20T01:50:00.000+02:00",
+      },
+      {
+        start: "2021-06-20T01:50:00.010+02:00",
+      },
+      {
+        start: "2021-06-21T01:50:00.180+02:00",
+      },
+      {
+        start: "2021-06-21T01:50:00.190+02:00",
+      },
+    ];
+    expect(
+      // Start on 0
+      getStartAtIndex({ scheduleOnlyFromCurrentTime: false }, priceData, time)
+    ).toEqual(0);
+    expect(getStartAtIndex(config, priceData, time)).toEqual(2);
+    expect(
+      // Start exactly on time
+      getStartAtIndex(
+        config,
+        priceData,
+        DateTime.fromISO("2021-06-20T01:50:00.010+02:00")
+      )
+    ).toEqual(1);
+    expect(
+      getStartAtIndex(
+        config,
+        priceData,
+        DateTime.fromISO("2021-06-20T01:50:00.011+02:00")
+      )
+    ).toEqual(2);
+    expect(
+      // Start later than all data
+      getStartAtIndex(
+        config,
+        priceData,
+        DateTime.fromISO("2021-06-21T01:50:00.200+02:00")
+      )
+    ).toEqual(4);
   });
 });

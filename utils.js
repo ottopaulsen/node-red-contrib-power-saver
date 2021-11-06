@@ -224,6 +224,16 @@ function isSameDate(date1, date2) {
   );
 }
 
+function getStartAtIndex(effectiveConfig, priceData, time) {
+  if (effectiveConfig.scheduleOnlyFromCurrentTime) {
+    return priceData
+      .map((p) => DateTime.fromISO(p.start))
+      .filter((t) => t < time).length;
+  } else {
+    return 0;
+  }
+}
+
 module.exports = {
   sortedIndex,
   getDiffToNextOn,
@@ -236,4 +246,5 @@ module.exports = {
   convertMsg,
   extractPlanForDate,
   isSameDate,
+  getStartAtIndex,
 };

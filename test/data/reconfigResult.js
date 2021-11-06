@@ -1,14 +1,6 @@
 module.exports = {
   schedule: [
     {
-      time: "2021-06-20T01:50:00.000+02:00",
-      value: true,
-    },
-    {
-      time: "2021-06-20T01:50:00.030+02:00",
-      value: false,
-    },
-    {
       time: "2021-06-20T01:50:00.050+02:00",
       value: true,
     },
@@ -165,6 +157,6 @@ module.exports = {
     minHoursOnAfterMaxSequenceSaved: 2,
     minSaving: 0.001,
     outputIfNoSchedule: false,
-    scheduleOnlyFromCurrentTime: false,
+    scheduleOnlyFromCurrentTime: true,
   },
 };

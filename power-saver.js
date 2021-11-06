@@ -1,11 +1,5 @@
 const { DateTime } = require("luxon");
-const {
-  convertMsg,
-  countAtEnd,
-  makeSchedule,
-  getSavings,
-  extractPlanForDate,
-} = require("./utils");
+const { convertMsg, countAtEnd, makeSchedule, getSavings, extractPlanForDate, getStartAtIndex } = require("./utils");
 const mostSavedStrategy = require("./mostSavedStrategy");
 
 let schedulingTimeout = null;
@@ -21,6 +15,7 @@ module.exports = function (RED) {
       minSaving: parseFloat(config.minSaving),
       sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       outputIfNoSchedule: config.outputIfNoSchedule === "true",
+      scheduleOnlyFromCurrentTime: config.scheduleOnlyFromCurrentTime === "true",
     };
     node.context().set("config", originalConfig);
 
@@ -34,28 +29,44 @@ module.exports = function (RED) {
       if (!priceData) {
         return;
       }
+      const planFromTime = msg.payload.time ?? DateTime.now();
 
       // Store config variables in node
-      Object.keys(effectiveConfig).forEach(
-        (key) => (node[key] = effectiveConfig[key])
-      );
+      Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
 
       clearTimeout(schedulingTimeout);
 
-      const dates = [
-        ...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate())),
-      ];
+      const dates = [...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate()))];
 
       // Load data from day before
+      const dateToday = DateTime.fromISO(dates[0]);
       const dateDayBefore = DateTime.fromISO(dates[0]).plus({ days: -1 });
-      const dataDayBefore = loadDayData(node, dateDayBefore);
 
       // Make plan
-      const values = priceData.map((d) => d.value);
-      const startTimes = priceData.map((d) => d.start);
-      const plan = makePlan(node, values, startTimes, dataDayBefore.onOff);
+      const startAtIndex = getStartAtIndex(effectiveConfig, priceData, planFromTime);
+
+      const dataJustBefore = loadDataJustBefore(node, dateDayBefore, dateToday, startAtIndex);
+      const values = priceData.map((d) => d.value).slice(startAtIndex);
+      const startTimes = priceData.map((d) => d.start).slice(startAtIndex);
+      const onOffBefore = dataJustBefore.hours.map((h) => h.onOff);
+
+      const lastPlanHours = node.context().get("lastPlan")?.hours ?? [];
+
+      // TODO: Populate plan based on startAtIndex
+      const plan = makePlan(node, values, startTimes, onOffBefore);
+      const includeFromLastPlanHours = lastPlanHours.filter(
+        (h) => h.start < plan.hours[0].start && h.start >= priceData[0].start
+      );
+      plan.hours.splice(0, 0, ...includeFromLastPlanHours);
+
+      // TODO:
+      // If start from now, merge new plan with earliest hours for pevious plan.
+      // Keep only the new schedule.
+      // Adjust savings on hours from prev plan
+      // what else?
 
       // Save schedule
+      node.context().set("lastPlan", plan);
       dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
       // Prepare output
@@ -71,15 +82,10 @@ module.exports = function (RED) {
       };
 
       // Find current output, and set output (if configured to do)
-      const time = msg.payload.time
-        ? DateTime.fromISO(msg.payload.time)
-        : DateTime.now();
-      const pastSchedule = plan.schedule.filter(
-        (entry) => DateTime.fromISO(entry.time) <= time
-      );
-      const outputCurrent = node.sendCurrentValueWhenRescheduling;
+      const time = msg.payload.time ? DateTime.fromISO(msg.payload.time) : planFromTime; // TODO just use planFromTime
+      const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= time);
 
-      if (outputCurrent && pastSchedule.length > 0) {
+      if (node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0) {
         const currentValue = pastSchedule[pastSchedule.length - 1].value;
         output1 = currentValue ? { payload: true } : null;
         output2 = currentValue ? null : { payload: false };
@@ -116,35 +122,41 @@ function getPriceData(node, msg) {
   const isConfigMsg = !!msg?.payload?.config;
   if (isConfigMsg) {
     return node.context().get("lastPriceData");
-  } else {
-    if (!validateMsg(node, msg)) {
-      return null;
-    }
-
-    const input = convertMsg(msg);
-    if (!validateInput(node, input)) {
-      return null;
-    }
-    priceData = [...input.today, ...input.tomorrow];
-    priceData.source = input.source;
-    node.context().set("lastPriceData", priceData);
-    return priceData;
   }
+
+  if (!validateMsg(node, msg)) {
+    return null;
+  }
+  const input = convertMsg(msg);
+  if (!validateInput(node, input)) {
+    return null;
+  }
+
+  priceData = [...input.today, ...input.tomorrow];
+  priceData.source = input.source;
+  node.context().set("lastPriceData", priceData);
+  return priceData;
 }
 
 function loadDayData(node, date) {
   // Load saved schedule for the date (YYYY-MM-DD)
   // Return null if not found
-  const key = date.toISO();
+  const key = date.toISODate();
   const saved = node.context().get(key);
   const res = saved ?? {
-    values: [],
-    onOff: [],
-    startTimes: [],
     schedule: [],
-    savings: [],
+    hours: [],
   };
   return res;
+}
+
+function loadDataJustBefore(node, dateDayBefore, dateToday, startAtIndex) {
+  const dataDayBefore = loadDayData(node, dateDayBefore);
+  const dataToday = loadDayData(node, dateToday);
+  return {
+    schedule: [...dataDayBefore.schedule, ...dataToday.schedule.slice(0, startAtIndex)],
+    hours: [...dataDayBefore.hours, ...dataToday.hours.slice(0, startAtIndex)],
+  };
 }
 
 function saveDayData(node, date, plan) {
@@ -186,7 +198,6 @@ function makePlan(node, values, startTimes, onOffBefore, firstValueNextDay) {
   return {
     hours,
     schedule,
-    onOff,
   };
 }
 
@@ -200,8 +211,7 @@ function validateMsg(node, msg) {
     validationFailure(node, "Payload missing");
     return false;
   }
-  const payload =
-    msg.data?.new_state?.attributes ?? msg.data?.attributes ?? msg.payload;
+  const payload = msg.data?.new_state?.attributes ?? msg.data?.attributes ?? msg.payload;
   if (typeof payload !== "object") {
     validationFailure(node, "Payload must be an object");
     return false;
@@ -216,10 +226,7 @@ function validateInput(node, input) {
         return day.start === undefined || day.value === undefined;
       })
     ) {
-      validationFailure(
-        node,
-        `Malformed entries in payload.${arr}. All entries must contain start and value.`
-      );
+      validationFailure(node, `Malformed entries in payload.${arr}. All entries must contain start and value.`);
     }
   });
   if (!input.today.length && !input.tomorrow.length) {
@@ -239,18 +246,16 @@ function validateInput(node, input) {
  */
 function runSchedule(node, schedule, time) {
   let currentTime = time;
-  let remainingSchedule = schedule.filter(
-    (entry) => DateTime.fromISO(entry.time) > time
-  );
+  let remainingSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) > time);
   if (remainingSchedule.length > 0) {
     const entry = remainingSchedule[0];
     const nextTime = DateTime.fromISO(entry.time);
     const wait = nextTime - currentTime;
     const onOff = entry.value ? "on" : "off";
     node.log("Switching " + onOff + " in " + wait + " milliseconds");
-    const statusMessage = `Scheduled ${
-      remainingSchedule.length
-    } changes. Next: ${remainingSchedule[0].value ? "on" : "off"}`;
+    const statusMessage = `Scheduled ${remainingSchedule.length} changes. Next: ${
+      remainingSchedule[0].value ? "on" : "off"
+    }`;
     node.status({ fill: "green", shape: "dot", text: statusMessage });
     return setTimeout(() => {
       sendSwitch(node, entry.value);
