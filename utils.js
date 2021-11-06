@@ -12,9 +12,10 @@ function convertMsg(msg) {
 
   if (msg.payload?.viewer?.homes[0]?.currentSubscription?.priceInfo?.today) {
     source = "Tibber";
-    today = msg.payload.viewer.homes[0].currentSubscription.priceInfo.today.map(
-      (v) => ({ value: v.total, start: v.startsAt })
-    );
+    today = msg.payload.viewer.homes[0].currentSubscription.priceInfo.today.map((v) => ({
+      value: v.total,
+      start: v.startsAt,
+    }));
   } else if (msg.data?.new_state?.attributes?.raw_today) {
     source = "Nordpool";
     today = msg.data.new_state.attributes.raw_today.map((v) => ({
@@ -33,10 +34,10 @@ function convertMsg(msg) {
   }
 
   if (msg.payload?.viewer?.homes[0]?.currentSubscription?.priceInfo?.tomorrow) {
-    tomorrow =
-      msg.payload.viewer.homes[0].currentSubscription.priceInfo.tomorrow.map(
-        (v) => ({ value: v.total, start: v.startsAt })
-      );
+    tomorrow = msg.payload.viewer.homes[0].currentSubscription.priceInfo.tomorrow.map((v) => ({
+      value: v.total,
+      start: v.startsAt,
+    }));
   } else if (msg.data?.new_state?.attributes?.raw_tomorrow) {
     tomorrow = msg.data.new_state.attributes.raw_tomorrow.map((v) => ({
       value: v.value,
@@ -94,12 +95,16 @@ function getDiffToNextOn(values, onOff, nextOn = null) {
   const res = values.map((p, i, a) => {
     for (let n = i + 1; n < a.length; n++) {
       if (onOff[n]) {
-        return Math.round((values[i] - values[n]) * 10000) / 10000;
+        return getDiff(values[i], values[n]);
       }
     }
-    return Math.round((p - nextOnValue) * 10000) / 10000;
+    return getDiff(p, nextOnValue);
   });
   return res;
+}
+
+function getDiff(large, small) {
+  return Math.round((large - small) * 10000) / 10000;
 }
 
 /**
@@ -111,9 +116,7 @@ function getDiffToNextOn(values, onOff, nextOn = null) {
  * @returns Array with how much you save on the off-hours, null on the others.
  */
 function getSavings(values, onOff, nextOn = null) {
-  return getDiffToNextOn(values, onOff, nextOn).map((v, i) =>
-    onOff[i] ? null : v
-  );
+  return getDiffToNextOn(values, onOff, nextOn).map((v, i) => (onOff[i] ? null : v));
 }
 
 /**
@@ -219,16 +222,12 @@ function extractPlanForDate(plan, day) {
 }
 
 function isSameDate(date1, date2) {
-  return (
-    DateTime.fromISO(date1).toISODate() === DateTime.fromISO(date2).toISODate()
-  );
+  return DateTime.fromISO(date1).toISODate() === DateTime.fromISO(date2).toISODate();
 }
 
 function getStartAtIndex(effectiveConfig, priceData, time) {
   if (effectiveConfig.scheduleOnlyFromCurrentTime) {
-    return priceData
-      .map((p) => DateTime.fromISO(p.start))
-      .filter((t) => t < time).length;
+    return priceData.map((p) => DateTime.fromISO(p.start)).filter((t) => t < time).length;
   } else {
     return 0;
   }
@@ -247,4 +246,5 @@ module.exports = {
   extractPlanForDate,
   isSameDate,
   getStartAtIndex,
+  getDiff,
 };

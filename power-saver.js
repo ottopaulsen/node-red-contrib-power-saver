@@ -1,5 +1,13 @@
 const { DateTime } = require("luxon");
-const { convertMsg, countAtEnd, makeSchedule, getSavings, extractPlanForDate, getStartAtIndex } = require("./utils");
+const {
+  convertMsg,
+  countAtEnd,
+  makeSchedule,
+  getSavings,
+  extractPlanForDate,
+  getStartAtIndex,
+  getDiff,
+} = require("./utils");
 const mostSavedStrategy = require("./mostSavedStrategy");
 
 let schedulingTimeout = null;
@@ -44,26 +52,17 @@ module.exports = function (RED) {
 
       // Make plan
       const startAtIndex = getStartAtIndex(effectiveConfig, priceData, planFromTime);
-
       const dataJustBefore = loadDataJustBefore(node, dateDayBefore, dateToday, startAtIndex);
       const values = priceData.map((d) => d.value).slice(startAtIndex);
       const startTimes = priceData.map((d) => d.start).slice(startAtIndex);
       const onOffBefore = dataJustBefore.hours.map((h) => h.onOff);
-
       const lastPlanHours = node.context().get("lastPlan")?.hours ?? [];
-
-      // TODO: Populate plan based on startAtIndex
       const plan = makePlan(node, values, startTimes, onOffBefore);
       const includeFromLastPlanHours = lastPlanHours.filter(
         (h) => h.start < plan.hours[0].start && h.start >= priceData[0].start
       );
+      adjustSavingsPassedHours(plan, includeFromLastPlanHours);
       plan.hours.splice(0, 0, ...includeFromLastPlanHours);
-
-      // TODO:
-      // If start from now, merge new plan with earliest hours for pevious plan.
-      // Keep only the new schedule.
-      // Adjust savings on hours from prev plan
-      // what else?
 
       // Save schedule
       node.context().set("lastPlan", plan);
@@ -82,8 +81,7 @@ module.exports = function (RED) {
       };
 
       // Find current output, and set output (if configured to do)
-      const time = msg.payload.time ? DateTime.fromISO(msg.payload.time) : planFromTime; // TODO just use planFromTime
-      const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= time);
+      const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
 
       if (node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0) {
         const currentValue = pastSchedule[pastSchedule.length - 1].value;
@@ -98,12 +96,25 @@ module.exports = function (RED) {
       node.send([output1, output2, output3]);
 
       // Run schedule
-      schedulingTimeout = runSchedule(node, plan.schedule, time);
+      schedulingTimeout = runSchedule(node, plan.schedule, planFromTime);
     });
   }
 
   RED.nodes.registerType("power-saver", PowerSaverNode);
 };
+
+function adjustSavingsPassedHours(plan, includeFromLastPlanHours) {
+  const firstOnIndex = plan.hours.findIndex((h) => h.onOff);
+  if (firstOnIndex < 0) {
+    return;
+  }
+  const nextOnValue = plan.hours[firstOnIndex].price;
+  let adjustIndex = includeFromLastPlanHours.length - 1;
+  while (adjustIndex >= 0 && !includeFromLastPlanHours[adjustIndex].onOff) {
+    includeFromLastPlanHours[adjustIndex].saving = getDiff(includeFromLastPlanHours[adjustIndex].price, nextOnValue);
+    adjustIndex--;
+  }
+}
 
 function getEffectiveConfig(node, msg) {
   const res = node.context().get("config");

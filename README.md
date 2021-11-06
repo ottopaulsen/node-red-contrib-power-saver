@@ -20,6 +20,7 @@ This node is currently rather new, and has been tried for a few weeks, enough to
 
 Feel free to try it, and report back problems or ideas as [Github issues](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues).
 
+
 ## Installation
 
 Install in Node-RED via the Manage Palette menu.
@@ -28,7 +29,7 @@ May also be installed via npm:
 
 `npm install node-red-contrib-power-saver`
 
-Make sure that you also upgrade now and then to get the latest version. See [changelog](CHANGELOG) for changes.
+Make sure that you upgrade now and then to get the latest version. See [changelog](CHANGELOG) for changes.
 
 ## Input
 
@@ -39,6 +40,8 @@ Make sure that you also upgrade now and then to get the latest version. See [cha
 * Other sources in a specific JSON format
 
 Choose the one that fits you best. Of course, all inputs are JSON, but the Tibber and Nordpool alternatives are designed to connect directly to those sources with a minimum effort.
+
+From version 2.1.0, you can also send a config object as input for dynamically changing the node config.
 
 ### Tibber input
 
@@ -186,7 +189,8 @@ It is possible to change config dynamically by sending a config message to the n
     "minHoursOnAfterMaxSequenceSaved": 2,
     "minSaving": 0.02,
     "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": true
+    "outputIfNoSchedule": true,
+    "scheduleOnlyFromCurrentTime: false
   }
 }
 ```

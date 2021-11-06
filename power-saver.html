@@ -113,9 +113,10 @@
           <p>A node you can use to save money by turning off and on a switch based on power prices.</p>
           <p>You can use it to control for example a heater, a water heater or any other power consumer that is
             acceptable to turn off now and then.</p>
-          <p>It is designed to be used with Home Assistant, and to use the prices as produced by the
+          <p>It is designed to be used with Home Assistant, but can also be used without.
+            Prices can be supplied by the
             <a href="https://github.com/custom-components/nordpool">nordpool</a> custom component,
-            but can be used without as long as you can provide input in the correct format.</p>
+            by a Tibber query or by any other means that can produce data in a valid format.</p>
           <h3>Configuration</h3>
             <p>
                 <strong>Max per sequence</strong> is the maximum number of hours that can be saved (turned off) in a sequence.
@@ -129,12 +130,17 @@
                 For a sequence of multiple hours, the average per hour is evaluated against this value.
             </p>
             <p>
+              You can select to <strong>Schedule for</strong> either the whole data set
+              or just from the current time when the schedule is calculated.
+            </p>
+            <p>
                 Check <strong>Send when rescheduling</strong> to make sure the correct value for the current
                 time is sent on output 1 or output 2,
                 when a new schedule is calculated. The new schedule is sent to output 3 anyway.
             </p>
             <p>
                 <strong>If no schedule, send</strong> Select if the output shall be set to on or off when there is no valid schedule.
+                If you control a water heater or control heat in a room, selecting "on" is recommended.
             </p>
           <h3>Input</h3>
           <dl class="message-properties">

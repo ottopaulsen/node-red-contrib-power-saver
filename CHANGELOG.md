@@ -2,9 +2,11 @@
 
 List the most significant changes, starting in version 1.0.9.
 
-## Next
+## 2.1.0
 
+* Accept config as input, making it possible to dynamically change config
 * Fix dropdown for config value for selecting output when there is no schedule
+* Improve config screen and documentation
 
 ## 2.0.5
 
