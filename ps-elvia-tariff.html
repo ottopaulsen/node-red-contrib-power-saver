@@ -1,0 +1,89 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-elvia-tariff", {
+    category: "Power Saver",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Elvia Tariff" },
+      elviaConfig: { value: "", type: "ps-elvia-config" },
+      tariffKey: { value: "", required: true },
+      range: { value: "today", required: true },
+    },
+    inputs: 1,
+    outputs: 1,
+    // icon: "font-awesome/fa-power-off",
+    icon: "elvia_hvite.svg",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "ps-elvia-tariff";
+    },
+    oneditprepare: function () {
+      const readTariffTypes = function () {
+        const configId = $("#node-input-elviaConfig").val();
+        if (!configId) {
+          return;
+        }
+        $.getJSON("elvia-tariff-types?configId=" + configId, function (data) {
+          if (!data.tariffTypes) {
+            return;
+          }
+          $("#node-input-tariffKey").typedInput({
+            types: [
+              {
+                value: "tariffkeys",
+                options: data.tariffTypes.map((k) => {
+                  return { value: k.tariffKey, label: k.title };
+                }),
+              },
+            ],
+          });
+        });
+      };
+
+      $("#node-input-range").typedInput({
+        types: [
+          {
+            value: "range",
+            options: [
+              { value: "today", label: "today" },
+              { value: "yesterday", label: "yesterday" },
+              { value: "tomorrow", label: "tomorrow" },
+            ],
+          },
+        ],
+      });
+      $(".refresh-button").on("click", function () {
+        readTariffTypes();
+      });
+      $("#node-input-elviaConfig").on("change", function () {
+        readTariffTypes();
+      });
+      readTariffTypes();
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-elvia-tariff">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" style="width: 300px" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-elviaConfig"><i class="fa fa-tag"></i> Elvia config</label>
+    <input type="text" id="node-input-elviaConfig" placeholder="Elvia config" style="width: 300px" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-tariffKey"><i class="fa fa-tag"></i> Tariff key</label>
+    <input type="text" id="node-input-tariffKey" placeholder="Tariff" style="width: 300px" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-range">Range</label>
+    <input type="text" id="node-input-range" style="width: 120px">
+    </label>
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-elvia-tariff">
+  # Elvia Tariff
+
+  A node to get the tariff from Elvia.
+</script>

@@ -2,6 +2,10 @@
 
 List the most significant changes, starting in version 1.0.9.
 
+## next
+
+* Change node category to Power Saver
+
 ## 2.1.0
 
 * Accept config as input, making it possible to dynamically change config

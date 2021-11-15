@@ -18,7 +18,10 @@
   ],
   "node-red": {
     "nodes": {
-      "power-saver": "power-saver.js"
+      "power-saver": "power-saver.js",
+      "ps-elvia-config": "ps-elvia-config.js",
+      "ps-elvia-tariff-types": "ps-elvia-tariff-types.js",
+      "ps-elvia-tariff": "ps-elvia-tariff.js"
     }
   },
   "prettier": {
@@ -32,6 +35,7 @@
     "expect": "^27.0.2",
     "lodash.clonedeep": "^4.5.0",
     "mocha": "^6.2.1",
+    "node-fetch": "^2.6.6",
     "node-red": "^1.3.5",
     "node-red-node-test-helper": "^0.2.7"
   },

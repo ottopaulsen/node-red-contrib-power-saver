@@ -1,0 +1,44 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-elvia-config", {
+    category: "config",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Elvia Config" },
+      elviaSubscriptionKey: { value: "", required: true },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "elvia_hvite.svg",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "ps-elvia-tariff-types";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-elvia-config">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Elvia config name</label>
+    <input type="text" id="node-config-input-name" style="width: 240px" />
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-elviaSubscriptionKey"><i class="fa fa-tag"></i> Subscription key</label>
+    <input
+      type="text"
+      id="node-config-input-elviaSubscriptionKey"
+      placeholder="your API subscription key from Elvia"
+      style="width: 240px"
+    />
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-elvia-tariff-types">
+  # Elvia Configuation
+
+  You must get your own Elvia API subscription key.
+
+  Go to the [Elvia Developer Portal](https://elvia.portal.azure-api.net/) to sign up,
+  and then request for a subscription to the GridTariffAPI.
+  When your subscription is approved, you will find your subscription key in the
+  [developer portal](https://elvia.portal.azure-api.net/developer) under Your subscriptions.
+</script>

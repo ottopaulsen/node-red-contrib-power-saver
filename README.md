@@ -93,12 +93,12 @@ If you cannot use any of the two above (Tibber or Nordpool), create the input to
   "today": [
     { "value": 1, "start": "2021-06-21T00:00:00+02:00" },
     { "value": 2, "start": "2021-06-21T01:00:00+02:00" },
-    ...
+    //...
   ],
   "tomorrow": [
     { "value": 3, "start": "2021-06-22T00:00:00+02:00" },
     { "value": 4, "start": "2021-06-22T01:00:00+02:00" },
-    ...
+    //...
   ],
 }
 ```
@@ -130,7 +130,7 @@ Example of output:
       "time": "2021-09-30T01:00:00.000+02:00",
       "value": true
     },
-    ...
+    //...
   ],
   "hours": [
     {
@@ -151,7 +151,7 @@ Example of output:
       "start": "2021-09-30T02:00:00.000+02:00",
       "saving": null
     },
-    ...
+    //...
   ],
   "source": "Nordpool",
   "config": {
@@ -190,7 +190,7 @@ It is possible to change config dynamically by sending a config message to the n
     "minSaving": 0.02,
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": true,
-    "scheduleOnlyFromCurrentTime: false
+    "scheduleOnlyFromCurrentTime": false
   }
 }
 ```
