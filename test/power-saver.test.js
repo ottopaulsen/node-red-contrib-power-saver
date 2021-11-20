@@ -2,7 +2,6 @@ const cloneDeep = require("lodash.clonedeep");
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const powerSaver = require("../power-saver.js");
-const { DateTime } = require("luxon");
 
 const prices = require("./data/prices");
 const result = require("./data/result");
@@ -151,8 +150,8 @@ describe("power-saver Node", function () {
     });
   });
   it("works for Tibber data", function (done) {
-    const tibberData = require("./data/tibber_prices.json");
-    const tibberResult = require("./data/tibber_result.json");
+    const tibberData = require("./data/tibber-prices.json");
+    const tibberResult = require("./data/tibber-result.json");
     const flow = makeFlow(4, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");

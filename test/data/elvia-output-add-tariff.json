@@ -1,0 +1,290 @@
+[
+  {
+    "value": 0.4493,
+    "start": "2021-11-16T00:00:00.000+01:00",
+    "powerPrice": 0.1658,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4496,
+    "start": "2021-11-16T01:00:00.000+01:00",
+    "powerPrice": 0.1661,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4514,
+    "start": "2021-11-16T02:00:00.000+01:00",
+    "powerPrice": 0.1679,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4549,
+    "start": "2021-11-16T03:00:00.000+01:00",
+    "powerPrice": 0.1714,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4625,
+    "start": "2021-11-16T04:00:00.000+01:00",
+    "powerPrice": 0.179,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4689,
+    "start": "2021-11-16T05:00:00.000+01:00",
+    "powerPrice": 0.1854,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.6344,
+    "start": "2021-11-16T06:00:00.000+01:00",
+    "powerPrice": 0.1864,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6427,
+    "start": "2021-11-16T07:00:00.000+01:00",
+    "powerPrice": 0.1947,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 1.0037,
+    "start": "2021-11-16T08:00:00.000+01:00",
+    "powerPrice": 0.1977,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0038,
+    "start": "2021-11-16T09:00:00.000+01:00",
+    "powerPrice": 0.1978,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0038,
+    "start": "2021-11-16T10:00:00.000+01:00",
+    "powerPrice": 0.1978,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0048,
+    "start": "2021-11-16T11:00:00.000+01:00",
+    "powerPrice": 0.1988,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.6487,
+    "start": "2021-11-16T12:00:00.000+01:00",
+    "powerPrice": 0.2007,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.648,
+    "start": "2021-11-16T13:00:00.000+01:00",
+    "powerPrice": 0.2,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6471,
+    "start": "2021-11-16T14:00:00.000+01:00",
+    "powerPrice": 0.1991,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6464,
+    "start": "2021-11-16T15:00:00.000+01:00",
+    "powerPrice": 0.1984,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 1.0028,
+    "start": "2021-11-16T16:00:00.000+01:00",
+    "powerPrice": 0.1968,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0007,
+    "start": "2021-11-16T17:00:00.000+01:00",
+    "powerPrice": 0.1947,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0008,
+    "start": "2021-11-16T18:00:00.000+01:00",
+    "powerPrice": 0.1948,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.9995,
+    "start": "2021-11-16T19:00:00.000+01:00",
+    "powerPrice": 0.1935,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.6364,
+    "start": "2021-11-16T20:00:00.000+01:00",
+    "powerPrice": 0.1884,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6343,
+    "start": "2021-11-16T21:00:00.000+01:00",
+    "powerPrice": 0.1863,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.4691,
+    "start": "2021-11-16T22:00:00.000+01:00",
+    "powerPrice": 0.1856,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4562,
+    "start": "2021-11-16T23:00:00.000+01:00",
+    "powerPrice": 0.1727,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4573,
+    "start": "2021-11-17T00:00:00.000+01:00",
+    "powerPrice": 0.1738,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4481,
+    "start": "2021-11-17T01:00:00.000+01:00",
+    "powerPrice": 0.1646,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4447,
+    "start": "2021-11-17T02:00:00.000+01:00",
+    "powerPrice": 0.1612,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4433,
+    "start": "2021-11-17T03:00:00.000+01:00",
+    "powerPrice": 0.1598,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4448,
+    "start": "2021-11-17T04:00:00.000+01:00",
+    "powerPrice": 0.1613,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4511,
+    "start": "2021-11-17T05:00:00.000+01:00",
+    "powerPrice": 0.1676,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.6221,
+    "start": "2021-11-17T06:00:00.000+01:00",
+    "powerPrice": 0.1741,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.63,
+    "start": "2021-11-17T07:00:00.000+01:00",
+    "powerPrice": 0.182,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.9892,
+    "start": "2021-11-17T08:00:00.000+01:00",
+    "powerPrice": 0.1832,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.9897,
+    "start": "2021-11-17T09:00:00.000+01:00",
+    "powerPrice": 0.1837,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.9904,
+    "start": "2021-11-17T10:00:00.000+01:00",
+    "powerPrice": 0.1844,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.9916,
+    "start": "2021-11-17T11:00:00.000+01:00",
+    "powerPrice": 0.1856,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.6354,
+    "start": "2021-11-17T12:00:00.000+01:00",
+    "powerPrice": 0.1874,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6358,
+    "start": "2021-11-17T13:00:00.000+01:00",
+    "powerPrice": 0.1878,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6442,
+    "start": "2021-11-17T14:00:00.000+01:00",
+    "powerPrice": 0.1962,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6509,
+    "start": "2021-11-17T15:00:00.000+01:00",
+    "powerPrice": 0.2029,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 1.023,
+    "start": "2021-11-17T16:00:00.000+01:00",
+    "powerPrice": 0.217,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0236,
+    "start": "2021-11-17T17:00:00.000+01:00",
+    "powerPrice": 0.2176,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0219,
+    "start": "2021-11-17T18:00:00.000+01:00",
+    "powerPrice": 0.2159,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 1.0198,
+    "start": "2021-11-17T19:00:00.000+01:00",
+    "powerPrice": 0.2138,
+    "gridTariffVariable": 0.806
+  },
+  {
+    "value": 0.6613,
+    "start": "2021-11-17T20:00:00.000+01:00",
+    "powerPrice": 0.2133,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.6536,
+    "start": "2021-11-17T21:00:00.000+01:00",
+    "powerPrice": 0.2056,
+    "gridTariffVariable": 0.448
+  },
+  {
+    "value": 0.4759,
+    "start": "2021-11-17T22:00:00.000+01:00",
+    "powerPrice": 0.1924,
+    "gridTariffVariable": 0.2835
+  },
+  {
+    "value": 0.4565,
+    "start": "2021-11-17T23:00:00.000+01:00",
+    "powerPrice": 0.173,
+    "gridTariffVariable": 0.2835
+  }
+]

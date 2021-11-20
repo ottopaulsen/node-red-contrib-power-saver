@@ -15,6 +15,17 @@ function getTariff(node, subscriptionKey, tariffKey, range = "today", setResultS
   return get(node, subscriptionKey, url, setResultStatus);
 }
 
+function getTariffForPeriod(node, subscriptionKey, tariffKey, startTime, endTime, setResultStatus = true) {
+  const url =
+    "https://elvia.azure-api.net/grid-tariff/api/1/tariffquery?TariffKey=" +
+    tariffKey +
+    "&StartTime=" +
+    startTime +
+    "&EndTime=" +
+    endTime;
+  return get(node, subscriptionKey, url, setResultStatus);
+}
+
 function getTariffTypes(node, subscriptionKey, setResultStatus = true) {
   const url = "https://elvia.azure-api.net/grid-tariff/api/1/tarifftype";
   return get(node, subscriptionKey, url, setResultStatus);
@@ -26,7 +37,9 @@ function get(node, subscriptionKey, url, setResultStatus) {
     if (setResultStatus && node) {
       setNodeStatus(node, res.status);
     }
-    return res.json();
+    return res.json().then((json) => {
+      return json;
+    });
   });
 }
 
@@ -43,5 +56,6 @@ function setNodeStatus(node, status) {
 module.exports = {
   ping,
   getTariff,
+  getTariffForPeriod,
   getTariffTypes,
 };

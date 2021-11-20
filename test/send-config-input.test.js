@@ -29,8 +29,6 @@ describe("send config as input", () => {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        console.log("Pass " + pass);
-        console.log(JSON.stringify(msg, null, 2));
         switch (pass) {
           case 1:
             pass++;

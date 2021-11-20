@@ -5,14 +5,14 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
 
     // Store config in global configList
-    const configList = this.context().global.get("elviraConfigList") || [];
+    const configList = this.context().global.get("elviaConfigList") || [];
     configList.push(config);
-    this.context().global.set("elviraConfigList", configList);
+    this.context().global.set("elviaConfigList", configList);
 
     const node = this;
 
     RED.httpAdmin.get("/elvia-tariff-types", RED.auth.needsPermission("ps-elvia-config.read"), function (req, res) {
-      const configList = node.context().global.get("elviraConfigList") || [];
+      const configList = node.context().global.get("elviaConfigList") || [];
       const configId = req.query.configId;
       const key = configList.find((c) => c.id == configId)?.elviaSubscriptionKey;
       console.log("Getting tariff types for key " + key);
