@@ -21,6 +21,7 @@
       "power-saver": "power-saver.js",
       "ps-receive-price": "receive-price.js",
       "ps-strategy-best-save": "strategy-best-save.js",
+      "ps-strategy-lowest-price": "strategy-lowest-price.js",
       "ps-elvia-config": "elvia/elvia-config.js",
       "ps-elvia-tariff-types": "elvia/elvia-tariff-types.js",
       "ps-elvia-tariff": "elvia/elvia-tariff.js",

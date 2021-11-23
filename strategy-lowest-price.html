@@ -1,4 +1,10 @@
 <script type="text/javascript">
+  function validateTime() {
+    return true;
+  }
+  function validateTimeOfDay() {
+    return true;
+  }
   RED.nodes.registerType("ps-strategy-lowest-price", {
     category: "Power Saver",
     color: "#a6bbcf",
@@ -7,12 +13,12 @@
       fromTime: {
         value: "12:00",
         required: true,
-        validate: validateTimeOfDay(),
+        validate: this.validateTimeOfDay(),
       },
       toTime: {
         value: "12:00",
         required: true,
-        validate: validateTimeOfDay(),
+        validate: this.validateTimeOfDay(),
       },
       timeOn: {
         value: "12:00",
@@ -33,12 +39,6 @@
       return this.name || "ps-strategy-lowest-price";
     },
     outputLabels: ["on", "off", "schedule"],
-    validateTime: function () {
-      return true;
-    },
-    validateTimeOfDay: function () {
-      return true;
-    },
   });
 </script>
 
@@ -49,20 +49,20 @@
   </div>
 
   <div class="form-row">
-      <label for="node-input-fromTime"><i class="fa fa-arrows-h"></i> Max per sequence</label>
-      <input type="text" id="node-input-fromTime" style="width: 80px" placeholder="From time (HH:MM)">
+      <label for="node-input-fromTime"><i class="fa fa-arrows-h"></i> From time (HH:MM)</label>
+      <input type="text" id="node-input-fromTime" style="width: 80px" placeholder="HH:MM">
   </div>
   <div class="form-row">
-      <label for="node-input-toTime"><i class="fa fa-arrows-h"></i> Max per sequence</label>
-      <input type="text" id="node-input-toTime" style="width: 80px" placeholder="Tom til (HH:MM)">
+      <label for="node-input-toTime"><i class="fa fa-arrows-h"></i> To time (HH:MM)</label>
+      <input type="text" id="node-input-toTime" style="width: 80px" placeholder="HH:MM">
   </div>
   <div class="form-row">
-      <label for="node-input-timeOn"><i class="fa fa-arrows-h"></i> Max per sequence</label>
-      <input type="text" id="node-input-timeOn" style="width: 80px" placeholder="Time on (HH:MM)">
+      <label for="node-input-timeOn"><i class="fa fa-arrows-h"></i> Time on (HH:MM)</label>
+      <input type="text" id="node-input-timeOn" style="width: 80px" placeholder="HH:MM">
   </div>
   <div class="form-row">
       <label for="node-input-doNotSplit">Consecutive on-period</label>
-      <input type="boolean" id="node-input-doNotSplit" style="width: 80px">
+      <input type="checkbox" id="node-input-doNotSplit" style="display:inline-block; width:22px; vertical-align:top;">
       </label>
   </div>
 </script>

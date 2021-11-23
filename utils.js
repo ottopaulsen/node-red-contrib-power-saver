@@ -1,3 +1,4 @@
+const { extractExpectedAssertionsErrors } = require("expect");
 const { DateTime } = require("luxon");
 
 /**
@@ -182,6 +183,26 @@ function getStartAtIndex(effectiveConfig, priceData, time) {
   }
 }
 
+class TimeOfDay {
+  #todFormat = /^[0-2]\d:[0-5]\d$/;
+  constructor(tod) {
+    if (!this.#todFormat.test(tod)) {
+      throw TypeError("Illegal TimeOfDay");
+    }
+    this.hours = parseInt(tod.substr(0, 2));
+    this.minutes = parseInt(tod.substr(3, 2));
+    if (this.hours < 0 || this.hours > 23 || this.minutes < 0 || this.minutes > 59) {
+      throw "Illegal TimeOfDay";
+    }
+  }
+  hours() {
+    return this.hours;
+  }
+  minutes() {
+    return this.minutes;
+  }
+}
+
 module.exports = {
   sortedIndex,
   getDiffToNextOn,
@@ -196,4 +217,5 @@ module.exports = {
   getStartAtIndex,
   getDiff,
   roundPrice,
+  TimeOfDay,
 };

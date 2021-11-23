@@ -4,7 +4,7 @@ const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../strategy-best-save.js");
 
-const prices = require("./data/converted-prices");
+const prices = require("./data/converted-prices.json");
 const result = require("./data/best-save-result.json");
 const { testPlan: plan } = require("./test-utils");
 

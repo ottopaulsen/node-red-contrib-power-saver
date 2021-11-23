@@ -12,6 +12,7 @@ const {
   extractPlanForDate,
   isSameDate,
   getStartAtIndex,
+  TimeOfDay,
 } = require("../utils");
 
 describe("utils", () => {
@@ -232,5 +233,16 @@ describe("utils", () => {
       // Start later than all data
       getStartAtIndex(config, priceData, DateTime.fromISO("2021-06-21T01:50:00.200+02:00"))
     ).toEqual(4);
+  });
+
+  it("constructs TimeOfDay", () => {
+    const tod = new TimeOfDay("11:45");
+    expect(tod.hours).toEqual(11);
+    expect(tod.minutes).toEqual(45);
+    ["", "abc", "0:12", "24:00", "23:60", "000:00", "a0:00", "1010"].forEach((bug) => {
+      expect(() => {
+        new TimeOfDay(bug);
+      }).toThrow();
+    });
   });
 });

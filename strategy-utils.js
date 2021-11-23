@@ -1,4 +1,5 @@
-const { DateTime } = require("luxon");
+const cloneDeep = require("lodash.clonedeep");
+const { TimeOfDay } = require("./utils");
 
 function getEffectiveConfig(node, msg) {
   const res = node.context().get("config");
@@ -13,34 +14,17 @@ function getEffectiveConfig(node, msg) {
   return res;
 }
 
-function runSchedule(node, schedule, time) {
-  let currentTime = time;
-  let remainingSchedule = schedule.filter((entry) => {
-    // console.log("entry.time:", entry.time);
-    // console.log("curr. time:", time);
-    return DateTime.fromISO(entry.time) > DateTime.fromISO(time);
-  });
-  // console.log("remainingSchedule", remainingSchedule);
-  if (remainingSchedule.length > 0) {
-    const entry = remainingSchedule[0];
-    const nextTime = DateTime.fromISO(entry.time);
-    const wait = nextTime - currentTime;
-    const onOff = entry.value ? "on" : "off";
-    node.log("Switching " + onOff + " in " + wait + " milliseconds");
-    const statusMessage = `Scheduled ${remainingSchedule.length} changes. Next: ${
-      remainingSchedule[0].value ? "on" : "off"
-    }`;
-    node.status({ fill: "green", shape: "dot", text: statusMessage });
-    return setTimeout(() => {
-      sendSwitch(node, entry.value);
-      schedulingTimeout = runSchedule(node, remainingSchedule, nextTime);
-    }, wait);
-  } else {
-    const message = "No schedule";
-    node.warn(message);
-    node.status({ fill: "red", shape: "dot", text: message });
-    sendSwitch(node, node.outputIfNoSchedule);
+function getStartTimesInPeriod(fromTime, toTime, startTimes) {}
+
+function isTimeInsidePeriod(dateTime, fromTime, toTime) {
+  const from = new TimeOfDay(fromTime);
+  const to = new TimeOfDay(toTime);
+  const start = cloneDeep(dateTime).set({ hours: from.hours, minutes: from.minutes });
+  let end = cloneDeep(dateTime).set({ hours: to.hours, minutes: to.minutes });
+  if (end < dateTime || end.toMillis() === start.toMillis()) {
+    end = end.plus({ days: 1 });
   }
+  return dateTime >= start && dateTime < end;
 }
 
 function validateInput(node, msg) {
@@ -73,15 +57,9 @@ function validateInput(node, msg) {
   return true;
 }
 
-function sendSwitch(node, onOff) {
-  const output1 = onOff ? { payload: true } : null;
-  const output2 = onOff ? null : { payload: false };
-  node.send([output1, output2, null]);
-}
-
 function validationFailure(node, message, status = null) {
   node.status({ fill: "red", shape: "ring", text: status ?? message });
   node.warn(message);
 }
 
-module.exports = { getEffectiveConfig, runSchedule, validateInput };
+module.exports = { getEffectiveConfig, getStartTimesInPeriod, isTimeInsidePeriod, validateInput };
