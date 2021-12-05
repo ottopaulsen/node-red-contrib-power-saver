@@ -12,8 +12,7 @@ const {
   extractPlanForDate,
   isSameDate,
   getStartAtIndex,
-  TimeOfDay,
-} = require("../utils");
+} = require("../src/utils");
 
 describe("utils", () => {
   it("can sortedIndex", () => {
@@ -35,18 +34,6 @@ describe("utils", () => {
     expect(getDiffToNextOn(values, [true, false, true], 50)).toEqual([70, 170, -20]);
     expect(getDiffToNextOn(values, [true, true, false], 50)).toEqual([-100, 150, -20]);
     expect(getDiffToNextOn(values, [true, true, false])).toEqual([-100, 170, 0]);
-  });
-  it("evaluates onOff sequences correct", () => {
-    expect(isOnOffSequencesOk([], 0, 0)).toBeTruthy();
-    expect(isOnOffSequencesOk([true], 0, 0)).toBeTruthy();
-    expect(isOnOffSequencesOk([false], 0, 0)).toBeFalsy();
-    expect(isOnOffSequencesOk([true, false], 0, 0)).toBeFalsy();
-    expect(isOnOffSequencesOk([true, false], 1, 0)).toBeTruthy();
-    const onOff = [true, true, false, false, false, true, true, false];
-    expect(isOnOffSequencesOk(onOff, 3, 2)).toBeTruthy();
-    expect(isOnOffSequencesOk(onOff, 4, 2)).toBeTruthy();
-    expect(isOnOffSequencesOk(onOff, 2, 2)).toBeFalsy();
-    expect(isOnOffSequencesOk(onOff, 3, 3)).toBeFalsy();
   });
   it("calculates savings for hours off", () => {
     const values = [1, 10, 8, 5];
@@ -233,16 +220,5 @@ describe("utils", () => {
       // Start later than all data
       getStartAtIndex(config, priceData, DateTime.fromISO("2021-06-21T01:50:00.200+02:00"))
     ).toEqual(4);
-  });
-
-  it("constructs TimeOfDay", () => {
-    const tod = new TimeOfDay("11");
-    expect(tod.hours).toEqual(11);
-    expect(tod.minutes).toEqual(00);
-    ["", "abc", "0:12", "24:00", "23:60", "000:00", "a0:00", "1010"].forEach((bug) => {
-      expect(() => {
-        new TimeOfDay(bug);
-      }).toThrow();
-    });
   });
 });

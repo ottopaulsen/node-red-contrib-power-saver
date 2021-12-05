@@ -53,6 +53,31 @@ function getDiff(large, small) {
   return roundPrice(large - small);
 }
 
+function getEffectiveConfig(node, msg) {
+  const res = node.context().get("config");
+  const isConfigMsg = !!msg?.payload?.config;
+  if (isConfigMsg) {
+    const inputConfig = msg.payload.config;
+    Object.keys(inputConfig).forEach((key) => {
+      res[key] = inputConfig[key];
+    });
+    node.context().set("config", res);
+  }
+  return res;
+}
+
+function loadDayData(node, date) {
+  // Load saved schedule for the date (YYYY-MM-DD)
+  // Return null if not found
+  const key = date.toISODate();
+  const saved = node.context().get(key);
+  const res = saved ?? {
+    schedule: [],
+    hours: [],
+  };
+  return res;
+}
+
 function roundPrice(value) {
   return Math.round(value * 10000) / 10000;
 }
@@ -77,42 +102,6 @@ function getSavings(values, onOff, nextOn = null) {
  */
 function firstOn(values, onOff, defaultValue = 0) {
   return [...values, defaultValue][[...onOff, true].findIndex((e) => e)];
-}
-
-/**
- * Takes an array of true/false values where true means on and false means off.
- * Evaluates of the on/off sequences are valid according to other arguments.
- *
- * @param {*} onOff Array of on/off values
- * @param {*} maxOff Max number of values that can be off in a sequence
- * @param {*} minOnAfterOff Min number of values that must be on after maxOff is reached
- * @returns
- */
-function isOnOffSequencesOk(onOff, maxOff, minOnAfterOff) {
-  let offCount = 0;
-  let onCount = 0;
-  let reachedMaxOff = false;
-  for (let i = 0; i < onOff.length; i++) {
-    if (!onOff[i]) {
-      if (maxOff === 0 || reachedMaxOff) {
-        return false;
-      }
-      offCount++;
-      onCount = 0;
-      if (offCount >= maxOff) {
-        reachedMaxOff = true;
-      }
-    } else {
-      if (reachedMaxOff) {
-        onCount++;
-        if (onCount >= minOnAfterOff) {
-          reachedMaxOff = false;
-        }
-      }
-      offCount = 0;
-    }
-  }
-  return true;
 }
 
 /**
@@ -183,42 +172,19 @@ function getStartAtIndex(effectiveConfig, priceData, time) {
   }
 }
 
-class TimeOfDay {
-  // #todFormat = /^[0-2]\d:[0-5]\d$/;
-  #todFormat = /^[0-2]\d$/;
-  constructor(tod) {
-    if (!this.#todFormat.test(tod)) {
-      throw TypeError("Illegal TimeOfDay");
-    }
-    this.hours = parseInt(tod);
-    this.minutes = 0;
-    // this.hours = parseInt(tod.substr(0, 2));
-    // this.minutes = parseInt(tod.substr(3, 2));
-    if (this.hours < 0 || this.hours > 23 || this.minutes < 0 || this.minutes > 59) {
-      throw "Illegal TimeOfDay";
-    }
-  }
-  hours() {
-    return this.hours;
-  }
-  minutes() {
-    return this.minutes;
-  }
-}
-
 module.exports = {
-  sortedIndex,
-  getDiffToNextOn,
-  firstOn,
-  isOnOffSequencesOk,
-  getSavings,
   countAtEnd,
-  makeSchedule,
-  fillArray,
   extractPlanForDate,
-  isSameDate,
-  getStartAtIndex,
+  fillArray,
+  firstOn,
   getDiff,
+  getDiffToNextOn,
+  getEffectiveConfig,
+  getSavings,
+  getStartAtIndex,
+  isSameDate,
+  loadDayData,
+  makeSchedule,
   roundPrice,
-  TimeOfDay,
+  sortedIndex,
 };

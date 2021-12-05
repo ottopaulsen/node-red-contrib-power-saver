@@ -1,7 +1,7 @@
 const expect = require("expect");
-const { convertMsg } = require("../receive-price-utils");
+const { convertMsg } = require("../src/receive-price-functions");
 
-describe("receive-price-utils", () => {
+describe("receive-price-functions", () => {
   it("can convert input msg", () => {
     const msgStd = {
       payload: {

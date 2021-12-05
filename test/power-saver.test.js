@@ -1,7 +1,7 @@
 const cloneDeep = require("lodash.clonedeep");
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
-const powerSaver = require("../power-saver.js");
+const powerSaver = require("../src/power-saver.js");
 
 const prices = require("./data/prices");
 const result = require("./data/result");

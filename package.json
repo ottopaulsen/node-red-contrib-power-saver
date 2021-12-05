@@ -19,14 +19,14 @@
   ],
   "node-red": {
     "nodes": {
-      "power-saver": "power-saver.js",
-      "ps-receive-price": "receive-price.js",
-      "ps-strategy-best-save": "strategy-best-save.js",
-      "ps-strategy-lowest-price": "strategy-lowest-price.js",
-      "ps-elvia-config": "elvia/elvia-config.js",
-      "ps-elvia-tariff-types": "elvia/elvia-tariff-types.js",
-      "ps-elvia-tariff": "elvia/elvia-tariff.js",
-      "ps-elvia-add-tariff": "elvia/elvia-add-tariff.js"
+      "power-saver": "src/power-saver.js",
+      "ps-receive-price": "src/receive-price.js",
+      "ps-strategy-best-save": "src/strategy-best-save.js",
+      "ps-strategy-lowest-price": "src/strategy-lowest-price.js",
+      "ps-elvia-config": "src/elvia/elvia-config.js",
+      "ps-elvia-tariff-types": "src/elvia/elvia-tariff-types.js",
+      "ps-elvia-tariff": "src/elvia/elvia-tariff.js",
+      "ps-elvia-add-tariff": "src/elvia/elvia-add-tariff.js"
     }
   },
   "prettier": {
