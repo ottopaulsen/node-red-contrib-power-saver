@@ -18,23 +18,6 @@ const testPlan = {
   time: "2021-06-20T01:50:00+02:00",
 };
 
-function makeFlow(maxHoursToSaveInSequence, minHoursOnAfterMaxSequenceSaved) {
-  return [
-    {
-      id: "n1",
-      type: "power-saver",
-      name: "test name",
-      maxHoursToSaveInSequence,
-      minHoursOnAfterMaxSequenceSaved,
-      minSaving: 0.001,
-      wires: [["n3"], ["n4"], ["n2"]],
-    },
-    { id: "n2", type: "helper" },
-    { id: "n3", type: "helper" },
-    { id: "n4", type: "helper" },
-  ];
-}
-
 function makePayload(prices, time) {
   const payload = cloneDeep(prices);
   payload.time = time;
@@ -118,7 +101,6 @@ function equalPlan(expected, actual) {
 
 module.exports = {
   testPlan,
-  makeFlow,
   makePayload,
   equalPlan,
 };

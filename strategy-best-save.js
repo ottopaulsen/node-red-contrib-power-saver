@@ -1,5 +1,6 @@
 const { countAtEnd, makeSchedule, getSavings, getStartAtIndex, getDiff } = require("./utils");
 const { handleStrategyInput } = require("./strategy-handle-input");
+const { loadDayData } = require("./strategy-utils");
 
 const mostSavedStrategy = require("./mostSavedStrategy");
 
@@ -40,18 +41,6 @@ function adjustSavingsPassedHours(plan, includeFromLastPlanHours) {
     includeFromLastPlanHours[adjustIndex].saving = getDiff(includeFromLastPlanHours[adjustIndex].price, nextOnValue);
     adjustIndex--;
   }
-}
-
-function loadDayData(node, date) {
-  // Load saved schedule for the date (YYYY-MM-DD)
-  // Return null if not found
-  const key = date.toISODate();
-  const saved = node.context().get(key);
-  const res = saved ?? {
-    schedule: [],
-    hours: [],
-  };
-  return res;
 }
 
 function loadDataJustBefore(node, dateDayBefore, dateToday, startAtIndex) {

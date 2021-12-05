@@ -9,8 +9,8 @@ function handleStrategyInput(node, msg, doPlanning) {
   if (!validateInput(node, msg)) {
     return;
   }
-  const priceData = msg.payload.priceData;
-  const planFromTime = msg.payload.time ?? DateTime.now();
+  const priceData = getPriceData(node, msg);
+  const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
   // Store config variables in node
   Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
@@ -61,14 +61,21 @@ function handleStrategyInput(node, msg, doPlanning) {
   node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime);
 }
 
+function getPriceData(node, msg) {
+  const isConfigMsg = !!msg?.payload?.config;
+  if (isConfigMsg) {
+    return node.context().get("lastPriceData");
+  }
+  const priceData = msg.payload.priceData;
+  node.context().set("lastPriceData", priceData);
+  return priceData;
+}
+
 function runSchedule(node, schedule, time) {
   let currentTime = time;
   let remainingSchedule = schedule.filter((entry) => {
-    console.log("entry.time:", entry.time);
-    console.log("curr. time:", time);
     return DateTime.fromISO(entry.time) > DateTime.fromISO(time);
   });
-  console.log("remainingSchedule", remainingSchedule);
   if (remainingSchedule.length > 0) {
     const entry = remainingSchedule[0];
     const nextTime = DateTime.fromISO(entry.time);

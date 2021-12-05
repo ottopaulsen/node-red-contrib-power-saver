@@ -30,7 +30,7 @@ module.exports = function (RED) {
       if (!priceData) {
         return;
       }
-      const planFromTime = msg.payload.time ?? DateTime.now();
+      const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
       // Store config variables in node
       Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));

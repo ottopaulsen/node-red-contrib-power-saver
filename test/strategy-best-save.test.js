@@ -3,10 +3,10 @@ const { DateTime } = require("luxon");
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../strategy-best-save.js");
-
 const prices = require("./data/converted-prices.json");
 const result = require("./data/best-save-result.json");
 const { testPlan: plan } = require("./test-utils");
+const { makeFlow } = require("./strategy-best-save-test-utils");
 
 helper.init(require.resolve("node-red"));
 
@@ -90,23 +90,6 @@ describe("ps-strategy-best-save node", function () {
     });
   });
 });
-
-function makeFlow(maxHoursToSaveInSequence, minHoursOnAfterMaxSequenceSaved) {
-  return [
-    {
-      id: "n1",
-      type: "ps-strategy-best-save",
-      name: "test name",
-      maxHoursToSaveInSequence,
-      minHoursOnAfterMaxSequenceSaved,
-      minSaving: 0.001,
-      wires: [["n3"], ["n4"], ["n2"]],
-    },
-    { id: "n2", type: "helper" },
-    { id: "n3", type: "helper" },
-    { id: "n4", type: "helper" },
-  ];
-}
 
 function makePayload(prices, time) {
   const payload = cloneDeep(prices);

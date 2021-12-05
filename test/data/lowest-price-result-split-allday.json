@@ -1,0 +1,21 @@
+{
+  "schedule": [
+    { "time": "2021-10-11T00:00:00.000+02:00", "value": true },
+    { "time": "2021-10-11T06:00:00.000+02:00", "value": false },
+    { "time": "2021-10-11T12:00:00.000+02:00", "value": true },
+    { "time": "2021-10-11T14:00:00.000+02:00", "value": false },
+    { "time": "2021-10-12T00:00:00.000+02:00", "value": true },
+    { "time": "2021-10-12T07:00:00.000+02:00", "value": false },
+    { "time": "2021-10-12T14:00:00.000+02:00", "value": true },
+    { "time": "2021-10-12T15:00:00.000+02:00", "value": false }
+  ],
+  "config": {
+    "doNotSplit": false,
+    "fromTime": "00",
+    "hoursOn": 8,
+    "outputIfNoSchedule": true,
+    "outputOutsidePeriod": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "toTime": "00"
+  }
+}

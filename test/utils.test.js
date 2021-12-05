@@ -236,9 +236,9 @@ describe("utils", () => {
   });
 
   it("constructs TimeOfDay", () => {
-    const tod = new TimeOfDay("11:45");
+    const tod = new TimeOfDay("11");
     expect(tod.hours).toEqual(11);
-    expect(tod.minutes).toEqual(45);
+    expect(tod.minutes).toEqual(00);
     ["", "abc", "0:12", "24:00", "23:60", "000:00", "a0:00", "1010"].forEach((bug) => {
       expect(() => {
         new TimeOfDay(bug);
