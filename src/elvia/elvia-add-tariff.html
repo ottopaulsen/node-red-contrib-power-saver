@@ -1,20 +1,19 @@
 <script type="text/javascript">
-  RED.nodes.registerType("ps-elvia-tariff", {
+  RED.nodes.registerType("ps-elvia-add-tariff", {
     category: "Power Saver",
     color: "#a6bbcf",
     defaults: {
-      name: { value: "Elvia Tariff" },
+      name: { value: "Add Elvia Grid Tariff" },
       elviaConfig: { value: "", type: "ps-elvia-config" },
       tariffKey: { value: "", required: true },
       range: { value: "today", required: true },
     },
     inputs: 1,
     outputs: 1,
-    // icon: "font-awesome/fa-power-off",
     icon: "elvia_hvite.svg",
     color: "#FFCC66",
     label: function () {
-      return this.name || "ps elvia tariff";
+      return this.name || "Add Elvia Grid Tariff";
     },
     oneditprepare: function () {
       const readTariffTypes = function () {
@@ -38,22 +37,6 @@
           });
         });
       };
-
-      $("#node-input-range").typedInput({
-        types: [
-          {
-            value: "range",
-            options: [
-              { value: "today", label: "today" },
-              { value: "yesterday", label: "yesterday" },
-              { value: "tomorrow", label: "tomorrow" },
-            ],
-          },
-        ],
-      });
-      $(".refresh-button").on("click", function () {
-        readTariffTypes();
-      });
       $("#node-input-elviaConfig").on("change", function () {
         readTariffTypes();
       });
@@ -62,7 +45,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="ps-elvia-tariff">
+<script type="text/html" data-template-name="ps-elvia-add-tariff">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" style="width: 300px" />
@@ -75,15 +58,11 @@
     <label for="node-input-tariffKey"><i class="fa fa-tag"></i> Tariff key</label>
     <input type="text" id="node-input-tariffKey" placeholder="Tariff" style="width: 300px" />
   </div>
-  <div class="form-row">
-    <label for="node-input-range">Range</label>
-    <input type="text" id="node-input-range" style="width: 120px">
-    </label>
-  </div>
 </script>
 
-<script type="text/markdown" data-help-name="ps-elvia-tariff">
-  # Elvia Tariff
+<script type="text/markdown" data-help-name="ps-elvia-add-tariff">
+  # Elvia Add Tariff
 
-  A node to get the tariff from Elvia.
+  A node to get the tariff from Elvia and add it to the price before it is sent to the power saver strategy nodes.
+  Use this node between the receive-price node and any of the strategy nodes.
 </script>

@@ -1,8 +1,8 @@
 const { countAtEnd, makeSchedule, getSavings, getStartAtIndex, getDiff } = require("./utils");
-const { handleStrategyInput } = require("./strategy-handle-input");
-const { loadDayData } = require("./strategy-utils");
+const { handleStrategyInput } = require("./handle-input");
+const { loadDayData } = require("./utils");
 
-const mostSavedStrategy = require("./mostSavedStrategy");
+const mostSavedStrategy = require("./strategy-best-save-functions");
 
 module.exports = function (RED) {
   function StrategyBestSaveNode(config) {

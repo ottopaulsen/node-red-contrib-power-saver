@@ -1,4 +1,4 @@
-const { getPriceData } = require("./receive-price-utils");
+const { getPriceData } = require("./receive-price-functions");
 
 module.exports = function (RED) {
   function ReceivePriceNode(config) {

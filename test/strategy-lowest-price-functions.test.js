@@ -1,32 +1,10 @@
 const { DateTime } = require("luxon");
 const expect = require("expect");
-const { getBestContinuous, getBestX, getTimeAfter, getTimeBefore, isTimeInsidePeriod } = require("../strategy-utils");
+const { getBestContinuous, getBestX } = require("../src/strategy-lowest-price-functions");
 const convertedPrices = require("./data/converted-prices.json");
 const { cloneDeep } = require("lodash");
 
 describe("strategy-utils", () => {
-  it("can get time after and before", () => {
-    const opts = {
-      suppressMilliseconds: true,
-      suppressSeconds: true.valueOf,
-      includeOffset: false,
-    };
-    const now = DateTime.local(2021, 11, 22, 20, 26);
-    expect(getTimeBefore(now, "12").toISO(opts)).toEqual("2021-11-22T12:00");
-    expect(getTimeBefore(now, "20").toISO(opts)).toEqual("2021-11-22T20:00");
-    expect(getTimeAfter(now, "12").toISO(opts)).toEqual("2021-11-23T12:00");
-    expect(getTimeAfter(now, "20").toISO(opts)).toEqual("2021-11-23T20:00");
-  });
-
-  it("can check isTimeInsidePeriod", () => {
-    const now = DateTime.local(2021, 11, 22, 20, 26);
-    expect(isTimeInsidePeriod(now, "00", "23")).toBeTruthy();
-    expect(isTimeInsidePeriod(now, "00", "00")).toBeTruthy();
-    expect(isTimeInsidePeriod(now, "20", "20")).toBeTruthy();
-    expect(isTimeInsidePeriod(now, "10", "19")).toBeFalsy();
-    expect(isTimeInsidePeriod(now, "21", "19")).toBeFalsy();
-  });
-
   it("can find best x", () => {
     const values = convertedPrices.priceData.slice(0, 48).map((p) => p.value);
     const result = cloneDeep(values).fill(false);

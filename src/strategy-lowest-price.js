@@ -1,7 +1,7 @@
 const { DateTime } = require("luxon");
-const { makeSchedule } = require("./utils");
-const { handleStrategyInput } = require("./strategy-handle-input");
-const { getBestContinuous, getBestX, loadDayData } = require("./strategy-utils");
+const { makeSchedule, loadDayData } = require("./utils");
+const { handleStrategyInput } = require("./handle-input");
+const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
 
 module.exports = function (RED) {
   function StrategyLowestPriceNode(config) {

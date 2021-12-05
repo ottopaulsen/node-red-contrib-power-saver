@@ -1,9 +1,9 @@
 <script type="text/javascript">
-  RED.nodes.registerType("ps-strategy-best-save", {
+  RED.nodes.registerType("power-saver", {
     category: "Power Saver",
     color: "#a6bbcf",
     defaults: {
-      name: { value: "Best Save" },
+      name: { value: "Power Saver" },
       maxHoursToSaveInSequence: {
         value: 3,
         required: true,
@@ -37,7 +37,7 @@
     icon: "font-awesome/fa-eur",
     color: "#FFCC66",
     label: function () {
-      return this.name || "ps-strategy-best-save";
+      return this.name || "Power Saver";
     },
     outputLabels: ["on", "off", "schedule"],
     oneditprepare: function () {
@@ -67,7 +67,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="ps-strategy-best-save">
+<script type="text/html" data-template-name="power-saver">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
@@ -109,7 +109,7 @@
     </div>
 </script>
 
-<script type="text/html" data-help-name="ps-strategy-best-save">
+<script type="text/html" data-help-name="power-saver">
           <p>A node you can use to save money by turning off and on a switch based on power prices.</p>
           <p>You can use it to control for example a heater, a water heater or any other power consumer that is
             acceptable to turn off now and then.</p>
@@ -300,8 +300,8 @@
       </p>
       <h3>References</h3>
           <ul>
-              <li><a href="https://github.com/ottopaulsen/node-red-contrib-ps-strategy-best-save">
-                  node-red-contrib-ps-strategy-best-save</a>  on GitHub</li>
+              <li><a href="https://github.com/ottopaulsen/node-red-contrib-power-saver">
+                  node-red-contrib-power-saver</a>  on GitHub</li>
               <li>The <a href="https://github.com/custom-components/nordpool">
                   nordpool</a>  custom component for Home Assistant</li>
           </ul>

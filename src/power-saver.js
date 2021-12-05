@@ -1,7 +1,16 @@
 const { DateTime } = require("luxon");
-const { countAtEnd, makeSchedule, getSavings, extractPlanForDate, getStartAtIndex, getDiff } = require("./utils");
-const { convertMsg } = require("./receive-price-utils");
-const mostSavedStrategy = require("./mostSavedStrategy");
+const {
+  countAtEnd,
+  extractPlanForDate,
+  getDiff,
+  getEffectiveConfig,
+  getSavings,
+  getStartAtIndex,
+  loadDayData,
+  makeSchedule,
+} = require("./utils");
+const { convertMsg } = require("./receive-price-functions");
+const { calculate } = require("./strategy-best-save-functions");
 
 let schedulingTimeout = null;
 
@@ -109,19 +118,6 @@ function adjustSavingsPassedHours(plan, includeFromLastPlanHours) {
   }
 }
 
-function getEffectiveConfig(node, msg) {
-  const res = node.context().get("config");
-  const isConfigMsg = !!msg?.payload?.config;
-  if (isConfigMsg) {
-    const inputConfig = msg.payload.config;
-    Object.keys(inputConfig).forEach((key) => {
-      res[key] = inputConfig[key];
-    });
-    node.context().set("config", res);
-  }
-  return res;
-}
-
 function getPriceData(node, msg) {
   const isConfigMsg = !!msg?.payload?.config;
   if (isConfigMsg) {
@@ -140,18 +136,6 @@ function getPriceData(node, msg) {
   priceData.source = input.source;
   node.context().set("lastPriceData", priceData);
   return priceData;
-}
-
-function loadDayData(node, date) {
-  // Load saved schedule for the date (YYYY-MM-DD)
-  // Return null if not found
-  const key = date.toISODate();
-  const saved = node.context().get(key);
-  const res = saved ?? {
-    schedule: [],
-    hours: [],
-  };
-  return res;
 }
 
 function loadDataJustBefore(node, dateDayBefore, dateToday, startAtIndex) {
@@ -181,7 +165,7 @@ function makePlan(node, values, startTimes, onOffBefore, firstValueNextDay) {
   const lastCountDayBefore = countAtEnd(onOffBefore, lastValueDayBefore);
   const onOff =
     strategy === "mostSaved"
-      ? mostSavedStrategy.calculate(
+      ? calculate(
           values,
           node.maxHoursToSaveInSequence,
           node.minHoursOnAfterMaxSequenceSaved,

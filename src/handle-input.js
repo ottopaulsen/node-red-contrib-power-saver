@@ -1,4 +1,4 @@
-const { getEffectiveConfig, validateInput } = require("./strategy-utils");
+const { getEffectiveConfig } = require("./utils");
 const { extractPlanForDate } = require("./utils");
 const { DateTime } = require("luxon");
 
@@ -114,6 +114,44 @@ function sendSwitch(node, onOff) {
   const output1 = onOff ? { payload: true } : null;
   const output2 = onOff ? null : { payload: false };
   node.send([output1, output2, null]);
+}
+
+function validateInput(node, msg) {
+  if (!msg.payload) {
+    validationFailure(node, "No payload");
+    return;
+  }
+  if (typeof msg.payload !== "object") {
+    validationFailure(node, "Payload is not an object");
+    return;
+  }
+  if (msg.payload.config !== undefined) {
+    return true; // Got config msg
+  }
+  if (msg.payload.priceData === undefined) {
+    validationFailure(node, "Payload is missing priceData");
+    return;
+  }
+  if (msg.payload.priceData.length === undefined) {
+    validationFailure(node, "Illegal priceData in payload. Did you use the receive-price node?", "Illegal payload");
+    return;
+  }
+  if (msg.payload.priceData.length === 0) {
+    validationFailure(node, "priceData is empty");
+    return;
+  }
+  msg.payload.priceData.forEach((h) => {
+    if (!h.start || !h.value) {
+      validationFailure(node, "Malformed entries in priceData. All entries must contain start and value.");
+      return;
+    }
+  });
+  return true;
+}
+
+function validationFailure(node, message, status = null) {
+  node.status({ fill: "red", shape: "ring", text: status ?? message });
+  node.warn(message);
 }
 
 module.exports = {

@@ -2,7 +2,7 @@ const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
-const lowestPrice = require("../strategy-lowest-price.js");
+const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/converted-prices.json");
 
 helper.init(require.resolve("node-red"));

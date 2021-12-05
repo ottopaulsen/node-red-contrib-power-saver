@@ -1,5 +1,5 @@
 const helper = require("node-red-node-test-helper");
-const receivePrices = require("../receive-price.js");
+const receivePrices = require("../src/receive-price.js");
 const expect = require("expect");
 
 helper.init(require.resolve("node-red"));

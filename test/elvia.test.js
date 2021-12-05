@@ -1,5 +1,5 @@
 const helper = require("node-red-node-test-helper");
-const elviaAddTariff = require("../elvia/elvia-add-tariff.js");
+const elviaAddTariff = require("../src/elvia/elvia-add-tariff.js");
 const expect = require("expect");
 
 helper.init(require.resolve("node-red"));
