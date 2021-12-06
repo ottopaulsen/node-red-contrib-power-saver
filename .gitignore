@@ -7,3 +7,5 @@ install.sh
 .DS_Store
 mostSavedStrategy_v1.js
 mostSavedStrategy_v2.js
+.temp
+.cache
