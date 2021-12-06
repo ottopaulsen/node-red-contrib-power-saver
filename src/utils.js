@@ -1,4 +1,3 @@
-const { extractExpectedAssertionsErrors } = require("expect");
 const { DateTime } = require("luxon");
 
 /**
