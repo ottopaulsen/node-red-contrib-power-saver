@@ -89,8 +89,45 @@ describe("receive-price-functions", () => {
       },
     };
 
+    const msgTibberSingle = {
+      payload: {
+        viewer: {
+          home: {
+            currentSubscription: {
+              priceInfo: {
+                today: [
+                  {
+                    total: 1,
+                    startsAt: "2021-06-21T00:00:00+02:00",
+                  },
+                  {
+                    total: 2,
+                    startsAt: "2021-06-21T01:00:00+02:00",
+                  },
+                ],
+                tomorrow: [
+                  {
+                    total: 3,
+                    startsAt: "2021-06-22T00:00:00+02:00",
+                  },
+                  {
+                    total: 4,
+                    startsAt: "2021-06-22T01:00:00+02:00",
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    };
+
     expect(convertMsg(msgStd)).toEqual({ source: "Other", ...msgStd.payload });
     expect(convertMsg(msgTibber)).toEqual({
+      source: "Tibber",
+      ...msgStd.payload,
+    });
+    expect(convertMsg(msgTibberSingle)).toEqual({
       source: "Tibber",
       ...msgStd.payload,
     });
@@ -98,12 +135,12 @@ describe("receive-price-functions", () => {
       source: "Nordpool",
       ...msgStd.payload,
     });
-    delete msgTibber.payload.viewer.homes[0].currentSubscription.priceInfo.tomorrow;
+    msgTibber.payload.viewer.homes[0].currentSubscription.priceInfo.tomorrow = [];
     expect(convertMsg(msgTibber)).toEqual({
       source: "Tibber",
       ...msgStdTodayOnly.payload,
     });
-    delete msgNordpool.data.new_state.attributes.raw_tomorrow;
+    msgNordpool.data.new_state.attributes.raw_tomorrow = [];
     expect(convertMsg(msgNordpool)).toEqual({
       source: "Nordpool",
       ...msgStdTodayOnly.payload,

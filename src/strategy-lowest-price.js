@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { makeSchedule, loadDayData } = require("./utils");
+const { booleanConfig, makeSchedule, loadDayData } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
 
@@ -12,10 +12,10 @@ module.exports = function (RED) {
       fromTime: config.fromTime,
       toTime: config.toTime,
       hoursOn: config.hoursOn,
-      doNotSplit: config.doNotSplit === true,
-      sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling ?? true,
-      outputIfNoSchedule: config.outputIfNoSchedule ?? false,
-      outputOutsidePeriod: config.outputOutsidePeriod ?? false,
+      doNotSplit: booleanConfig(config.doNotSplit),
+      sendCurrentValueWhenRescheduling: booleanConfig(config.sendCurrentValueWhenRescheduling),
+      outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
+      outputOutsidePeriod: booleanConfig(config.outputOutsidePeriod),
     };
     node.context().set("config", originalConfig);
 

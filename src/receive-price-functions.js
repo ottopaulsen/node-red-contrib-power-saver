@@ -57,53 +57,40 @@ function validateInput(node, input) {
  * @param {*} msg
  */
 function convertMsg(msg) {
-  let today = [];
-  let tomorrow = [];
-  let source = "Unknown";
+  const result = { source: "Unknown" };
 
-  if (msg.payload?.viewer?.homes[0]?.currentSubscription?.priceInfo?.today) {
-    source = "Tibber";
-    today = msg.payload.viewer.homes[0].currentSubscription.priceInfo.today.map((v) => ({
-      value: v.total,
-      start: v.startsAt,
-    }));
-  } else if (msg.data?.new_state?.attributes?.raw_today) {
-    source = "Nordpool";
-    today = msg.data.new_state.attributes.raw_today.map((v) => ({
-      value: v.value,
-      start: v.start,
-    }));
-  } else if (msg.payload?.attributes?.raw_today) {
-    source = "Nordpool";
-    today = msg.payload.attributes.raw_today.map((v) => ({
-      value: v.value,
-      start: v.start,
-    }));
-  } else {
-    source = "Other";
-    today = msg.payload?.today || [];
-  }
+  ["today", "tomorrow"].forEach((day) => {
+    if (msg.payload?.viewer?.home?.currentSubscription?.priceInfo[day]) {
+      result.source = "Tibber";
+      result[day] = msg.payload.viewer.home.currentSubscription.priceInfo[day].map((v) => ({
+        value: v.total,
+        start: v.startsAt,
+      }));
+    } else if (msg.payload?.viewer?.homes && msg.payload?.viewer?.homes[0]?.currentSubscription?.priceInfo[day]) {
+      result.source = "Tibber";
+      result[day] = msg.payload.viewer.homes[0].currentSubscription.priceInfo[day].map((v) => ({
+        value: v.total,
+        start: v.startsAt,
+      }));
+    } else if (msg.data?.new_state?.attributes["raw_" + day]) {
+      result.source = "Nordpool";
+      result[day] = msg.data.new_state.attributes["raw_" + day].map((v) => ({
+        value: v.value,
+        start: v.start,
+      }));
+    } else if (msg.payload?.attributes && msg.payload?.attributes["raw_" + day]) {
+      result.source = "Nordpool";
+      result[day] = msg.payload.attributes["raw_" + day].map((v) => ({
+        value: v.value,
+        start: v.start,
+      }));
+    } else {
+      result.source = "Other";
+      result[day] = msg.payload[day] || [];
+    }
+  });
 
-  if (msg.payload?.viewer?.homes[0]?.currentSubscription?.priceInfo?.tomorrow) {
-    tomorrow = msg.payload.viewer.homes[0].currentSubscription.priceInfo.tomorrow.map((v) => ({
-      value: v.total,
-      start: v.startsAt,
-    }));
-  } else if (msg.data?.new_state?.attributes?.raw_tomorrow) {
-    tomorrow = msg.data.new_state.attributes.raw_tomorrow.map((v) => ({
-      value: v.value,
-      start: v.start,
-    }));
-  } else if (msg.payload?.attributes?.raw_tomorrow) {
-    tomorrow = msg.payload.attributes.raw_tomorrow.map((v) => ({
-      value: v.value,
-      start: v.start,
-    }));
-  } else {
-    tomorrow = msg.payload?.tomorrow || [];
-  }
-
-  return { today, tomorrow, source };
+  return result;
 }
 
 module.exports = {

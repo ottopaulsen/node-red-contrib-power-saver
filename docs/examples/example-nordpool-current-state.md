@@ -1,12 +1,14 @@
-## Example with Nord Pool and current state node
+# Nord Pool and current state node
+
+## Description
 
 In this example, data is read from the Nord Pool sensor in HA via the `current state` node. The `ps-best-save` node is used to control a water heater via a switch, controlled by `call service` nodes in Home Assistant. The schedule is printed to a debug node. An `inject` node is used to trigger the reading of the Nord Pool sensor every hour.
 
-![Example with Tibber and MQTT](./power-saver-nordpool-current-state.png)
+![Example with Tibber and MQTT](../images/power-saver-nordpool-current-state.png)
 
-Flow:
+## Flow
 
-```json
+```json:no-line-numbers
 [
   {
     "id": "e2578f6a.210a8",

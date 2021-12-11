@@ -1,6 +1,7 @@
 const { DateTime } = require("luxon");
 const expect = require("expect");
 const {
+  booleanConfig,
   sortedIndex,
   firstOn,
   getDiffToNextOn,
@@ -15,6 +16,13 @@ const {
 } = require("../src/utils");
 
 describe("utils", () => {
+  it("can test boolean config", () => {
+    expect(booleanConfig(true)).toBeTruthy();
+    expect(booleanConfig(false)).toBeFalsy();
+    expect(booleanConfig("true")).toBeTruthy();
+    expect(booleanConfig("false")).toBeFalsy();
+    expect(booleanConfig(undefined)).toBeFalsy();
+  });
   it("can sortedIndex", () => {
     expect(sortedIndex([3, 1, 2, 4])).toEqual([3, 0, 2, 1]);
   });

@@ -1,12 +1,14 @@
-## Example with Nordpool and events: state node
+# Nord Pool and events: state node
 
-In this example, data is read from the Nord Pool sensor in HA via the `events: state` node.
+## Description
 
-![Example with Tibber and MQTT](./power-saver-nordpool-events-state.png)
+In this example, data is read from the Nord Pool sensor in HA via the `events: state` node. The `ps-lowest-price` node is used to control a switch, controlled by `call service` nodes in Home Assistant, to turn on the cheapest 4 hours between 18:00 and 08:00. The schedule is printed to a debug node. The flow is triggered every time the Nord Pool sensor receives new prices.
 
-Flow:
+![Example with Tibber and MQTT](../images/power-saver-nordpool-events-state.png)
 
-```json
+## Flow
+
+```json:no-line-numbers
 [
   {
     "id": "3662aca5.dfe974",
@@ -14,7 +16,7 @@ Flow:
     "z": "d938c47f.3398f8",
     "name": "Nord Pool sensor",
     "server": "ec4a12a1.b2be9",
-    "version": 1,
+    "version": 3,
     "exposeToHomeAssistant": false,
     "haConfig": [
       {
@@ -43,30 +45,36 @@ Flow:
     "ignorePrevStateUnavailable": false,
     "ignoreCurrentStateUnknown": false,
     "ignoreCurrentStateUnavailable": false,
+    "outputProperties": [
+      {
+        "property": "payload",
+        "propertyType": "msg",
+        "value": "",
+        "valueType": "entityState"
+      },
+      {
+        "property": "data",
+        "propertyType": "msg",
+        "value": "",
+        "valueType": "eventData"
+      },
+      {
+        "property": "topic",
+        "propertyType": "msg",
+        "value": "",
+        "valueType": "triggerId"
+      }
+    ],
     "x": 120,
     "y": 620,
-    "wires": [["fc7df8c4.e50c88"]]
-  },
-  {
-    "id": "fc7df8c4.e50c88",
-    "type": "power-saver",
-    "z": "d938c47f.3398f8",
-    "name": "Power Saver",
-    "maxHoursToSaveInSequence": 3,
-    "minHoursOnAfterMaxSequenceSaved": "1",
-    "minSaving": "0.001",
-    "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": true,
-    "x": 310,
-    "y": 620,
-    "wires": [["32f17ab2.927cf6"], ["2a3cd7db.0891f8"], ["ed7202ff.b5725"]]
+    "wires": [["e21a4b49adea2350"]]
   },
   {
     "id": "ed7202ff.b5725",
     "type": "debug",
     "z": "d938c47f.3398f8",
-    "name": "Nordpool result",
-    "active": true,
+    "name": "Nord Pool result",
+    "active": false,
     "tosidebar": true,
     "console": false,
     "tostatus": false,
@@ -74,17 +82,17 @@ Flow:
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 580,
-    "y": 660,
+    "x": 720,
+    "y": 680,
     "wires": []
   },
   {
     "id": "32f17ab2.927cf6",
     "type": "api-call-service",
     "z": "d938c47f.3398f8",
-    "name": "Turn on VVB",
+    "name": "Turn on",
     "server": "ec4a12a1.b2be9",
-    "version": 1,
+    "version": 3,
     "debugenabled": false,
     "service_domain": "switch",
     "service": "turn_on",
@@ -92,10 +100,10 @@ Flow:
     "data": "",
     "dataType": "jsonata",
     "mergecontext": "",
-    "output_location": "",
-    "output_location_type": "none",
     "mustacheAltTags": false,
-    "x": 570,
+    "outputProperties": [],
+    "queue": "none",
+    "x": 700,
     "y": 580,
     "wires": [[]]
   },
@@ -103,9 +111,9 @@ Flow:
     "id": "2a3cd7db.0891f8",
     "type": "api-call-service",
     "z": "d938c47f.3398f8",
-    "name": "Turn off VVB",
+    "name": "Turn off",
     "server": "ec4a12a1.b2be9",
-    "version": 1,
+    "version": 3,
     "debugenabled": true,
     "service_domain": "switch",
     "service": "turn_off",
@@ -113,23 +121,50 @@ Flow:
     "data": "",
     "dataType": "json",
     "mergecontext": "",
-    "output_location": "",
-    "output_location_type": "none",
     "mustacheAltTags": false,
-    "x": 570,
+    "outputProperties": [],
+    "queue": "none",
+    "x": 700,
     "y": 620,
     "wires": [[]]
+  },
+  {
+    "id": "e21a4b49adea2350",
+    "type": "ps-receive-price",
+    "z": "d938c47f.3398f8",
+    "name": "Price Receiver",
+    "x": 310,
+    "y": 620,
+    "wires": [["391ac08890e0dd40"]]
+  },
+  {
+    "id": "391ac08890e0dd40",
+    "type": "ps-strategy-lowest-price",
+    "z": "d938c47f.3398f8",
+    "name": "Lowest Price",
+    "fromTime": "18",
+    "toTime": "08",
+    "hoursOn": "04",
+    "doNotSplit": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": "false",
+    "outputOutsidePeriod": "false",
+    "x": 490,
+    "y": 620,
+    "wires": [["32f17ab2.927cf6"], ["2a3cd7db.0891f8"], ["ed7202ff.b5725"]]
   },
   {
     "id": "ec4a12a1.b2be9",
     "type": "server",
     "name": "Home Assistant",
-    "legacy": false,
+    "version": 2,
     "addon": true,
     "rejectUnauthorizedCerts": true,
     "ha_boolean": "y|yes|true|on|home|open",
     "connectionDelay": true,
-    "cacheJson": true
+    "cacheJson": true,
+    "heartbeat": false,
+    "heartbeatInterval": 30
   }
 ]
 ```

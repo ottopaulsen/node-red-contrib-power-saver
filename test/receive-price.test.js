@@ -48,6 +48,30 @@ describe("receive-price node", function () {
     });
   });
 
+  it("should convert tibber single home prices", function (done) {
+    const tibberPrices = require("./data/tibber-prices-single-home.json");
+    const convertedPrices = require("./data/converted-prices.json");
+    convertedPrices.priceData.source = "Tibber";
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-receive-price",
+        name: "Receive prices",
+        wires: [["n2"]],
+      },
+      { id: "n2", type: "helper" },
+    ];
+    helper.load(receivePrices, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", convertedPrices);
+        done();
+      });
+      n1.receive(tibberPrices);
+    });
+  });
+
   it("should convert nordpool event prices", function (done) {
     const nordpoolPrices = require("./data/nordpool-event-prices.json");
     const convertedPrices = require("./data/converted-prices.json");

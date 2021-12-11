@@ -1,5 +1,9 @@
 const { DateTime } = require("luxon");
 
+function booleanConfig(value) {
+  return value === "true" || value === true;
+}
+
 /**
  * Sort values in array and return array with index of original array
  * in sorted order. Highest value first.
@@ -172,6 +176,7 @@ function getStartAtIndex(effectiveConfig, priceData, time) {
 }
 
 module.exports = {
+  booleanConfig,
   countAtEnd,
   extractPlanForDate,
   fillArray,

@@ -156,7 +156,7 @@ describe("ps-strategy-lowest-price node", function () {
     flow[0].doNotSplit = false;
     flow[0].fromTime = "10";
     flow[0].toTime = "10";
-    flow[0].outputIfNoSchedule = true;
+    flow[0].outputIfNoSchedule = "true";
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
