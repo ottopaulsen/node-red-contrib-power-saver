@@ -1,6 +1,10 @@
+---
+next: ./ps-receive-price.md
+---
+
 # ps-strategy-lowest-price
 
-![ps-strategy-lowest-price](/node-ps-strategy-lowest-price.png)
+![ps-strategy-lowest-price](../images/node-ps-strategy-lowest-price.png)
 
 Strategy node to turn on power the hours when the price is lowest during a given period, and turn off the other hours.
 

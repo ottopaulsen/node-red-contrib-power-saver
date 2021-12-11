@@ -1,6 +1,6 @@
 # ps-strategy-best-save
 
-![ps-strategy-best-save](/node-ps-strategy-best-save.png)
+![ps-strategy-best-save](../images/node-ps-strategy-best-save.png)
 
 Strategy node to postpone power consumption until the price is lower.
 

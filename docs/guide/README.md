@@ -1,3 +1,7 @@
+---
+sidebar: "auto"
+---
+
 # Guide
 
 ## Introduction
@@ -17,7 +21,7 @@ The strategy nodes have 3 outputs. Output 1 is used to "turn on", output 2 is us
 
 Example:
 
-![Example flow](/example-flow-1.png)
+![Example flow](../images/example-flow-1.png)
 
 Here prices are received from Tibber, converted in the `ps-receive-price` node, then gridd tariff for Elvia is added before sent to the `ps-strategy-best-save` node. Output is sent to Home Assistant via two `call-service` nodes, and the schedule is sent to a debug node.
 
@@ -140,7 +144,7 @@ If the grid tariff is the same the whole day, you can skip this step i the flow.
 
 ### Calculate and run schedule
 
-This is the step where the value is produced. Based on the prices received, the optimal schedule for you is calculated automatically, based on you configuration. You can choose between the following strategies:
+This is the step where the value is produced. Based on the prices received, the optimal schedule for you is calculated automatically, based on your configuration. You can choose between the following strategies:
 
 | Strategy     | Node                        | Description                                                     |
 | ------------ | --------------------------- | --------------------------------------------------------------- |
@@ -152,6 +156,12 @@ These nodes must be configured for your purpose. See configuration description a
 Send the result from the `ps-xxx-add-tariff` node (or the `ps-receive-price` node) as input to the
 strategy node you choose.
 
+::: tip Choose strategy
+Choose the best save strategy if you can postpone power consumption, and expect the consumption to occur during the first hour after power is turned on again.
+
+Choose the lowest price strategy if you need the power to be on for x hours, but it is not important when that is. Note that you can select to have all hours on in one consecutive period, or spread around on the cheapest hours.
+:::
+
 ### Use schedule signals
 
 Use the outputs to control switches, thermostats or other entities to control your power consumers.
@@ -162,7 +172,7 @@ Use the outputs to control switches, thermostats or other entities to control yo
 
 Example using Home Assistant:
 
-![Example flow](../images/example-flow-1.png)
+![Example flow](../images/example-flow-2.png)
 
 ### Display schedule
 
@@ -172,4 +182,12 @@ For users of Magic Mirror and Tibber, the `ps-best-save` node can send its sched
 
 ### More information
 
-There are more details and more information in the documentation for each [node](/nodes/overview/) and in the [examples](/examples/).
+There are more details and more information in the documentation for each [node](/nodes/) and in the [examples](/examples/).
+
+## Migration from v2
+
+The `Power Saver` node from v2 is still here, and it is working exactly as before. However, it will not be further maintained, so you should replace it. You may directly replace the `Power Saver` node by two of the new nodes:
+
+![Migrate Power Saver](../images/migrate-best-save.png)
+
+See more details in the [documentation for the `Power Saver`](../nodes/power-saver.md) node.

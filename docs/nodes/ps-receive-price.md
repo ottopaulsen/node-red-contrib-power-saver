@@ -1,6 +1,10 @@
+---
+prev: ./ps-strategy-lowest-price.md
+---
+
 # ps-receive-price
 
-![ps-receive-price](/node-ps-receive-price.png)
+![ps-receive-price](../images/node-ps-receive-price.png)
 
 ## Description
 

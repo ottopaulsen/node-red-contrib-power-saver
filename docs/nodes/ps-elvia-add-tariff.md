@@ -1,6 +1,6 @@
 # ps-elvia-add-tariff
 
-![ps-elvia-add-tariff](/node-ps-elvia-add-tariff.png)
+![ps-elvia-add-tariff](../images/node-ps-elvia-add-tariff.png)
 
 Node to add grid tariff from Elvia.
 
@@ -12,7 +12,7 @@ You need an Elvia API subscription key to use this node. See [configuration](#el
 
 When grid tariff changes from hour to hour, this should normally also be considered when finding the most favorable hours to use power. This node retrieves prices from Elvia, so if you are an elvia customer, you can put this node between the `ps-receive-price` node and the strategy nodes. When configured, it will add Elvia tariff to the power prices before doing the calculation:
 
-![Elvia flow](/elvia-flow.png)
+![Elvia flow](../images/elvia-flow.png)
 
 ## Configuration
 
@@ -26,20 +26,20 @@ When your subscription is approved, you will find your subscription key in the
 
 The first time you use this node, you must create a `ps-elvia-config` entry. Click on the edit button to the right of Elvia Config:
 
-![Elvia configuration](/elvia-config-no-config.png)
+![Elvia configuration](../images/elvia-config-no-config.png)
 
 Then enter the Elvia API subscription key:
 
-![Elvia configuration](/elvia-config-subscription-key.png)
+![Elvia configuration](../images/elvia-config-subscription-key.png)
 
 After entering the Elvia API subscription key the first time, it is not possible to select tariff.
 
-![Elvia configuration](/elvia-config-no-tariff.png)
+![Elvia configuration](../images/elvia-config-no-tariff.png)
 
 To fix that, save the config, deploy, and then open the node again.
 Now you should be able to select the right tariff:
 
-![Elvia configuration](/elvia-config-select-tariff.png)
+![Elvia configuration](../images/elvia-config-select-tariff.png)
 
 The next time you use this node, you can select the same config as you created the first time, and then you can also select tariff immediately.
 

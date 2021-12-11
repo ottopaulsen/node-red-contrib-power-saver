@@ -9,12 +9,14 @@ actions:
     link: /guide
     type: primary
   - text: Nodes
-    link: /nodes/overview
-    type: secondary
+    link: /nodes/
+    type: primary
   - text: Examples
     link: /examples/
-    type: secondary
+    type: primary
 features:
+  - title: Automatic scheduling
+    details: Automatically calculate best plan and send signal to turn on and off.
   - title: Best Save Strategy
     details: Postpone power consumption when there is most to save.
   - title: Lowest Price Strategy

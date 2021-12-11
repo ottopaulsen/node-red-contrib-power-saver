@@ -21,6 +21,10 @@ module.exports = {
         text: "Contribute",
         link: "/contribute/",
       },
+      {
+        text: "Changes",
+        link: "/changelog/",
+      },
     ],
     sidebar: {
       "/guide/": [{ text: "Guide", children: ["/guide/README.md"] }],
@@ -28,12 +32,18 @@ module.exports = {
         {
           text: "Nodes",
           children: [
-            "/nodes/power-saver.md",
-            "/nodes/ps-strategy-best-save.md",
-            "/nodes/ps-strategy-lowest-price.md",
-            "/nodes/ps-receive-price.md",
-            "/nodes/ps-elvia-add-tariff.md",
+            { text: "Power Saver", link: "/nodes/power-saver.md" },
+            {
+              text: "Strategy nodes",
+              children: ["/nodes/ps-strategy-best-save.md", "/nodes/ps-strategy-lowest-price.md"],
+            },
+            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md"] },
+            { text: "Grid tariff nodes", children: ["/nodes/ps-elvia-add-tariff.md"] },
           ],
+        },
+        {
+          text: "Data format",
+          children: ["/nodes/strategy-input.md"],
         },
       ],
       "/examples/": [
@@ -46,12 +56,8 @@ module.exports = {
           ],
         },
       ],
-      "/contribute/": [
-        {
-          text: "Contribute",
-          children: ["/contribute/README.md"],
-        },
-      ],
+      "/contribute/": "auto",
+      "/changelog/": "auto",
     },
   },
   head: [
