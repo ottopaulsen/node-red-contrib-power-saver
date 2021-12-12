@@ -1,0 +1,760 @@
+{
+  "gridTariff": {
+    "tariffType": {
+      "tariffKey": "private_tou_rush2",
+      "company": "Elvia AS",
+      "customerType": "private",
+      "title": "Nettleie Rush&Ro (Innlandet)",
+      "resolution": 60,
+      "description": "Tariff focused on lowering energy consumption during high consumption periods of the day. Future prices are subject to changes. Applies to Innlandet."
+    },
+    "tariffPrice": {
+      "priceInfo": [
+        {
+          "startTime": "2021-11-17T00:00:00+01:00",
+          "expiredAt": "2021-11-17T01:00:00+01:00",
+          "hoursShortName": "00-01",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T01:00:00+01:00",
+          "expiredAt": "2021-11-17T02:00:00+01:00",
+          "hoursShortName": "01-02",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T02:00:00+01:00",
+          "expiredAt": "2021-11-17T03:00:00+01:00",
+          "hoursShortName": "02-03",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T03:00:00+01:00",
+          "expiredAt": "2021-11-17T04:00:00+01:00",
+          "hoursShortName": "03-04",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T04:00:00+01:00",
+          "expiredAt": "2021-11-17T05:00:00+01:00",
+          "hoursShortName": "04-05",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T05:00:00+01:00",
+          "expiredAt": "2021-11-17T06:00:00+01:00",
+          "hoursShortName": "05-06",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T06:00:00+01:00",
+          "expiredAt": "2021-11-17T07:00:00+01:00",
+          "hoursShortName": "06-07",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T07:00:00+01:00",
+          "expiredAt": "2021-11-17T08:00:00+01:00",
+          "hoursShortName": "07-08",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T08:00:00+01:00",
+          "expiredAt": "2021-11-17T09:00:00+01:00",
+          "hoursShortName": "08-09",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T09:00:00+01:00",
+          "expiredAt": "2021-11-17T10:00:00+01:00",
+          "hoursShortName": "09-10",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T10:00:00+01:00",
+          "expiredAt": "2021-11-17T11:00:00+01:00",
+          "hoursShortName": "10-11",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T11:00:00+01:00",
+          "expiredAt": "2021-11-17T12:00:00+01:00",
+          "hoursShortName": "11-12",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T12:00:00+01:00",
+          "expiredAt": "2021-11-17T13:00:00+01:00",
+          "hoursShortName": "12-13",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T13:00:00+01:00",
+          "expiredAt": "2021-11-17T14:00:00+01:00",
+          "hoursShortName": "13-14",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T14:00:00+01:00",
+          "expiredAt": "2021-11-17T15:00:00+01:00",
+          "hoursShortName": "14-15",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T15:00:00+01:00",
+          "expiredAt": "2021-11-17T16:00:00+01:00",
+          "hoursShortName": "15-16",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T16:00:00+01:00",
+          "expiredAt": "2021-11-17T17:00:00+01:00",
+          "hoursShortName": "16-17",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T17:00:00+01:00",
+          "expiredAt": "2021-11-17T18:00:00+01:00",
+          "hoursShortName": "17-18",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T18:00:00+01:00",
+          "expiredAt": "2021-11-17T19:00:00+01:00",
+          "hoursShortName": "18-19",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T19:00:00+01:00",
+          "expiredAt": "2021-11-17T20:00:00+01:00",
+          "hoursShortName": "19-20",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.806,
+            "energy": 0.4679,
+            "power": 0,
+            "taxes": 0.3381,
+            "level": "EXPENSIVE",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T20:00:00+01:00",
+          "expiredAt": "2021-11-17T21:00:00+01:00",
+          "hoursShortName": "20-21",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T21:00:00+01:00",
+          "expiredAt": "2021-11-17T22:00:00+01:00",
+          "hoursShortName": "21-22",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.448,
+            "energy": 0.1815,
+            "power": 0,
+            "taxes": 0.2665,
+            "level": "NORMAL",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T22:00:00+01:00",
+          "expiredAt": "2021-11-17T23:00:00+01:00",
+          "hoursShortName": "22-23",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        },
+        {
+          "startTime": "2021-11-17T23:00:00+01:00",
+          "expiredAt": "2021-11-18T00:00:00+01:00",
+          "hoursShortName": "23-24",
+          "season": "winter",
+          "publicHoliday": false,
+          "fixedPrices": [
+            {
+              "priceLevel": [
+                {
+                  "level": "Level4",
+                  "levelInfo": "Elvia private fixed price component: Innlandet - Rush&Ro og Dag&Natt",
+                  "total": 0.2361,
+                  "fixed": 0.1889,
+                  "taxes": 0.0472,
+                  "currency": "NOK",
+                  "uom": "kr/hour"
+                }
+              ]
+            }
+          ],
+          "variablePrice": {
+            "total": 0.2835,
+            "energy": 0.0499,
+            "power": 0,
+            "taxes": 0.2336,
+            "level": "CHEAP",
+            "currency": "NOK",
+            "uom": "kr/kWh"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 const { DateTime } = require("luxon");
 const expect = require("expect");
 const {
+  booleanConfig,
   sortedIndex,
   firstOn,
   getDiffToNextOn,
@@ -9,13 +10,19 @@ const {
   countAtEnd,
   makeSchedule,
   fillArray,
-  convertMsg,
   extractPlanForDate,
   isSameDate,
   getStartAtIndex,
-} = require("../utils");
+} = require("../src/utils");
 
 describe("utils", () => {
+  it("can test boolean config", () => {
+    expect(booleanConfig(true)).toBeTruthy();
+    expect(booleanConfig(false)).toBeFalsy();
+    expect(booleanConfig("true")).toBeTruthy();
+    expect(booleanConfig("false")).toBeFalsy();
+    expect(booleanConfig(undefined)).toBeFalsy();
+  });
   it("can sortedIndex", () => {
     expect(sortedIndex([3, 1, 2, 4])).toEqual([3, 0, 2, 1]);
   });
@@ -29,54 +36,18 @@ describe("utils", () => {
   });
   it("can getDiffToNextOn", () => {
     const values = [100, 200, 30];
-    expect(getDiffToNextOn(values, [false, false, false], 50)).toEqual([
-      50, 150, -20,
-    ]);
-    expect(getDiffToNextOn(values, [false, false, true], 50)).toEqual([
-      70, 170, -20,
-    ]);
-    expect(getDiffToNextOn(values, [false, true, false], 50)).toEqual([
-      -100, 150, -20,
-    ]);
-    expect(getDiffToNextOn(values, [true, false, true], 50)).toEqual([
-      70, 170, -20,
-    ]);
-    expect(getDiffToNextOn(values, [true, true, false], 50)).toEqual([
-      -100, 150, -20,
-    ]);
-    expect(getDiffToNextOn(values, [true, true, false])).toEqual([
-      -100, 170, 0,
-    ]);
-  });
-  it("evaluates onOff sequences correct", () => {
-    expect(isOnOffSequencesOk([], 0, 0)).toBeTruthy();
-    expect(isOnOffSequencesOk([true], 0, 0)).toBeTruthy();
-    expect(isOnOffSequencesOk([false], 0, 0)).toBeFalsy();
-    expect(isOnOffSequencesOk([true, false], 0, 0)).toBeFalsy();
-    expect(isOnOffSequencesOk([true, false], 1, 0)).toBeTruthy();
-    const onOff = [true, true, false, false, false, true, true, false];
-    expect(isOnOffSequencesOk(onOff, 3, 2)).toBeTruthy();
-    expect(isOnOffSequencesOk(onOff, 4, 2)).toBeTruthy();
-    expect(isOnOffSequencesOk(onOff, 2, 2)).toBeFalsy();
-    expect(isOnOffSequencesOk(onOff, 3, 3)).toBeFalsy();
+    expect(getDiffToNextOn(values, [false, false, false], 50)).toEqual([50, 150, -20]);
+    expect(getDiffToNextOn(values, [false, false, true], 50)).toEqual([70, 170, -20]);
+    expect(getDiffToNextOn(values, [false, true, false], 50)).toEqual([-100, 150, -20]);
+    expect(getDiffToNextOn(values, [true, false, true], 50)).toEqual([70, 170, -20]);
+    expect(getDiffToNextOn(values, [true, true, false], 50)).toEqual([-100, 150, -20]);
+    expect(getDiffToNextOn(values, [true, true, false])).toEqual([-100, 170, 0]);
   });
   it("calculates savings for hours off", () => {
     const values = [1, 10, 8, 5];
-    expect(getSavings(values, [true, true, true, true], 99)).toEqual([
-      null,
-      null,
-      null,
-      null,
-    ]);
-    expect(getSavings(values, [false, false, false, false], 99)).toEqual([
-      -98, -89, -91, -94,
-    ]);
-    expect(getSavings(values, [false, true, false, true], 99)).toEqual([
-      -9,
-      null,
-      3,
-      null,
-    ]);
+    expect(getSavings(values, [true, true, true, true], 99)).toEqual([null, null, null, null]);
+    expect(getSavings(values, [false, false, false, false], 99)).toEqual([-98, -89, -91, -94]);
+    expect(getSavings(values, [false, true, false, true], 99)).toEqual([-9, null, 3, null]);
   });
 
   it("can count at end of array", () => {
@@ -122,119 +93,6 @@ describe("utils", () => {
     expect(fillArray(true, 2)).toEqual([true, true]);
     expect(fillArray(undefined, 2)).toEqual([]);
     expect(fillArray(true, 0)).toEqual([]);
-  });
-
-  it("can convert input msg", () => {
-    const msgStd = {
-      payload: {
-        today: [
-          { value: 1, start: "2021-06-21T00:00:00+02:00" },
-          { value: 2, start: "2021-06-21T01:00:00+02:00" },
-        ],
-        tomorrow: [
-          { value: 3, start: "2021-06-22T00:00:00+02:00" },
-          { value: 4, start: "2021-06-22T01:00:00+02:00" },
-        ],
-      },
-    };
-    const msgStdTodayOnly = {
-      payload: {
-        today: [
-          { value: 1, start: "2021-06-21T00:00:00+02:00" },
-          { value: 2, start: "2021-06-21T01:00:00+02:00" },
-        ],
-        tomorrow: [],
-      },
-    };
-    const msgNordpool = {
-      data: {
-        new_state: {
-          attributes: {
-            raw_today: [
-              { value: 1, start: "2021-06-21T00:00:00+02:00" },
-              { value: 2, start: "2021-06-21T01:00:00+02:00" },
-            ],
-            raw_tomorrow: [
-              { value: 3, start: "2021-06-22T00:00:00+02:00" },
-              { value: 4, start: "2021-06-22T01:00:00+02:00" },
-            ],
-          },
-        },
-      },
-    };
-    const msgTibber = {
-      payload: {
-        viewer: {
-          homes: [
-            {
-              currentSubscription: {
-                priceInfo: {
-                  current: {
-                    total: 0.6411,
-                    energy: 0.505,
-                    tax: 0.1361,
-                    startsAt: "2021-06-21T00:00:00+02:00",
-                  },
-                  today: [
-                    {
-                      total: 1,
-                      energy: 0.5051,
-                      tax: 0.1361,
-                      startsAt: "2021-06-21T00:00:00+02:00",
-                    },
-                    {
-                      total: 2,
-                      energy: 0.5016,
-                      tax: 0.1353,
-                      startsAt: "2021-06-21T01:00:00+02:00",
-                    },
-                  ],
-                  tomorrow: [
-                    {
-                      total: 3,
-                      energy: 0.4521,
-                      tax: 0.1229,
-                      startsAt: "2021-06-22T00:00:00+02:00",
-                    },
-                    {
-                      total: 4,
-                      energy: 0.4488,
-                      tax: 0.1221,
-                      startsAt: "2021-06-22T01:00:00+02:00",
-                    },
-                  ],
-                },
-              },
-            },
-          ],
-        },
-      },
-    };
-
-    expect(convertMsg(msgStd)).toEqual({ source: "Other", ...msgStd.payload });
-    expect(convertMsg(msgTibber)).toEqual({
-      source: "Tibber",
-      ...msgStd.payload,
-    });
-    expect(convertMsg(msgNordpool)).toEqual({
-      source: "Nordpool",
-      ...msgStd.payload,
-    });
-    delete msgTibber.payload.viewer.homes[0].currentSubscription.priceInfo
-      .tomorrow;
-    expect(convertMsg(msgTibber)).toEqual({
-      source: "Tibber",
-      ...msgStdTodayOnly.payload,
-    });
-    delete msgNordpool.data.new_state.attributes.raw_tomorrow;
-    expect(convertMsg(msgNordpool)).toEqual({
-      source: "Nordpool",
-      ...msgStdTodayOnly.payload,
-    });
-    expect(convertMsg(msgStdTodayOnly)).toEqual({
-      source: "Other",
-      ...msgStdTodayOnly.payload,
-    });
   });
 
   it("can compare dates", () => {
@@ -336,9 +194,7 @@ describe("utils", () => {
         },
       ],
     };
-    expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).toEqual(
-      part1
-    );
+    expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).toEqual(part1);
   });
 
   it("can get the correct startAt index", () => {
@@ -365,26 +221,12 @@ describe("utils", () => {
     expect(getStartAtIndex(config, priceData, time)).toEqual(2);
     expect(
       // Start exactly on time
-      getStartAtIndex(
-        config,
-        priceData,
-        DateTime.fromISO("2021-06-20T01:50:00.010+02:00")
-      )
+      getStartAtIndex(config, priceData, DateTime.fromISO("2021-06-20T01:50:00.010+02:00"))
     ).toEqual(1);
-    expect(
-      getStartAtIndex(
-        config,
-        priceData,
-        DateTime.fromISO("2021-06-20T01:50:00.011+02:00")
-      )
-    ).toEqual(2);
+    expect(getStartAtIndex(config, priceData, DateTime.fromISO("2021-06-20T01:50:00.011+02:00"))).toEqual(2);
     expect(
       // Start later than all data
-      getStartAtIndex(
-        config,
-        priceData,
-        DateTime.fromISO("2021-06-21T01:50:00.200+02:00")
-      )
+      getStartAtIndex(config, priceData, DateTime.fromISO("2021-06-21T01:50:00.200+02:00"))
     ).toEqual(4);
   });
 });

@@ -1,13 +1,13 @@
-const cloneDeep = require("lodash.clonedeep");
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
-const powerSaver = require("../power-saver.js");
+const bestSave = require("../src/strategy-best-save.js");
 const { DateTime } = require("luxon");
-const prices = require("./data/prices");
-const result = require("./data/result");
+const prices = require("./data/converted-prices.json");
+const result = require("./data/best-save-result.json");
 const reconfigResult = require("./data/reconfigResult");
 const adjustedResult = require("./data/adjustedResult");
-const { testPlan, makeFlow, makePayload, equalPlan } = require("./test-utils");
+const { testPlan, equalPlan } = require("./test-utils");
+const { makeFlow, makePayload } = require("./strategy-best-save-test-utils");
 
 helper.init(require.resolve("node-red"));
 
@@ -25,12 +25,10 @@ describe("send config as input", () => {
   it("should send new schedule on output 3", function (done) {
     const flow = makeFlow(3, 2);
     let pass = 1;
-    helper.load(powerSaver, flow, function () {
+    helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        console.log("Pass " + pass);
-        console.log(JSON.stringify(msg, null, 2));
         switch (pass) {
           case 1:
             pass++;
@@ -56,7 +54,7 @@ describe("send config as input", () => {
     flow[0].scheduleOnlyFromCurrentTime = false;
     const changeTime = DateTime.fromISO("2021-06-20T01:50:00.045+02:00");
     let pass = 1;
-    helper.load(powerSaver, flow, function () {
+    helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
@@ -92,7 +90,7 @@ describe("send config as input", () => {
     const flow = makeFlow(3, 2);
     const changeTime = DateTime.fromISO("2021-06-20T01:50:00.045+02:00");
     let pass = 1;
-    helper.load(powerSaver, flow, function () {
+    helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {

@@ -1,12 +1,11 @@
 const cloneDeep = require("lodash.clonedeep");
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
-const powerSaver = require("../power-saver.js");
-const { DateTime } = require("luxon");
+const powerSaver = require("../src/power-saver.js");
 
 const prices = require("./data/prices");
 const result = require("./data/result");
-const { testPlan: plan, makeFlow, makePayload } = require("./test-utils");
+const { testPlan: plan, makePayload } = require("./test-utils");
 
 helper.init(require.resolve("node-red"));
 
@@ -151,8 +150,8 @@ describe("power-saver Node", function () {
     });
   });
   it("works for Tibber data", function (done) {
-    const tibberData = require("./data/tibber_prices.json");
-    const tibberResult = require("./data/tibber_result.json");
+    const tibberData = require("./data/tibber-prices.json");
+    const tibberResult = require("./data/tibber-result.json");
     const flow = makeFlow(4, 2);
     helper.load(powerSaver, flow, function () {
       const n1 = helper.getNode("n1");
@@ -165,3 +164,20 @@ describe("power-saver Node", function () {
     });
   });
 });
+
+function makeFlow(maxHoursToSaveInSequence, minHoursOnAfterMaxSequenceSaved) {
+  return [
+    {
+      id: "n1",
+      type: "power-saver",
+      name: "test name",
+      maxHoursToSaveInSequence,
+      minHoursOnAfterMaxSequenceSaved,
+      minSaving: 0.001,
+      wires: [["n3"], ["n4"], ["n2"]],
+    },
+    { id: "n2", type: "helper" },
+    { id: "n3", type: "helper" },
+    { id: "n4", type: "helper" },
+  ];
+}

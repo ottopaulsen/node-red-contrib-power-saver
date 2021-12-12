@@ -1,0 +1,168 @@
+<script type="text/javascript">
+  const hours = [
+    "00",
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+  ];
+
+  RED.nodes.registerType("ps-strategy-lowest-price", {
+    category: "Power Saver",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Lowest Price" },
+      fromTime: {
+        value: "00",
+        required: true,
+      },
+      toTime: {
+        value: "00",
+        required: true,
+      },
+      hoursOn: {
+        value: "12",
+        required: true,
+      },
+      doNotSplit: {
+        value: false,
+        required: true,
+        align: "left",
+      },
+      sendCurrentValueWhenRescheduling: {
+        value: true,
+        required: true,
+        align: "left",
+      },
+      outputIfNoSchedule: { value: true, required: true, align: "left" },
+      outputOutsidePeriod: { value: false, required: true, align: "left" },
+    },
+    inputs: 1,
+    outputs: 3,
+    icon: "font-awesome/fa-bar-chart",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "Lowest Price";
+    },
+    outputLabels: ["on", "off", "schedule"],
+    oneditprepare: function () {
+      $("#node-input-outputIfNoSchedule").typedInput({
+        types: [
+          {
+            value: "onoff",
+            options: [
+              { value: true, label: "On" },
+              { value: false, label: "Off" },
+            ],
+          },
+        ],
+      });
+      $("#node-input-outputOutsidePeriod").typedInput({
+        types: [
+          {
+            value: "onoff",
+            options: [
+              { value: true, label: "On" },
+              { value: false, label: "Off" },
+            ],
+          },
+        ],
+      });
+      $("#node-input-fromTime").typedInput({
+        types: [
+          {
+            value: "fromtime",
+            options: hours.map((h) => ({ value: h, label: h + ":00" })),
+          },
+        ],
+      });
+      $("#node-input-toTime").typedInput({
+        types: [
+          {
+            value: "totime",
+            options: hours.map((h) => ({ value: h, label: h + ":00" })),
+          },
+        ],
+      });
+      $("#node-input-hoursOn").typedInput({
+        types: [
+          {
+            value: "hourson",
+            options: (() => {
+              const res = hours.map((h) => ({ value: h, label: h }));
+              res.push({ value: "24", label: "24" });
+              return res;
+            })(),
+          },
+        ],
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-strategy-lowest-price">
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
+  </div>
+  <div class="form-row">
+      <label for="node-input-fromTime"><i class="fa fa-arrows-h"></i> From time</label>
+      <input type="text" id="node-input-fromTime" style="width: 80px">
+    </div>
+  <div class="form-row">
+      <label for="node-input-toTime"><i class="fa fa-arrows-h"></i> To time</label>
+      <input type="text" id="node-input-toTime" style="width: 80px">
+  </div>
+  <div class="form-row">
+      <label for="node-input-hoursOn"><i class="fa fa-arrows-h"></i> Hours on</label>
+      <input type="text" id="node-input-hoursOn" style="width: 80px">
+  </div>
+  <div class="form-row">
+      <label for="node-input-doNotSplit">Consecutive on-period</label>
+      <input type="checkbox" id="node-input-doNotSplit" style="display:inline-block; width:22px; vertical-align:top;">
+      </label>
+  </div>
+    <div class="form-row">
+        <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">
+        <input type="checkbox"
+               id="node-input-sendCurrentValueWhenRescheduling"
+               style="display:inline-block; width:22px; vertical-align:top;"
+               autocomplete="off"><span>Send when rescheduling</span>
+        </label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
+        <input type="boolean" id="node-input-outputIfNoSchedule" style="width: 80px">
+        </label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputIfNoSchedule">Outside period, send</label>
+        <input type="boolean" id="node-input-outputOutsidePeriod" style="width: 80px">
+        </label>
+    </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-strategy-lowest-price">
+  A node to turn on a switch the hours when the price is lowest.
+
+  Please read more in the [node documentation](https://ottopaulsen.github.io/node-red-contrib-power-saver/nodes/ps-strategy-lowest-price)
+</script>
