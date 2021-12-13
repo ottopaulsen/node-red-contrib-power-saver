@@ -44,17 +44,17 @@
         required: true,
       },
       doNotSplit: {
-        value: false,
+        value: "false",
         required: true,
         align: "left",
       },
       sendCurrentValueWhenRescheduling: {
-        value: true,
+        value: "true",
         required: true,
         align: "left",
       },
-      outputIfNoSchedule: { value: true, required: true, align: "left" },
-      outputOutsidePeriod: { value: false, required: true, align: "left" },
+      outputIfNoSchedule: { value: "true", required: true, align: "left" },
+      outputOutsidePeriod: { value: "false", required: true, align: "left" },
     },
     inputs: 1,
     outputs: 3,
@@ -70,8 +70,8 @@
           {
             value: "onoff",
             options: [
-              { value: true, label: "On" },
-              { value: false, label: "Off" },
+              { value: "true", label: "On" },
+              { value: "false", label: "Off" },
             ],
           },
         ],
@@ -81,8 +81,8 @@
           {
             value: "onoff",
             options: [
-              { value: true, label: "On" },
-              { value: false, label: "Off" },
+              { value: "true", label: "On" },
+              { value: "false", label: "Off" },
             ],
           },
         ],
@@ -151,12 +151,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
-        <input type="boolean" id="node-input-outputIfNoSchedule" style="width: 80px">
+        <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
         </label>
     </div>
     <div class="form-row">
         <label for="node-input-outputIfNoSchedule">Outside period, send</label>
-        <input type="boolean" id="node-input-outputOutsidePeriod" style="width: 80px">
+        <input type="text" id="node-input-outputOutsidePeriod" style="width: 80px">
         </label>
     </div>
 </script>
