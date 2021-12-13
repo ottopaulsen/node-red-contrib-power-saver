@@ -4,17 +4,19 @@ module.exports = function (RED) {
   function PsElviaTariffTypesNode(config) {
     RED.nodes.createNode(this, config);
     this.elviaConfig = RED.nodes.getNode(config.elviaConfig);
+    const key = this.elviaConfig.credentials.elviaSubscriptionKey;
     const node = this;
-
-    const configList = node.context().global.get("elviaConfigList") || [];
-    const key = configList.find((c) => c.id == node.elviaConfig.id)?.elviaSubscriptionKey;
     ping(node, key);
 
-    node.on("input", function (msg) {
-      const configList = node.context().global.get("elviaConfigList") || [];
-      const key = configList.find((c) => c.id == node.elviaConfig.id)?.elviaSubscriptionKey;
+    node.on("input", function () {
       getTariffTypes(node, key).then((json) => {
         node.send([{ payload: json }]);
+      });
+    });
+
+    RED.httpAdmin.get("/elvia-tariff-types", RED.auth.needsPermission("ps-elvia-config.read"), function (req, res) {
+      getTariffTypes(null, key).then((json) => {
+        res.json(json);
       });
     });
   }

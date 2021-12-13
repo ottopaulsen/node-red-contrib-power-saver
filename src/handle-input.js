@@ -45,7 +45,8 @@ function handleStrategyInput(node, msg, doPlanning) {
   // Find current output, and set output (if configured to do)
   const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
 
-  if (node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0) {
+  const sendNow = node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0;
+  if (sendNow) {
     const currentValue = pastSchedule[pastSchedule.length - 1].value;
     output1 = currentValue ? { payload: true } : null;
     output2 = currentValue ? null : { payload: false };
@@ -58,7 +59,7 @@ function handleStrategyInput(node, msg, doPlanning) {
   node.send([output1, output2, output3]);
 
   // Run schedule
-  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime);
+  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, sendNow);
 }
 
 function getPriceData(node, msg) {
@@ -71,7 +72,7 @@ function getPriceData(node, msg) {
   return priceData;
 }
 
-function runSchedule(node, schedule, time) {
+function runSchedule(node, schedule, time, currentSent = false) {
   let currentTime = time;
   let remainingSchedule = schedule.filter((entry) => {
     return DateTime.fromISO(entry.time) > DateTime.fromISO(time);
@@ -94,7 +95,9 @@ function runSchedule(node, schedule, time) {
     const message = "No schedule";
     node.warn(message);
     node.status({ fill: "red", shape: "dot", text: message });
-    sendSwitch(node, node.outputIfNoSchedule);
+    if (!currentSent) {
+      sendSwitch(node, node.outputIfNoSchedule);
+    }
   }
 }
 

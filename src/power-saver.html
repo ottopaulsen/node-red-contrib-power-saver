@@ -25,9 +25,9 @@
         // validate: RED.validators.number(),
         align: "left",
       },
-      outputIfNoSchedule: { value: true, required: true, align: "left" },
+      outputIfNoSchedule: { value: "true", required: true, align: "left" },
       scheduleOnlyFromCurrentTime: {
-        value: true,
+        value: "true",
         required: true,
         align: "left",
       },
@@ -46,8 +46,8 @@
           {
             value: "onoff",
             options: [
-              { value: true, label: "On" },
-              { value: false, label: "Off" },
+              { value: "true", label: "On" },
+              { value: "false", label: "Off" },
             ],
           },
         ],
@@ -57,8 +57,8 @@
           {
             value: "nowOrStart",
             options: [
-              { value: false, label: "Whole data set" },
-              { value: true, label: "From current hour" },
+              { value: "false", label: "Whole data set" },
+              { value: "true", label: "From current hour" },
             ],
           },
         ],
@@ -90,7 +90,7 @@
     </div>
     <div class="form-row">
       <label for="node-input-scheduleOnlyFromCurrentTime">Schedule for</label>
-      <input type="boolean" id="node-input-scheduleOnlyFromCurrentTime" style="width: 160px">
+      <input type="text" id="node-input-scheduleOnlyFromCurrentTime" style="width: 160px">
       </label>
   </div>
   <h3>Output</h3>
@@ -104,7 +104,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
-        <input type="boolean" id="node-input-outputIfNoSchedule" style="width: 80px">
+        <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
         </label>
     </div>
 </script>
