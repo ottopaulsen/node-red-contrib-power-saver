@@ -174,6 +174,15 @@ Example using Home Assistant:
 
 ![Example flow](../images/example-flow-2.png)
 
+::: tip Use output
+There are many ways you can use the output:
+
+- Turn on/off a switch
+- Set a termostat up, down or to specific values
+- Change setting of a dimmer
+- Send a notification
+  :::
+
 ### Display schedule
 
 **Output 3** can be used to print or dispay the calculated schedule. If you just want to see it, send it to a debug node. You can also use it to display the result as graphs in HA.
@@ -190,4 +199,4 @@ The `Power Saver` node from v2 is still here, and it is working exactly as befor
 
 ![Migrate Power Saver](../images/migrate-best-save.png)
 
-See more details in the [documentation for the `Power Saver`](../nodes/power-saver.md) node.
+See more details in the [documentation for the `ps-strategy-best-save`](../nodes/ps-strategy-best-save.md) node.
