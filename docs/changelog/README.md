@@ -6,6 +6,12 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.1
+
+- Fix so elvia subscripion key is stored as credential
+- Fix bug on config for strategy nodes. Config was not saved properly.
+- Remove double output bug, and better handling when hoursOn > period
+
 ## 3.0.0
 
 - Deprecating old Power Saver node, adding multiple new nodes.
