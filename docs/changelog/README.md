@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.2
+
+- Bugfix in Lowest Price node
+
 ## 3.0.1
 
 - Fix so elvia subscripion key is stored as credential

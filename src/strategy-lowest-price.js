@@ -11,7 +11,7 @@ module.exports = function (RED) {
     const originalConfig = {
       fromTime: config.fromTime,
       toTime: config.toTime,
-      hoursOn: config.hoursOn,
+      hoursOn: parseInt(config.hoursOn),
       doNotSplit: booleanConfig(config.doNotSplit),
       sendCurrentValueWhenRescheduling: booleanConfig(config.sendCurrentValueWhenRescheduling),
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
