@@ -28,7 +28,8 @@
       "ps-elvia-config": "src/elvia/elvia-config.js",
       "ps-elvia-tariff-types": "src/elvia/elvia-tariff-types.js",
       "ps-elvia-tariff": "src/elvia/elvia-tariff.js",
-      "ps-elvia-add-tariff": "src/elvia/elvia-add-tariff.js"
+      "ps-elvia-add-tariff": "src/elvia/elvia-add-tariff.js",
+      "ps-general-add-tariff": "src/general-add-tariff.js"
     }
   },
   "prettier": {

@@ -1,0 +1,119 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-general-add-tariff", {
+    category: "Power Saver",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Add General Tariff" },
+      periods: {
+        value: [
+          { start: "22", value: 23.4 },
+          { start: "06", value: 34.5 },
+        ],
+      },
+    },
+    otto2: 234,
+    hours: [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+    ],
+    inputs: 1,
+    outputs: 1,
+    periodCont: 2,
+    icon: "font-awesome/fa-plus",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "Add Tariff";
+    },
+    oneditprepare: function () {
+      const createElement = function (type, attrs = [], children = []) {
+        const el = document.createElement(type);
+        attrs.forEach((attr) => {
+          el.setAttribute(attr[0], attr[1]);
+        });
+        children.forEach((child) => {
+          el.append(child);
+        });
+        return el;
+      };
+
+      for (let i = 0; i < this.periods.length; i++) {
+        let period = this.periods[i];
+
+        const timeId = "node-input-fromTime-" + i;
+        const timeIcon = createElement("i", [["class", "fa fa-arrows-h"]]);
+        const timeLabel = createElement("label", [["for", timeId]], [timeIcon]);
+        timeLabel.innerHTML = "From time";
+        const timeInp = createElement("input", [
+          ["type", "text"],
+          ["id", timeId],
+          ["style", "width: 80px"],
+        ]);
+        const timeEl = createElement("div", [["class", "form-row"]], [timeLabel, timeInp]);
+
+        const valId = "node-input-value-" + i;
+        const valIcon = createElement("i", [["class", "fa fa-arrows-h"]]);
+        const valLabel = createElement("label", [["for", valId]], [valIcon]);
+        valLabel.innerHTML = "From time";
+        const valInp = createElement("input", [
+          ["type", "text"],
+          ["id", valId],
+          ["style", "width: 80px"],
+        ]);
+        const valEl = createElement("div", [["class", "form-row"]], [valLabel, valInp]);
+        const li = createElement("li", [], [timeEl, valEl]);
+        $("#node-input-period-container").append(li);
+        $("#" + timeId).typedInput({
+          types: [
+            {
+              value: "fromtime",
+              options: hours.map((h) => ({ value: h, label: h + ":00" })),
+            },
+          ],
+        });
+      }
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-general-add-tariff">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" style="width: 300px" />
+  </div>
+
+  <div class="form-row node-input-period-container-row">
+    <ol id="node-input-period-container"></ol>
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-general-add-tariff">
+  # Add Tariff
+
+  A node to add a tariff that iis fixed for periods of the day/year
+  to the price before it is sent to the strategy nodes.
+  Use this node between the receive-price node and any of the strategy nodes.
+
+  Please read more in the [node documentation](https://ottopaulsen.github.io/node-red-contrib-power-saver/nodes/ps-general-add-tariff)
+</script>
