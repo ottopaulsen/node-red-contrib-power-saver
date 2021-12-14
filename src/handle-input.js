@@ -1,5 +1,4 @@
-const { getEffectiveConfig } = require("./utils");
-const { extractPlanForDate } = require("./utils");
+const { extractPlanForDate, getEffectiveConfig, validationFailure } = require("./utils");
 const { DateTime } = require("luxon");
 
 function handleStrategyInput(node, msg, doPlanning) {
@@ -150,11 +149,6 @@ function validateInput(node, msg) {
     }
   });
   return true;
-}
-
-function validationFailure(node, message, status = null) {
-  node.status({ fill: "red", shape: "ring", text: status ?? message });
-  node.warn(message);
 }
 
 module.exports = {

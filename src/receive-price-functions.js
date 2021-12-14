@@ -6,9 +6,6 @@ function getPriceData(node, msg) {
     return node.context().get("lastPriceData");
   }
 
-  if (!validateMsg(node, msg)) {
-    return null;
-  }
   const input = convertMsg(msg);
   if (!validateInput(node, input)) {
     return null;
@@ -18,19 +15,6 @@ function getPriceData(node, msg) {
   const source = input.source;
   node.context().set("lastPriceData", priceData);
   return { priceData, source };
-}
-
-function validateMsg(node, msg) {
-  if (!msg.payload && !msg.data?.new_state?.attributes) {
-    validationFailure(node, "Payload missing");
-    return false;
-  }
-  const payload = msg.data?.new_state?.attributes ?? msg.data?.attributes ?? msg.payload;
-  if (typeof payload !== "object") {
-    validationFailure(node, "Payload must be an object");
-    return false;
-  }
-  return true;
 }
 
 function validateInput(node, input) {
@@ -80,9 +64,9 @@ function convertMsg(msg) {
           value: v.value,
           start: v.start,
         }));
-    } else if (msg.payload?.attributes && msg.payload?.attributes["raw_" + day]) {
+    } else if (msg.data?.attributes && msg.data?.attributes["raw_" + day]) {
       result.source = "Nordpool";
-      result[day] = msg.payload.attributes["raw_" + day]
+      result[day] = msg.data.attributes["raw_" + day]
         .filter((v) => v.value)
         .map((v) => ({
           value: v.value,
