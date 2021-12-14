@@ -6,9 +6,15 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.3
+
+- Fix bug in lowest price strategy, when period ends at midnight.
+- Fix labels for hours on, so they do not have leading zero.
+- Fix so source should be visible in output 3.
+
 ## 3.0.2
 
-- Bugfix in Lowest Price node
+- Bugfix in Lowest Price node (not successful)
 
 ## 3.0.1
 

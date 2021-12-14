@@ -37,7 +37,7 @@ function handleStrategyInput(node, msg, doPlanning) {
     payload: {
       schedule: plan.schedule,
       hours: plan.hours,
-      source: priceData.source,
+      source: msg.payload.source,
       config: effectiveConfig,
     },
   };
