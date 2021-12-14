@@ -8,6 +8,7 @@ const {
   getStartAtIndex,
   loadDayData,
   makeSchedule,
+  validationFailure,
 } = require("./utils");
 const { convertMsg } = require("./receive-price-functions");
 const { calculate } = require("./strategy-best-save-functions");
@@ -187,11 +188,6 @@ function makePlan(node, values, startTimes, onOffBefore, firstValueNextDay) {
     hours,
     schedule,
   };
-}
-
-function validationFailure(node, message) {
-  node.status({ fill: "red", shape: "ring", text: message });
-  node.warn(message);
 }
 
 function validateMsg(node, msg) {

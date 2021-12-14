@@ -6,9 +6,13 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.7
+
+- Fix Nord Pool current state node input.
+
 ## 3.0.6
 
-Remove non-existant node from package.json.
+- Remove non-existant node from package.json.
 
 ## 3.0.5
 

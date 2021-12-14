@@ -175,6 +175,11 @@ function getStartAtIndex(effectiveConfig, priceData, time) {
   }
 }
 
+function validationFailure(node, message, status = null) {
+  node.status({ fill: "red", shape: "ring", text: status ?? message });
+  node.warn(message);
+}
+
 module.exports = {
   booleanConfig,
   countAtEnd,
@@ -191,4 +196,5 @@ module.exports = {
   makeSchedule,
   roundPrice,
   sortedIndex,
+  validationFailure,
 };

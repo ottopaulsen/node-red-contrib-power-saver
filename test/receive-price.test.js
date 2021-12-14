@@ -96,8 +96,8 @@ describe("receive-price node", function () {
     });
   });
 
-  it("should convert nordpool current state prices", function (done) {
-    const nordpoolPrices = require("./data/nordpool-current-state-prices.json");
+  it("should convert nordpool complete current state data set", function (done) {
+    const nordpoolPrices = require("./data/nordpool-events-state-2.json");
     const convertedPrices = require("./data/converted-prices.json");
     convertedPrices.source = "Nordpool";
     const flow = [
@@ -113,10 +113,11 @@ describe("receive-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", convertedPrices);
+        expect(msg.payload.priceData.length).toEqual(48);
+        expect(msg.payload.source).toEqual("Nordpool");
         done();
       });
-      n1.receive({ payload: nordpoolPrices });
+      n1.receive({ payload: nordpoolPrices.payload, data: nordpoolPrices.data });
     });
   });
 });
