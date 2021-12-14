@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.5
+
+- Move dependencies to correct section (node_fetch and lodash.cloneDeep).
+
 ## 3.0.4
 
 - Remove `null`-values from Nordpool data for `tomorrow`.
