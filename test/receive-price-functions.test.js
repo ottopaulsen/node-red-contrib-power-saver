@@ -40,6 +40,22 @@ describe("receive-price-functions", () => {
         },
       },
     };
+    const msgNordpoolTomorrowNull = {
+      data: {
+        new_state: {
+          attributes: {
+            raw_today: [
+              { value: 1, start: "2021-06-21T00:00:00+02:00" },
+              { value: 2, start: "2021-06-21T01:00:00+02:00" },
+            ],
+            raw_tomorrow: [
+              { value: null, start: "2021-06-22T00:00:00+02:00" },
+              { value: null, start: "2021-06-22T01:00:00+02:00" },
+            ],
+          },
+        },
+      },
+    };
     const msgTibber = {
       payload: {
         viewer: {
@@ -142,6 +158,10 @@ describe("receive-price-functions", () => {
     });
     msgNordpool.data.new_state.attributes.raw_tomorrow = [];
     expect(convertMsg(msgNordpool)).toEqual({
+      source: "Nordpool",
+      ...msgStdTodayOnly.payload,
+    });
+    expect(convertMsg(msgNordpoolTomorrowNull)).toEqual({
       source: "Nordpool",
       ...msgStdTodayOnly.payload,
     });

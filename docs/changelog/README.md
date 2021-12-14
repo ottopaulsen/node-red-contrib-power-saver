@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.4
+
+- Remove `null`-values from Nordpool data for `tomorrow`.
+
 ## 3.0.3
 
 - Fix bug in lowest price strategy, when period ends at midnight.
