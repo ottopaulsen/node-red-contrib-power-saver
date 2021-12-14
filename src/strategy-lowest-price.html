@@ -108,7 +108,7 @@
           {
             value: "hourson",
             options: (() => {
-              const res = hours.map((h) => ({ value: h, label: h }));
+              const res = hours.map((h) => ({ value: "" + parseInt(h), label: "" + parseInt(h) }));
               res.push({ value: "24", label: "24" });
               return res;
             })(),

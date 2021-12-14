@@ -6,14 +6,14 @@ module.exports = function (RED) {
     const node = this;
 
     node.on("input", function (msg) {
-      const priceData = getPriceData(node, msg);
+      const { priceData, source } = getPriceData(node, msg);
       if (!priceData) {
         // Set status failed
         return;
       }
 
       // Send output
-      node.send({ payload: { priceData } });
+      node.send({ payload: { priceData, source } });
     });
   }
 

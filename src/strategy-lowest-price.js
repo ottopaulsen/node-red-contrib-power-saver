@@ -41,14 +41,14 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
   const periodStatus = [];
   const startIndexes = [];
   const endIndexes = [];
-  let currentStatus = from < to ? "Outside" : "StartMissing";
+  let currentStatus = from < (to === 0 && to !== from ? 24 : to) ? "Outside" : "StartMissing";
   let hour;
   priceData.forEach((pd, i) => {
     hour = DateTime.fromISO(pd.start).hour;
     if (hour === to && to === from && currentStatus === "Inside") {
       endIndexes.push(i - 1);
     }
-    if (hour === to && to !== from) {
+    if (hour === to && to !== from && i > 0) {
       currentStatus = "Outside";
       endIndexes.push(i - 1);
     }

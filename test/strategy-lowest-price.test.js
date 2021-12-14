@@ -438,6 +438,72 @@ describe("ps-strategy-lowest-price node", function () {
       n1.receive({ payload: makePayload(prices, time) });
     });
   });
+  it("handles period end on hour 0 - 12 hours", function (done) {
+    const input = require("./data/tibber-data-end-0.json");
+    const result = require("./data/tibber-result-end-0.json");
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-strategy-lowest-price",
+        name: "test name",
+        fromTime: "16",
+        toTime: "00",
+        hoursOn: 3,
+        doNotSplit: false,
+        sendCurrentValueWhenRescheduling: true,
+        outputIfNoSchedule: false,
+        outputOutsidePeriod: false,
+        wires: [["n3"], ["n4"], ["n2"]],
+      },
+      { id: "n2", type: "helper" },
+      { id: "n3", type: "helper" },
+      { id: "n4", type: "helper" },
+    ];
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", result);
+        n1.warn.should.not.be.called;
+        done();
+      });
+      const time = DateTime.fromISO(prices.priceData[10].start);
+      n1.receive({ payload: makePayload(input, time) });
+    });
+  });
+  it("handles period end on hour 0 - 24 hours", function (done) {
+    const input = require("./data/tibber-data-end-0-24h.json");
+    const result = require("./data/tibber-result-end-0-24h.json");
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-strategy-lowest-price",
+        name: "test name",
+        fromTime: "16",
+        toTime: "00",
+        hoursOn: 3,
+        doNotSplit: false,
+        sendCurrentValueWhenRescheduling: true,
+        outputIfNoSchedule: false,
+        outputOutsidePeriod: false,
+        wires: [["n3"], ["n4"], ["n2"]],
+      },
+      { id: "n2", type: "helper" },
+      { id: "n3", type: "helper" },
+      { id: "n4", type: "helper" },
+    ];
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", result);
+        n1.warn.should.not.be.called;
+        done();
+      });
+      const time = DateTime.fromISO(prices.priceData[10].start);
+      n1.receive({ payload: makePayload(input, time) });
+    });
+  });
 });
 
 function makeFlow(hoursOn) {

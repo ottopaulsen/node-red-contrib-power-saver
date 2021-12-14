@@ -27,7 +27,7 @@ describe("receive-price node", function () {
   it("should convert tibber prices", function (done) {
     const tibberPrices = require("./data/tibber-prices.json");
     const convertedPrices = require("./data/converted-prices.json");
-    convertedPrices.priceData.source = "Tibber";
+    convertedPrices.source = "Tibber";
     const flow = [
       {
         id: "n1",
@@ -51,7 +51,7 @@ describe("receive-price node", function () {
   it("should convert tibber single home prices", function (done) {
     const tibberPrices = require("./data/tibber-prices-single-home.json");
     const convertedPrices = require("./data/converted-prices.json");
-    convertedPrices.priceData.source = "Tibber";
+    convertedPrices.source = "Tibber";
     const flow = [
       {
         id: "n1",
@@ -75,7 +75,7 @@ describe("receive-price node", function () {
   it("should convert nordpool event prices", function (done) {
     const nordpoolPrices = require("./data/nordpool-event-prices.json");
     const convertedPrices = require("./data/converted-prices.json");
-    convertedPrices.priceData.source = "Nordpool";
+    convertedPrices.source = "Nordpool";
     const flow = [
       {
         id: "n1",
@@ -99,7 +99,7 @@ describe("receive-price node", function () {
   it("should convert nordpool current state prices", function (done) {
     const nordpoolPrices = require("./data/nordpool-current-state-prices.json");
     const convertedPrices = require("./data/converted-prices.json");
-    convertedPrices.priceData.source = "Nordpool";
+    convertedPrices.source = "Nordpool";
     const flow = [
       {
         id: "n1",

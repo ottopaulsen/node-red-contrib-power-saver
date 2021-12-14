@@ -15,9 +15,9 @@ function getPriceData(node, msg) {
   }
 
   priceData = [...input.today, ...input.tomorrow];
-  priceData.source = input.source;
+  const source = input.source;
   node.context().set("lastPriceData", priceData);
-  return priceData;
+  return { priceData, source };
 }
 
 function validateMsg(node, msg) {
