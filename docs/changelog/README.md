@@ -6,6 +6,11 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.8
+
+- Fix bug in Lowest Price node when period goes over midnight.
+- Fix documentation - lots of pages were failing.
+
 ## 3.0.7
 
 - Fix Nord Pool current state node input.

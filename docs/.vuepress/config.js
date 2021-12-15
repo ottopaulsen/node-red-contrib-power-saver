@@ -61,7 +61,7 @@ module.exports = {
     },
   },
   head: [
-    ["script", { src: "https://c6.patreon.com/becomePatronButton.bundle.js" }],
+    // ["script", { src: "https://c6.patreon.com/becomePatronButton.bundle.js" }],
     ["link", { rel: "icon", href: "/euro.png" }],
   ],
 };

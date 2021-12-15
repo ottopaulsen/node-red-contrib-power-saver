@@ -1,0 +1,319 @@
+{
+  "payload": {
+    "schedule": [
+      {
+        "time": "2021-12-15T00:00:00+01:00",
+        "value": false
+      },
+      {
+        "time": "2021-12-15T22:00:00+01:00",
+        "value": true
+      },
+      {
+        "time": "2021-12-16T01:00:00+01:00",
+        "value": false
+      }
+    ],
+    "hours": [
+      {
+        "price": 1.588,
+        "onOff": false,
+        "start": "2021-12-15T00:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.521,
+        "onOff": false,
+        "start": "2021-12-15T01:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.492,
+        "onOff": false,
+        "start": "2021-12-15T02:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.487,
+        "onOff": false,
+        "start": "2021-12-15T03:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.497,
+        "onOff": false,
+        "start": "2021-12-15T04:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.514,
+        "onOff": false,
+        "start": "2021-12-15T05:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.583,
+        "onOff": false,
+        "start": "2021-12-15T06:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.667,
+        "onOff": false,
+        "start": "2021-12-15T07:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.729,
+        "onOff": false,
+        "start": "2021-12-15T08:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.724,
+        "onOff": false,
+        "start": "2021-12-15T09:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.707,
+        "onOff": false,
+        "start": "2021-12-15T10:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.703,
+        "onOff": false,
+        "start": "2021-12-15T11:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.692,
+        "onOff": false,
+        "start": "2021-12-15T12:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.692,
+        "onOff": false,
+        "start": "2021-12-15T13:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.692,
+        "onOff": false,
+        "start": "2021-12-15T14:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.717,
+        "onOff": false,
+        "start": "2021-12-15T15:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.72,
+        "onOff": false,
+        "start": "2021-12-15T16:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.718,
+        "onOff": false,
+        "start": "2021-12-15T17:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.679,
+        "onOff": false,
+        "start": "2021-12-15T18:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.661,
+        "onOff": false,
+        "start": "2021-12-15T19:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.629,
+        "onOff": false,
+        "start": "2021-12-15T20:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.652,
+        "onOff": false,
+        "start": "2021-12-15T21:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.612,
+        "onOff": true,
+        "start": "2021-12-15T22:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.587,
+        "onOff": true,
+        "start": "2021-12-15T23:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.682,
+        "onOff": true,
+        "start": "2021-12-16T00:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.676,
+        "onOff": false,
+        "start": "2021-12-16T01:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.669,
+        "onOff": false,
+        "start": "2021-12-16T02:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.673,
+        "onOff": false,
+        "start": "2021-12-16T03:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.692,
+        "onOff": false,
+        "start": "2021-12-16T04:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.768,
+        "onOff": false,
+        "start": "2021-12-16T05:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.888,
+        "onOff": false,
+        "start": "2021-12-16T06:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.971,
+        "onOff": false,
+        "start": "2021-12-16T07:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.098,
+        "onOff": false,
+        "start": "2021-12-16T08:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.076,
+        "onOff": false,
+        "start": "2021-12-16T09:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.073,
+        "onOff": false,
+        "start": "2021-12-16T10:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.039,
+        "onOff": false,
+        "start": "2021-12-16T11:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.003,
+        "onOff": false,
+        "start": "2021-12-16T12:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.968,
+        "onOff": false,
+        "start": "2021-12-16T13:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.971,
+        "onOff": false,
+        "start": "2021-12-16T14:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.029,
+        "onOff": false,
+        "start": "2021-12-16T15:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.138,
+        "onOff": false,
+        "start": "2021-12-16T16:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.258,
+        "onOff": false,
+        "start": "2021-12-16T17:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.248,
+        "onOff": false,
+        "start": "2021-12-16T18:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.076,
+        "onOff": false,
+        "start": "2021-12-16T19:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.009,
+        "onOff": false,
+        "start": "2021-12-16T20:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 2.051,
+        "onOff": false,
+        "start": "2021-12-16T21:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.926,
+        "onOff": false,
+        "start": "2021-12-16T22:00:00+01:00",
+        "saving": null
+      },
+      {
+        "price": 1.863,
+        "onOff": false,
+        "start": "2021-12-16T23:00:00+01:00",
+        "saving": null
+      }
+    ],
+    "source": "Nordpool",
+    "config": {
+      "fromTime": "22",
+      "toTime": "08",
+      "hoursOn": 3,
+      "doNotSplit": true,
+      "sendCurrentValueWhenRescheduling": true,
+      "outputIfNoSchedule": false,
+      "outputOutsidePeriod": false
+    }
+  },
+  "_msgid": "892aabf20811e69f"
+}

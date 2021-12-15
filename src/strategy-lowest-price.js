@@ -48,7 +48,7 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
     if (hour === to && to === from && currentStatus === "Inside") {
       endIndexes.push(i - 1);
     }
-    if (hour === to && to !== from && i > 0) {
+    if (hour === to && to !== from && i > 0 && currentStatus !== "StartMissing") {
       currentStatus = "Outside";
       endIndexes.push(i - 1);
     }
@@ -66,6 +66,7 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
       hour = DateTime.fromISO(priceData[i].start).hour;
       i--;
     } while (periodStatus[i] === "Inside" && hour !== from);
+    startIndexes.splice(startIndexes.length - 1, 1);
   }
   if (hour === (to === 0 ? 23 : to - 1)) {
     endIndexes.push(priceData.length - 1);
