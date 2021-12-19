@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.9
+
+- Fix Nord Pool input for current state node, to read data when payload is set to entity.
+
 ## 3.0.8
 
 - Fix bug in Lowest Price node when period goes over midnight.

@@ -125,6 +125,10 @@ This is especially designed to work for Home Assistant (HA), and the [Nord Pool 
 
 Data can be sent from both the `current state` node or the `events: state` node.
 
+::: tip Output properties
+When using the `current state` node, configure the output properties to set `msg.payload` to `entity`.
+:::
+
 [See example with Nord Pool and `current state` node](doc/example-nordpool-current-state.md)
 
 [See example with Nord Pool and `events: state` node](doc/example-nordpool-events-state.md)

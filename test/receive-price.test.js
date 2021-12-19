@@ -120,4 +120,26 @@ describe("receive-price node", function () {
       n1.receive({ payload: nordpoolPrices.payload, data: nordpoolPrices.data });
     });
   });
+  it("should convert nordpool data in payload", function (done) {
+    const nordpoolPrices = require("./data/nordpool-prices-in-payload.json");
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-receive-price",
+        name: "Receive prices",
+        wires: [["n2"]],
+      },
+      { id: "n2", type: "helper" },
+    ];
+    helper.load(receivePrices, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg.payload.priceData.length).toEqual(48);
+        expect(msg.payload.source).toEqual("Nordpool");
+        done();
+      });
+      n1.receive({ payload: nordpoolPrices.payload });
+    });
+  });
 });

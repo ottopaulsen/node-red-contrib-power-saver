@@ -72,6 +72,14 @@ function convertMsg(msg) {
           value: v.value,
           start: v.start,
         }));
+    } else if (msg.payload?.attributes && msg.payload.attributes["raw_" + day]) {
+      result.source = "Nordpool";
+      result[day] = msg.payload.attributes["raw_" + day]
+        .filter((v) => v.value)
+        .map((v) => ({
+          value: v.value,
+          start: v.start,
+        }));
     } else {
       result.source = "Other";
       result[day] = msg.payload[day] || [];
