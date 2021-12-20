@@ -55,11 +55,11 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
 
 Send the result from the `tibber-query` node with the query above directly to the `ps-receive-price` node. Make sure it is refreshed when new prices are ready. Prices for the next day are normally ready at 13:00, but refreshing every hour can be a good idea.
 
-[See example with Tibber, a switch and MQTT](doc/example-tibber-mqtt.md)
+[See example with Tibber, a switch and MQTT](../examples/example-tibber-mqtt.md)
 
 ::: danger Warning
 The query above returns an array with all houses you have in your Tibber account.
-It willl work only if the house you want is the first house in the array, for example if you have only one house.
+It will work only if the house you want is the first house in the array, for example if you have only one house.
 If that is not the case, you must use the query below.
 :::
 
@@ -67,7 +67,7 @@ If that is not the case, you must use the query below.
 
 If the above query does not give you the house you want as the first in the result array, you can use the following method. In this method you need run one query in order to find the id of the house you want the prices for first, and then use the id in the real query.
 
-Go to the [Tibber Deeloper pages](https://developer.tibber.com/), sign in, and go to the [API Explorer](https://developer.tibber.com/explorer). Load your personal token, then run the following query:
+Go to the [Tibber Developer pages](https://developer.tibber.com/), sign in, and go to the [API Explorer](https://developer.tibber.com/explorer). Load your personal token, then run the following query:
 
 ```gql
 {
@@ -129,9 +129,9 @@ Data can be sent from both the `current state` node or the `events: state` node.
 When using the `current state` node, configure the output properties to set `msg.payload` to `entity`.
 :::
 
-[See example with Nord Pool and `current state` node](doc/example-nordpool-current-state.md)
+[See example with Nord Pool and `current state` node](../examples/example-nordpool-current-state.md)
 
-[See example with Nord Pool and `events: state` node](doc/example-nordpool-events-state.md)
+[See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
 
 ### Other input
 

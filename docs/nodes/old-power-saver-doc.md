@@ -10,7 +10,7 @@ You can use it to control for example a heater, a water heater or any other powe
 
 The node takes power prices per hour as input, and sends output to turn a switch on or off based on the power price. It also outputs the schedule that is planned, as well as how much you save per kWh for each of the hours that are turned off, assuming that the same power is used as soon as the power is turned on.
 
-Power prices may be received from Tibber, Nordpool or any other source that gives price per hour for today and optionally tomorrow. It is primarily made to be used together with Home Assistant (HA), but there is no dependency to HA, so it can just as well be used by itself.
+Power prices may be received from Tibber, Nord Pool or any other source that gives price per hour for today and optionally tomorrow. It is primarily made to be used together with Home Assistant (HA), but there is no dependency to HA, so it can just as well be used by itself.
 
 The node can also be used in combination with MagicMirror with the MMM-MQTT and MMM-Tibber modules, in order to get the savings displayed on the MM screen in the MMM-Tibber module.
 
@@ -38,7 +38,7 @@ Make sure that you upgrade now and then to get the latest version. See [changelo
 - Nordpool
 - Other sources in a specific JSON format
 
-Choose the one that fits you best. Of course, all inputs are JSON, but the Tibber and Nordpool alternatives are designed to connect directly to those sources with a minimum effort.
+Choose the one that fits you best. Of course, all inputs are JSON, but the Tibber and Nord Pool alternatives are designed to connect directly to those sources with a minimum effort.
 
 From version 2.1.0, you can also send a config object as input for dynamically changing the node config.
 
@@ -73,17 +73,17 @@ Send the result from the `tibber-query` node with the query above directly to th
 
 ### Nordpool input
 
-This is especially designed to work for Home Assistant (HA), and the [Nordpool custom component](https://github.com/custom-components/nordpool). The Nordpool component provides a _sensor_ that gives price per hour for today and tomorrow (after 13:00). Send the output from this sensor directly to the `power-saver` node. Make sure this is done whenever the node is updated, as well as when the system starts up.
+This is especially designed to work for Home Assistant (HA), and the [Nord Pool custom component](https://github.com/custom-components/nordpool). The Nord Pool component provides a _sensor_ that gives price per hour for today and tomorrow (after 13:00). Send the output from this sensor directly to the `power-saver` node. Make sure this is done whenever the node is updated, as well as when the system starts up.
 
 Data can be sent from both the `current state` node or the `events: state` node.
 
-[See example with Nordpool and `current state` node](doc/example-nordpool-current-state.md)
+[See example with Nord Pool and `current state` node](doc/example-nordpool-current-state.md)
 
-[See example with Nordpool and `events: state` node](doc/example-nordpool-events-state.md)
+[See example with Nord Pool and `events: state` node](doc/example-nordpool-events-state.md)
 
 ### Other input
 
-If you cannot use any of the two above (Tibber or Nordpool), create the input to the node with the payload containing JSON like this:
+If you cannot use any of the two above (Tibber or Nord Pool), create the input to the node with the payload containing JSON like this:
 
 ```json
 {

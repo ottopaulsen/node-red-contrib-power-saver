@@ -3,7 +3,7 @@ home: true
 heroImage: /logo.png
 heroAlt: Power Saver
 heroText: node-red-contrib-power-saver
-tagline: Save money when power prices are changing every hour
+tagline: A collection of nodes to Node-RED that automates saving money on variable electricity prices
 actions:
   - text: Guide
     link: /guide
@@ -18,9 +18,9 @@ features:
   - title: Automatic scheduling
     details: Automatically calculate best plan and send signal to turn on and off.
   - title: Best Save Strategy
-    details: Postpone power consumption when there is most to save.
+    details: Postpone power consumption when there is most to save, perfect for the water heater.
   - title: Lowest Price Strategy
-    details: Turn on power when the prices are the lowest in a given period.
+    details: Turn on power when the prices are the lowest, perfect for smart charging or heating.
   - title: Integrate with grid tariff APIs
     details: Elvia grid tariff API already supported. Others are easy to add.
   - title: Perfect with Home Assistant
@@ -30,3 +30,5 @@ features:
 footer: Created by Otto Paulsen<br/><br/><a href="https://www.patreon.com/bePatron?u=65948417" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
 footerHtml: true
 ---
+
+This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.

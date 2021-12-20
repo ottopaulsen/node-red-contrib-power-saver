@@ -32,7 +32,7 @@ It would be very nice to get more examples into the documentation. If you have m
 
 ## Bug reports
 
-If you find a bug, please describe it thouroghly and make a [GitHub issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues). If the bug is related to the scheduling, **please provide the full output from output 3** on the strategy node.
+If you find a bug, please describe it thoroughly and make a [GitHub issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues). If the bug is related to the scheduling, **please provide the full output from output 3** on the strategy node.
 
 ## Ideas
 

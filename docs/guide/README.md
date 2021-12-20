@@ -6,8 +6,10 @@ sidebar: "auto"
 
 ## Introduction
 
-This is a collection of nodes you can use to save money on variable power prices. The solution can be used to control switches or other entities in a smart home system, and for example turn on when the price is low, and turn off when the price is high.
-There are different ways to calculate what hours to turn on and off, and these are impemented as **strategies nodes**. Each stragety node can be configured to fit different purposes.
+This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.
+
+The solution can be used to control switches or other entities in a smart home system, and for example turn on when the price is low, and turn off when the price is high.
+There are different ways to calculate what hours to turn on and off, and these are implemented as **strategies nodes**. Each strategy node can be configured to fit different purposes.
 
 The strategies need price data to work. These can be received from different sources, for example Tibber, Nord Pool or custom sources.
 
@@ -23,7 +25,7 @@ Example:
 
 ![Example flow](../images/example-flow-1.png)
 
-Here prices are received from Tibber, converted in the `ps-receive-price` node, then gridd tariff for Elvia is added before sent to the `ps-strategy-best-save` node. Output is sent to Home Assistant via two `call-service` nodes, and the schedule is sent to a debug node.
+Here prices are received from Tibber, converted in the `ps-receive-price` node, then grid tariff for Elvia is added before sent to the `ps-strategy-best-save` node. Output is sent to Home Assistant via two `call-service` nodes, and the schedule is sent to a debug node.
 
 ::: tip Home Assistant
 The node collection fits very well with Home Assistant (HA), as Node-RED is frequently used for automations, and there also is an integration with Nord Pool, but there is no direct dependency to HA, so all nodes can be used also without HA.
@@ -48,7 +50,7 @@ This solution is useless without price data. In the nordics, there are at least 
 - Tibber
 - Nord Pool
 
-The `ps-receive-price` node is designed to handle price input frome both these, and convert it to the format required by the strategy nodes.
+The `ps-receive-price` node is designed to handle price input from both these, and convert it to the format required by the strategy nodes.
 
 If you are a Tibber customer, use the `tibber-query` node from the [Tibber API](https://flows.nodered.org/node/node-red-contrib-tibber-api) to receive price, with one of the following queries:
 
@@ -75,7 +77,7 @@ If you are a Tibber customer, use the `tibber-query` node from the [Tibber API](
 
   </CodeGroupItem>
 
-  <CodeGroupItem title="Singel home" active>
+  <CodeGroupItem title="Single home" active>
 
 ```gql{3}
 {
@@ -120,15 +122,15 @@ If you use Home Assistant (HA), you can install the
 that provides a _sensor_ that gives price per hour for today and tomorrow.
 Data can be sent from both the `current state` node or the `events: state` node.
 
-[See example with Nordpool and `current state` node](../images/example-nordpool-current-state.md)
+[See example with Nord Pool and `current state` node](../images/example-nordpool-current-state.md)
 
-[See example with Nordpool and `events: state` node](../images/example-nordpool-events-state.md)
+[See example with Nord Pool and `events: state` node](../images/example-nordpool-events-state.md)
 
 ### Add grid tariff
 
 When also the grid tariff changes per hour, it must be added to the electricity price in order to get the calculations right.
 
-After the the `ps-receive-price` node, add a `ps-xxx-add-tariff` node to add grid tariff. What node to choose depends on what grid you get electricity through. The followinggrids are supported:
+After the the `ps-receive-price` node, add a `ps-xxx-add-tariff` node to add grid tariff. What node to choose depends on what grid you get electricity through. The following grids are supported:
 
 | Grid supplier | Node                  |
 | ------------- | --------------------- |
@@ -178,14 +180,14 @@ Example using Home Assistant:
 There are many ways you can use the output:
 
 - Turn on/off a switch
-- Set a termostat up, down or to specific values
+- Set a thermostat up, down or to specific values
 - Change setting of a dimmer
 - Send a notification
   :::
 
 ### Display schedule
 
-**Output 3** can be used to print or dispay the calculated schedule. If you just want to see it, send it to a debug node. You can also use it to display the result as graphs in HA.
+**Output 3** can be used to print or display the calculated schedule. If you just want to see it, send it to a debug node. You can also use it to display the result as graphs in HA.
 
 For users of Magic Mirror and Tibber, the `ps-best-save` node can send its schedule to the MMM-Tibber module. See more details in the `ps-best-save` node documentation.
 

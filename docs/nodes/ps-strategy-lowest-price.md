@@ -10,11 +10,11 @@ Strategy node to turn on power the hours when the price is lowest during a given
 
 ## Description
 
-The node can work on a specific period from 1 to 24 hours during a 24 hour period. Inside this period, you can decide how many hours that shall be on. The rest of the period will be off. Outside the peiod, you can select that the output shall be either on or off. You can also decide that the hours on shall be consequtive (one continuous period) or spread around in multiple on-periods.
+The node can work on a specific period from 1 to 24 hours during a 24 hour period. Inside this period, you can decide how many hours that shall be on. The rest of the period will be off. Outside the period, you can select that the output shall be either on or off. You can also decide that the hours on shall be consecutive (one continuous period) or spread around in multiple on-periods.
 
 ## Configuration
 
-![Node Configuration](/lowest-price-config.png)
+![Node Configuration](../images/lowest-price-config.png)
 
 | Value                  | Description                                                                      |
 | ---------------------- | -------------------------------------------------------------------------------- |
@@ -26,7 +26,7 @@ The node can work on a specific period from 1 to 24 hours during a 24 hour perio
 | If No Schedule, Send   | What to do if there is no valid schedule any more (turn on or off).              |
 | Outside Period, Send   | Select the value to send outside the selected period.                            |
 
-If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is signficant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
+If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is significant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
 
 ::: tip Example with Consecutive On-Period
 One example to need a consecutive on-period can be if you want to control the washing machine. Let's say it needs 3 hours, and you want it to run between 22:00 and 06:00. Set `From Time = 22:00`, `To Time = 06:00` and check the `Consecutive On-Period` flag. This will turn on the cheapest 3-hour period from 22:00 to 06:00.
