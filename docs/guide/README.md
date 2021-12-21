@@ -122,9 +122,9 @@ If you use Home Assistant (HA), you can install the
 that provides a _sensor_ that gives price per hour for today and tomorrow.
 Data can be sent from both the `current state` node or the `events: state` node.
 
-[See example with Nord Pool and `current state` node](../images/example-nordpool-current-state.md)
+[See example with Nord Pool and `current state` node](../examples/example-nordpool-current-state.md)
 
-[See example with Nord Pool and `events: state` node](../images/example-nordpool-events-state.md)
+[See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
 
 ### Add grid tariff
 
