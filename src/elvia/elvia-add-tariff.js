@@ -6,24 +6,25 @@ module.exports = function (RED) {
   function PsElviaAddTariffNode(config) {
     RED.nodes.createNode(this, config);
     this.elviaConfig = RED.nodes.getNode(config.elviaConfig);
+    const key = this.elviaConfig.credentials.elviaSubscriptionKey;
     this.tariffKey = config.tariffKey;
     this.range = config.range;
     const node = this;
-
-    const configList = node.context().global.get("elviaConfigList") || [];
-    const key = configList.find((c) => c.id == node.elviaConfig.id)?.elviaSubscriptionKey;
     ping(node, key);
 
     node.on("input", function (msg) {
       const prices = msg.payload.priceData;
+      if (!prices) {
+        node.warn(
+          "No price data received on input. Did you use the ps-receive-price node or convert to correct format otherwise?"
+        );
+        return;
+      }
       const fromTime = prices[0].start.substr(0, 19);
       const toTime = DateTime.fromISO(prices[prices.length - 1].start)
         .plus({ hours: 1 })
         .toISO()
         .substr(0, 19);
-
-      const configList = node.context().global.get("elviaConfigList") || [];
-      const key = configList.find((c) => c.id == node.elviaConfig.id)?.elviaSubscriptionKey;
 
       getTariffForPeriod(node, key, node.tariffKey, fromTime, toTime).then((json) => {
         const tariff = json;

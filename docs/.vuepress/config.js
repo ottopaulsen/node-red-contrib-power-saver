@@ -25,6 +25,10 @@ module.exports = {
         text: "Changes",
         link: "/changelog/",
       },
+      {
+        text: "GitHub",
+        link: "https://github.com/ottopaulsen/node-red-contrib-power-saver",
+      },
     ],
     sidebar: {
       "/guide/": [{ text: "Guide", children: ["/guide/README.md"] }],
