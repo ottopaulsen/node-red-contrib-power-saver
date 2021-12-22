@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.0.10
+
+- Fix bug in ps-elvia-add-tariff so it connects to API.
+
 ## 3.0.9
 
 - Fix Nord Pool input for current state node, to read data when payload is set to entity.
