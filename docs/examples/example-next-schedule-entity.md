@@ -25,6 +25,10 @@ This will return the following:
 - msg.upcoming.length = How long the next saving will last - set to 0 if no schedule.
 - msg.upcoming.savings = Estimated savings retrieved from the node.
 
+## Setup
+1. Paste the code above into a Function node and connect it to the schedule output.
+2. Create an entity node from the Node-RED Companion Integration, and configure it according to the steps below:
+
 The msg.topic is currently not used, but in case you'd want to specify dynamic names in the sensor instead of in the frontend, go ahead and add them as attributes using the following configuration:
 
 1. **State**: msg.upcoming.time
