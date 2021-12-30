@@ -8,10 +8,11 @@
         value: [
           { start: "22", value: 23.4 },
           { start: "06", value: 34.5 },
+          { start: "10", value: 24.5 },
+          { start: "15", value: 14.5 },
         ],
       },
     },
-    otto2: 234,
     hours: [
       "00",
       "01",
@@ -58,41 +59,82 @@
         return el;
       };
 
-      for (let i = 0; i < this.periods.length; i++) {
-        let period = this.periods[i];
-
-        const timeId = "node-input-fromTime-" + i;
-        const timeIcon = createElement("i", [["class", "fa fa-arrows-h"]]);
-        const timeLabel = createElement("label", [["for", timeId]], [timeIcon]);
-        timeLabel.innerHTML = "From time";
-        const timeInp = createElement("input", [
-          ["type", "text"],
-          ["id", timeId],
-          ["style", "width: 80px"],
-        ]);
-        const timeEl = createElement("div", [["class", "form-row"]], [timeLabel, timeInp]);
-
-        const valId = "node-input-value-" + i;
-        const valIcon = createElement("i", [["class", "fa fa-arrows-h"]]);
-        const valLabel = createElement("label", [["for", valId]], [valIcon]);
-        valLabel.innerHTML = "From time";
-        const valInp = createElement("input", [
-          ["type", "text"],
-          ["id", valId],
-          ["style", "width: 80px"],
-        ]);
-        const valEl = createElement("div", [["class", "form-row"]], [valLabel, valInp]);
-        const li = createElement("li", [], [timeEl, valEl]);
-        $("#node-input-period-container").append(li);
-        $("#" + timeId).typedInput({
-          types: [
-            {
-              value: "fromtime",
-              options: hours.map((h) => ({ value: h, label: h + ":00" })),
-            },
+      const createInputPart = function (name, i, text, inpStyle, value) {
+        const id = `node-input-${name}-${i}`;
+        const label = createElement(
+          "label",
+          [
+            ["for", id],
+            ["style", "margin-right: 10px;"],
           ],
-        });
-      }
+          []
+        );
+        label.innerHTML = text;
+        const inp = createElement("input", [
+          ["type", "text"],
+          ["id", id],
+          ["style", `width: 80px; ${inpStyle};`],
+        ]);
+        inp.value = value;
+        return createElement("span", [["style", "text-align: right;"]], [label, inp]);
+      };
+
+      const addPeriod = function (periods) {
+        const prev = periods[periods.length - 1].start;
+        const next = prev === "23" ? "00" : "" + (parseInt(prev) + 1);
+        periods.push({ start: next, value: null });
+        drawPeriods(periods);
+      };
+
+      const removePeriod = function (periods, i) {
+        periods.splice(i, 1);
+        drawPeriods(periods);
+      };
+
+      const drawPeriods = function (periods) {
+        document.getElementById("node-input-period-container").replaceChildren();
+        for (let i = 0; i < periods.length; i++) {
+          let period = periods[i];
+
+          const timeEl = createInputPart("fromTime", i, "From time:", "margin-right: 20px;", period.start);
+          const valEl = createInputPart("value", i, "Value:", "margin-right: 20px;", period.value);
+
+          let li;
+          if (periods.length > 1) {
+            // Delete button
+            const delButton = document.createElement("button");
+            delButton.setAttribute("style", "width: 24px;");
+            delButton.innerText = "X";
+            delButton.addEventListener("click", () => {
+              removePeriod(periods, i);
+            });
+            li = createElement("div", [["style", "text-align: left;"]], [timeEl, valEl, delButton]);
+          } else {
+            li = createElement("div", [["style", "text-align: left;"]], [timeEl, valEl]);
+          }
+          $("#node-input-period-container").append(li);
+
+          $("#node-input-fromTime-" + i).typedInput({
+            types: [
+              {
+                value: "fromtime",
+                options: hours.map((h) => ({ value: h, label: h + ":00" })),
+              },
+            ],
+          });
+          $("#node-input-fromTime-" + i).change(function () {
+            periods[i].start = this.value;
+          });
+          $("#node-input-value-" + i).change(function () {
+            periods[i].value = this.value;
+          });
+        }
+      };
+
+      drawPeriods(this.periods);
+      $("#add-period-button").on("click", () => {
+        addPeriod(this.periods);
+      });
     },
   });
 </script>
@@ -100,11 +142,15 @@
 <script type="text/html" data-template-name="ps-general-add-tariff">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name" style="width: 300px" />
+    <input type="text" id="node-input-name" placeholder="Name" />
   </div>
 
   <div class="form-row node-input-period-container-row">
-    <ol id="node-input-period-container"></ol>
+    <div id="node-input-period-container"></div>
+  </div>
+
+  <div class="form-row">
+    <button type="button" id="add-period-button" class="red-ui-button">Add period</button>
   </div>
 </script>
 
