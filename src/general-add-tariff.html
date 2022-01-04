@@ -54,6 +54,7 @@
     label: function () {
       return this.name || "Add Tariff";
     },
+
     oneditprepare: function () {
       const createElement = function (type, attrs = [], children = []) {
         const el = document.createElement(type);
@@ -96,6 +97,7 @@
       const removePeriod = function (periods, i) {
         periods.splice(i, 1);
         drawPeriods(periods);
+        RED.nodes.dirty(true);
       };
 
       const drawPeriods = function (periods) {
@@ -131,9 +133,11 @@
           });
           $("#node-input-fromTime-" + i).change(function () {
             periods[i].start = this.value;
+            RED.nodes.dirty(true);
           });
           $("#node-input-value-" + i).change(function () {
             periods[i].value = this.value;
+            RED.nodes.dirty(true);
           });
         }
       };
