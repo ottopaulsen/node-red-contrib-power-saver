@@ -1,5 +1,8 @@
+const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
+const { addTariffToPrices, buildAllHours } = require("./general-add-tariff-functions");
 const { roundPrice } = require("./utils");
+const { extractPlanForDate, getEffectiveConfig, validationFailure } = require("./utils");
 
 module.exports = function (RED) {
   function PsGeneralAddTariffNode(config) {
@@ -7,13 +10,24 @@ module.exports = function (RED) {
     this.range = config.range;
     const node = this;
 
-    node.on("input", function (msg) {
+    const originalConfig = {
+      periods: config.periods,
+      validFrom: config.validFrom,
+      validTo: config.validTo,
+    };
+    node.context().set("config", originalConfig);
+
+    node.on("input", function (originalMessage) {
+      const msg = cloneDeep(originalMessage);
+      const effectiveConfig = getEffectiveConfig(node, msg);
       const prices = msg.payload.priceData;
-      const fromTime = prices[0].start.substr(0, 19);
-      const toTime = DateTime.fromISO(prices[prices.length - 1].start)
-        .plus({ hours: 1 })
-        .toISO()
-        .substr(0, 19);
+      if (!prices || prices.length === 0) {
+        return;
+      }
+
+      addTariffToPrices(node, effectiveConfig, prices);
+
+      node.send(msg);
     });
   }
 

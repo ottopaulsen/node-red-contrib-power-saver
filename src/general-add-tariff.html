@@ -1,4 +1,6 @@
 <script type="text/javascript">
+  const dateRe = /^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
+  const priceRe = /^(\d+\.\d*)|(\d+)$/;
   RED.nodes.registerType("ps-general-add-tariff", {
     category: "Power Saver",
     color: "#a6bbcf",
@@ -11,7 +13,12 @@
           { start: "10", value: 24.5 },
           { start: "15", value: 14.5 },
         ],
+        validate: function () {
+          return !this.periods.some((p) => !priceRe.test("" + p.value));
+        },
       },
+      validFrom: { value: null, required: false, validate: RED.validators.regex(dateRe) },
+      validTo: { value: null, required: false, validate: RED.validators.regex(dateRe) },
     },
     hours: [
       "00",
@@ -152,12 +159,22 @@
   <div class="form-row">
     <button type="button" id="add-period-button" class="red-ui-button">Add period</button>
   </div>
+
+  <div class="form-row">
+    <label for="node-input-validFrom"><i class="fa fa-calendar"></i> Valid from date</label>
+    <input type="text" id="node-input-validFrom" placeholder="YYYY-MM-DD" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-validTo"><i class="fa fa-calendar"></i> Valid to date</label>
+    <input type="text" id="node-input-validTo" placeholder="YYYY-MM-DD" />
+  </div>
 </script>
 
 <script type="text/markdown" data-help-name="ps-general-add-tariff">
   # Add Tariff
 
-  A node to add a tariff that iis fixed for periods of the day/year
+  A node to add a tariff that is fixed for periods of the day/year
   to the price before it is sent to the strategy nodes.
   Use this node between the receive-price node and any of the strategy nodes.
 
