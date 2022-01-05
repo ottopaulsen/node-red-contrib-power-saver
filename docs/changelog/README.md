@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.1.0
+
+- New node `ps-general-add-tariff` to add values that varies af fixed times during the day.
+
 ## 3.0.10
 
 - Fix bug in ps-elvia-add-tariff so it connects to API.
