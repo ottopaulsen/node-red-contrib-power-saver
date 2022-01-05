@@ -156,7 +156,7 @@ function deleteSavedScheduleBefore(node, day) {
   let date = day;
   do {
     date = date.plus({ days: -1 });
-    data = node.context().get(date.toISO());
+    data = node.context().set(date.toISO(), undefined);
   } while (data);
 }
 

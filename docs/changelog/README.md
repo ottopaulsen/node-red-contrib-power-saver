@@ -6,6 +6,11 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.1.1
+
+- Fix schedule for Lowest Price node so it uses data from previous day correctly. It sometimes failed when the selected period went over midnight.
+- Fix so old data in the Lowest Price node context is deleted.
+
 ## 3.1.0
 
 - New node `ps-general-add-tariff` to add values that varies af fixed times during the day.

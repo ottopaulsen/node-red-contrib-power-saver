@@ -43,8 +43,8 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
   const endIndexes = [];
   let currentStatus = from < (to === 0 && to !== from ? 24 : to) ? "Outside" : "StartMissing";
   let hour;
-  priceData.forEach((pd, i) => {
-    hour = DateTime.fromISO(pd.start).hour;
+  startTimes.forEach((st, i) => {
+    hour = DateTime.fromISO(st).hour;
     if (hour === to && to === from && currentStatus === "Inside") {
       endIndexes.push(i - 1);
     }
@@ -63,13 +63,13 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
     let i = periodStatus.length - 1;
     do {
       periodStatus[i] = "EndMissing";
-      hour = DateTime.fromISO(priceData[i].start).hour;
+      hour = DateTime.fromISO(startTimes[i]).hour;
       i--;
     } while (periodStatus[i] === "Inside" && hour !== from);
     startIndexes.splice(startIndexes.length - 1, 1);
   }
   if (hour === (to === 0 ? 23 : to - 1)) {
-    endIndexes.push(priceData.length - 1);
+    endIndexes.push(startTimes.length - 1);
   }
 
   const onOff = [];
@@ -78,9 +78,9 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
   const lastStartMissing = periodStatus.lastIndexOf((s) => s === "StartMissing");
   if (lastStartMissing >= 0 && dataDayBefore?.hours?.length > 0) {
     const lastBefore = DateTime.fromISO(dataDayBefore.hours[dataDayBefore.hours.length - 1].start);
-    if (lastBefore >= DateTime.fromISO(priceData[lastStartMissing].start)) {
+    if (lastBefore >= DateTime.fromISO(startTimes[lastStartMissing])) {
       for (let i = 0; i <= lastStartMissing; i++) {
-        onOff[i] = dataDayBefore.hours.find((h) => h.start === priceData[i].start);
+        onOff[i] = dataDayBefore.hours.find((h) => h.start === startTimes[i]);
         periodStatus[i] = "Backfilled";
       }
     }
