@@ -21,8 +21,8 @@ features:
     details: Postpone power consumption when there is most to save, perfect for the water heater.
   - title: Lowest Price Strategy
     details: Turn on power when the prices are the lowest, perfect for smart charging or heating.
-  - title: Integrate with grid tariff APIs
-    details: Elvia grid tariff API already supported. Others are easy to add.
+  - title: Add variable grid tariff
+    details: Automatically add values that varies on fixed hours, or use API to get grid tariff from Elvia.
   - title: Perfect with Home Assistant
     details: Use Home Assistant with Node-RED and control switches via service calls.
   - title: Tibber and Nord Pool

@@ -43,7 +43,10 @@ module.exports = {
               children: ["/nodes/ps-strategy-best-save.md", "/nodes/ps-strategy-lowest-price.md"],
             },
             { text: "Utility nodes", children: ["/nodes/ps-receive-price.md"] },
-            { text: "Grid tariff nodes", children: ["/nodes/ps-elvia-add-tariff.md"] },
+            {
+              text: "Grid tariff nodes",
+              children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],
+            },
           ],
         },
         {
