@@ -34,6 +34,12 @@ Node to convert different types of input data to the format used by the strategy
 
 ## Grid tariff nodes
 
+### [ps-general-add-tariff](./ps-general-add-tariff)
+
+![ps-general-add-tariff](../images/node-ps-general-add-tariff.png)
+
+Node to add a variable grid tariff (or any value) to the prices before sending them to the strategy nodes.
+
 ### [ps-elvia-add-tariff](./ps-elvia-add-tariff)
 
 ![ps-elvia-add-tariff](../images/node-ps-elvia-add-tariff.png)

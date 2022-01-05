@@ -132,11 +132,10 @@ When also the grid tariff changes per hour, it must be added to the electricity 
 
 After the the `ps-receive-price` node, add a `ps-xxx-add-tariff` node to add grid tariff. What node to choose depends on what grid you get electricity through. The following grids are supported:
 
-| Grid supplier | Node                  |
-| ------------- | --------------------- |
-| Elvia         | `ps-elvia-add-tariff` |
-
-Oops. Only one grid is currently supported.
+| Grid supplier | Node                    |
+| ------------- | ----------------------- |
+| General (any) | `ps-general-add-tariff` |
+| Elvia         | `ps-elvia-add-tariff`   |
 
 If your grid is not supported, you may code this yourself.
 

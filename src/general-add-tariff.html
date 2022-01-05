@@ -1,0 +1,186 @@
+<script type="text/javascript">
+  const dateRe = /^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
+  const priceRe = /^(\d+\.\d*)|(\d+)$/;
+  RED.nodes.registerType("ps-general-add-tariff", {
+    category: "Power Saver",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Add General Tariff" },
+      periods: {
+        value: [
+          { start: "22", value: 0.0 },
+          { start: "06", value: 0.0 },
+        ],
+        validate: function () {
+          return !this.periods.some((p) => !priceRe.test("" + p.value));
+        },
+      },
+      validFrom: { value: null, required: false, validate: RED.validators.regex(dateRe) },
+      validTo: { value: null, required: false, validate: RED.validators.regex(dateRe) },
+    },
+    hours: [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+    ],
+    inputs: 1,
+    outputs: 1,
+    periodCont: 2,
+    icon: "font-awesome/fa-plus",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "Add Tariff";
+    },
+
+    oneditprepare: function () {
+      const createElement = function (type, attrs = [], children = []) {
+        const el = document.createElement(type);
+        attrs.forEach((attr) => {
+          el.setAttribute(attr[0], attr[1]);
+        });
+        children.forEach((child) => {
+          el.append(child);
+        });
+        return el;
+      };
+
+      const createInputPart = function (name, i, text, inpStyle, value) {
+        const id = `node-input-${name}-${i}`;
+        const label = createElement(
+          "label",
+          [
+            ["for", id],
+            ["style", "margin-right: 10px;"],
+          ],
+          []
+        );
+        label.innerHTML = text;
+        const inp = createElement("input", [
+          ["type", "text"],
+          ["id", id],
+          ["style", `width: 80px; ${inpStyle};`],
+        ]);
+        inp.value = value;
+        return createElement("span", [["style", "text-align: right;"]], [label, inp]);
+      };
+
+      const addPeriod = function (periods) {
+        const prev = periods[periods.length - 1].start;
+        const next = prev === "23" ? "00" : "" + (parseInt(prev) + 1);
+        periods.push({ start: next, value: null });
+        drawPeriods(periods);
+      };
+
+      const removePeriod = function (periods, i) {
+        periods.splice(i, 1);
+        drawPeriods(periods);
+        RED.nodes.dirty(true);
+      };
+
+      const drawPeriods = function (periods) {
+        document.getElementById("node-input-period-container").replaceChildren();
+        for (let i = 0; i < periods.length; i++) {
+          let period = periods[i];
+
+          const timeEl = createInputPart("fromTime", i, "From time:", "margin-right: 20px;", period.start);
+          const valEl = createInputPart("value", i, "Value:", "margin-right: 20px;", period.value);
+
+          let li;
+          if (periods.length > 1) {
+            // Delete button
+            const delButton = document.createElement("button");
+            delButton.setAttribute("style", "width: 24px;");
+            delButton.innerText = "X";
+            delButton.addEventListener("click", () => {
+              removePeriod(periods, i);
+            });
+            li = createElement("div", [["style", "text-align: left;"]], [timeEl, valEl, delButton]);
+          } else {
+            li = createElement("div", [["style", "text-align: left;"]], [timeEl, valEl]);
+          }
+          $("#node-input-period-container").append(li);
+
+          $("#node-input-fromTime-" + i).typedInput({
+            types: [
+              {
+                value: "fromtime",
+                options: hours.map((h) => ({ value: h, label: h + ":00" })),
+              },
+            ],
+          });
+          $("#node-input-fromTime-" + i).change(function () {
+            periods[i].start = this.value;
+            RED.nodes.dirty(true);
+          });
+          $("#node-input-value-" + i).change(function () {
+            periods[i].value = this.value;
+            RED.nodes.dirty(true);
+          });
+        }
+      };
+
+      drawPeriods(this.periods);
+      $("#add-period-button").on("click", () => {
+        addPeriod(this.periods);
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-general-add-tariff">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+
+  <div class="form-row node-input-period-container-row">
+    <div id="node-input-period-container"></div>
+  </div>
+
+  <div class="form-row">
+    <button type="button" id="add-period-button" class="red-ui-button">Add period</button>
+  </div>
+
+  <h3>Optional:</h3>
+
+  <div class="form-row">
+    <label for="node-input-validFrom"><i class="fa fa-calendar"></i> Valid from date</label>
+    <input type="text" id="node-input-validFrom" placeholder="YYYY-MM-DD" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-validTo"><i class="fa fa-calendar"></i> Valid to date</label>
+    <input type="text" id="node-input-validTo" placeholder="YYYY-MM-DD" />
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-general-add-tariff">
+  # Add Tariff
+
+  A node to add a tariff that is fixed for periods of the day/year
+  to the price before it is sent to the strategy nodes.
+  Use this node between the receive-price node and any of the strategy nodes.
+
+  Please read more in the [node documentation](https://ottopaulsen.github.io/node-red-contrib-power-saver/nodes/ps-general-add-tariff)
+</script>
