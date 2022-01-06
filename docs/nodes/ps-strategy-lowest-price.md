@@ -144,7 +144,9 @@ Example of output:
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": "true",
     "outputOutsidePeriod": "true"
-  }
+  },
+  "time": "2021-09-30T23:45:12.123+02:00",
+  "version": "3.1.2"
 }
 ```
 
