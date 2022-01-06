@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.1.2
+
+- Add time, version and current value to output from strategy nodes.
+
 ## 3.1.1
 
 - Fix schedule for Lowest Price node so it uses data from previous day correctly. It sometimes failed when the selected period went over midnight.

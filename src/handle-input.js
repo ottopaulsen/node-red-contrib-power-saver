@@ -1,5 +1,6 @@
 const { extractPlanForDate, getEffectiveConfig, validationFailure } = require("./utils");
 const { DateTime } = require("luxon");
+const { version } = require("../package.json");
 
 function handleStrategyInput(node, msg, doPlanning) {
   node.schedulingTimeout = null;
@@ -38,6 +39,8 @@ function handleStrategyInput(node, msg, doPlanning) {
       hours: plan.hours,
       source: msg.payload.source,
       config: effectiveConfig,
+      time: planFromTime.toISO(),
+      version,
     },
   };
 
@@ -45,11 +48,12 @@ function handleStrategyInput(node, msg, doPlanning) {
   const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
 
   const sendNow = node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0;
+  const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
   if (sendNow) {
-    const currentValue = pastSchedule[pastSchedule.length - 1].value;
     output1 = currentValue ? { payload: true } : null;
     output2 = currentValue ? null : { payload: false };
   }
+  output3.payload.current = currentValue;
 
   // Delete old data
   deleteSavedScheduleBefore(node, dateDayBefore);
