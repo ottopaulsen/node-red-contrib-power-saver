@@ -8,6 +8,7 @@ const reconfigResult = require("./data/reconfigResult");
 const adjustedResult = require("./data/adjustedResult");
 const { testPlan, equalPlan } = require("./test-utils");
 const { makeFlow, makePayload } = require("./strategy-best-save-test-utils");
+const cloneDeep = require("lodash.clonedeep");
 
 helper.init(require.resolve("node-red"));
 
@@ -118,4 +119,47 @@ describe("send config as input", () => {
       n1.receive({ payload: makePayload(prices, testPlan.time) });
     });
   });
+  it("should accept config and price-data together", function (done) {
+    const flow = makeFlow(3, 2);
+    let pass = 1;
+    helper.load(bestSave, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        switch (pass) {
+          case 1:
+            pass++;
+            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            n1.receive({ payload: makePayloadWithConfigAndPrices(prices, testPlan.time) });
+            break;
+          case 2:
+            pass++;
+            const priceSum = prices.priceData.reduce((prev, p) => {
+              return prev + p.value;
+            }, 0);
+            const planSum = msg.payload.hours.reduce((prev, h) => {
+              return prev + h.price;
+            }, 0);
+            expect(Math.round(planSum)).toEqual(Math.round(priceSum * 2));
+            done();
+        }
+      });
+      n1.receive({ payload: makePayload(prices, testPlan.time) });
+    });
+  });
 });
+
+function makePayloadWithConfigAndPrices(prices, time) {
+  const payload = cloneDeep(prices);
+  payload.priceData.forEach((e) => {
+    e.value = e.value * 2;
+  });
+  payload.time = time;
+  let entryTime = DateTime.fromISO(payload.time);
+  payload.priceData.forEach((e) => {
+    e.start = entryTime.toISO();
+    entryTime = entryTime.plus({ milliseconds: 10 });
+  });
+  payload.config = { minSaving: 0.01 };
+  return payload;
+}

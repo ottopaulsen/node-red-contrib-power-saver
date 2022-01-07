@@ -6,10 +6,14 @@ function handleStrategyInput(node, msg, doPlanning) {
   node.schedulingTimeout = null;
 
   const effectiveConfig = getEffectiveConfig(node, msg);
+
   if (!validateInput(node, msg)) {
     return;
   }
   const priceData = getPriceData(node, msg);
+  if (!priceData) {
+    return;
+  }
   const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
   // Store config variables in node
@@ -67,7 +71,8 @@ function handleStrategyInput(node, msg, doPlanning) {
 
 function getPriceData(node, msg) {
   const isConfigMsg = !!msg?.payload?.config;
-  if (isConfigMsg) {
+  const isPriceMsg = !!msg?.payload?.priceData;
+  if (isConfigMsg && !isPriceMsg) {
     return node.context().get("lastPriceData");
   }
   const priceData = msg.payload.priceData;

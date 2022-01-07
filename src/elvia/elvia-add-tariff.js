@@ -39,7 +39,11 @@ module.exports = function (RED) {
             p.value = roundPrice(p.powerPrice + p.gridTariffVariable);
           });
         }
-        node.send([{ payload: { priceData: prices } }]);
+        const payload = { priceData: prices };
+        if (msg.payload.config) {
+          payload.config = msg.payload.config;
+        }
+        node.send([{ payload }]);
       });
     });
   }

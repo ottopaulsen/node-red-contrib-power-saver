@@ -52,7 +52,9 @@ All the variables in the config object are optional. You can send only those you
 
 The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
 
-When a config is sent like this, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
+When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
+
+However, you can send config and price data in the same message. Then both will be used .
 
 ## Input
 

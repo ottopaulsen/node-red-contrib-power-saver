@@ -6,6 +6,12 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.2.0
+
+- Config can be sent on input to strategy nodes together with price data, in the same message.
+- The ps-receive-price and ps-xxx-add-tariff nodes pass config through from input to output.
+- Status on strategy nodes shows the time for the next change.
+
 ## 3.1.2
 
 - Add time, version and current value to output from strategy nodes.
