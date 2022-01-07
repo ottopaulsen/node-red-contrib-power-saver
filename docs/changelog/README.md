@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.2.1
+
+- Fix that may solve the problem with multiple outputs at the same time.
+
 ## 3.2.0
 
 - Config can be sent on input to strategy nodes together with price data, in the same message.

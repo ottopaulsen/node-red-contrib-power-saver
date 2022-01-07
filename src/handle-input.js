@@ -81,14 +81,13 @@ function getPriceData(node, msg) {
 }
 
 function runSchedule(node, schedule, time, currentSent = false) {
-  let currentTime = time;
   let remainingSchedule = schedule.filter((entry) => {
-    return DateTime.fromISO(entry.time) > DateTime.fromISO(time);
+    return DateTime.fromISO(entry.time) > time;
   });
   if (remainingSchedule.length > 0) {
     const entry = remainingSchedule[0];
     const nextTime = DateTime.fromISO(entry.time);
-    const wait = nextTime - currentTime;
+    const wait = nextTime - time;
     const onOff = entry.value ? "on" : "off";
     node.log("Switching " + onOff + " in " + wait + " milliseconds");
     const statusMessage = `${remainingSchedule.length} changes - ${
