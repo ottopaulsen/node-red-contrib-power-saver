@@ -3,8 +3,6 @@ const { DateTime } = require("luxon");
 const { version } = require("../package.json");
 
 function handleStrategyInput(node, msg, doPlanning) {
-  node.schedulingTimeout = null;
-
   const effectiveConfig = getEffectiveConfig(node, msg);
 
   if (!validateInput(node, msg)) {
