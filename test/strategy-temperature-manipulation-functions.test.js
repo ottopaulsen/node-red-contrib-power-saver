@@ -1,22 +1,68 @@
 const { DateTime } = require("luxon");
 const expect = require("expect");
-const { calculate_opportunities } = require("../src/strategy-temperature-manipulation-functions");
-const price_data = require("./data/converted-prices.json");
+const { calculate_opportunities, find_best_buy_sell_pattern, calculate_value_dictlist, remove_low_buysell_pairs } = require("../src/strategy-temperature-manipulation-functions");
+const converted_prices = require("./data/converted-prices.json");
 const { cloneDeep } = require("lodash");
 
 //User input
-time_heat_1c = 55
-time_cool_1c = 40
-max_temp_adjustment = 0.61
-min_saving_NOK_kWh=0.1
+const time_heat_1c = 60
+const time_cool_1c = 40
+const max_temp_adjustment = 1
+const min_saving_NOK_kWh = 0.1
 
-describe("test_opportunities", () => {
-  it("can find best x", () => {
-    let prices = [...price_data.map((pd) => pd.value)];
-    prices = prices.slice(0,1)
-    start_date =  DateTime.fromISO(price_data[0].start);
-    buy_pattern= Array(5).fill(1)
-    //Calculate what it will cost to procure/sell 1 kWh as a function of time
-    expect(calculate_opportunities(prices,buy_pattern,1)).toEqual(Array(55).fill(prices(0)));
+describe("Test Temperature manipulation strategy functions", () => {
+  before(function() {
+    var prices =  converted_prices.priceData.slice(0, 1).map((p) => p.value);
+    
+    var buy_pattern= Array(Math.round(time_heat_1c*max_temp_adjustment*2)).fill(1)
+    var sell_pattern= Array(Math.round(time_cool_1c*max_temp_adjustment*2)).fill(1)
+    console.log(prices);
   });
+  
+  it("Can calculate procurement opportunities", () => {
+    let my_prices = prices.slice(0,1)
+    let my_buy_pattern= Array(5).fill(1)
+    //Calculate what it will cost to procure/sell 1 kWh as a function of time
+    result = calculate_opportunities(my_prices, my_buy_pattern, 1)
+    //Remove float precitions errors by rounding
+    result = result.map(x => Math.round(x*1000000)/1000000);
+    expect(result).toEqual(Array(56).fill(my_prices[0]));
+  });
+  
+  it("Can find procuremnt pattern", () => {
+    //Use a simple pricelist
+    let my_prices = [1,2,2,1,8,1]
+
+    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+
+    let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
+
+    expect(my_buy_sell).toEqual([[0,173],[131,251]]);
+  });
+
+  it("Dictlist test", () => {
+    let my_prices = [1,2,2,1,8,1]
+    let my_buy_sell_indexes = [[0,173],[131,251]]
+    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+    result = calculate_value_dictlist(my_buy_sell_indexes, buy_prices, sell_prices, start_date)
+    
+    expect(result[0].sell_date).toEqual(start_date.plus({minutes: 131}));
+  });
+
+  it("Check removal of low benefit buy-sell pairs", () => {
+    let my_prices = [1,2,1,1.05,1,2]
+    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+    let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
+
+    let result = remove_low_buysell_pairs(my_buy_sell, buy_prices,sell_prices, min_saving_NOK_kWh, start_date)
+    //Should remove the sell at 1.05 and the re-buy at 1 (only 0.05 difference)
+    let compare = [my_buy_sell[0].slice(0,2),[my_buy_sell[1][0],my_buy_sell[1][2]]]
+
+    expect(result).toEqual(compare);
+  });
+
+
 });
