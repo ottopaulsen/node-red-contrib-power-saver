@@ -48,8 +48,9 @@
     "vuepress": "^2.0.0-beta.27"
   },
   "dependencies": {
+    "chai": "^4.3.4",
     "lodash.clonedeep": "^4.5.0",
-    "node-fetch": "^2.6.6",
-    "luxon": "^1.27.0"
+    "luxon": "^1.27.0",
+    "node-fetch": "^2.6.6"
   }
 }
