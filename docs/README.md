@@ -28,7 +28,10 @@ features:
   - title: Tibber and Nord Pool
     details: Painlessly use prices received from Tibber or Nord Pool.
 footer: Created by Otto Paulsen<br/><br/><a href="https://www.patreon.com/bePatron?u=65948417" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
+
 footerHtml: true
 ---
 
 This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.
+
+<DonateButtons/>

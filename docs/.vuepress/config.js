@@ -74,6 +74,16 @@ module.exports = {
       "/changelog/": "auto",
     },
   },
+  plugins: [
+    [
+      "@vuepress/register-components",
+      {
+        components: {
+          DonateButtons: path.resolve(__dirname, "./components/DonateButtons.vue"),
+        },
+      },
+    ],
+  ],
   head: [
     // ["script", { src: "https://c6.patreon.com/becomePatronButton.bundle.js" }],
     ["link", { rel: "icon", href: "/euro.png" }],
