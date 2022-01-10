@@ -4,24 +4,26 @@
 
 In this example, the temperature setpoint of a climate entity is manipulated to move power consumption from expensive to cheap periods. It does this by changing the temperature setpoint of the climate entity up at times when electricity is cheap, and reducing it when electricity is expensive.
 
+It is a good application for cabins/heated storage spaces, as the entity never actually shuts off the climate entities and should therefore be rather safe to apply (still at you own risk :-) )
+
 ![Temperature profile vs. cost](../images/temp-manipulation-temperatureVsPrice.png)
 
 
 Requirements:
--Home assistant integrated with Node-RED
--Tibber node installed and correctly configured
--A climate entity
+1. Home assistant integrated with Node-RED
+2. Tibber node installed and correctly configured
+3. A climate entity
 
 Instructions:
--Create an "input_number" entity in Home Assistant
--Import the flow into Node-RED
--Configure the temperature manipulation node:
---Insert an approximate time it takes to increase the temperature by 1 Centigrade (could be 90 minutes)
---Insert an approximate time it takes to decrease 1 Centigrade
---Insert minimum savings for a heating/cooling cycle (should usually not be zero, as a cycle might have a cost)
--Configure the climate service to target the correct climate entity (this has to be edited in two places)
---Change `Entity Id` in the properties menu
---Change the `entity_id` vaule in the `Data` property
+1. Create an "input_number" entity in Home Assistant
+2. Import the flow into Node-RED
+3. Configure the temperature manipulation node:
+  a. Insert an approximate time it takes to increase the temperature by 1 Centigrade (could be 90 minutes)
+  b. Insert an approximate time it takes to decrease 1 Centigrade
+  c. Insert minimum savings for a heating/cooling cycle (should usually not be zero, as a cycle might have a cost)
+4. Configure the climate service to target the correct climate entity (this has to be edited in two places)
+  a. Change `Entity Id` in the properties menu
+  b. Change the `entity_id` vaule in the `Data` property
 
 
 ![Simple example with Tibber](../images/node-ps-strategy-temperature-maipulation-simple-flow-example.png)
