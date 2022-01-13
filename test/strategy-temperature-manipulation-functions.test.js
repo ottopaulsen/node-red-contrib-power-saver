@@ -1,7 +1,8 @@
 const { DateTime } = require("luxon");
 const expect = require("expect");
-const { calculate_opportunities, find_best_buy_sell_pattern, calculate_value_dictlist, remove_low_buysell_pairs } = require("../src/strategy-temperature-manipulation-functions");
+const { calculate_schedule, calculate_opportunities, find_best_buy_sell_pattern, calculate_value_dictlist, remove_low_buysell_pairs } = require("../src/strategy-temperature-manipulation-functions");
 const converted_prices = require("./data/converted-prices.json");
+const decreasing_end_prices = require("./data/tibber-decreasing-24h.json");
 const { cloneDeep } = require("lodash");
 
 //User input
@@ -12,10 +13,11 @@ const min_saving_NOK_kWh = 0.1
 
 describe("Test Temperature manipulation strategy functions", () => {
   before(function() {
-    var prices =  converted_prices.priceData.slice(0, 1).map((p) => p.value);
-    
-    var buy_pattern= Array(Math.round(time_heat_1c*max_temp_adjustment*2)).fill(1)
-    var sell_pattern= Array(Math.round(time_cool_1c*max_temp_adjustment*2)).fill(1)
+    prices =  converted_prices.priceData.slice(0, 1).map((p) => p.value);
+    decreasing_24h_prices =  decreasing_end_prices.priceData.slice(0, 1).map((p) => p.value);
+    start_date =  DateTime.fromISO(converted_prices.priceData[0].start);
+    buy_pattern= Array(Math.round(time_heat_1c*max_temp_adjustment*2)).fill(1)
+    sell_pattern= Array(Math.round(time_cool_1c*max_temp_adjustment*2)).fill(1)
     console.log(prices);
   });
   
@@ -38,7 +40,7 @@ describe("Test Temperature manipulation strategy functions", () => {
 
     let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
 
-    expect(my_buy_sell).toEqual([[0,173],[131,251]]);
+    expect(my_buy_sell).toEqual([[0,141],[100,240]]);
   });
 
   it("Dictlist test", () => {
@@ -49,6 +51,16 @@ describe("Test Temperature manipulation strategy functions", () => {
     result = calculate_value_dictlist(my_buy_sell_indexes, buy_prices, sell_prices, start_date)
     
     expect(result[0].sell_date).toEqual(start_date.plus({minutes: 131}));
+  });
+
+  it("Dictlist test at decreasing end", () => {
+    let my_prices =  decreasing_end_prices.priceData.map((p) => p.value);
+    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+
+    let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
+    let my_schedule = calculate_schedule(start_date, my_buy_sell, max_temp_adjustment,buy_prices.length)
+    expect(my_schedule.temperatures.at(-1)).toEqual(-max_temp_adjustment);
   });
 
   it("Check removal of low benefit buy-sell pairs", () => {

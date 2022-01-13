@@ -1,7 +1,8 @@
 # ps-strategy-temperature-maipulation
 
-![ps-strategy-lowest-price](../images/node-ps-strategy-lowest-price.png)
-
+<!--
+[ps-strategy-lowest-price](../images/node-ps-strategy-lowest-price.png)
+-->
 A strategy for moving consumption from expensive to cheap periods utilising climate entities.
 
 ## Description
