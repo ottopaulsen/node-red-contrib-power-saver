@@ -59,7 +59,7 @@ describe("Test Temperature manipulation strategy functions", () => {
     let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
 
     let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
-    let my_schedule = calculate_schedule(start_date, my_buy_sell, max_temp_adjustment,buy_prices.length)
+    let my_schedule = calculate_schedule(start_date , my_buy_sell, buy_prices, sell_prices, max_temp_adjustment)
     expect(my_schedule.temperatures.at(-1)).toEqual(-max_temp_adjustment);
   });
 

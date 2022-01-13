@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-//const decreasing_end_prices = require("../test/data/tibber-decreasing-24h.json");
+const decreasing_end_prices = require("../test/data/tibber-decreasing-24h.json");
 
 function calculate_opportunities(prices, pattern, amount){
     //creating a price vector with minute granularity
@@ -101,7 +101,8 @@ function remove_low_buysell_pairs(buy_sell_pattern, buy_prices, sell_prices, min
     return buy_sell_clone
 }
 
-function calculate_schedule(start_date , buy_sell_stacked_array, max_temp_adjustment, array_length){
+function calculate_schedule(start_date , buy_sell_stacked_array, buy_prices, sell_prices, max_temp_adjustment){
+    let array_length = buy_prices.length
     let schedule={start_at: start_date, temperatures: Array(array_length), max_temp_adjustment: max_temp_adjustment, duration_in_minutes: array_length}
     if(buy_sell_stacked_array[0].length===0){
         schedule.temperatures.fill(-max_temp_adjustment,0,array_length)
@@ -114,6 +115,8 @@ function calculate_schedule(start_date , buy_sell_stacked_array, max_temp_adjust
         }
         schedule.temperatures.fill(-max_temp_adjustment,n,array_length)
     }
+
+    schedule.trades = calculate_value_dictlist(buy_sell_stacked_array,buy_prices,sell_prices, start_date)
     return schedule
 }
 
@@ -142,17 +145,16 @@ function run_buy_sell_algorithm(price_data,time_heat_1c,time_cool_1c,max_temp_ad
         
     //Remove small/disputable gains (least profitable buy/sell pairs)
     var buy_sell_cleaned = remove_low_buysell_pairs(buy_sell,buy_prices,sell_prices,min_saving_NOK_kWh, start_date)
-    var buy_sell_value_dictlist_cleaned = calculate_value_dictlist(buy_sell_cleaned,buy_prices,sell_prices, start_date)
 
     //Calculate temperature adjustment as a function of time
-    let schedule = calculate_schedule(start_date, buy_sell_cleaned,max_temp_adjustment, buy_prices.length)
+    let schedule = calculate_schedule(start_date, buy_sell_cleaned, buy_prices, sell_prices, max_temp_adjustment)
     
     return schedule
 }
 
 
 function test(){ //Set up price data
-    price_data = [2,3,4] //decreasing_end_prices.priceData;
+    price_data = decreasing_end_prices.priceData //decreasing_end_prices.priceData;
     //User input
     time_heat_1c = 55
     time_cool_1c = 40
@@ -163,6 +165,8 @@ function test(){ //Set up price data
     dT = find_temp(DateTime.local(2022, 1, 2),schedule)
     debugger
 }
+
+//var value = test()
 
 module.exports = {
     run_buy_sell_algorithm,
