@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const decreasing_end_prices = require("../test/data/tibber-decreasing-24h.json");
+//const decreasing_end_prices = require("../test/data/tibber-decreasing-24h.json");
 
 function calculate_opportunities(prices, pattern, amount){
     //creating a price vector with minute granularity
