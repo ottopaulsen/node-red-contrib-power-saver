@@ -1,6 +1,6 @@
 const { DateTime } = require("luxon");
 const expect = require("expect");
-const { calculate_schedule, calculate_opportunities, find_best_buy_sell_pattern, calculate_value_dictlist, remove_low_buysell_pairs } = require("../src/strategy-temperature-manipulation-functions");
+const { calculate_schedule, calculate_opportunities, find_best_buy_sell_pattern, calculate_value_dictlist, remove_low_buysell_pairs } = require("../src/strategy-heat-capacitor-functions");
 const converted_prices = require("./data/converted-prices.json");
 const decreasing_end_prices = require("./data/tibber-decreasing-24h.json");
 const { cloneDeep } = require("lodash");

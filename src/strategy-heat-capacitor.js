@@ -1,6 +1,6 @@
 const { DateTime } = require("luxon");
 //const { loadDayData } = require("./utils");
-const { run_buy_sell_algorithm, find_temp} = require("./strategy-temperature-manipulation-functions");
+const { run_buy_sell_algorithm, find_temp} = require("./strategy-heat-capacitor-functions");
 //const { difference } = require("lodash");
 
 
@@ -44,5 +44,5 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("ps-strategy-temperature-manipulation",TempMan);
+  RED.nodes.registerType("ps-strategy-heat-capacitor",TempMan);
 };
