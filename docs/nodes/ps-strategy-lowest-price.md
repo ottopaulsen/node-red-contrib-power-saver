@@ -74,6 +74,20 @@ When a config is sent like this, and without price data, the schedule will be re
 
 However, you can send config and price data in the same message. Then both will be used .
 
+### Dynamic commands
+
+You can get the schedule sent to output 3 any time by sending a message like this to the node:
+
+```json
+"payload": {
+  "commands": {
+    "sendSchedule": true,
+  }
+}
+```
+
+When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
+
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md)

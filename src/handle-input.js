@@ -10,6 +10,9 @@ function handleStrategyInput(node, msg, doPlanning) {
   }
   const { priceData, source } = getPriceData(node, msg);
   if (!priceData) {
+    const message = "No price data";
+    node.warn(message);
+    node.status({ fill: "yellow", shape: "dot", text: message });
     return;
   }
   const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
