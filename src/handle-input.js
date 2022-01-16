@@ -8,6 +8,12 @@ function handleStrategyInput(node, msg, doPlanning) {
   if (!validateInput(node, msg)) {
     return;
   }
+  if (msg.payload.commands && msg.payload.commands.reset) {
+    node.warn("Resetting node context by command");
+    // Reset all saved data
+    node.context().set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined]);
+    deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 1 }), 100);
+  }
   const { priceData, source } = getPriceData(node, msg);
   if (!priceData) {
     const message = "No price data";
@@ -117,12 +123,14 @@ function runSchedule(node, schedule, time, currentSent = false) {
   }
 }
 
-function deleteSavedScheduleBefore(node, day) {
+function deleteSavedScheduleBefore(node, day, checkDays = 0) {
   let date = day;
+  let count = 0;
   do {
     date = date.plus({ days: -1 });
     data = node.context().set(date.toISO(), undefined);
-  } while (data);
+    count++;
+  } while (data || count <= checkDays);
 }
 
 function saveDayData(node, date, plan) {
