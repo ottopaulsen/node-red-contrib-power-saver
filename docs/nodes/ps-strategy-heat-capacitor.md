@@ -1,4 +1,4 @@
-# ps-strategy-temperature-maipulation
+# ps-strategy-heat-capacitor
 
 <!--
 [ps-strategy-lowest-price](../images/node-ps-strategy-lowest-price.png)
@@ -12,7 +12,7 @@ This is achieved by increasing the temperature setpoint of one or several climat
 
 It is a good application for cabins/heated storage spaces, as the entity never actually shuts off the climate entities and should therefore be rather safe to apply (still at you own risk :-)). It can also be used for you house, jacuzzi, and/or pool.
 
-![Temperature profile vs. cost](../images/temp-manipulation-temperatureVsPrice.png)
+![Temperature profile vs. cost](../images/heat-capacitor-temperatureVsPrice.png)
 
 ## Configuration
 
@@ -26,7 +26,7 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 | Min Savings            | The minimum amount of savings required for a buy/sell cycle.
 
 
-![Simple example with Tibber](../images/node-ps-strategy-temperature-maipulation-simple-flow-example.png)
+![Simple example with Tibber](../images/node-ps-strategy-heat-capacitor-simple-flow-example.png)
 
 The node consumes price information and outputs $\Delta T$ on its first output and the planned schedule and benefit calculations on the secound output. The $\Delta T$ is used to adjust the set-point of a climate entity.
 
