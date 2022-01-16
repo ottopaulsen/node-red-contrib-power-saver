@@ -82,9 +82,10 @@ function calculate_value_dictlist(buy_sell, buy_prices, sell_prices, start_date)
 function remove_low_buysell_pairs(buy_sell_pattern, buy_prices, sell_prices, min_saving_NOK_kWh, start_date){
     var min_saving = -1
     var buy_sell_clone= Array.from(buy_sell_pattern);
-    if(dictlist.length===0) {return buy_sell_clone}
+
     while(min_saving_NOK_kWh>=min_saving){
         dictlist= calculate_value_dictlist(buy_sell_clone,buy_prices,sell_prices, start_date)
+        if(dictlist.length===0) {return buy_sell_clone}
         let sell_index = 0
         let buy_index = 0
         for(i=0;i<dictlist.length;i++){
