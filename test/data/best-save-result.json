@@ -351,7 +351,6 @@
     "maxHoursToSaveInSequence": 3,
     "minHoursOnAfterMaxSequenceSaved": 2,
     "minSaving": 0.001,
-    "outputIfNoSchedule": false,
-    "scheduleOnlyFromCurrentTime": false
+    "outputIfNoSchedule": false
   }
 }

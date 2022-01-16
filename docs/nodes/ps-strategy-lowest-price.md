@@ -74,6 +74,49 @@ When a config is sent like this, and without price data, the schedule will be re
 
 However, you can send config and price data in the same message. Then both will be used .
 
+### Dynamic commands
+
+You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
+
+Commands can be sent together with config and/or price data, but the exact behavior is not defined.
+
+#### sendSchedule
+
+You can get the schedule sent to output 3 any time by sending a message like this to the node:
+
+```json
+"payload": {
+  "commands": {
+    "sendSchedule": true,
+  }
+}
+```
+
+When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
+
+#### reset
+
+You can reset data the node has saved in context by sending this message:
+
+```json
+"payload": {
+  "commands": {
+    "reset": true,
+  }
+}
+```
+
+When you do this, all historical data the node has saved is deleted, including the current schedule, so the result will be
+that the node shows status "No price data". When new price data is received, a schedule is calculated without considering any history.
+
+The nodes config is not deleted, as the node depends on it to work.
+
+::: warning
+This operation cannot be undone.
+
+However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
+:::
+
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md)

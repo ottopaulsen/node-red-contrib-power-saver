@@ -1,4 +1,4 @@
-const { countAtEnd, makeSchedule, getSavings, getStartAtIndex, getDiff } = require("./utils");
+const { countAtEnd, makeSchedule, getSavings, getDiff } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { loadDayData } = require("./utils");
 
@@ -15,7 +15,6 @@ module.exports = function (RED) {
       minSaving: parseFloat(config.minSaving),
       sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       outputIfNoSchedule: config.outputIfNoSchedule === "true",
-      scheduleOnlyFromCurrentTime: config.scheduleOnlyFromCurrentTime === "true",
     };
     node.context().set("config", originalConfig);
 
@@ -43,20 +42,18 @@ function adjustSavingsPassedHours(plan, includeFromLastPlanHours) {
   }
 }
 
-function loadDataJustBefore(node, dateDayBefore, dateToday, startAtIndex) {
+function loadDataJustBefore(node, dateDayBefore) {
   const dataDayBefore = loadDayData(node, dateDayBefore);
-  const dataToday = loadDayData(node, dateToday);
   return {
-    schedule: [...dataDayBefore.schedule, ...dataToday.schedule.slice(0, startAtIndex)],
-    hours: [...dataDayBefore.hours, ...dataToday.hours.slice(0, startAtIndex)],
+    schedule: [...dataDayBefore.schedule],
+    hours: [...dataDayBefore.hours],
   };
 }
 
-function doPlanning(node, effectiveConfig, priceData, planFromTime, dateDayBefore, dateToday) {
-  const startAtIndex = getStartAtIndex(effectiveConfig, priceData, planFromTime);
-  const dataJustBefore = loadDataJustBefore(node, dateDayBefore, dateToday, startAtIndex);
-  const values = priceData.map((d) => d.value).slice(startAtIndex);
-  const startTimes = priceData.map((d) => d.start).slice(startAtIndex);
+function doPlanning(node, _, priceData, _, dateDayBefore, _) {
+  const dataJustBefore = loadDataJustBefore(node, dateDayBefore);
+  const values = priceData.map((d) => d.value);
+  const startTimes = priceData.map((d) => d.start);
   const onOffBefore = dataJustBefore.hours.map((h) => h.onOff);
   const lastPlanHours = node.context().get("lastPlan")?.hours ?? [];
   const plan = makePlan(node, values, startTimes, onOffBefore);

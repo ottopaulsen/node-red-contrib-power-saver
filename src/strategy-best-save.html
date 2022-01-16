@@ -26,11 +26,6 @@
         align: "left",
       },
       outputIfNoSchedule: { value: "true", required: true, align: "left" },
-      scheduleOnlyFromCurrentTime: {
-        value: "true",
-        required: true,
-        align: "left",
-      },
     },
     inputs: 1,
     outputs: 3,
@@ -48,17 +43,6 @@
             options: [
               { value: "true", label: "On" },
               { value: "false", label: "Off" },
-            ],
-          },
-        ],
-      });
-      $("#node-input-scheduleOnlyFromCurrentTime").typedInput({
-        types: [
-          {
-            value: "nowOrStart",
-            options: [
-              { value: "false", label: "Whole data set" },
-              { value: "true", label: "From current hour" },
             ],
           },
         ],
@@ -88,11 +72,6 @@
         <label for="node-input-minSaving"><i class="fa fa-eur"></i> Min saving</label>
         <input type="text" id="node-input-minSaving" placeholder="Minimum to save for turning off" style="width: 80px">
     </div>
-    <div class="form-row">
-      <label for="node-input-scheduleOnlyFromCurrentTime">Schedule for</label>
-      <input type="text" id="node-input-scheduleOnlyFromCurrentTime" style="width: 160px">
-      </label>
-  </div>
   <h3>Output</h3>
     <div class="form-row">
         <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">

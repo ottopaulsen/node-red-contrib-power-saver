@@ -1,0 +1,208 @@
+{
+  "schedule": [
+    {
+      "time": "2022-01-12T18:00:00+01:00",
+      "value": true
+    },
+    {
+      "time": "2022-01-13T17:00:00+01:00",
+      "value": false
+    },
+    {
+      "time": "2022-01-13T23:00:00+01:00",
+      "value": true
+    }
+  ],
+  "hours": [
+    {
+      "price": 1.692,
+      "onOff": true,
+      "start": "2022-01-12T18:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.661,
+      "onOff": true,
+      "start": "2022-01-12T19:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.64,
+      "onOff": true,
+      "start": "2022-01-12T20:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.634,
+      "onOff": true,
+      "start": "2022-01-12T21:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.614,
+      "onOff": true,
+      "start": "2022-01-12T22:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.598,
+      "onOff": true,
+      "start": "2022-01-12T23:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.569,
+      "onOff": true,
+      "start": "2022-01-13T00:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.548,
+      "onOff": true,
+      "start": "2022-01-13T01:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.518,
+      "onOff": true,
+      "start": "2022-01-13T02:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.507,
+      "onOff": true,
+      "start": "2022-01-13T03:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.501,
+      "onOff": true,
+      "start": "2022-01-13T04:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.508,
+      "onOff": true,
+      "start": "2022-01-13T05:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.544,
+      "onOff": true,
+      "start": "2022-01-13T06:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.612,
+      "onOff": true,
+      "start": "2022-01-13T07:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.646,
+      "onOff": true,
+      "start": "2022-01-13T08:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.654,
+      "onOff": true,
+      "start": "2022-01-13T09:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.656,
+      "onOff": true,
+      "start": "2022-01-13T10:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.648,
+      "onOff": true,
+      "start": "2022-01-13T11:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.617,
+      "onOff": true,
+      "start": "2022-01-13T12:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.613,
+      "onOff": true,
+      "start": "2022-01-13T13:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.612,
+      "onOff": true,
+      "start": "2022-01-13T14:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.611,
+      "onOff": true,
+      "start": "2022-01-13T15:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.618,
+      "onOff": true,
+      "start": "2022-01-13T16:00:00+01:00",
+      "saving": null
+    },
+    {
+      "price": 1.616,
+      "onOff": false,
+      "start": "2022-01-13T17:00:00+01:00",
+      "saving": 0.148
+    },
+    {
+      "price": 1.617,
+      "onOff": false,
+      "start": "2022-01-13T18:00:00+01:00",
+      "saving": 0.149
+    },
+    {
+      "price": 1.601,
+      "onOff": false,
+      "start": "2022-01-13T19:00:00+01:00",
+      "saving": 0.133
+    },
+    {
+      "price": 1.568,
+      "onOff": false,
+      "start": "2022-01-13T20:00:00+01:00",
+      "saving": 0.1
+    },
+    {
+      "price": 1.565,
+      "onOff": false,
+      "start": "2022-01-13T21:00:00+01:00",
+      "saving": 0.097
+    },
+    {
+      "price": 1.506,
+      "onOff": false,
+      "start": "2022-01-13T22:00:00+01:00",
+      "saving": 0.038
+    },
+    {
+      "price": 1.468,
+      "onOff": true,
+      "start": "2022-01-13T23:00:00+01:00",
+      "saving": null
+    }
+  ],
+  "source": "Nordpool",
+  "config": {
+    "maxHoursToSaveInSequence": "6",
+    "minHoursOnAfterMaxSequenceSaved": "3",
+    "minSaving": 0.1,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": true
+  },
+  "time": "2022-01-12T17:29:33.411+01:00",
+  "version": "3.2.3"
+}
