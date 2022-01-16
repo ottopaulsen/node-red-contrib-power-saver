@@ -19,16 +19,11 @@ The picture at the bottom of the page, under [Integration with MagicMirror](#int
 | Max per sequence       | Maximum number of hours to turn off in a sequence.                                                                                                                   |
 | Min recover            | Minimum hours to turn on immediately after a period when turned off the maximum number of hours that is allowed to be turned off                                     |
 | Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it? |
-| Schedule for           | Select to schedule for the whole data set or only from the current hour.                                                                                             |
 | Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling                                                                                      |
 | If no schedule, send   | What to do if there is no valid schedule any more (turn on or off).                                                                                                  |
 
 ::: warning Min recover
 NB! The `Min recover` only has effect if the previous save-period is of length `Max per sequence`. If the save-period is shorter, the following on-period may be as short as one hour.
-:::
-
-::: tip Legionella
-Many people ask if there is a danger that legionella bacteria will grow and become dangerous when the temperature of the water heater is lowered. As long as the water is heated to at least 65 °C every day, or at least every week, the risk of infection is not considered significant, according to the norwegian [FHI](https://www.fhi.no/nettpub/legionellaveilederen/).
 :::
 
 ### Dynamic config
@@ -43,7 +38,6 @@ It is possible to change config dynamically by sending a config message to the n
     "minSaving": 0.02,
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": true,
-    "scheduleOnlyFromCurrentTime": false
   }
 }
 ```
@@ -54,7 +48,7 @@ The config sent like this will be valid until a new config is sent the same way,
 
 When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
 
-However, you can send config and price data in the same message. Then both will be used .
+However, you can send config and price data in the same message. Then both will be used.
 
 ## Input
 
@@ -138,6 +132,28 @@ The calculation that decides what hours to turn off works as follows:
 7. When all sequences are processed, the resulting table shows a pretty good savings plan, that in most cases would be the optimal plan.
 
 I say "in most cases", because there is a chance that a group of two or more sequences combined can give a better plan than a single sequence preceeding those two, but where the selection of the one sequence causes the group to be discarded. If anyone encounters this situation, I would be happy to receive the price data set, and try to improve the algorithm even further.
+
+## Data used for calculation
+
+Normally data is received for one or two whole days, and all this data is used to do the calculation. In addition, if the node has run before, so there is historical data, the last period on or off before the period data is received for, is considered in the calculation, so that the rules in the configuration are followed also between days.
+
+## Restarts
+
+The node saves data in the nodes context, so if Node-RED is configured to save context between restarts, the node will replan with the last received data when it restarts.
+
+::: warning
+In Home Assistant, Node-RED is by default configured to save context between restarts. However, if you run Node-RED another way, this may not be the case by default. If context is only stored in memory, it is lost between restarts, and even between re-deployments. This can be changed in the `settings.js` file for Node-RED like this:
+
+```js
+contextStorage: {
+   default: {
+       module: "localfilesystem"
+   }
+}
+```
+
+Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/context) for more details about this.
+:::
 
 ## Integration with MagicMirror
 

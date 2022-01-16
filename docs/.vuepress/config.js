@@ -20,6 +20,10 @@ module.exports = {
         link: "/examples/",
       },
       {
+        text: "FAQ",
+        link: "/faq/",
+      },
+      {
         text: "Contribute",
         link: "/contribute/",
       },
