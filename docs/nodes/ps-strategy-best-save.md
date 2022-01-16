@@ -50,9 +50,27 @@ When a config is sent like this, and without price data, the schedule will be re
 
 However, you can send config and price data in the same message. Then both will be used.
 
+### Dynamic commands
+
+You can get the schedule sent to output 3 any time by sending a message like this to the node:
+
+```json
+"payload": {
+  "commands": {
+    "sendSchedule": true,
+  }
+}
+```
+
+When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
+
 ## Input
 
-The input is the [common strategy input format](./strategy-input.md)
+The input is the [common strategy input format](./strategy-input.md).
+
+In addition to the prices sent as input,
+the node is using the schedule for the day before it receives data for,
+so that it can calculate the schedule in the beginning of the day according to the configured rules. This requires of course that the node was run the day before.
 
 ## Output
 
@@ -118,6 +136,12 @@ Example of output:
 ```
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
+
+### Data saved in context
+
+The node saves some data in the nodes context, so that it can be used on restarts and also taken into consideration when calculating the schedule over midnight.
+
+You can see the saved data if you select the node in Node-RED, and view "Context data", and refresh the Node context.
 
 ## Algorithm
 

@@ -8,7 +8,7 @@ function handleStrategyInput(node, msg, doPlanning) {
   if (!validateInput(node, msg)) {
     return;
   }
-  const priceData = getPriceData(node, msg);
+  const { priceData, source } = getPriceData(node, msg);
   if (!priceData) {
     return;
   }
@@ -32,6 +32,8 @@ function handleStrategyInput(node, msg, doPlanning) {
   node.context().set("lastPlan", plan);
   dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
+  const sentOnCommand = !!msg.payload.commands?.sendSchedule;
+
   // Prepare output
   let output1 = null;
   let output2 = null;
@@ -39,8 +41,9 @@ function handleStrategyInput(node, msg, doPlanning) {
     payload: {
       schedule: plan.schedule,
       hours: plan.hours,
-      source: msg.payload.source,
+      source,
       config: effectiveConfig,
+      sentOnCommand,
       time: planFromTime.toISO(),
       version,
     },
@@ -49,7 +52,7 @@ function handleStrategyInput(node, msg, doPlanning) {
   // Find current output, and set output (if configured to do)
   const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
 
-  const sendNow = node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0;
+  const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
   const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
   if (sendNow) {
     output1 = currentValue ? { payload: true } : null;
@@ -69,13 +72,18 @@ function handleStrategyInput(node, msg, doPlanning) {
 
 function getPriceData(node, msg) {
   const isConfigMsg = !!msg?.payload?.config;
+  const isCommandMsg = !!msg?.payload?.commands;
   const isPriceMsg = !!msg?.payload?.priceData;
-  if (isConfigMsg && !isPriceMsg) {
-    return node.context().get("lastPriceData");
+  if ((isConfigMsg || isCommandMsg) && !isPriceMsg) {
+    const priceData = node.context().get("lastPriceData");
+    const source = node.context().get("lastSource");
+    return { priceData, source };
   }
   const priceData = msg.payload.priceData;
+  const source = msg.payload.source;
   node.context().set("lastPriceData", priceData);
-  return priceData;
+  node.context().set("lastSource", source);
+  return { priceData, source };
 }
 
 function runSchedule(node, schedule, time, currentSent = false) {
@@ -135,6 +143,9 @@ function validateInput(node, msg) {
   }
   if (msg.payload.config !== undefined) {
     return true; // Got config msg
+  }
+  if (msg.payload.commands !== undefined) {
+    return true; // Got command msg
   }
   if (msg.payload.priceData === undefined) {
     validationFailure(node, "Payload is missing priceData");
