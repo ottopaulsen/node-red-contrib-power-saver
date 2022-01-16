@@ -87,7 +87,7 @@ that the node shows status "No price data". When new price data is received, a s
 
 The nodes config is not deleted, as the node depends on it to work.
 
-::: danger
+::: warning
 This operation cannot be undone.
 
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.

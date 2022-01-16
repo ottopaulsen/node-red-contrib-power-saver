@@ -6,6 +6,15 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.3.0
+
+- Remove the config option to schedule from the current hour. The feature did not work, and it was not clear how it should work.
+- Added a dynamic command feature to make it possible to dynamically
+  1. Tell the node to send the schedule to output 3.
+  2. Reset saved data making the next schedule to start without historical data.
+- Fix node status so it says "No price data" when there is no price data available.
+- Added an FAQ section to the doc.
+
 ## 3.2.3
 
 - Remove unused imports

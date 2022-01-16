@@ -25,4 +25,3 @@ Another alternative is to reduce the minimum saving from 0.05 to 0.001. Then the
 ## Can we get Legionella bacteria when turning off the water heater?
 
 Many people ask if there is a danger that legionella bacteria will grow and become dangerous when the temperature of the water heater is lowered. As long as the water is heated to at least 65 °C every day, or at least every week, the risk of infection is not considered significant, according to the norwegian [FHI](https://www.fhi.no/nettpub/legionellaveilederen/).
-:::
