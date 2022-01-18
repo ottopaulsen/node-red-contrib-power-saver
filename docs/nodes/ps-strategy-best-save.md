@@ -217,3 +217,7 @@ Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [
 The purple lines show savings per kWh.
 
 Read more about this in the [MMM-Tibber documentation](https://github.com/ottopaulsen/MMM-Tibber#show-savings).
+
+## Viewer
+
+If you like to analyze the data output by the node, take a look at the [Best Save Viewer](../faq/best-save-viewer.md).

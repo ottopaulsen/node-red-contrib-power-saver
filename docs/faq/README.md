@@ -1,4 +1,18 @@
+---
+sidebar:
+  - /faq/README.md
+  - /faq/best-save-viewer.md
+---
+
 # FAQ
+
+## How can I contribute?
+
+You can donate:
+
+<DonateButtons/>
+
+or take a look at the [contribute page](../contribute/README.md)
 
 ## Why is the best save schedule like this?
 

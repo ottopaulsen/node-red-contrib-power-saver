@@ -1,4 +1,10 @@
+---
+sidebar: auto
+---
+
 # Best Save Viewer
+
+## Tool
 
 Below is a tool you can use to look at how the Best Save node is working.
 In order to use it, you must copy the payload from output 3 on the node:
@@ -46,3 +52,6 @@ If the number is black, it could be used, but only if all other criteria are sat
 ## Something seems wrong
 
 The tool is not using the same code as the node, so in case there is a bg in the node (or in the tool) the numbers may not match.
+
+<hr/>
+<DonateButtons/>
