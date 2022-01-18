@@ -1,3 +1,4 @@
+const { path } = require("@vuepress/utils");
 module.exports = {
   lang: "en-US",
   title: "Power Saver",
@@ -76,5 +77,15 @@ module.exports = {
   head: [
     // ["script", { src: "https://c6.patreon.com/becomePatronButton.bundle.js" }],
     ["link", { rel: "icon", href: "/euro.png" }],
+  ],
+  plugins: [
+    [
+      "@vuepress/register-components",
+      {
+        components: {
+          BestSaveVerificator: path.resolve(__dirname, "./components/BestSaveVerificator.vue"),
+        },
+      },
+    ],
   ],
 };
