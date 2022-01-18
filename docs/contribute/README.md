@@ -4,13 +4,13 @@ sidebar: "auto"
 
 # Contribute
 
-## Patreon
+## Donate
 
 Developing software is time consuming. This solution has taken the better part of all my free time for about 3 quarters of a year. Getting something back would make it easier to also spend future time on this.
 
-I am trying out Patreon to see if it is possible to get something back for the work I do. The software is open source, and you can use it for free, but if you feel it has value, you can support the development by becoming a patron, paying a monthly fee of your choice.
+I am trying out Patreon and PayPals "Donate" to see if it is possible to get something back for the work I do. The software is open source, and you can use it for free, but if you feel it has value, you can support the development by donating or becoming a patron, paying a fee of your choice.
 
-<a href="https://www.patreon.com/bePatron?u=65948417" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
+<DonateButtons></DonateButtons>
 
 ## Code
 

@@ -70,20 +70,19 @@ module.exports = {
           ],
         },
       ],
-      "/contribute/": "auto",
-      "/changelog/": "auto",
+      "/faq/": [{ text: "FAQ", children: ["/faq/README.md"] }],
+      "/contribute/": [{ text: "Contribute", children: ["/contribute/README.md"] }],
+      "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   },
-  head: [
-    // ["script", { src: "https://c6.patreon.com/becomePatronButton.bundle.js" }],
-    ["link", { rel: "icon", href: "/euro.png" }],
-  ],
+  head: [["link", { rel: "icon", href: "/euro.png" }]],
   plugins: [
     [
       "@vuepress/register-components",
       {
         components: {
           BestSaveVerificator: path.resolve(__dirname, "./components/BestSaveVerificator.vue"),
+          DonateButtons: path.resolve(__dirname, "./components/DonateButtons.vue"),
         },
       },
     ],
