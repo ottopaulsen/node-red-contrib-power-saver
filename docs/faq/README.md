@@ -1,5 +1,14 @@
 # FAQ
 
+## Why is the best save schedule like this?
+
+There may be many reasons for the best save node planning like it does. Here are some considerations:
+
+- It is turning off only if it can save the `Min saving` amount in average per kWh per hour for the hours turned off, compared to the next hour that is on.
+- It will not turn off more than `Max per sequence` hours, so it may have to stay on through the most expensive hours, if there are more than the configured number of hours until the price is low enough.
+
+In order to understand how the node works, try out the [Best Save Viewer](./best-save-viewer.md)
+
 ## Why does the Best Save node not turn off the most expensive hours?
 
 Here is an example:
