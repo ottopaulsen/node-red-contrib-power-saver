@@ -31,7 +31,7 @@ It is a good application for cabins/heated storage spaces, as the entity never a
   - Change the `entity_id` vaule in the `Data` property
 
 ### Advanced set-up
-> Replace the `Set temperature` node with a [Cascade controller](./example-cascade-temperature-controller.md) to improve the heaters accuracy and response time.
+> Replace the `Set temperature` node with a [Cascade controller](./example-cascade-temperature-control.md) to improve the heaters accuracy and response time.
 
 ---
 ## Flow
