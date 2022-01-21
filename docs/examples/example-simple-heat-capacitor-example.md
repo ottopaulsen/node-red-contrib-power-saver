@@ -1,4 +1,4 @@
-# Simple heat capacitor startegy flow 
+# Simple heat capacitor strategy flow 
 
 ## Description
 The heat capacitor strategy utilizes a large body of mass, like your house or cabin, to procure heat at a time where electricity is cheap, and divest at a time where electricity is expensive.
