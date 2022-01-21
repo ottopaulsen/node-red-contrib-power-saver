@@ -25,6 +25,10 @@ This is the configuration you have used.
 
 Other information about the calculation etc.
 
+### Days
+
+Here you can see some summary and average for each date in the data set. Hover over the column title for explanation.
+
 ### Hours
 
 Here is your dta represented per hour, as well as potential savings calculated by the tool. Negative numbers are hidden, but you can select to show them.

@@ -5,7 +5,6 @@
     <h3>Config:</h3>
     <p>Max in sequence: {{ payload.config.maxHoursToSaveInSequence }}</p>
     <p>Min on after max: {{ payload.config.minHoursOnAfterMaxSequenceSaved }}</p>
-    <p>Max in sequence: {{ payload.config.maxHoursToSaveInSequence }}</p>
     <p>Minimum saving: {{ payload.config.minSaving }}</p>
     <p>Send when rescheduling: {{ payload.config.sendCurrentValueWhenRescheduling ? "Yes" : "No" }}</p>
     <p>If no schedule, output: {{ payload.config.outputIfNoSchedule ? "On" : "Off" }}</p>
@@ -15,6 +14,32 @@
     <p>Price source: {{ payload.source }}</p>
     <p>Current output: {{ payload.current ? "On" : "Off" }}</p>
     <hr />
+    <h3>Days:</h3>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th v-tooltip="'Number of hours for the day'">Hours</th>
+        <th v-tooltip="'Number of hours that are on'">Count on</th>
+        <th v-tooltip="'Number of hours that are off'">Count off</th>
+        <th v-tooltip="'Average price for the day'">Avg price</th>
+        <th v-tooltip="'Number of hours that are turned off (saved)'">Count saved</th>
+        <th v-tooltip="'Sum saved per kWh for the hours that are saved'">Sum saved</th>
+        <th v-tooltip="'Sum saved / count saved'">Avg saved 1</th>
+        <th v-tooltip="'Sum saved / Hours (whole day)'">Avg saved 2</th>
+      </tr>
+      <tr v-for="day in dayData" :key="day.date">
+        <td>{{ day.date }}</td>
+        <td>{{ day.countHours }}</td>
+        <td>{{ day.countOn }}</td>
+        <td>{{ day.countOff }}</td>
+        <td>{{ day.avgPrice }}</td>
+        <td>{{ day.countSaved }}</td>
+        <td>{{ day.sumSaved }}</td>
+        <td>{{ day.avgSaved1 }}</td>
+        <td>{{ day.avgSaved2 }}</td>
+      </tr>
+    </table>
+
     <h3>Hours:</h3>
 
     <div>
@@ -81,6 +106,7 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
+
 const { roundPrice } = require("../../../src/utils");
 const { DateTime } = require("luxon");
 
@@ -150,6 +176,40 @@ function calculatePotentialSavings() {
   }
 }
 
+// Daily data
+const dayData = computed(() => {
+  const hours = payload.hours;
+  const dates = [...new Set(hours.map((h) => DateTime.fromISO(h.start).toISODate()))];
+  const days = dates.map((d) => {
+    return { date: d };
+  });
+  days.forEach((d) => {
+    const dayHours = hours.filter((h) => DateTime.fromISO(h.start).toISODate() === d.date);
+    d.countHours = dayHours.length;
+    d.countOn = dayHours.filter((h) => h.onOff).length;
+    d.countOff = dayHours.filter((h) => !h.onOff).length;
+    d.countSaved = dayHours.filter((h) => h.saving !== null).length;
+    d.avgPrice = roundPrice(
+      dayHours.reduce((prev, h) => {
+        return prev + h.price;
+      }, 0.0) / d.countHours
+    );
+    d.sumSaved =
+      d.countSaved > 0
+        ? roundPrice(
+            dayHours.reduce((prev, h) => {
+              return prev + h.saving ?? 0;
+            }, 0)
+          )
+        : null;
+    d.avgSaved1 = d.countSaved > 0 ? roundPrice(d.sumSaved / d.countSaved) : null;
+    d.avgSaved2 = d.countSaved > 0 ? roundPrice(d.sumSaved / d.countHours) : null;
+  });
+  return days;
+});
+
+// Event handlers
+
 // Show source for sequence sums
 const highlightSequence = reactive([]);
 const clickedSequence = reactive({ row: null, col: null });
@@ -170,6 +230,8 @@ function showSavingSource(row, col) {
   clickedSaving.row = sameCell ? null : row;
   clickedSaving.col = sameCell ? null : col;
 }
+
+// Styling functions
 
 function priceClasses(i) {
   let hl =
