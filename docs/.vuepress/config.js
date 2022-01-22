@@ -75,7 +75,7 @@ module.exports = {
       "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   },
-  head: [["link", { rel: "icon", href: "/euro.png" }]],
+  head: [["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }]],
   plugins: [
     [
       "@vuepress/register-components",
