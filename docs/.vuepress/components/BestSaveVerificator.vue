@@ -116,6 +116,8 @@ const showNegative = ref(false);
 const show = ref("avg");
 const showSum = computed(() => show.value === "sum");
 
+console.log("This is the setup script");
+
 const dataString = ref("");
 watch(dataString, (value) => {
   convert(value);
