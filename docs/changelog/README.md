@@ -6,6 +6,11 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.3.1
+
+- Move doc to [power-saver.smoky.no](power-saver.smoky.no)
+- Make tool to test the result of the best save node: [Best Save Viewer](power-saver.smoky.no/faq/best-save-viewer.html)
+
 ## 3.3.0
 
 - Remove the config option to schedule from the current hour. The feature did not work, and it was not clear how it should work.

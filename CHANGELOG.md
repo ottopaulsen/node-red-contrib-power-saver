@@ -1,1 +1,1 @@
-[The changelog has moved here](https://ottopaulsen.github.io/node-red-contrib-power-saver/changelog/)
+[The changelog has moved here](http://power-saver.smoky.no/changelog/)

@@ -3,7 +3,7 @@ module.exports = {
   lang: "en-US",
   title: "Power Saver",
   description: "A Node-RED note to save money on hourly changing power prices",
-  base: "/node-red-contrib-power-saver/",
+  base: "/",
   publicPath: "/node-red-contrib-power-saver/",
   themeConfig: {
     contributors: false,
@@ -75,7 +75,17 @@ module.exports = {
       "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   },
-  head: [["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }]],
+  head: [
+    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
+    [
+      "script",
+      {
+        async: true,
+        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
+        crossorigin: "anonymous",
+      },
+    ],
+  ],
   plugins: [
     [
       "@vuepress/register-components",
