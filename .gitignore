@@ -5,6 +5,7 @@
 install.sh
 .gitignore
 .DS_Store
+package-lock.json
 mostSavedStrategy_v1.js
 mostSavedStrategy_v2.js
 .temp
