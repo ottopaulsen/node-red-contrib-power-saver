@@ -5,6 +5,7 @@ const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/converted-prices.json");
 const { testPlan: plan } = require("./test-utils");
+const { version } = require("../package.json");
 
 helper.init(require.resolve("node-red"));
 
@@ -441,6 +442,7 @@ describe("ps-strategy-lowest-price node", function () {
   it("handles period end on hour 0 - 12 hours", function (done) {
     const input = require("./data/tibber-data-end-0.json");
     const result = require("./data/tibber-result-end-0.json");
+    result.version = version;
     const flow = [
       {
         id: "n1",
@@ -474,6 +476,7 @@ describe("ps-strategy-lowest-price node", function () {
   it("handles period end on hour 0 - 24 hours", function (done) {
     const input = require("./data/tibber-data-end-0-24h.json");
     const result = require("./data/tibber-result-end-0-24h.json");
+    result.version = version;
     const flow = [
       {
         id: "n1",
@@ -507,6 +510,7 @@ describe("ps-strategy-lowest-price node", function () {
   it("fix bug", function (done) {
     const input = require("./data/lowest-price-input-missing-end.json");
     const result = require("./data/lowest-price-result-missing-end.json");
+    result.payload.version = version;
     const flow = [
       {
         id: "n1",
@@ -534,6 +538,7 @@ describe("ps-strategy-lowest-price node", function () {
         done();
       });
       const time = DateTime.fromISO(prices.priceData[10].start);
+      result.payload.time = time.toISO();
       n1.receive({ payload: makePayload(input, time) });
     });
   });

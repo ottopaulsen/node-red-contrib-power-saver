@@ -154,7 +154,6 @@ In this example, data is read from the Nord Pool sensor in HA via the `current s
         "minSaving": "0.03",
         "sendCurrentValueWhenRescheduling": true,
         "outputIfNoSchedule": "true",
-        "scheduleOnlyFromCurrentTime": "false",
         "x": 630,
         "y": 380,
         "wires": [

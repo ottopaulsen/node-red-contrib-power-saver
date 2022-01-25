@@ -55,7 +55,7 @@ describe("general-add-tariff node", function () {
     });
   });
 
-  it("should add to price", function (done) {
+  it("should add to price and config", function (done) {
     const flow = [
       {
         id: "n1",
@@ -76,6 +76,7 @@ describe("general-add-tariff node", function () {
     result.priceData[3].value = 2.0345;
     result.priceData[4].value = 2.9;
     result.priceData[5].value = 2.7;
+    result.config = { abc: 123 };
     helper.load(addTariff, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -83,7 +84,9 @@ describe("general-add-tariff node", function () {
         expect(msg).toHaveProperty("payload", result);
         done();
       });
-      n1.receive({ payload: prices });
+      const payload = cloneDeep(prices);
+      payload.config = { abc: 123 };
+      n1.receive({ payload });
     });
   });
   it("should add to price when only first day is valid", function (done) {

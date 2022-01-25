@@ -12,8 +12,13 @@ module.exports = function (RED) {
         return;
       }
 
+      const payload = { priceData, source };
+      if (msg.config) {
+        payload.config = msg.config;
+      }
+
       // Send output
-      node.send({ payload: { priceData, source } });
+      node.send({ payload });
     });
   }
 

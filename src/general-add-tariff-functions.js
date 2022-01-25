@@ -1,6 +1,5 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const { nodes } = require("node-red");
 const { roundPrice } = require("./utils");
 
 function buildAllHours(node, periods) {

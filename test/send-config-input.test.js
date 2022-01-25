@@ -5,9 +5,9 @@ const { DateTime } = require("luxon");
 const prices = require("./data/converted-prices.json");
 const result = require("./data/best-save-result.json");
 const reconfigResult = require("./data/reconfigResult");
-const adjustedResult = require("./data/adjustedResult");
 const { testPlan, equalPlan } = require("./test-utils");
 const { makeFlow, makePayload } = require("./strategy-best-save-test-utils");
+const cloneDeep = require("lodash.clonedeep");
 
 helper.init(require.resolve("node-red"));
 
@@ -49,9 +49,8 @@ describe("send config as input", () => {
       n1.receive({ payload: makePayload(prices, testPlan.time) });
     });
   });
-  it("should schedule only from selected time", function (done) {
+  it("should use another minHoursOnAfterMaxSequenceSaved", function (done) {
     const flow = makeFlow(3, 2);
-    flow[0].scheduleOnlyFromCurrentTime = false;
     const changeTime = DateTime.fromISO("2021-06-20T01:50:00.045+02:00");
     let pass = 1;
     helper.load(bestSave, flow, function () {
@@ -64,14 +63,14 @@ describe("send config as input", () => {
             expect(equalPlan(result, msg.payload)).toBeTruthy();
             n1.receive({
               payload: {
-                config: { scheduleOnlyFromCurrentTime: true },
+                config: { minHoursOnAfterMaxSequenceSaved: 5 },
                 time: changeTime,
               },
             });
             break;
           case 2:
             pass++;
-            reconfigResult.config.scheduleOnlyFromCurrentTime = true;
+            reconfigResult.config.minHoursOnAfterMaxSequenceSaved = 5;
             expect(equalPlan(reconfigResult, msg.payload)).toBeTruthy();
             const payload = makePayload(prices, testPlan.time);
             payload.time = changeTime;
@@ -86,9 +85,8 @@ describe("send config as input", () => {
       n1.receive({ payload: makePayload(prices, testPlan.time) });
     });
   });
-  it("should correct savings for passed hours", function (done) {
+  it("should accept config and price-data together", function (done) {
     const flow = makeFlow(3, 2);
-    const changeTime = DateTime.fromISO("2021-06-20T01:50:00.045+02:00");
     let pass = 1;
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
@@ -98,20 +96,17 @@ describe("send config as input", () => {
           case 1:
             pass++;
             expect(equalPlan(result, msg.payload)).toBeTruthy();
-            n1.receive({
-              payload: {
-                config: {
-                  maxHoursToSaveInSequence: 5,
-                  minSaving: 0.25,
-                  scheduleOnlyFromCurrentTime: true,
-                },
-                time: changeTime,
-              },
-            });
+            n1.receive({ payload: makePayloadWithConfigAndPrices(prices, testPlan.time) });
             break;
           case 2:
             pass++;
-            expect(equalPlan(adjustedResult, msg.payload)).toBeTruthy();
+            const priceSum = prices.priceData.reduce((prev, p) => {
+              return prev + p.value;
+            }, 0);
+            const planSum = msg.payload.hours.reduce((prev, h) => {
+              return prev + h.price;
+            }, 0);
+            expect(Math.round(planSum)).toEqual(Math.round(priceSum * 2));
             done();
         }
       });
@@ -119,3 +114,18 @@ describe("send config as input", () => {
     });
   });
 });
+
+function makePayloadWithConfigAndPrices(prices, time) {
+  const payload = cloneDeep(prices);
+  payload.priceData.forEach((e) => {
+    e.value = e.value * 2;
+  });
+  payload.time = time;
+  let entryTime = DateTime.fromISO(payload.time);
+  payload.priceData.forEach((e) => {
+    e.start = entryTime.toISO();
+    entryTime = entryTime.plus({ milliseconds: 10 });
+  });
+  payload.config = { minSaving: 0.01 };
+  return payload;
+}
