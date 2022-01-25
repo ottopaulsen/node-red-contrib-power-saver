@@ -70,7 +70,52 @@ All the variables in the config object are optional. You can send only those you
 
 The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
 
-When a config is sent like this, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
+When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
+
+However, you can send config and price data in the same message. Then both will be used .
+
+### Dynamic commands
+
+You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
+
+Commands can be sent together with config and/or price data, but the exact behavior is not defined.
+
+#### sendSchedule
+
+You can get the schedule sent to output 3 any time by sending a message like this to the node:
+
+```json
+"payload": {
+  "commands": {
+    "sendSchedule": true,
+  }
+}
+```
+
+When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
+
+#### reset
+
+You can reset data the node has saved in context by sending this message:
+
+```json
+"payload": {
+  "commands": {
+    "reset": true,
+  }
+}
+```
+
+When you do this, all historical data the node has saved is deleted, including the current schedule, so the result will be
+that the node shows status "No price data". When new price data is received, a schedule is calculated without considering any history.
+
+The nodes config is not deleted, as the node depends on it to work.
+
+::: warning
+This operation cannot be undone.
+
+However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
+:::
 
 ## Input
 
@@ -144,7 +189,9 @@ Example of output:
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": "true",
     "outputOutsidePeriod": "true"
-  }
+  },
+  "time": "2021-09-30T23:45:12.123+02:00",
+  "version": "3.1.2"
 }
 ```
 

@@ -120,7 +120,6 @@ In this example, data is read from Tibber and used to turn on/off a switch, sche
     "minSaving": "0.05",
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": "true",
-    "scheduleOnlyFromCurrentTime": "false",
     "x": 490,
     "y": 160,
     "wires": [["467a5fe.d0bbba", "5e485ff7.db156"], ["9c978d1c.ee76", "467a5fe.d0bbba"], ["42d8b632.402e38"]]

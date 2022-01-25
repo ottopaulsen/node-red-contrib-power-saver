@@ -5,8 +5,9 @@ const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const prices = require("./data/converted-prices.json");
 const result = require("./data/best-save-result.json");
-const { testPlan: plan } = require("./test-utils");
+const { testPlan: plan, equalPlan } = require("./test-utils");
 const { makeFlow } = require("./strategy-best-save-test-utils");
+const { version } = require("../package.json");
 
 helper.init(require.resolve("node-red"));
 
@@ -61,6 +62,11 @@ describe("ps-strategy-best-save node", function () {
   });
   it("should send new schedule on output 3", function (done) {
     const flow = makeFlow(3, 2);
+    const expected = cloneDeep(result);
+    expected.version = version;
+    expected.time = plan.time;
+    expected.source = "Tibber";
+    expected.current = false;
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -69,22 +75,22 @@ describe("ps-strategy-best-save node", function () {
       let countOn = 0;
       let countOff = 0;
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(equalPlan(expected, msg.payload)).toBeTruthy();
         n1.warn.should.not.be.called;
+        setTimeout(() => {
+          console.log("countOn = " + countOn + ", countOff = " + countOff);
+          expect(countOn).toEqual(7);
+          expect(countOff).toEqual(7);
+          done();
+        }, 900);
       });
       n3.on("input", function (msg) {
         countOn++;
         expect(msg).toHaveProperty("payload", true);
-        if (countOn === 7 && countOff === 7) {
-          done();
-        }
       });
       n4.on("input", function (msg) {
         countOff++;
         expect(msg).toHaveProperty("payload", false);
-        if (countOn === 7 && countOff === 7) {
-          done();
-        }
       });
       n1.receive({ payload: makePayload(prices, plan.time) });
     });

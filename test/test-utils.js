@@ -81,13 +81,7 @@ function equalPlan(expected, actual) {
     });
   });
 
-  [
-    "maxHoursToSaveInSequence",
-    "minHoursOnAfterMaxSequenceSaved",
-    "minSaving",
-    "outputIfNoSchedule",
-    "scheduleOnlyFromCurrentTime",
-  ].forEach((key) => {
+  ["maxHoursToSaveInSequence", "minHoursOnAfterMaxSequenceSaved", "minSaving", "outputIfNoSchedule"].forEach((key) => {
     if (expected.config[key] != actual.config[key]) {
       console.log(
         "Different config values for " + key + ": Expected " + expected.config[key] + ", got " + actual.config[key]

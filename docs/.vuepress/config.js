@@ -1,8 +1,10 @@
+const { path } = require("@vuepress/utils");
 module.exports = {
   lang: "en-US",
   title: "Power Saver",
   description: "A Node-RED note to save money on hourly changing power prices",
-  base: "/node-red-contrib-power-saver/",
+  base: "/",
+  publicPath: "/node-red-contrib-power-saver/",
   themeConfig: {
     contributors: false,
     navbar: [
@@ -17,6 +19,10 @@ module.exports = {
       {
         text: "Examples",
         link: "/examples/",
+      },
+      {
+        text: "FAQ",
+        link: "/faq/",
       },
       {
         text: "Contribute",
@@ -64,12 +70,31 @@ module.exports = {
           ],
         },
       ],
-      "/contribute/": "auto",
-      "/changelog/": "auto",
+      "/faq/": [{ text: "FAQ", children: ["/faq/README.md"] }],
+      "/contribute/": [{ text: "Contribute", children: ["/contribute/README.md"] }],
+      "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   },
   head: [
-    // ["script", { src: "https://c6.patreon.com/becomePatronButton.bundle.js" }],
-    ["link", { rel: "icon", href: "/euro.png" }],
+    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
+    [
+      "script",
+      {
+        async: true,
+        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
+        crossorigin: "anonymous",
+      },
+    ],
+  ],
+  plugins: [
+    [
+      "@vuepress/register-components",
+      {
+        components: {
+          BestSaveVerificator: path.resolve(__dirname, "./components/BestSaveVerificator.vue"),
+          DonateButtons: path.resolve(__dirname, "./components/DonateButtons.vue"),
+        },
+      },
+    ],
   ],
 };
