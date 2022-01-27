@@ -12,7 +12,7 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 
 ---
 
-## Requirements:
+## Requirements
 
 > Home assistant integrated with Node-RED
 
@@ -20,7 +20,7 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 
 > A climate entity
 
-## Instructions:
+## Instructions
 
 > Create an `input_number` entity in Home Assistant names `setpoint`
 

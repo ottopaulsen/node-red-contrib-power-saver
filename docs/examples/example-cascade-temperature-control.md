@@ -18,7 +18,7 @@ A cascade temperature controller is a controller which utilizes the input/setpoi
 
 ---
 
-## Requirements:
+## Requirements
 
 > Home assistant integrated with Node-RED
 
@@ -26,7 +26,7 @@ A cascade temperature controller is a controller which utilizes the input/setpoi
 
 > A climate entity
 
-## Instructions:
+## Instructions
 
 > Create an `input_number` entity in Home Assistant and name it "cascade_setpoint"
 
