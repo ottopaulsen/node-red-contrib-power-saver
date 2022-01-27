@@ -11,7 +11,7 @@ const time_cool_1c = 40
 const max_temp_adjustment = 1
 const min_saving_NOK_kWh = 0.1
 
-describe("Test Temperature manipulation strategy functions", () => {
+describe("Test heat capacitor strategy functions", () => {
   before(function() {
     prices =  converted_prices.priceData.slice(0, 1).map((p) => p.value);
     decreasing_24h_prices =  decreasing_end_prices.priceData.slice(0, 1).map((p) => p.value);
