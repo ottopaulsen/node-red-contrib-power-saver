@@ -4,7 +4,6 @@ module.exports = {
   title: "Power Saver",
   description: "A Node-RED note to save money on hourly changing power prices",
   base: "/",
-  publicPath: "/node-red-contrib-power-saver/",
   themeConfig: {
     contributors: false,
     navbar: [

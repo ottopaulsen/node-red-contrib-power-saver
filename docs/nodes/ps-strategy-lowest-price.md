@@ -94,6 +94,20 @@ You can get the schedule sent to output 3 any time by sending a message like thi
 
 When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
 
+#### sendOutput
+
+You can get the node to send the current output to output 1 or 2 any time by sending a message like this to the node:
+
+```json
+"payload": {
+  "commands": {
+    "sendOutput": true,
+  }
+}
+```
+
+When you do this, the current schedule is actually recalculated based on the last received data. The current output is sent to output 1 or 2, and the schedule is sent to output 3.
+
 #### reset
 
 You can reset data the node has saved in context by sending this message:
