@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.3.2
+
+- Add command sendOutput.
+
 ## 3.3.1
 
 - Move doc to [power-saver.smoky.no](power-saver.smoky.no)

@@ -63,7 +63,7 @@ function handleStrategyInput(node, msg, doPlanning) {
 
   const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
   const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-  if (sendNow) {
+  if (sendNow || !!msg.payload.commands?.sendOutput) {
     output1 = currentValue ? { payload: true } : null;
     output2 = currentValue ? null : { payload: false };
   }
