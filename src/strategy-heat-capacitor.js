@@ -1,3 +1,4 @@
+"use strict";
 const { DateTime } = require("luxon");
 const { validateInput } = require("./handle-input");
 const { run_buy_sell_algorithm, find_temp } = require("./strategy-heat-capacitor-functions");

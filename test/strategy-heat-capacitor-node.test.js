@@ -1,3 +1,4 @@
+"use strict";
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("expect");

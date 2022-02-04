@@ -1,3 +1,4 @@
+"use strict";
 const { DateTime } = require("luxon");
 
 function calculate_opportunities(prices, pattern, amount) {
@@ -89,7 +90,7 @@ function remove_low_buysell_pairs(buy_sell_pattern, buy_prices, sell_prices, min
   const buy_sell_clone = Array.from(buy_sell_pattern);
 
   while (min_saving_NOK_kWh >= min_saving) {
-    dictlist = calculate_value_dictlist(buy_sell_clone, buy_prices, sell_prices, start_date);
+    const dictlist = calculate_value_dictlist(buy_sell_clone, buy_prices, sell_prices, start_date);
     if (dictlist.length === 0) {
       return buy_sell_clone;
     }
