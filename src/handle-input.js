@@ -180,5 +180,5 @@ function validateInput(node, msg) {
 }
 
 module.exports = {
-  handleStrategyInput,
+  handleStrategyInput, validateInput
 };

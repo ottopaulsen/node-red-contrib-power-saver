@@ -43,3 +43,4 @@ A value of 0.65 will change the setpoint temperature by $\pm0.65$. Please note t
 ### Min Savings
 
 The heating and cooling periods can be seen as buy - sell pairs. That is, heat is procured at time t, and the same heat is sold at t+dt. The savings can then be estimated as the price difference $S=price(t+dt) - price(t)$. If this saving is less that the minimum savings requirement, it will be removed. The algorithm removes these in a prioritized order, starting with the pair with the smallest gain.
+

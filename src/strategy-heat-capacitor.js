@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-//const { loadDayData } = require("./utils");
+const { validateInput } = require("./handle-input");
 const { run_buy_sell_algorithm, find_temp } = require("./strategy-heat-capacitor-functions");
 //const { difference } = require("lodash");
 
@@ -18,30 +18,37 @@ module.exports = function (RED) {
     }
 
     this.on("input", function (msg) {
-      // Using msg.* to change specific TM property.
-      if (msg.hasOwnProperty("time_heat_1c")) node.time_heat_1c = Number(msg.time_heat_1c);
-      if (msg.hasOwnProperty("time_cool_1c")) node.time_cool_1c = Number(msg.time_cool_1c);
-      if (msg.hasOwnProperty("max_temp_adjustment")) node.max_temp_adjustment = Number(msg.max_temp_adjustment);
-      if (msg.hasOwnProperty("min_saving_NOK_kWh")) node.min_saving_NOK_kWh = Number(msg.min_saving_NOK_kWh);
 
-      if (msg.topic == "configure") {
-        node.setpoint = Number(msg.payload);
-      } else {
-        // anything else is assumed to be a process value
+      if(validateInput(node,msg)){
+        // Using msg.* to change specific TM property.
+        if (msg.hasOwnProperty("payload")) {
+          if (msg.payload.hasOwnProperty("config")) {
+            if (msg.payload.config.hasOwnProperty("time_heat_1c")) node.time_heat_1c = Number(msg.payload.config.time_heat_1c);
+            if (msg.payload.config.hasOwnProperty("time_cool_1c")) node.time_cool_1c = Number(msg.payload.config.time_cool_1c);
+            if (msg.payload.config.hasOwnProperty("max_temp_adjustment")) node.max_temp_adjustment = Number(msg.payload.config.max_temp_adjustment);
+            if (msg.payload.config.hasOwnProperty("min_saving_NOK_kWh")) node.min_saving_NOK_kWh = Number(msg.payload.config.min_saving_NOK_kWh);
+          }
+          if (msg.payload.hasOwnProperty("priceData")){
+  
+            // anything else is assumed to be a process value
+    
+            node.priceData = msg.payload.priceData;
+    
+            node.schedule = run_buy_sell_algorithm(
+              node.priceData,
+              node.time_heat_1c,
+              node.time_cool_1c,
+              node.max_temp_adjustment,
+              node.min_saving_NOK_kWh
+            );
 
-        node.priceData = msg.payload.priceData;
-
-        node.schedule = run_buy_sell_algorithm(
-          node.priceData,
-          node.time_heat_1c,
-          node.time_cool_1c,
-          node.max_temp_adjustment,
-          node.min_saving_NOK_kWh
-        );
-        node.dT = find_temp(DateTime.now(), node.schedule);
-
-        // Send output
-        node.send([{ payload: node.dT }, { payload: node.schedule }]);
+            //node.dT = find_temp(DateTime.now(), node.schedule);
+            node.dT = find_temp(msg.payload.time, node.schedule);
+    
+            // Send output
+            node.send([{ payload: node.dT }, { payload: node.schedule }]);
+          } 
+        } 
       }
     });
   }
