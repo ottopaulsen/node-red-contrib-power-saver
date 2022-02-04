@@ -22,8 +22,8 @@ describe("Test heat capacitor strategy functions", () => {
   });
   
   it("Can calculate procurement opportunities", () => {
-    let my_prices = prices.slice(0,1)
-    let my_buy_pattern= Array(5).fill(1)
+    const my_prices = prices.slice(0,1)
+    const my_buy_pattern= Array(5).fill(1)
     //Calculate what it will cost to procure/sell 1 kWh as a function of time
     result = calculate_opportunities(my_prices, my_buy_pattern, 1)
     //Remove float precitions errors by rounding
@@ -33,45 +33,45 @@ describe("Test heat capacitor strategy functions", () => {
   
   it("Can find procuremnt pattern", () => {
     //Use a simple pricelist
-    let my_prices = [1,2,2,1,8,1]
+    const my_prices = [1,2,2,1,8,1]
 
-    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
-    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+    const buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    const sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
 
-    let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
+    const my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
 
     expect(my_buy_sell).toEqual([[0,141],[100,240]]);
   });
 
   it("Dictlist test", () => {
-    let my_prices = [1,2,2,1,8,1]
-    let my_buy_sell_indexes = [[0,173],[131,251]]
-    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
-    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+    const my_prices = [1,2,2,1,8,1]
+    const my_buy_sell_indexes = [[0,173],[131,251]]
+    const buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    const sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
     result = calculate_value_dictlist(my_buy_sell_indexes, buy_prices, sell_prices, start_date)
     
     expect(result[0].sell_date).toEqual(start_date.plus({minutes: 131}));
   });
 
   it("Dictlist test at decreasing end", () => {
-    let my_prices =  decreasing_end_prices.priceData.map((p) => p.value);
-    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
-    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+    const my_prices =  decreasing_end_prices.priceData.map((p) => p.value);
+    const buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    const sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
 
-    let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
-    let my_schedule = calculate_schedule(start_date , my_buy_sell, buy_prices, sell_prices, max_temp_adjustment)
+    const my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
+    const my_schedule = calculate_schedule(start_date , my_buy_sell, buy_prices, sell_prices, max_temp_adjustment)
     expect(my_schedule.temperatures.at(-1)).toEqual(-max_temp_adjustment);
   });
 
   it("Check removal of low benefit buy-sell pairs", () => {
-    let my_prices = [1,2,1,1.05,1,2]
-    let buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
-    let sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
-    let my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
+    const my_prices = [1,2,1,1.05,1,2]
+    const buy_prices = calculate_opportunities(my_prices, buy_pattern, 1)
+    const sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
+    const my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
 
-    let result = remove_low_buysell_pairs(my_buy_sell, buy_prices,sell_prices, min_saving_NOK_kWh, start_date)
+    const result = remove_low_buysell_pairs(my_buy_sell, buy_prices,sell_prices, min_saving_NOK_kWh, start_date)
     //Should remove the sell at 1.05 and the re-buy at 1 (only 0.05 difference)
-    let compare = [my_buy_sell[0].slice(0,2),[my_buy_sell[1][0],my_buy_sell[1][2]]]
+    const compare = [my_buy_sell[0].slice(0,2),[my_buy_sell[1][0],my_buy_sell[1][2]]]
 
     expect(result).toEqual(compare);
   });
