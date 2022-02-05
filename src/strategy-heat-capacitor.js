@@ -52,7 +52,7 @@ module.exports = function (RED) {
 
             node.T = node.setpoint + node.dT;
             // Send output
-            node.send([{payload: node.T, topic = "setpoint" }, { payload: node.dT, topic = "adjustment" }, { payload: node.schedule }]);
+            node.send([{payload: node.T, topic: "setpoint" }, { payload: node.dT, topic: "adjustment" }, { payload: node.schedule }]);
           } 
         } 
       }
