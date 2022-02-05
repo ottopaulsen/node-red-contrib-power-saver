@@ -3,20 +3,21 @@
     category: "Power Saver",
     color: "#FFCC66",
     defaults: {
-      name: { value: "Temp. Adj." },
-      time_heat_1c: { value: 50, required: true, align: "left" },
-      time_cool_1c: { value: 50, required: true, align: "left" },
-      max_temp_adjustment: { value: 0.5, required: true, align: "left" },
-      min_saving_NOK_kWh: { value: 0.08, required: true, align: "left" },
+      name: { value: "Heat capacitor" },
+      timeHeat1C: { value: 50, required: true, align: "left" },
+      timeCool1C: { value: 50, required: true, align: "left" },
+      maxTempAdjustment: { value: 0.5, required: true, align: "left" },
+      minSavings: { value: 0.08, required: true, align: "left" },
+      setpoint: { value: 23, required: true, align: "left" },
     },
     inputs: 1,
-    outputs: 2,
+    outputs: 3,
     color: "#FFCC66",
     icon: "font-awesome/fa-bar-chart",
     label: function () {
-      return this.name || "Temp. Adj.";
+      return this.name || "Heat capacitor";
     },
-    outputLabels: ["dT", "schedule"],
+    outputLabels: ["T","dT", "schedule"],
   });
 </script>
 
@@ -26,20 +27,24 @@
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
   <div class="form-row">
-    <label for="node-input-time_heat_1c"><i class="icon-tag"></i> Time +1C [minutes]</label>
-    <input type="text" id="node-input-time_heat_1c" placeholder="Timep1c" />
+    <label for="node-input-timeHeat1C"><i class="icon-tag"></i> Time +1C [minutes]</label>
+    <input type="text" id="node-input-timeHeat1C" placeholder="Timep1c" />
   </div>
   <div class="form-row">
-    <label for="node-input-time_cool_1c"><i class="icon-tag"></i> Time -1C [minutes]</label>
-    <input type="text" id="node-input-time_cool_1c" placeholder="Timem1c" />
+    <label for="node-input-timeCool1C"><i class="icon-tag"></i> Time -1C [minutes]</label>
+    <input type="text" id="node-input-timeCool1C" placeholder="Timem1c" />
   </div>
   <div class="form-row">
-    <label for="node-input-max_temp_adjustment"><i class="icon-tag"></i> Max temp adj.</label>
-    <input type="text" id="node-input-max_temp_adjustment" placeholder="Max DT" />
+    <label for="node-input-setpoint"><i class="icon-tag"></i> Setpoint</label>
+    <input type="text" id="node-input-setpoint" placeholder="Setpoint" />
   </div>
   <div class="form-row">
-    <label for="node-input-min_saving_NOK_kWh"><i class="icon-tag"></i> Min Savings [NOK/kWh]</label>
-    <input type="text" id="node-input-min_saving_NOK_kWh" placeholder="MinSav" />
+    <label for="node-input-maxTempAdjustment"><i class="icon-tag"></i> Max temp adj.</label>
+    <input type="text" id="node-input-maxTempAdjustment" placeholder="Max DT" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-minSavings"><i class="icon-tag"></i> Min Savings [NOK/kWh]</label>
+    <input type="text" id="node-input-minSavings" placeholder="MinSav" />
   </div>
 </script>
 
@@ -49,12 +54,9 @@
   <p>.</p>
 
   <ul>
-    <li>
-      <b>Time +1C [minutes]</b> - Time required by the system to increase 1C <b>msg.topic</b> set to
-      <code>setpoint</code> and <b>msg.payload</b> set to the required floating point value, or by passing the value in
-      <b>msg.setpoint</b>.
-    </li>
-    <li><b>Time -1C [minutes]</b> - Time to loose 1C when no heat is applied <b>msg.prop_band</b>.</li>
+    <li><b>Time +1C [minutes]</b> - Time required by the system to increase 1C </li>
+    <li><b>Time -1C [minutes]</b> - Time to loose 1C when no heat is applied </li>
+    <li><b>Setpoint [C]</b> - The ideal temperature</li>
     <li><b>Max temp adj.</b> - Max temperature adjustment</li>
     <li><b>Min Savings [NOK/kWh]</b> - Min savings per cycle</li>
   </ul>

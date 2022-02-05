@@ -65,10 +65,17 @@ describe("ps-strategy-heat-capacitor node", function () {
     helper.load(node, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      let bothRecieved = false
       n2.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", 22.5);
+        n1.warn.should.not.be.called;
+        (bothRecieved)? done(): bothRecieved=true;
+      });
+      n3.on("input", function (msg) {
         expect(msg).toHaveProperty("payload", -0.5);
         n1.warn.should.not.be.called;
-        done();
+        (bothRecieved)? done(): bothRecieved=true;
       });
       const time = DateTime.fromISO(prices.priceData[10].start);
       n1.receive({ payload: makePayload(prices, time) });
@@ -83,14 +90,16 @@ function makeFlow() {
       id: "n1",
       type: "ps-strategy-heat-capacitor",
       name: "Temp. Adj.",
-      time_heat_1c: 60,
-      time_cool_1c: 50,
-      max_temp_adjustment: 0.5,
-      min_saving_NOK_kWh: 0.08,
-      wires: [["n2"], ["n3"]],
+      timeHeat1C: 60,
+      timeCool1C: 50,
+      setpoint: 23,
+      maxTempAdjustment: 0.5,
+      minSavings: 0.08,
+      wires: [["n2"], ["n3"], ["n4"]],
     },
     { id: "n2", type: "helper" },
     { id: "n3", type: "helper" },
+    { id: "n4", type: "helper" },
   ];
 }
 

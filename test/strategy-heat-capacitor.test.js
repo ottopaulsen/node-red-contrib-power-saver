@@ -14,17 +14,17 @@ describe("Test heat capacitor strategy functions", () => {
   let prices, decreasing_24h_prices, start_date, buy_pattern, sell_pattern;
   
   //User input
-  const time_heat_1c = 60
-  const time_cool_1c = 40
-  const max_temp_adjustment = 1
-  const min_saving_NOK_kWh = 0.1
+  const timeHeat1C = 60
+  const timeCool1C = 40
+  const maxTempAdjustment = 1
+  const minSavings = 0.1
 
   before(function() {
     prices =  converted_prices.priceData.slice(0, 1).map((p) => p.value);
     decreasing_24h_prices =  decreasing_end_prices.priceData.slice(0, 1).map((p) => p.value);
     start_date =  DateTime.fromISO(converted_prices.priceData[0].start);
-    buy_pattern= Array(Math.round(time_heat_1c*max_temp_adjustment*2)).fill(1)
-    sell_pattern= Array(Math.round(time_cool_1c*max_temp_adjustment*2)).fill(1)
+    buy_pattern= Array(Math.round(timeHeat1C*maxTempAdjustment*2)).fill(1)
+    sell_pattern= Array(Math.round(timeCool1C*maxTempAdjustment*2)).fill(1)
   });
   
   it("Can calculate procurement opportunities", () => {
@@ -65,8 +65,8 @@ describe("Test heat capacitor strategy functions", () => {
     const sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
 
     const my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
-    const my_schedule = calculate_schedule(start_date , my_buy_sell, buy_prices, sell_prices, max_temp_adjustment)
-    expect(my_schedule.temperatures.at(-1)).toEqual(-max_temp_adjustment);
+    const my_schedule = calculate_schedule(start_date , my_buy_sell, buy_prices, sell_prices, maxTempAdjustment)
+    expect(my_schedule.temperatures.at(-1)).toEqual(-maxTempAdjustment);
   });
 
   it("Check removal of low benefit buy-sell pairs", () => {
@@ -75,7 +75,7 @@ describe("Test heat capacitor strategy functions", () => {
     const sell_prices = calculate_opportunities(my_prices, sell_pattern, 1)
     const my_buy_sell = find_best_buy_sell_pattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
 
-    const result = remove_low_buysell_pairs(my_buy_sell, buy_prices,sell_prices, min_saving_NOK_kWh, start_date)
+    const result = remove_low_buysell_pairs(my_buy_sell, buy_prices,sell_prices, minSavings, start_date)
     //Should remove the sell at 1.05 and the re-buy at 1 (only 0.05 difference)
     const compare = [my_buy_sell[0].slice(0,2),[my_buy_sell[1][0],my_buy_sell[1][2]]]
 

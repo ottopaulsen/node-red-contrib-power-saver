@@ -8,10 +8,11 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const node = this;
 
-    node.time_heat_1c = Number(config.time_heat_1c);
-    node.time_cool_1c = Number(config.time_cool_1c);
-    node.max_temp_adjustment = Number(config.max_temp_adjustment);
-    node.min_saving_NOK_kWh = Number(config.min_saving_NOK_kWh);
+    node.timeHeat1C = Number(config.timeHeat1C);
+    node.timeCool1C = Number(config.timeCool1C);
+    node.setpoint = Number(config.setpoint);
+    node.maxTempAdjustment = Number(config.maxTempAdjustment);
+    node.minSavings = Number(config.minSavings);
     // sanitise disabled output as this is used when all else fails
     if (isNaN(node.disabled_op)) {
       node.disabled_op = 0;
@@ -23,10 +24,11 @@ module.exports = function (RED) {
         // Using msg.* to change specific TM property.
         if (msg.hasOwnProperty("payload")) {
           if (msg.payload.hasOwnProperty("config")) {
-            if (msg.payload.config.hasOwnProperty("time_heat_1c")) node.time_heat_1c = Number(msg.payload.config.time_heat_1c);
-            if (msg.payload.config.hasOwnProperty("time_cool_1c")) node.time_cool_1c = Number(msg.payload.config.time_cool_1c);
-            if (msg.payload.config.hasOwnProperty("max_temp_adjustment")) node.max_temp_adjustment = Number(msg.payload.config.max_temp_adjustment);
-            if (msg.payload.config.hasOwnProperty("min_saving_NOK_kWh")) node.min_saving_NOK_kWh = Number(msg.payload.config.min_saving_NOK_kWh);
+            if (msg.payload.config.hasOwnProperty("timeHeat1C")) node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
+            if (msg.payload.config.hasOwnProperty("timeCool1C")) node.timeCool1C = Number(msg.payload.config.timeCool1C);
+            if (msg.payload.config.hasOwnProperty("setpoint")) node.timeCool1C = Number(msg.payload.config.setpoint);
+            if (msg.payload.config.hasOwnProperty("maxTempAdjustment")) node.maxTempAdjustment = Number(msg.payload.config.maxTempAdjustment);
+            if (msg.payload.config.hasOwnProperty("minSavings")) node.minSavings = Number(msg.payload.config.minSavings);
           }
           if (msg.payload.hasOwnProperty("priceData")){
   
@@ -36,17 +38,17 @@ module.exports = function (RED) {
     
             node.schedule = run_buy_sell_algorithm(
               node.priceData,
-              node.time_heat_1c,
-              node.time_cool_1c,
-              node.max_temp_adjustment,
-              node.min_saving_NOK_kWh
+              node.timeHeat1C,
+              node.timeCool1C,
+              node.maxTempAdjustment,
+              node.minSavings
             );
 
             //node.dT = find_temp(DateTime.now(), node.schedule);
             node.dT = find_temp(msg.payload.time, node.schedule);
-    
+            node.T = node.setpoint + node.dT;
             // Send output
-            node.send([{ payload: node.dT }, { payload: node.schedule }]);
+            node.send([{payload: node.T}, { payload: node.dT }, { payload: node.schedule }]);
           } 
         } 
       }
