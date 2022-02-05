@@ -26,7 +26,10 @@ module.exports = function (RED) {
           if (msg.payload.hasOwnProperty("config")) {
             if (msg.payload.config.hasOwnProperty("timeHeat1C")) node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
             if (msg.payload.config.hasOwnProperty("timeCool1C")) node.timeCool1C = Number(msg.payload.config.timeCool1C);
-            if (msg.payload.config.hasOwnProperty("setpoint")) node.setpoint = Number(msg.payload.config.setpoint);
+            if (msg.payload.config.hasOwnProperty("setpoint")) {
+              node.setpoint = Number(msg.payload.config.setpoint);
+              config.setpoint=node.setpoint;
+            }
             if (msg.payload.config.hasOwnProperty("maxTempAdjustment")) node.maxTempAdjustment = Number(msg.payload.config.maxTempAdjustment);
             if (msg.payload.config.hasOwnProperty("minSavings")) node.minSavings = Number(msg.payload.config.minSavings);
           }
