@@ -49,10 +49,10 @@ module.exports = function (RED) {
             }else{
               node.dT = find_temp(DateTime.now(), node.schedule);
             }
-            
+
             node.T = node.setpoint + node.dT;
             // Send output
-            node.send([{payload: node.T}, { payload: node.dT }, { payload: node.schedule }]);
+            node.send([{payload: node.T, topic = "setpoint" }, { payload: node.dT, topic = "adjustment" }, { payload: node.schedule }]);
           } 
         } 
       }
