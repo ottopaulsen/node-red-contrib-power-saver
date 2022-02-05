@@ -18,6 +18,10 @@ module.exports = function (RED) {
       node.disabled_op = 0;
     }
 
+    node.on("close", function () {
+      clearTimeout(node.schedulingTimeout);
+    });
+
     this.on("input", function (msg) {
 
       if(validateInput(node,msg)){
