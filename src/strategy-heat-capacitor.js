@@ -21,7 +21,7 @@ module.exports = function (RED) {
     this.on("input", function (msg) {
 
       if(validateInput(node,msg)){
-        // Using msg.* to change specific TM property.
+        // Using msg.payload.config to change specific properties
         if (msg.hasOwnProperty("payload")) {
           if (msg.payload.hasOwnProperty("config")) {
             if (msg.payload.config.hasOwnProperty("timeHeat1C")) node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
@@ -32,8 +32,7 @@ module.exports = function (RED) {
           }
           if (msg.payload.hasOwnProperty("priceData")){
   
-            // anything else is assumed to be a process value
-    
+            // recieved priceData
             node.priceData = msg.payload.priceData;
     
             node.schedule = run_buy_sell_algorithm(

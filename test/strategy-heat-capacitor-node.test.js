@@ -59,6 +59,22 @@ describe("ps-strategy-heat-capacitor node", function () {
     });
   });
 
+  it("should be configurable", function (done) {
+    const flow = [{ id: "n1", type: "ps-strategy-heat-capacitor", name: "Heat Capacitor" }];
+    helper.load(node, flow, function () {
+      const n1 = helper.getNode("n1");
+      n1.receive({ payload: {config: {timeHeat1C: 1, timeCool1C:2, setpoint: 3, maxTempAdjustment: 4, minSavings: 5}} });
+      expect(n1).toHaveProperty("timeHeat1C", 1);
+      expect(n1).toHaveProperty("timeCool1C", 2);
+      expect(n1).toHaveProperty("setpoint", 3);
+      expect(n1).toHaveProperty("maxTempAdjustment", 4);
+      expect(n1).toHaveProperty("minSavings", 5);
+      n1.receive({"payload":{"config":{"setpoint":24}}})
+      expect(n1).toHaveProperty("setpoint", 24);
+      done();
+    });
+  });
+
   it("should plan correctly", function (done) {
     const result = 0.5
     const flow = makeFlow();
