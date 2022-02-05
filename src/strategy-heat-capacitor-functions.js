@@ -140,13 +140,13 @@ function find_temp(date, schedule) {
   return schedule.temperatures[diff];
 }
 
-function run_buy_sell_algorithm(price_data, time_heat_1c, time_cool_1c, max_temp_adjustment, min_saving_NOK_kWh) {
+function run_buy_sell_algorithm(price_data, timeHeat1C, time_cool_1c, max_temp_adjustment, min_saving_NOK_kWh) {
   const prices = [...price_data.map((pd) => pd.value)];
   const start_date = DateTime.fromISO(price_data[0].start);
 
   //pattern for how much power is procured/sold when.
   //This has, for now, just a flat aquisition/divestment profile
-  const buy_pattern = Array(Math.round(time_heat_1c * max_temp_adjustment * 2)).fill(1);
+  const buy_pattern = Array(Math.round(timeHeat1C * max_temp_adjustment * 2)).fill(1);
   const sell_pattern = Array(Math.round(time_cool_1c * max_temp_adjustment * 2)).fill(1);
 
   //Calculate what it will cost to procure/sell 1 kWh as a function of time

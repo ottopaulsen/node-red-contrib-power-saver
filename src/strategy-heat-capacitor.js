@@ -44,8 +44,12 @@ module.exports = function (RED) {
               node.minSavings
             );
 
-            //node.dT = find_temp(DateTime.now(), node.schedule);
-            node.dT = find_temp(msg.payload.time, node.schedule);
+            if (msg.payload.hasOwnProperty("time")){
+              node.dT = find_temp(msg.payload.time, node.schedule);
+            }else{
+              node.dT = find_temp(DateTime.now(), node.schedule);
+            }
+            
             node.T = node.setpoint + node.dT;
             // Send output
             node.send([{payload: node.T}, { payload: node.dT }, { payload: node.schedule }]);
