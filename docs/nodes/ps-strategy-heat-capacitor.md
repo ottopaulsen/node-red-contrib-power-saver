@@ -98,6 +98,12 @@ There are three outputs. You use only those you need for your purpose.
 
 The setpoint temperature intended to be passed to a climate entity.
 
+Example:
+
+```json
+{"payload":22.5,"topic":"setpoint","_msgid":"e1550e5ed179e9cd"}
+```
+
 ### Output 2 - $\Delta T$ 
 
 The number of degrees which has been added or subtracted to the setpoint
@@ -108,7 +114,7 @@ The current schedule as well as some other information. You can use this to see 
 
 Example:
 
-```json:no-line-numbers
+```json
 {
   "payload": {
     "startAt": "2022-02-06T00:00:00.000+01:00",
