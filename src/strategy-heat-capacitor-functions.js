@@ -122,6 +122,10 @@ function calculateSchedule(startDate, buySellStackedArray, buyPrices, sellPrices
     temperatures: Array(arrayLength),
     maxTempAdjustment: maxTempAdjustment,
     durationInMinutes: arrayLength,
+    boostTempHeat: boostTempHeat,
+    boostTempCool: boostTempCool,
+    heatingDuration: buyDuration,
+    coolingDuration: sellDuration
   };
   
   if (buySellStackedArray[0].length === 0) { //No procurements or sales scheduled
