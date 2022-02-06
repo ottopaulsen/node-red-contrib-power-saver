@@ -6,7 +6,7 @@ The controller changes the setpoint of climate entities to regulate the temperat
 
 ### An example
 
-A room has a temperature sensor and en electric heater. Given a setpoint temperature, the controller can make the sensor match the given value by adjusting the temperature settings of the electric heater. This type of control usually reacts faster and is more accurate then the alternative of simply changing the temperature settings of the heater.
+A room has a temperature sensor and en electric heater. Given a setpoint temperature, the controller can make the sensor match the given value by adjusting the temperature settings of the electric heater. This type of control usually reacts faster and is more accurate then the alternative of simply changing the temperature settings of the heater. The flow requires that node-red, home assistant, and the connection to the climate entity are stable.
 
 ![cascade_flow](../images/node-ps-strategy-heat-capacitor-cascade-control.png)
 

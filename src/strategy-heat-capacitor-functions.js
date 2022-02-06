@@ -66,20 +66,24 @@ function calculateValueDictlist(buySell, buyPrices, sellPrices, startDate) {
       const prevSellDatetime = startDate.plus({ minutes: buySell[1][i - 1] });
       buySellValueDictList.push({
         type: "sell - buy",
-        value: sellPrices[buySell[1][i - 1]] - buyPrices[buySell[0][i]],
-        buy: buySell[0][i],
+        tradeValue: sellPrices[buySell[1][i - 1]] - buyPrices[buySell[0][i]],
+        buyIndex: buySell[0][i],
         buyDate: buyDatetime,
-        sell: buySell[1][i - 1],
+        buyPrice:  buyPrices[buySell[0][i]],
+        sellIndex: buySell[1][i - 1],
         sellDate: prevSellDatetime,
+        sellPrice: sellPrices[buySell[1][i - 1]]
       });
     }
     buySellValueDictList.push({
       type: "buy - sell",
-      value: sellPrices[buySell[1][i]] - buyPrices[buySell[0][i]],
-      buy: buySell[0][i],
+      tradeValue: sellPrices[buySell[1][i]] - buyPrices[buySell[0][i]],
+      buyIndex: buySell[0][i],
       buyDate: buyDatetime,
-      sell: buySell[1][i],
+      buyPrice:  buyPrices[buySell[0][i]],
+      sellIndex: buySell[1][i],
       sellDate: sellDatetime,
+      sellPrice: sellPrices[buySell[1][i]]
     });
   }
   return buySellValueDictList;
@@ -97,10 +101,10 @@ function removeLowBuySellPairs(buySellPattern, buyPrices, sellPrices, minSavings
     let sellIndex = 0;
     let buyIndex = 0;
     for (let i = 0; i < dictlist.length; i++) {
-      if (i == 0 || dictlist[i].value < lowestSaving) {
-        lowestSaving = dictlist[i].value;
-        sellIndex = dictlist[i].sell;
-        buyIndex = dictlist[i].buy;
+      if (i == 0 || dictlist[i].tradeValue < lowestSaving) {
+        lowestSaving = dictlist[i].tradeValue;
+        sellIndex = dictlist[i].sellIndex;
+        buyIndex = dictlist[i].buyIndex;
       }
     }
     if (lowestSaving <= minSavings) {
@@ -111,7 +115,7 @@ function removeLowBuySellPairs(buySellPattern, buyPrices, sellPrices, minSavings
   return buySellClone;
 }
 
-function calculateSchedule(startDate, buySellStackedArray, buyPrices, sellPrices, maxTempAdjustment) {
+function calculateSchedule(startDate, buySellStackedArray, buyPrices, sellPrices, maxTempAdjustment, boostTempHeat, boostTempCool, buyDuration, sellDuration) {
   const arrayLength = buyPrices.length;
   const schedule = {
     startAt: startDate,
@@ -119,16 +123,39 @@ function calculateSchedule(startDate, buySellStackedArray, buyPrices, sellPrices
     maxTempAdjustment: maxTempAdjustment,
     durationInMinutes: arrayLength,
   };
-  if (buySellStackedArray[0].length === 0) {
+  
+  if (buySellStackedArray[0].length === 0) { //No procurements or sales scheduled
     schedule.temperatures.fill(-maxTempAdjustment, 0, arrayLength);
   } else {
-    let n = 0;
+    let lastBuyIndex = 0;
     for (let i = 0; i < buySellStackedArray[0].length; i++) {
-      schedule.temperatures.fill(-maxTempAdjustment, n, buySellStackedArray[0][i]);
-      schedule.temperatures.fill(maxTempAdjustment, buySellStackedArray[0][i], buySellStackedArray[1][i]);
-      n = buySellStackedArray[1][i];
+      const buyIndex = buySellStackedArray[1][i];
+      const sellIndex = buySellStackedArray[0][i]
+      //Cooling period. Adding boosted cooling temperature for the period of divestment
+      if(sellIndex-lastBuyIndex <=sellDuration){
+        schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, sellIndex);
+      } else {
+        schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, lastBuyIndex+sellDuration);
+        schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, sellIndex);
+      }
+      //Heating period. Adding boosted heating temperature for the period of procurement
+      if(buyIndex-sellIndex <=buyDuration){
+        schedule.temperatures.fill(maxTempAdjustment+boostTempHeat, sellIndex, buyIndex);
+      } else {
+        schedule.temperatures.fill(maxTempAdjustment+boostTempHeat, sellIndex, sellIndex + buyDuration);
+        schedule.temperatures.fill(maxTempAdjustment, sellIndex + buyDuration, buyIndex);
+      }
+
+      lastBuyIndex=buyIndex
     }
-    schedule.temperatures.fill(-maxTempAdjustment, n, arrayLength);
+
+    //final fill
+    if(arrayLength-lastBuyIndex <=sellDuration){
+      schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, arrayLength);
+    } else {
+      schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, lastBuyIndex+sellDuration);
+      schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, arrayLength);
+    }
   }
 
   schedule.trades = calculateValueDictlist(buySellStackedArray, buyPrices, sellPrices, startDate);
@@ -140,14 +167,16 @@ function findTemp(date, schedule) {
   return schedule.temperatures[diff];
 }
 
-function runBuySellAlgorithm(priceData, timeHeat1C, timeCool1C, maxTempAdjustment, minSavings) {
+function runBuySellAlgorithm(priceData, timeHeat1C, timeCool1C, boostTempHeat, boostTempCool, maxTempAdjustment, minSavings) {
   const prices = [...priceData.map((pd) => pd.value)];
   const startDate = DateTime.fromISO(priceData[0].start);
 
   //pattern for how much power is procured/sold when.
   //This has, for now, just a flat aquisition/divestment profile
-  const buyPattern = Array(Math.round(timeHeat1C * maxTempAdjustment * 2)).fill(1);
-  const sellPattern = Array(Math.round(timeCool1C * maxTempAdjustment * 2)).fill(1);
+  const buyDuration = Math.round(timeHeat1C * maxTempAdjustment * 2)
+  const sellDuration = Math.round(timeCool1C * maxTempAdjustment * 2)
+  const buyPattern = Array(buyDuration).fill(1);
+  const sellPattern = Array(sellDuration).fill(1);
 
   //Calculate what it will cost to procure/sell 1 kWh as a function of time
   const buyPrices = calculateOpportunities(prices, buyPattern, 1);
@@ -160,7 +189,7 @@ function runBuySellAlgorithm(priceData, timeHeat1C, timeCool1C, maxTempAdjustmen
   const buySellCleaned = removeLowBuySellPairs(buySell, buyPrices, sellPrices, minSavings, startDate);
 
   //Calculate temperature adjustment as a function of time
-  const schedule = calculateSchedule(startDate, buySellCleaned, buyPrices, sellPrices, maxTempAdjustment);
+  const schedule = calculateSchedule(startDate, buySellCleaned, buyPrices, sellPrices, maxTempAdjustment, boostTempHeat, boostTempCool,buyDuration,sellDuration);
 
   return schedule;
 }

@@ -63,9 +63,11 @@ describe("ps-strategy-heat-capacitor node", function () {
     const flow = [{ id: "n1", type: "ps-strategy-heat-capacitor", name: "Heat Capacitor" }];
     helper.load(node, flow, function () {
       const n1 = helper.getNode("n1");
-      n1.receive({ payload: {config: {timeHeat1C: 1, timeCool1C:2, setpoint: 3, maxTempAdjustment: 4, minSavings: 5}} });
+      n1.receive({ payload: {config: {timeHeat1C: 1, timeCool1C:2, setpoint: 3, maxTempAdjustment: 4, minSavings: 5, boostTempHeat: 6, boostTempCool: 7}} });
       expect(n1).toHaveProperty("timeHeat1C", 1);
       expect(n1).toHaveProperty("timeCool1C", 2);
+      expect(n1).toHaveProperty("boostTempHeat", 6);
+      expect(n1).toHaveProperty("boostTempCool", 7);
       expect(n1).toHaveProperty("setpoint", 3);
       expect(n1).toHaveProperty("maxTempAdjustment", 4);
       expect(n1).toHaveProperty("minSavings", 5);
@@ -84,12 +86,12 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n3 = helper.getNode("n3");
       let bothRecieved = false
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 22.5);
+        expect(msg).toHaveProperty("payload", 21.5);
         n1.warn.should.not.be.called;
         (bothRecieved)? done(): bothRecieved=true;
       });
       n3.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", -0.5);
+        expect(msg).toHaveProperty("payload", -1.5);
         n1.warn.should.not.be.called;
         (bothRecieved)? done(): bothRecieved=true;
       });
@@ -108,6 +110,8 @@ function makeFlow() {
       name: "Temp. Adj.",
       timeHeat1C: 60,
       timeCool1C: 50,
+      boostTempHeat: 1,
+      boostTempCool: 1,
       setpoint: 23,
       maxTempAdjustment: 0.5,
       minSavings: 0.08,

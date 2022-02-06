@@ -17,8 +17,10 @@ describe("Test heat capacitor strategy functions", () => {
   const timeHeat1C = 60
   const timeCool1C = 40
   const maxTempAdjustment = 1
+  const boostTempHeat = 1
+  const boostTempCool = 1
   const minSavings = 0.1
-
+  
   before(function() {
     prices =  converted_prices.priceData.slice(0, 1).map((p) => p.value);
     decreasing_24h_prices =  decreasing_end_prices.priceData.slice(0, 1).map((p) => p.value);
@@ -65,7 +67,7 @@ describe("Test heat capacitor strategy functions", () => {
     const sell_prices = calculateOpportunities(my_prices, sell_pattern, 1)
 
     const my_buy_sell = findBestBuySellPattern(buy_prices,buy_pattern.length,sell_prices,sell_pattern.length);
-    const my_schedule = calculateSchedule(start_date , my_buy_sell, buy_prices, sell_prices, maxTempAdjustment)
+    const my_schedule = calculateSchedule(start_date , my_buy_sell, buy_prices, sell_prices, maxTempAdjustment, boostTempHeat, boostTempCool, buy_pattern.length, sell_pattern.length)
     expect(my_schedule.temperatures.at(-1)).toEqual(-maxTempAdjustment);
   });
 

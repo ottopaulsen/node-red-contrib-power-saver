@@ -12,6 +12,8 @@ module.exports = function (RED) {
     node.timeCool1C = Number(config.timeCool1C);
     node.setpoint = Number(config.setpoint);
     node.maxTempAdjustment = Number(config.maxTempAdjustment);
+    node.boostTempHeat = Number(config.boostTempHeat);
+    node.boostTempCool = Number(config.boostTempCool);
     node.minSavings = Number(config.minSavings);
     // sanitise disabled output as this is used when all else fails
     if (isNaN(node.disabled_op)) {
@@ -32,6 +34,8 @@ module.exports = function (RED) {
             if (msg.payload.config.hasOwnProperty("timeCool1C")) node.timeCool1C = Number(msg.payload.config.timeCool1C);
             if (msg.payload.config.hasOwnProperty("setpoint")) node.setpoint = Number(msg.payload.config.setpoint);
             if (msg.payload.config.hasOwnProperty("maxTempAdjustment")) node.maxTempAdjustment = Number(msg.payload.config.maxTempAdjustment);
+            if (msg.payload.config.hasOwnProperty("boostTempHeat")) node.boostTempHeat = Number(msg.payload.config.boostTempHeat);
+            if (msg.payload.config.hasOwnProperty("boostTempCool")) node.boostTempCool = Number(msg.payload.config.boostTempCool);
             if (msg.payload.config.hasOwnProperty("minSavings")) node.minSavings = Number(msg.payload.config.minSavings);
           }
           if (msg.payload.hasOwnProperty("priceData")){
@@ -42,6 +46,8 @@ module.exports = function (RED) {
               node.priceData,
               node.timeHeat1C,
               node.timeCool1C,
+              node.boostTempHeat,
+              node.boostTempCool,
               node.maxTempAdjustment,
               node.minSavings
             );

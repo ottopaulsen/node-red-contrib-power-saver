@@ -7,6 +7,8 @@
       timeHeat1C: { value: 50, required: true, align: "left" },
       timeCool1C: { value: 50, required: true, align: "left" },
       maxTempAdjustment: { value: 0.5, required: true, align: "left" },
+      boostTempHeat: { value: 0, required: true, align: "left" },
+      boostTempCool: { value: 0, required: true, align: "left" },
       minSavings: { value: 0.08, required: true, align: "left" },
       setpoint: { value: 23, required: true, align: "left" },
     },
@@ -35,6 +37,14 @@
     <input type="text" id="node-input-timeCool1C" />
   </div>
   <div class="form-row">
+    <label for="node-input-boostTempHeat"><i class="icon-tag"></i> Heating Boost [C]</label>
+    <input type="text" id="node-input-boostTempHeat" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-boostTempCool"><i class="icon-tag"></i> Cooling Boost [C]</label>
+    <input type="text" id="node-input-boostTempCool" />
+  </div>
+  <div class="form-row">
     <label for="node-input-setpoint"><i class="icon-tag"></i> Setpoint</label>
     <input type="text" id="node-input-setpoint" />
   </div>
@@ -56,6 +66,8 @@
   <ul>
     <li><b>Time +1C [minutes]</b> - Time required by the system to increase 1C </li>
     <li><b>Time -1C [minutes]</b> - Time to loose 1C when no heat is applied </li>
+    <li><b>Heating Boost [C]</b> - Added to the climate setpoint in the heating period </li>
+    <li><b>Cooling Boost [C]</b> - Subtracted from the climate setpoint in the cooling period </li>
     <li><b>Setpoint [C]</b> - The ideal temperature</li>
     <li><b>Max temp adj.</b> - Max temperature adjustment</li>
     <li><b>Min Savings </b> - Min savings per cycle</li>
