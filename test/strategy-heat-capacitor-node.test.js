@@ -5,6 +5,7 @@ const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const node = require("../src/strategy-heat-capacitor.js");
 const prices = require("./data/converted-prices.json");
+const multitrade = require("./data/multiple-trades.json");
 
 helper.init(require.resolve("node-red"));
 
@@ -97,6 +98,31 @@ describe("ps-strategy-heat-capacitor node", function () {
       });
       const time = DateTime.fromISO(prices.priceData[10].start);
       n1.receive({ payload: makePayload(prices, time) });
+    });
+  });
+
+  
+  it("should plan correctly, multitrade", function (done) {
+    const result = 0.5
+    const flow = makeFlow();
+    helper.load(node, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      let bothRecieved = false
+      n2.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", 24.5);
+        n1.warn.should.not.be.called;
+        (bothRecieved)? done(): bothRecieved=true;
+      });
+      n3.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", 1.5);
+        n1.warn.should.not.be.called;
+        (bothRecieved)? done(): bothRecieved=true;
+      });
+      const time = DateTime.fromISO(multitrade.priceData[4].start).plus({minutes: 10});
+      multitrade.time = time
+      n1.receive({ payload: multitrade });
     });
   });
 
