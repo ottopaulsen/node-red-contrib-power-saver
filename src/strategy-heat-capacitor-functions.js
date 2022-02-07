@@ -132,21 +132,28 @@ function calculateSchedule(startDate, buySellStackedArray, buyPrices, sellPrices
     schedule.temperatures.fill(-maxTempAdjustment, 0, arrayLength);
   } else {
     let lastBuyIndex = 0;
+    let boostHeat
+    let boostCool
     for (let i = 0; i < buySellStackedArray[0].length; i++) {
       const buyIndex = buySellStackedArray[1][i];
-      const sellIndex = buySellStackedArray[0][i]
+      const sellIndex = buySellStackedArray[0][i];
+
+      //If this is the start of the timeseries, do not boost the temperatures
+      (sellIndex ==0)? boostHeat = 0 : boostHeat = boostTempHeat;
+      (lastBuyIndex == 0)? boostCool = 0: boostCool = boostTempCool;
+
       //Cooling period. Adding boosted cooling temperature for the period of divestment
       if(sellIndex-lastBuyIndex <=sellDuration){
-        schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, sellIndex);
+        schedule.temperatures.fill(-maxTempAdjustment-boostCool, lastBuyIndex, sellIndex);
       } else {
-        schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, lastBuyIndex+sellDuration);
+        schedule.temperatures.fill(-maxTempAdjustment-boostCool, lastBuyIndex, lastBuyIndex+sellDuration);
         schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, sellIndex);
       }
       //Heating period. Adding boosted heating temperature for the period of procurement
       if(buyIndex-sellIndex <=buyDuration){
-        schedule.temperatures.fill(maxTempAdjustment+boostTempHeat, sellIndex, buyIndex);
+        schedule.temperatures.fill(maxTempAdjustment+boostHeat, sellIndex, buyIndex);
       } else {
-        schedule.temperatures.fill(maxTempAdjustment+boostTempHeat, sellIndex, sellIndex + buyDuration);
+        schedule.temperatures.fill(maxTempAdjustment+boostHeat, sellIndex, sellIndex + buyDuration);
         schedule.temperatures.fill(maxTempAdjustment, sellIndex + buyDuration, buyIndex);
       }
 
@@ -155,9 +162,9 @@ function calculateSchedule(startDate, buySellStackedArray, buyPrices, sellPrices
 
     //final fill
     if(arrayLength-lastBuyIndex <=sellDuration){
-      schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, arrayLength);
+      schedule.temperatures.fill(-maxTempAdjustment-boostCool, lastBuyIndex, arrayLength);
     } else {
-      schedule.temperatures.fill(-maxTempAdjustment-boostTempCool, lastBuyIndex, lastBuyIndex+sellDuration);
+      schedule.temperatures.fill(-maxTempAdjustment-boostCool, lastBuyIndex, lastBuyIndex+sellDuration);
       schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, arrayLength);
     }
   }
