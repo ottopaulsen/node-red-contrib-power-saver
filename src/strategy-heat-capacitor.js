@@ -2,6 +2,7 @@
 const { DateTime } = require("luxon");
 const { validateInput } = require("./handle-input");
 const { runBuySellAlgorithm, findTemp } = require("./strategy-heat-capacitor-functions");
+const { version } = require("../package.json");
 
 module.exports = function (RED) {
   function TempMan(config) {
@@ -45,11 +46,11 @@ module.exports = function (RED) {
           }
 
           //merge pricedata to escape some midnight issues. Store max 72 hour history
-          if (msg.payload.hasOwnProperty("priceData")){
-            if (node.hasOwnProperty("priceData")){
-              node.priceData = mergePriceData(node.priceData,msg.payload.priceData);
-              if (node.priceData.length>72) node.priceData = node.priceData.slice(-72);
-            } else{
+          if (msg.payload.hasOwnProperty("priceData")) {
+            if (node.hasOwnProperty("priceData")) {
+              node.priceData = mergePriceData(node.priceData, msg.payload.priceData);
+              if (node.priceData.length > 72) node.priceData = node.priceData.slice(-72);
+            } else {
               node.priceData = msg.payload.priceData;
             }
           }
@@ -72,10 +73,26 @@ module.exports = function (RED) {
             }
 
             node.T = node.setpoint + node.dT;
+
+            //Add config to statistics
+            node.schedule.config = {
+              timeHeat1C: node.timeHeat1C,
+              timeCool1C: node.timeCool1C,
+              setpoint: node.setpoint,
+              maxTempAdjustment: node.maxTempAdjustment,
+              boostTempHeat: node.boostTempHeat,
+              boostTempCool: node.boostTempCool,
+              minSavings: node.minSavings,
+            };
+
+            node.schedule.priceData = node.priceData;
+            node.schedule.time = DateTime.now().toISO();
+            node.schedule.version = version;
+
             // Send output
             node.send([
-              { payload: node.T, topic: "setpoint" },
-              { payload: node.dT, topic: "adjustment" },
+              { payload: node.T, topic: "setpoint", time: node.schedule.time, version: version },
+              { payload: node.dT, topic: "adjustment", time: node.schedule.time, version: version },
               { payload: node.schedule },
             ]);
           }
@@ -88,16 +105,20 @@ module.exports = function (RED) {
 };
 
 function mergePriceData(priceDataA, priceDataB) {
-  const tempDict ={}
-  priceDataA.forEach((e) => {tempDict[e.start]=e.value;});
-  priceDataB.forEach((e) => {tempDict[e.start]=e.value;});
+  const tempDict = {};
+  priceDataA.forEach((e) => {
+    tempDict[e.start] = e.value;
+  });
+  priceDataB.forEach((e) => {
+    tempDict[e.start] = e.value;
+  });
 
   var keys = Object.keys(tempDict);
   keys.sort();
 
   const res = Array(keys.length);
-  for(let i =0; i<res.length;i++){
-    res[i]={value: tempDict[keys[i]], start: keys[i] }
+  for (let i = 0; i < res.length; i++) {
+    res[i] = { value: tempDict[keys[i]], start: keys[i] };
   }
 
   return res;
