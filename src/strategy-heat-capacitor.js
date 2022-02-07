@@ -25,23 +25,36 @@ module.exports = function (RED) {
     });
 
     this.on("input", function (msg) {
-
-      if(validateInput(node,msg)){
+      if (validateInput(node, msg)) {
         // Using msg.payload.config to change specific properties
         if (msg.hasOwnProperty("payload")) {
           if (msg.payload.hasOwnProperty("config")) {
-            if (msg.payload.config.hasOwnProperty("timeHeat1C")) node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
-            if (msg.payload.config.hasOwnProperty("timeCool1C")) node.timeCool1C = Number(msg.payload.config.timeCool1C);
+            if (msg.payload.config.hasOwnProperty("timeHeat1C"))
+              node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
+            if (msg.payload.config.hasOwnProperty("timeCool1C"))
+              node.timeCool1C = Number(msg.payload.config.timeCool1C);
             if (msg.payload.config.hasOwnProperty("setpoint")) node.setpoint = Number(msg.payload.config.setpoint);
-            if (msg.payload.config.hasOwnProperty("maxTempAdjustment")) node.maxTempAdjustment = Number(msg.payload.config.maxTempAdjustment);
-            if (msg.payload.config.hasOwnProperty("boostTempHeat")) node.boostTempHeat = Number(msg.payload.config.boostTempHeat);
-            if (msg.payload.config.hasOwnProperty("boostTempCool")) node.boostTempCool = Number(msg.payload.config.boostTempCool);
-            if (msg.payload.config.hasOwnProperty("minSavings")) node.minSavings = Number(msg.payload.config.minSavings);
+            if (msg.payload.config.hasOwnProperty("maxTempAdjustment"))
+              node.maxTempAdjustment = Number(msg.payload.config.maxTempAdjustment);
+            if (msg.payload.config.hasOwnProperty("boostTempHeat"))
+              node.boostTempHeat = Number(msg.payload.config.boostTempHeat);
+            if (msg.payload.config.hasOwnProperty("boostTempCool"))
+              node.boostTempCool = Number(msg.payload.config.boostTempCool);
+            if (msg.payload.config.hasOwnProperty("minSavings"))
+              node.minSavings = Number(msg.payload.config.minSavings);
           }
+
+          //merge pricedata to escape some midnight issues. Store max 72 hour history
           if (msg.payload.hasOwnProperty("priceData")){
-            // recieved priceData
-            node.priceData = msg.payload.priceData;
-    
+            if (node.hasOwnProperty("priceData")){
+              node.priceData = mergePriceData(node.priceData,msg.payload.priceData);
+              if (node.priceData.length>72) node.priceData = node.priceData.slice(-72);
+            } else{
+              node.priceData = msg.payload.priceData;
+            }
+          }
+
+          if (node.hasOwnProperty("priceData")) {
             node.schedule = runBuySellAlgorithm(
               node.priceData,
               node.timeHeat1C,
@@ -52,20 +65,40 @@ module.exports = function (RED) {
               node.minSavings
             );
 
-            if (msg.payload.hasOwnProperty("time")){
+            if (msg.payload.hasOwnProperty("time")) {
               node.dT = findTemp(msg.payload.time, node.schedule);
-            }else{
+            } else {
               node.dT = findTemp(DateTime.now(), node.schedule);
             }
 
             node.T = node.setpoint + node.dT;
             // Send output
-            node.send([{payload: node.T, topic: "setpoint" }, { payload: node.dT, topic: "adjustment" }, { payload: node.schedule }]);
-          } 
-        } 
+            node.send([
+              { payload: node.T, topic: "setpoint" },
+              { payload: node.dT, topic: "adjustment" },
+              { payload: node.schedule },
+            ]);
+          }
+        }
       }
     });
   }
 
   RED.nodes.registerType("ps-strategy-heat-capacitor", TempMan);
 };
+
+function mergePriceData(priceDataA, priceDataB) {
+  const tempDict ={}
+  priceDataA.forEach((e) => {tempDict[e.start]=e.value;});
+  priceDataB.forEach((e) => {tempDict[e.start]=e.value;});
+
+  var keys = Object.keys(tempDict);
+  keys.sort();
+
+  const res = Array(keys.length);
+  for(let i =0; i<res.length;i++){
+    res[i]={value: tempDict[keys[i]], start: keys[i] }
+  }
+
+  return res;
+}

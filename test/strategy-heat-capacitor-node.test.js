@@ -87,17 +87,19 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n3 = helper.getNode("n3");
       let bothRecieved = false
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 21.5);
+        expect(msg).toHaveProperty("payload", 22.5);
         n1.warn.should.not.be.called;
         (bothRecieved)? done(): bothRecieved=true;
       });
       n3.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", -1.5);
+        expect(msg).toHaveProperty("payload", -0.5);
         n1.warn.should.not.be.called;
         (bothRecieved)? done(): bothRecieved=true;
       });
-      const time = DateTime.fromISO(prices.priceData[10].start);
-      n1.receive({ payload: makePayload(prices, time) });
+      const time = DateTime.fromISO(prices.priceData[10].start)
+      const p = cloneDeep(prices);
+      p.time=time;
+      n1.receive({ payload: p });
     });
   });
 
@@ -123,6 +125,17 @@ describe("ps-strategy-heat-capacitor node", function () {
       const time = DateTime.fromISO(multitrade.priceData[4].start).plus({minutes: 10});
       multitrade.time = time
       n1.receive({ payload: multitrade });
+    });
+  });
+
+  it("should merge and trim priceData", function (done) {
+    const flow = makeFlow();
+    helper.load(node, flow, function () {
+      const n1 = helper.getNode("n1");
+      n1.receive({ payload: multitrade });
+      n1.receive({ payload: prices });
+      expect(n1.priceData.length).toEqual(72);
+      done();
     });
   });
 
