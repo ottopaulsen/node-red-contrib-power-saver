@@ -67,8 +67,7 @@ A cascade temperature controller is a controller which utilizes the input/setpoi
 
 ---
 
-<details>
-  <summary>Click to expand!</summary>
+::: details Flow code
 
 ```json:no-line-numbers
 [
@@ -343,5 +342,4 @@ A cascade temperature controller is a controller which utilizes the input/setpoi
   }
 ]
 ```
-
-</details>
+:::

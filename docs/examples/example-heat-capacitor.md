@@ -33,7 +33,7 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 
 > Configure the climate service to target the correct climate entity (this has to be edited in two places)
   - Change `Entity Id` in the properties menu
-  - Change the `entity_id` vaule in the `Data` property
+  - Change the `entity_id` value in the `Data` property
 
 > (optional) If the `input_number` entity was named something else than `setpoint`, change the `entity_id` of the `Setpoint` node accordingly.
 
@@ -50,8 +50,7 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 ---
 
 
-<details>
-  <summary>Click to expand!</summary>
+::: details [Flow code]
 
 ```json:no-line-numbers
 [
@@ -269,4 +268,4 @@ It is a good application for cabins/heated storage spaces, as the entity never a
     }
 ]
 ```
-</details>
+:::
