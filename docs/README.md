@@ -27,7 +27,7 @@ features:
     details: Use Home Assistant with Node-RED and control switches via service calls.
   - title: Tibber and Nord Pool
     details: Painlessly use prices received from Tibber or Nord Pool.
-footer: Created by Otto Paulsen
+footer: Created by Otto Paulsen and contributors
 
 footerHtml: true
 ---

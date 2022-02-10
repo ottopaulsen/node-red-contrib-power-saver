@@ -16,13 +16,19 @@ These are the nodes used to calculate and control saving.
 
 ![ps-strategy-best-save](../images/node-ps-strategy-best-save.png)
 
-Strategy to find the best hours to turn off for most saving.
+Strategy to find the best hours to postpone power consumption to achieve the most saving.
 
 ### [ps-strategy-lowest-price](./ps-strategy-lowest-price)
 
 ![ps-strategy-lowest-price](../images/node-ps-strategy-lowest-price.png)
 
 Strategy to find the x hours with lowest price in a given period each day.
+
+### [ps-strategy-heat-capacitor](./ps-strategy-heat-capacitor) <Badge type="warning">Experimental</Badge>
+
+![ps-strategy-heat-capacitor](../images/node-ps-strategy-heat-capacitor.png)
+
+A strategy for moving consumption from expensive to cheap periods utilizing climate entities and trading principles.
 
 ## Utility nodes
 

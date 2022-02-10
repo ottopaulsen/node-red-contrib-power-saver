@@ -45,7 +45,11 @@ module.exports = {
             { text: "Power Saver", link: "/nodes/power-saver.md" },
             {
               text: "Strategy nodes",
-              children: ["/nodes/ps-strategy-best-save.md", "/nodes/ps-strategy-lowest-price.md"],
+              children: [
+                "/nodes/ps-strategy-best-save.md",
+                "/nodes/ps-strategy-lowest-price.md",
+                { text: "ps-strategy-heat-capacitor", link: "/nodes/ps-strategy-heat-capacitor.md" },
+              ],
             },
             { text: "Utility nodes", children: ["/nodes/ps-receive-price.md"] },
             {
@@ -66,6 +70,8 @@ module.exports = {
             "/examples/example-nordpool-current-state.md",
             "/examples/example-nordpool-events-state.md",
             "/examples/example-tibber-mqtt.md",
+            "/examples/example-heat-capacitor.md",
+            "/examples/example-cascade-temperature-control.md",
           ],
         },
       ],

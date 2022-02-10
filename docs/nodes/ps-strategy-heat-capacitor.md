@@ -1,4 +1,4 @@
-# ps-strategy-heat-capacitor
+# ps-strategy-heat-capacitor <Badge type="warning">Experimental</Badge>
 
 ![ps-strategy-lowest-price](../images/node-ps-strategy-heat-capacitor.png)
 
@@ -129,7 +129,6 @@ The current schedule as well as some other information. You can use this to see 
 
 The "trades" key contains a list of dictionaries indicating the trades:
 
-
 ```json
 {
   "type": "buy - sell",
@@ -143,7 +142,7 @@ The "trades" key contains a list of dictionaries indicating the trades:
 }
 ```
 
-A trade consists of a `buy action` and a `sell action`. You buy electricity in the heating period, and sell it during the cooling period. `buyPrice` indicates the price at which the electricity is bought, while `sellPrice` indicates the price at which it is sold. This yields the `tradeValue`, which is how much is gained by moving one kWh from the expensive to the cheap period. If you run two 1kWh heaters and is able to turn it off from a 50% load for an hour, you earn 1kWh * 2 * 50% * 0.2558 = 0.2558.
+A trade consists of a `buy action` and a `sell action`. You buy electricity in the heating period, and sell it during the cooling period. `buyPrice` indicates the price at which the electricity is bought, while `sellPrice` indicates the price at which it is sold. This yields the `tradeValue`, which is how much is gained by moving one kWh from the expensive to the cheap period. If you run two 1kWh heaters and is able to turn it off from a 50% load for an hour, you earn 1kWh _ 2 _ 50% \* 0.2558 = 0.2558.
 
 The temperature variations from the setpoint are shown in a list at the end of the dictionary. The array has minute resolution, meaning that the first value is valid from 07.02.2022 00:00 till 00:01. As such, this is an indexed list, and the `buyIndex` and `sellIndex` values is a reference to the index in this array.
 

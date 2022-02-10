@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.4.0
+
+- Added new strategy node Heat Capacitor
+
 ## 3.3.2
 
 - Add command sendOutput.

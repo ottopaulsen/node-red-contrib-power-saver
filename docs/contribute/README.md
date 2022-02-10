@@ -37,3 +37,11 @@ If you find a bug, please describe it thoroughly and make a [GitHub issue](https
 ## Ideas
 
 If you have ideas for new features, please make a [GitHub issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues) and describe it as detailed as possible.
+
+## Contributors
+
+Main developer: [Otto Paulsen](https://github.com/ottopaulsen)
+
+Heat Capacitor developer: [Arne Klaveness](https://github.com/TomTorger)
+
+Example contributors: [Stefan](https://github.com/oakhill87/node-red-contrib-power-saver)
