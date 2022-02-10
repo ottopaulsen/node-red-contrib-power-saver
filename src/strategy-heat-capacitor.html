@@ -1,0 +1,85 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-strategy-heat-capacitor", {
+    category: "Power Saver",
+    color: "#FFCC66",
+    defaults: {
+      name: { value: "Heat capacitor" },
+      timeHeat1C: { value: 50, required: true, align: "left" },
+      timeCool1C: { value: 50, required: true, align: "left" },
+      maxTempAdjustment: { value: 0.5, required: true, align: "left" },
+      boostTempHeat: { value: 0, required: true, align: "left" },
+      boostTempCool: { value: 0, required: true, align: "left" },
+      minSavings: { value: 0.08, required: true, align: "left" },
+      setpoint: { value: 23, required: true, align: "left" },
+    },
+    inputs: 1,
+    outputs: 3,
+    color: "#FFCC66",
+    icon: "font-awesome/fa-bar-chart",
+    label: function () {
+      return this.name || "Heat capacitor";
+    },
+    outputLabels: ["T", "dT", "schedule"],
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-strategy-heat-capacitor">
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-timeHeat1C"><i class="icon-tag"></i> Time +1C [minutes]</label>
+    <input type="text" id="node-input-timeHeat1C" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-timeCool1C"><i class="icon-tag"></i> Time -1C [minutes]</label>
+    <input type="text" id="node-input-timeCool1C" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-setpoint"><i class="icon-tag"></i> Setpoint</label>
+    <input type="text" id="node-input-setpoint" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-maxTempAdjustment"><i class="icon-tag"></i> Max temp adj.</label>
+    <input type="text" id="node-input-maxTempAdjustment" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-minSavings"><i class="icon-tag"></i> Min Savings</label>
+    <input type="text" id="node-input-minSavings" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-boostTempHeat"><i class="icon-tag"></i> Heating Boost [C]</label>
+    <input type="text" id="node-input-boostTempHeat" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-boostTempCool"><i class="icon-tag"></i> Cooling Boost [C]</label>
+    <input type="text" id="node-input-boostTempCool" />
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-strategy-heat-capacitor">
+  # ps-strategy-heat-capacitor
+
+  A strategy for moving consumption from expensive to cheap periods utilizing climate entities.
+
+  ## Description
+
+  The heat capacitor strategy utilizes a large body of mass, like your house or cabin, to procure heat at a time where electricity is cheap, and divest at a time where electricity is expensive. This is achieved by increasing the temperature setpoint of one or several climate entities at times when electricity is cheap, and reducing it when electricity is expensive.
+
+  It is a good application for cabins/heated storage spaces, as the entity never actually shuts off the climate entities and should therefore be rather safe to apply (still at you own risk :-)). It can also be used for you house, jacuzzi, and/or pool.
+
+  | Value             | Description                                                                |
+  | ----------------- | -------------------------------------------------------------------------- |
+  | Time + 1C         | The time required to increase the temperature by 1C.                       |
+  | Time - 1C         | The time required to decrease the temperature by 1C.                       |
+  | Setpoint          | Ideal temperature in C                                                     |
+  | Max temp adj.     | The number of degrees the system is allowed to increase/decrease.          |
+  | Heating Boost [C] | An extra increase in temperature to the setpoint for the investment period |
+  | Cooling Boost [C] | An extra decrease in temperature to the setpoint for the divestment period |
+  | Min Savings       | The minimum amount of savings required for a buy/sell cycle.               |
+
+  
+  Please read more in the [node documentation](https://ottopaulsen.github.io/node-red-contrib-power-saver/nodes/ps-strategy-heat-capacitor)
+
+</script>
