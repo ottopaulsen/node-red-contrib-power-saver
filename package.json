@@ -31,7 +31,11 @@
       "ps-elvia-tariff": "src/elvia/elvia-tariff.js",
       "ps-elvia-add-tariff": "src/elvia/elvia-add-tariff.js",
       "ps-general-add-tariff": "src/general-add-tariff.js"
-    }
+    },
+    "version": ">=2.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   },
   "prettier": {
     "printWidth": 120
