@@ -105,10 +105,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
-const { roundPrice } = require("../../../src/utils");
-const { DateTime } = require("luxon");
+const { roundPrice } = import("../../../src/utils");
+const { DateTime } = import("luxon");
 
 const message = ref("");
 const showNegative = ref(false);

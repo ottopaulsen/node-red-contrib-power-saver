@@ -5,14 +5,12 @@ const {
   sortedIndex,
   firstOn,
   getDiffToNextOn,
-  isOnOffSequencesOk,
   getSavings,
   countAtEnd,
   makeSchedule,
   fillArray,
   extractPlanForDate,
   isSameDate,
-  getStartAtIndex,
 } = require("../src/utils");
 
 describe("utils", () => {

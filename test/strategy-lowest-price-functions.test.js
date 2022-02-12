@@ -2,7 +2,7 @@ const { DateTime } = require("luxon");
 const expect = require("expect");
 const { getBestContinuous, getBestX } = require("../src/strategy-lowest-price-functions");
 const convertedPrices = require("./data/converted-prices.json");
-const { cloneDeep } = require("lodash");
+const cloneDeep = require("lodash.clonedeep");
 
 describe("strategy-utils", () => {
   it("can find best x", () => {

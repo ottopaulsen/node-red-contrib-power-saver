@@ -1,4 +1,6 @@
 const { path } = require("@vuepress/utils");
+const vue = require("@vitejs/plugin-vue");
+
 module.exports = {
   lang: "en-US",
   title: "Power Saver",
@@ -102,4 +104,10 @@ module.exports = {
       },
     ],
   ],
+  bundler: "@vuepress/bundler-webpack",
+  bundlerConfig: {
+    viteOptions: {
+      plugins: [vue()],
+    },
+  },
 };

@@ -9,6 +9,7 @@ List the most significant changes, starting in version 1.0.9.
 ## 3.4.1
 
 - Update examples
+- Update dependencies
 - Move doc to powersaver.no
 
 ## 3.4.0

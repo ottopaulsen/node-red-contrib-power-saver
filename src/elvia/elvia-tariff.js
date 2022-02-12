@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
-const { getTariff, ping } = require("./elvia-api");
+
+const { getTariff, ping } = require("./elvia-api.js");
 
 module.exports = function (RED) {
   function PsElviaTariffNode(config) {
