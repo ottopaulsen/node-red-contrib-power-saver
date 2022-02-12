@@ -1,0 +1,159 @@
+[
+  {
+    "id": "4f11b5ae.4cc22c",
+    "type": "inject",
+    "z": "d938c47f.3398f8",
+    "name": "Refresh",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "3600",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "{viewer{homes{currentSubscription{priceInfo{today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
+    "payloadType": "str",
+    "x": 120,
+    "y": 40,
+    "wires": [["ab2d599a.077738"]]
+  },
+  {
+    "id": "ab2d599a.077738",
+    "type": "tibber-query",
+    "z": "d938c47f.3398f8",
+    "name": "Get Tibber prices",
+    "active": true,
+    "apiEndpointRef": "b70ec5d0.6f8f08",
+    "x": 310,
+    "y": 40,
+    "wires": [["0ef929fde193cf4d"]]
+  },
+  {
+    "id": "0ef929fde193cf4d",
+    "type": "ps-receive-price",
+    "z": "d938c47f.3398f8",
+    "name": "Price Receiver",
+    "x": 140,
+    "y": 100,
+    "wires": [["5b6be1568744c6cf", "391ac08890e0dd40"]]
+  },
+  {
+    "id": "391ac08890e0dd40",
+    "type": "ps-strategy-lowest-price",
+    "z": "d938c47f.3398f8",
+    "name": "Lowest Price",
+    "fromTime": "00",
+    "toTime": "00",
+    "hoursOn": "12",
+    "doNotSplit": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": "true",
+    "outputOutsidePeriod": "true",
+    "x": 410,
+    "y": 400,
+    "wires": [["32f17ab2.927cf6"], ["526a6e89600f0f19"], ["ed7202ff.b5725"]]
+  },
+  {
+    "id": "32f17ab2.927cf6",
+    "type": "api-call-service",
+    "z": "d938c47f.3398f8",
+    "name": "Turn up",
+    "server": "ec4a12a1.b2be9",
+    "version": 3,
+    "debugenabled": true,
+    "service_domain": "climate",
+    "service": "set_temperature",
+    "entityId": "climate.varme_gulv_kjellerstue",
+    "data": "{\"temperature\":27}",
+    "dataType": "json",
+    "mergecontext": "",
+    "mustacheAltTags": false,
+    "outputProperties": [],
+    "queue": "last",
+    "x": 700,
+    "y": 340,
+    "wires": [[]]
+  },
+  {
+    "id": "526a6e89600f0f19",
+    "type": "api-call-service",
+    "z": "d938c47f.3398f8",
+    "name": "Turn down",
+    "server": "ec4a12a1.b2be9",
+    "version": 3,
+    "debugenabled": true,
+    "service_domain": "climate",
+    "service": "set_temperature",
+    "entityId": "climate.varme_gulv_kjellerstue",
+    "data": "{\"temperature\":25}",
+    "dataType": "json",
+    "mergecontext": "",
+    "mustacheAltTags": false,
+    "outputProperties": [],
+    "queue": "last",
+    "x": 710,
+    "y": 400,
+    "wires": [[]]
+  },
+  {
+    "id": "ed7202ff.b5725",
+    "type": "debug",
+    "z": "d938c47f.3398f8",
+    "name": "Lowest Price Schedule",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 750,
+    "y": 460,
+    "wires": []
+  },
+  {
+    "id": "82c86d92b7c9292c",
+    "type": "inject",
+    "z": "d938c47f.3398f8",
+    "name": "Send schedule",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"commands\":{\"sendSchedule\":true}}",
+    "payloadType": "json",
+    "x": 140,
+    "y": 260,
+    "wires": [["5b6be1568744c6cf", "391ac08890e0dd40"]]
+  },
+  {
+    "id": "b70ec5d0.6f8f08",
+    "type": "tibber-api-endpoint",
+    "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
+    "queryUrl": "https://api.tibber.com/v1-beta/gql",
+    "name": "Tibber API"
+  },
+  {
+    "id": "ec4a12a1.b2be9",
+    "type": "server",
+    "name": "Home Assistant",
+    "version": 2,
+    "addon": true,
+    "rejectUnauthorizedCerts": true,
+    "ha_boolean": "y|yes|true|on|home|open",
+    "connectionDelay": true,
+    "cacheJson": true,
+    "heartbeat": false,
+    "heartbeatInterval": 30
+  }
+]

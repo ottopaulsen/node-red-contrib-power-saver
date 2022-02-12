@@ -1,0 +1,140 @@
+[
+  {
+    "id": "4f11b5ae.4cc22c",
+    "type": "inject",
+    "z": "d938c47f.3398f8",
+    "name": "Refresh",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "3600",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "{viewer{homes{currentSubscription{priceInfo{today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
+    "payloadType": "str",
+    "x": 120,
+    "y": 40,
+    "wires": [["ab2d599a.077738"]]
+  },
+  {
+    "id": "ab2d599a.077738",
+    "type": "tibber-query",
+    "z": "d938c47f.3398f8",
+    "name": "Get Tibber prices",
+    "active": true,
+    "apiEndpointRef": "b70ec5d0.6f8f08",
+    "x": 310,
+    "y": 40,
+    "wires": [["0ef929fde193cf4d"]]
+  },
+  {
+    "id": "0ef929fde193cf4d",
+    "type": "ps-receive-price",
+    "z": "d938c47f.3398f8",
+    "name": "Price Receiver",
+    "x": 140,
+    "y": 100,
+    "wires": [["5b6be1568744c6cf", "391ac08890e0dd40"]]
+  },
+  {
+    "id": "5b6be1568744c6cf",
+    "type": "ps-strategy-best-save",
+    "z": "d938c47f.3398f8",
+    "name": "Best Save",
+    "maxHoursToSaveInSequence": "5",
+    "minHoursOnAfterMaxSequenceSaved": "1",
+    "minSaving": "0.05",
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": "true",
+    "x": 410,
+    "y": 140,
+    "wires": [
+      ["467a5fe.d0bbba", "5e485ff7.db156"],
+      ["9c978d1c.ee76", "467a5fe.d0bbba"],
+      ["42d8b632.402e38", "aa4f06692a2fe46b"]
+    ]
+  },
+  {
+    "id": "5e485ff7.db156",
+    "type": "api-call-service",
+    "z": "d938c47f.3398f8",
+    "name": "Turn on VVB",
+    "server": "ec4a12a1.b2be9",
+    "version": 3,
+    "debugenabled": false,
+    "service_domain": "switch",
+    "service": "turn_on",
+    "entityId": "switch.varmtvannsbereder",
+    "data": "",
+    "dataType": "jsonata",
+    "mergecontext": "",
+    "mustacheAltTags": false,
+    "outputProperties": [],
+    "queue": "none",
+    "x": 710,
+    "y": 40,
+    "wires": [[]]
+  },
+  {
+    "id": "9c978d1c.ee76",
+    "type": "api-call-service",
+    "z": "d938c47f.3398f8",
+    "name": "Turn off VVB",
+    "server": "ec4a12a1.b2be9",
+    "version": 3,
+    "debugenabled": true,
+    "service_domain": "switch",
+    "service": "turn_off",
+    "entityId": "switch.varmtvannsbereder",
+    "data": "",
+    "dataType": "json",
+    "mergecontext": "",
+    "mustacheAltTags": false,
+    "outputProperties": [],
+    "queue": "none",
+    "x": 710,
+    "y": 160,
+    "wires": [[]]
+  },
+  {
+    "id": "aa4f06692a2fe46b",
+    "type": "debug",
+    "z": "d938c47f.3398f8",
+    "name": "Best Save Schedule",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 740,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "b70ec5d0.6f8f08",
+    "type": "tibber-api-endpoint",
+    "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
+    "queryUrl": "https://api.tibber.com/v1-beta/gql",
+    "name": "Tibber API"
+  },
+  {
+    "id": "ec4a12a1.b2be9",
+    "type": "server",
+    "name": "Home Assistant",
+    "version": 2,
+    "addon": true,
+    "rejectUnauthorizedCerts": true,
+    "ha_boolean": "y|yes|true|on|home|open",
+    "connectionDelay": true,
+    "cacheJson": true,
+    "heartbeat": false,
+    "heartbeatInterval": 30
+  }
+]
