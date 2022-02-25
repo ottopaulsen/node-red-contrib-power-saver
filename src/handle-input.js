@@ -12,7 +12,7 @@ function handleStrategyInput(node, msg, doPlanning) {
     node.warn("Resetting node context by command");
     // Reset all saved data
     node.context().set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined]);
-    deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 1 }), 100);
+    deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
   const { priceData, source } = getPriceData(node, msg);
   if (!priceData) {
@@ -125,12 +125,14 @@ function runSchedule(node, schedule, time, currentSent = false) {
 
 function deleteSavedScheduleBefore(node, day, checkDays = 0) {
   let date = day;
+  let data = null;
   let count = 0;
   do {
     date = date.plus({ days: -1 });
-    data = node.context().set(date.toISO(), undefined);
+    data = node.context().get(date.toISODate());
+    node.context().set(date.toISODate(), undefined);
     count++;
-  } while (data || count <= checkDays);
+  } while (data !== undefined || count <= checkDays);
 }
 
 function saveDayData(node, date, plan) {
@@ -180,5 +182,6 @@ function validateInput(node, msg) {
 }
 
 module.exports = {
-  handleStrategyInput, validateInput
+  handleStrategyInput,
+  validateInput,
 };

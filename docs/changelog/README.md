@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.4.2
+
+- Fix bug in reset command. It did not reset daily data properly.
+
 ## 3.4.1
 
 - Update examples
