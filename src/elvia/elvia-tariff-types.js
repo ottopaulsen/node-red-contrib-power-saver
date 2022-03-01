@@ -13,12 +13,6 @@ module.exports = function (RED) {
         node.send([{ payload: json }]);
       });
     });
-
-    RED.httpAdmin.get("/elvia-tariff-types", RED.auth.needsPermission("ps-elvia-config.read"), function (req, res) {
-      getTariffTypes(null, key).then((json) => {
-        res.json(json);
-      });
-    });
   }
 
   RED.nodes.registerType("ps-elvia-tariff-types", PsElviaTariffTypesNode);

@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.4.3
+
+- Fix Elvia config so it can be used independently on any node.
+
 ## 3.4.2
 
 - Fix bug in reset command. It did not reset daily data properly.

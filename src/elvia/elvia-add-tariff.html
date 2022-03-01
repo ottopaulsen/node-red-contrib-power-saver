@@ -18,13 +18,15 @@
     oneditprepare: function () {
       const readTariffTypes = function () {
         const configId = $("#node-input-elviaConfig").val();
-        if (!configId) {
+        if (configId === "_ADD_") {
+          $("#keyMessage").hide();
           return;
         }
         $.getJSON("elvia-tariff-types?configId=" + configId, function (data) {
           if (!data.tariffTypes) {
             return;
           }
+          $("#keyMessage").hide();
           $("#node-input-tariffKey").typedInput({
             types: [
               {
@@ -38,6 +40,7 @@
         });
       };
       $("#node-input-elviaConfig").on("change", function () {
+        $("#keyMessage").show();
         readTariffTypes();
       });
       readTariffTypes();
@@ -57,6 +60,9 @@
   <div class="form-row">
     <label for="node-input-tariffKey"><i class="fa fa-tag"></i> Tariff key</label>
     <input type="text" id="node-input-tariffKey" placeholder="Tariff" style="width: 300px" />
+  </div>
+  <div id="keyMessage" class="form-row">
+    <p>When Subscription key is set in the Elvia config,<br />you must deploy once to get the list of tariff keys.</p>
   </div>
 </script>
 
