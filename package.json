@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-power-saver",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "description": "A module for Node-RED that you can use to turn on and off a switch based on power prices",
   "main": "index.js",
   "scripts": {
@@ -45,22 +45,20 @@
     "url": "https://github.com/ottopaulsen/node-red-contrib-power-saver.git"
   },
   "devDependencies": {
-    "@vuepress/bundler-webpack": "^2.0.0-alpha.1",
-    "@vuepress/plugin-register-components": "^2.0.0-beta.33",
-    "@vuepress/utils": "^2.0.0-beta.27",
+    "@vuepress/bundler-vite": "^2.0.0-beta.36",
+    "@vuepress/plugin-register-components": "^2.0.0-beta.36",
+    "@vuepress/utils": "^2.0.0-beta.35",
+    "sass-loader": "^12.6.0",
+    "vuepress": "^2.0.0-beta.36",
     "expect": "^27.5.1",
     "mocha": "^9.2.0",
-    "node-red": "^2.2.0",
-    "node-red-node-test-helper": "^0.2.7",
-    "patch-vue-directive-ssr": "^0.0.1",
-    "vuepress": "^2.0.0-beta.35",
-    "vuepress-webpack": "^2.0.0-beta.35"
+    "node-red": "^2.2.2",
+    "node-red-node-test-helper": "^0.2.7"
   },
   "dependencies": {
-    "@vitejs/plugin-vue": "^2.2.0",
     "floating-vue": "^2.0.0-beta.6",
     "lodash.clonedeep": "^4.5.0",
-    "luxon": "^2.3.0",
+    "luxon": "^2.3.1",
     "node-fetch": "^2.6.7"
   }
 }
