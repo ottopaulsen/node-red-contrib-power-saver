@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.4.4
+
+- Fix bug in Best Save Viewer in the documentation (under FAQ).
+
 ## 3.4.3
 
 - Fix Elvia config so it can be used independently on any node.

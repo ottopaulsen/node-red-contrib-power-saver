@@ -1,5 +1,4 @@
 const { path } = require("@vuepress/utils");
-const vue = require("@vitejs/plugin-vue");
 
 module.exports = {
   lang: "en-US",
@@ -51,13 +50,19 @@ module.exports = {
               children: [
                 "/nodes/ps-strategy-best-save.md",
                 "/nodes/ps-strategy-lowest-price.md",
-                { text: "ps-strategy-heat-capacitor", link: "/nodes/ps-strategy-heat-capacitor.md" },
+                {
+                  text: "ps-strategy-heat-capacitor",
+                  link: "/nodes/ps-strategy-heat-capacitor.md",
+                },
               ],
             },
             { text: "Utility nodes", children: ["/nodes/ps-receive-price.md"] },
             {
               text: "Grid tariff nodes",
-              children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],
+              children: [
+                "/nodes/ps-general-add-tariff.md",
+                "/nodes/ps-elvia-add-tariff.md",
+              ],
             },
           ],
         },
@@ -79,41 +84,23 @@ module.exports = {
         },
       ],
       "/faq/": [{ text: "FAQ", children: ["/faq/README.md"] }],
-      "/contribute/": [{ text: "Contribute", children: ["/contribute/README.md"] }],
-      "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
+      "/contribute/": [
+        { text: "Contribute", children: ["/contribute/README.md"] },
+      ],
+      "/changelog/": [
+        { text: "Changelog", children: ["/changelog/README.md"] },
+      ],
     },
   },
   head: [
     ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
-    [
-      "script",
-      {
-        async: true,
-        src: "https://www.googletagmanager.com/gtag/js?id=G-Z2QNNCDQZG",
-      },
-    ],
-    [
-      "script",
-      {
-        src: "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z2QNNCDQZG');",
-      },
-    ],
   ],
   plugins: [
     [
       "@vuepress/register-components",
       {
-        components: {
-          BestSaveVerificator: path.resolve(__dirname, "./components/BestSaveVerificator.vue"),
-          DonateButtons: path.resolve(__dirname, "./components/DonateButtons.vue"),
-        },
+        componentsDir: path.resolve(__dirname, "./components"),
       },
     ],
   ],
-  bundler: "@vuepress/bundler-webpack",
-  bundlerConfig: {
-    viteOptions: {
-      plugins: [vue()],
-    },
-  },
 };
