@@ -1,0 +1,1 @@
+const e={key:"v-1ad821fa",path:"/nodes/power-saver.html",title:"power-saver",lang:"en-US",frontmatter:{next:"./ps-strategy-best-save.md"},excerpt:"",headers:[],git:{updatedTime:1639315027e3},filePathRelative:"nodes/power-saver.md"};export{e as data};

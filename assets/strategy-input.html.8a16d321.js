@@ -1,0 +1,1 @@
+const t={key:"v-5954bcb2",path:"/nodes/strategy-input.html",title:"Strategy input format",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1640034618e3},filePathRelative:"nodes/strategy-input.md"};export{t as data};

@@ -1,0 +1,1 @@
+const e={key:"v-0607240a",path:"/examples/example-next-schedule-entity.html",title:"Output schedule to a sensor entity",lang:"en-US",frontmatter:{},excerpt:"",headers:[{level:2,title:"Setup",slug:"setup",children:[]},{level:2,title:"To-do",slug:"to-do",children:[]}],git:{updatedTime:164027482e4},filePathRelative:"examples/example-next-schedule-entity.md"};export{e as data};

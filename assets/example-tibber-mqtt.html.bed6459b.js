@@ -1,0 +1,1 @@
+const e={key:"v-5db8da3a",path:"/examples/example-tibber-mqtt.html",title:"Tibber, a switch and MQTT",lang:"en-US",frontmatter:{},excerpt:"",headers:[{level:2,title:"Description",slug:"description",children:[]},{level:2,title:"Flow",slug:"flow",children:[]}],git:{updatedTime:1642369461e3},filePathRelative:"examples/example-tibber-mqtt.md"};export{e as data};

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="generator" content="VuePress 2.0.0-beta.36">
+    <style>
+      :root {
+        --c-bg: #fff;
+      }
+      html.dark {
+        --c-bg: #22272e;
+      }
+      html, body {
+        background-color: var(--c-bg);
+      }
+    </style>
+    <script>
+      const userMode = localStorage.getItem('vuepress-color-scheme');
+			const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (userMode === 'dark' || (userMode !== 'light' && systemDarkMode)) {
+				document.documentElement.classList.toggle('dark', true);
+			}
+    </script>
+    <link rel="shortcut icon" type="image/x-icon" href="euro.png"><title>Nord Pool and events: state node | Power Saver</title><meta name="description" content="A Node-RED note to save money on hourly changing power prices">
+    <link rel="modulepreload" href="/assets/app.ee0bf03b.js"><link rel="modulepreload" href="/assets/example-nordpool-events-state.html.47dbda83.js"><link rel="modulepreload" href="/assets/example-nordpool-events-state.html.83718bf8.js"><link rel="modulepreload" href="/assets/plugin-vue_export-helper.21dcd24c.js">
+    <link rel="stylesheet" href="/assets/style.a8aae67b.css">
+  </head>
+  <body>
+    <div id="app"><!--[--><div class="theme-container"><!--[--><header ref_key="navbar" class="navbar"><div class="toggle-sidebar-button" title="toggle sidebar" aria-expanded="false" role="button" tabindex="0"><div class="icon" aria-hidden="true"><span></span><span></span><span></span></div></div><span><a href="/" class=""><img class="logo" src="/Ukraine-heart-shape-flag.png" alt="Power Saver"><span class="site-name can-hide">Power Saver</span></a></span><div class="navbar-items-wrapper" style=""><!--[--><!--]--><nav class="navbar-items can-hide"><!--[--><div class="navbar-item"><a href="/guide/" class="" aria-label="Guide"><!--[--><!--]--> Guide <!--[--><!--]--></a></div><div class="navbar-item"><a href="/nodes/" class="" aria-label="Nodes"><!--[--><!--]--> Nodes <!--[--><!--]--></a></div><div class="navbar-item"><a href="/examples/" class="router-link-active" aria-label="Examples"><!--[--><!--]--> Examples <!--[--><!--]--></a></div><div class="navbar-item"><a href="/faq/" class="" aria-label="FAQ"><!--[--><!--]--> FAQ <!--[--><!--]--></a></div><div class="navbar-item"><a href="/contribute/" class="" aria-label="Contribute"><!--[--><!--]--> Contribute <!--[--><!--]--></a></div><div class="navbar-item"><a href="/changelog/" class="" aria-label="Changes"><!--[--><!--]--> Changes <!--[--><!--]--></a></div><div class="navbar-item"><a class="external-link" href="https://github.com/ottopaulsen/node-red-contrib-power-saver" rel="noopener noreferrer" target="_blank" aria-label="GitHub"><!--[--><!--]--> GitHub <span><svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg><span class="external-link-icon-sr-only">open in new window</span></span><!--[--><!--]--></a></div><!--]--></nav><!--[--><!--]--><button class="toggle-dark-button" title="toggle dark mode"><svg style="" class="icon" focusable="false" viewBox="0 0 32 32"><path d="M16 12.005a4 4 0 1 1-4 4a4.005 4.005 0 0 1 4-4m0-2a6 6 0 1 0 6 6a6 6 0 0 0-6-6z" fill="currentColor"></path><path d="M5.394 6.813l1.414-1.415l3.506 3.506L8.9 10.318z" fill="currentColor"></path><path d="M2 15.005h5v2H2z" fill="currentColor"></path><path d="M5.394 25.197L8.9 21.691l1.414 1.415l-3.506 3.505z" fill="currentColor"></path><path d="M15 25.005h2v5h-2z" fill="currentColor"></path><path d="M21.687 23.106l1.414-1.415l3.506 3.506l-1.414 1.414z" fill="currentColor"></path><path d="M25 15.005h5v2h-5z" fill="currentColor"></path><path d="M21.687 8.904l3.506-3.506l1.414 1.415l-3.506 3.505z" fill="currentColor"></path><path d="M15 2.005h2v5h-2z" fill="currentColor"></path></svg><svg style="display:none;" class="icon" focusable="false" viewBox="0 0 32 32"><path d="M13.502 5.414a15.075 15.075 0 0 0 11.594 18.194a11.113 11.113 0 0 1-7.975 3.39c-.138 0-.278.005-.418 0a11.094 11.094 0 0 1-3.2-21.584M14.98 3a1.002 1.002 0 0 0-.175.016a13.096 13.096 0 0 0 1.825 25.981c.164.006.328 0 .49 0a13.072 13.072 0 0 0 10.703-5.555a1.01 1.01 0 0 0-.783-1.565A13.08 13.08 0 0 1 15.89 4.38A1.015 1.015 0 0 0 14.98 3z" fill="currentColor"></path></svg></button><!----></div></header><!--]--><div class="sidebar-mask"></div><!--[--><aside class="sidebar"><nav class="navbar-items"><!--[--><div class="navbar-item"><a href="/guide/" class="" aria-label="Guide"><!--[--><!--]--> Guide <!--[--><!--]--></a></div><div class="navbar-item"><a href="/nodes/" class="" aria-label="Nodes"><!--[--><!--]--> Nodes <!--[--><!--]--></a></div><div class="navbar-item"><a href="/examples/" class="router-link-active" aria-label="Examples"><!--[--><!--]--> Examples <!--[--><!--]--></a></div><div class="navbar-item"><a href="/faq/" class="" aria-label="FAQ"><!--[--><!--]--> FAQ <!--[--><!--]--></a></div><div class="navbar-item"><a href="/contribute/" class="" aria-label="Contribute"><!--[--><!--]--> Contribute <!--[--><!--]--></a></div><div class="navbar-item"><a href="/changelog/" class="" aria-label="Changes"><!--[--><!--]--> Changes <!--[--><!--]--></a></div><div class="navbar-item"><a class="external-link" href="https://github.com/ottopaulsen/node-red-contrib-power-saver" rel="noopener noreferrer" target="_blank" aria-label="GitHub"><!--[--><!--]--> GitHub <span><svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg><span class="external-link-icon-sr-only">open in new window</span></span><!--[--><!--]--></a></div><!--]--></nav><!--[--><!--]--><ul class="sidebar-items"><!--[--><li><p tabindex="0" class="sidebar-item sidebar-heading active">Examples <!----></p><!--[--><ul style="" class="sidebar-item-children"><!--[--><li><a href="/examples/example-nordpool-current-state.html" class="sidebar-item" aria-label="Nord Pool and current state node"><!--[--><!--]--> Nord Pool and current state node <!--[--><!--]--></a><!----></li><li><a aria-current="page" href="/examples/example-nordpool-events-state.html" class="router-link-active router-link-exact-active router-link-active sidebar-item active" aria-label="Nord Pool and events: state node"><!--[--><!--]--> Nord Pool and events: state node <!--[--><!--]--></a><!--[--><ul style="" class="sidebar-item-children"><!--[--><li><a aria-current="page" href="/examples/example-nordpool-events-state.html#description" class="router-link-active router-link-exact-active sidebar-item" aria-label="Description"><!--[--><!--]--> Description <!--[--><!--]--></a><!----></li><li><a aria-current="page" href="/examples/example-nordpool-events-state.html#flow" class="router-link-active router-link-exact-active sidebar-item" aria-label="Flow"><!--[--><!--]--> Flow <!--[--><!--]--></a><!----></li><!--]--></ul><!--]--></li><li><a href="/examples/example-tibber-mqtt.html" class="sidebar-item" aria-label="Tibber, a switch and MQTT"><!--[--><!--]--> Tibber, a switch and MQTT <!--[--><!--]--></a><!----></li><li><a href="/examples/example-heat-capacitor.html" class="sidebar-item" aria-label="Simple heat capacitor strategy flow"><!--[--><!--]--> Simple heat capacitor strategy flow <!--[--><!--]--></a><!----></li><li><a href="/examples/example-cascade-temperature-control.html" class="sidebar-item" aria-label="Cascade temperature control"><!--[--><!--]--> Cascade temperature control <!--[--><!--]--></a><!----></li><!--]--></ul><!--]--></li><!--]--></ul><!--[--><!--]--></aside><!--]--><!--[--><main class="page"><!--[--><!--]--><div class="theme-default-content"><!--[--><h1 id="nord-pool-and-events-state-node" tabindex="-1"><a class="header-anchor" href="#nord-pool-and-events-state-node" aria-hidden="true">#</a> Nord Pool and events: state node</h1><h2 id="description" tabindex="-1"><a class="header-anchor" href="#description" aria-hidden="true">#</a> Description</h2><p>In this example, data is read from the Nord Pool sensor in HA via the <code>events: state</code> node. The <code>ps-lowest-price</code> node is used to control a switch, controlled by <code>call service</code> nodes in Home Assistant, to turn on the cheapest 4 hours between 18:00 and 08:00. The schedule is printed to a debug node. The flow is triggered every time the Nord Pool sensor receives new prices.</p><p><img src="/assets/power-saver-nordpool-events-state.a764b813.png" alt="Example with Tibber and MQTT"></p><h2 id="flow" tabindex="-1"><a class="header-anchor" href="#flow" aria-hidden="true">#</a> Flow</h2><div class="language-json ext-json"><pre class="language-json"><code><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;3662aca5.dfe974&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;server-state-changed&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;z&quot;</span><span class="token operator">:</span> <span class="token string">&quot;d938c47f.3398f8&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Nord Pool sensor&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;server&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ec4a12a1.b2be9&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;version&quot;</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;exposeToHomeAssistant&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;haConfig&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">&quot;property&quot;</span><span class="token operator">:</span> <span class="token string">&quot;name&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;value&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">&quot;property&quot;</span><span class="token operator">:</span> <span class="token string">&quot;icon&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;value&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;entityidfilter&quot;</span><span class="token operator">:</span> <span class="token string">&quot;sensor.nordpool_kwh_trheim_nok_3_095_025&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;entityidfiltertype&quot;</span><span class="token operator">:</span> <span class="token string">&quot;exact&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;outputinitially&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;state_type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;str&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;haltifstate&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;halt_if_type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;str&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;halt_if_compare&quot;</span><span class="token operator">:</span> <span class="token string">&quot;is&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;outputs&quot;</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;output_only_on_state_change&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;for&quot;</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;forType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;num&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;forUnits&quot;</span><span class="token operator">:</span> <span class="token string">&quot;minutes&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;ignorePrevStateNull&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;ignorePrevStateUnknown&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;ignorePrevStateUnavailable&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;ignoreCurrentStateUnknown&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;ignoreCurrentStateUnavailable&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;outputProperties&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">&quot;property&quot;</span><span class="token operator">:</span> <span class="token string">&quot;payload&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;propertyType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;msg&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;value&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;valueType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;entityState&quot;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">&quot;property&quot;</span><span class="token operator">:</span> <span class="token string">&quot;data&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;propertyType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;msg&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;value&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;valueType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;eventData&quot;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">&quot;property&quot;</span><span class="token operator">:</span> <span class="token string">&quot;topic&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;propertyType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;msg&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;value&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;valueType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;triggerId&quot;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;x&quot;</span><span class="token operator">:</span> <span class="token number">120</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;y&quot;</span><span class="token operator">:</span> <span class="token number">620</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;wires&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">&quot;e21a4b49adea2350&quot;</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ed7202ff.b5725&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;debug&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;z&quot;</span><span class="token operator">:</span> <span class="token string">&quot;d938c47f.3398f8&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Nord Pool result&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;active&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;tosidebar&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;console&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;tostatus&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;complete&quot;</span><span class="token operator">:</span> <span class="token string">&quot;true&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;targetType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;full&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;statusVal&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;statusType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;auto&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;x&quot;</span><span class="token operator">:</span> <span class="token number">720</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;y&quot;</span><span class="token operator">:</span> <span class="token number">680</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;wires&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;32f17ab2.927cf6&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;api-call-service&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;z&quot;</span><span class="token operator">:</span> <span class="token string">&quot;d938c47f.3398f8&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Turn on&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;server&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ec4a12a1.b2be9&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;version&quot;</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;debugenabled&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;service_domain&quot;</span><span class="token operator">:</span> <span class="token string">&quot;switch&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;service&quot;</span><span class="token operator">:</span> <span class="token string">&quot;turn_on&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;entityId&quot;</span><span class="token operator">:</span> <span class="token string">&quot;switch.varmtvannsbereder_switch&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;data&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;dataType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;jsonata&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;mergecontext&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;mustacheAltTags&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;outputProperties&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;queue&quot;</span><span class="token operator">:</span> <span class="token string">&quot;none&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;x&quot;</span><span class="token operator">:</span> <span class="token number">700</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;y&quot;</span><span class="token operator">:</span> <span class="token number">580</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;wires&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2a3cd7db.0891f8&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;api-call-service&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;z&quot;</span><span class="token operator">:</span> <span class="token string">&quot;d938c47f.3398f8&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Turn off&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;server&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ec4a12a1.b2be9&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;version&quot;</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;debugenabled&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;service_domain&quot;</span><span class="token operator">:</span> <span class="token string">&quot;switch&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;service&quot;</span><span class="token operator">:</span> <span class="token string">&quot;turn_off&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;entityId&quot;</span><span class="token operator">:</span> <span class="token string">&quot;switch.varmtvannsbereder_switch&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;data&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;dataType&quot;</span><span class="token operator">:</span> <span class="token string">&quot;json&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;mergecontext&quot;</span><span class="token operator">:</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;mustacheAltTags&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;outputProperties&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;queue&quot;</span><span class="token operator">:</span> <span class="token string">&quot;none&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;x&quot;</span><span class="token operator">:</span> <span class="token number">700</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;y&quot;</span><span class="token operator">:</span> <span class="token number">620</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;wires&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;e21a4b49adea2350&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ps-receive-price&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;z&quot;</span><span class="token operator">:</span> <span class="token string">&quot;d938c47f.3398f8&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Price Receiver&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;x&quot;</span><span class="token operator">:</span> <span class="token number">310</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;y&quot;</span><span class="token operator">:</span> <span class="token number">620</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;wires&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">&quot;391ac08890e0dd40&quot;</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;391ac08890e0dd40&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ps-strategy-lowest-price&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;z&quot;</span><span class="token operator">:</span> <span class="token string">&quot;d938c47f.3398f8&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Lowest Price&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;fromTime&quot;</span><span class="token operator">:</span> <span class="token string">&quot;18&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;toTime&quot;</span><span class="token operator">:</span> <span class="token string">&quot;08&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;hoursOn&quot;</span><span class="token operator">:</span> <span class="token string">&quot;04&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;doNotSplit&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;sendCurrentValueWhenRescheduling&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;outputIfNoSchedule&quot;</span><span class="token operator">:</span> <span class="token string">&quot;false&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;outputOutsidePeriod&quot;</span><span class="token operator">:</span> <span class="token string">&quot;false&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;x&quot;</span><span class="token operator">:</span> <span class="token number">490</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;y&quot;</span><span class="token operator">:</span> <span class="token number">620</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;wires&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">&quot;32f17ab2.927cf6&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">&quot;2a3cd7db.0891f8&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">&quot;ed7202ff.b5725&quot;</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ec4a12a1.b2be9&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;server&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Home Assistant&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;version&quot;</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;addon&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;rejectUnauthorizedCerts&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;ha_boolean&quot;</span><span class="token operator">:</span> <span class="token string">&quot;y|yes|true|on|home|open&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;connectionDelay&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;cacheJson&quot;</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;heartbeat&quot;</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;heartbeatInterval&quot;</span><span class="token operator">:</span> <span class="token number">30</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div><!--]--></div><footer class="page-meta"><!----><div class="meta-item last-updated"><span class="meta-item-label">Last Updated: </span><!----></div><!----></footer><nav class="page-nav"><p class="inner"><span class="prev"><a href="/examples/example-nordpool-current-state.html" class="" aria-label="Nord Pool and current state node"><!--[--><!--]--> Nord Pool and current state node <!--[--><!--]--></a></span><span class="next"><a href="/examples/example-tibber-mqtt.html" class="" aria-label="Tibber, a switch and MQTT"><!--[--><!--]--> Tibber, a switch and MQTT <!--[--><!--]--></a></span></p></nav><!--[--><!--]--></main><!--]--></div><!----><!--]--></div>
+    <script type="module" src="/assets/app.ee0bf03b.js" defer></script>
+  </body>
+</html>
