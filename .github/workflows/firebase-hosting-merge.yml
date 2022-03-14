@@ -19,8 +19,3 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_POWERSAVER_C98D0 }}'
           channelId: live
           projectId: powersaver-c98d0
-      - name: Publish tag to npm
-        if: contains(github.ref, 'tags')
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

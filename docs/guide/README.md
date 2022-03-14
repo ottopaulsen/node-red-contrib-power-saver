@@ -61,14 +61,17 @@ If you are a Tibber customer, use the `tibber-query` node from the [Tibber API](
 {
   viewer {
     homes {
-      id
-      address {
-        address1
-        address2
-        address3
-        postalCode
-        city
-        country
+      currentSubscription {
+        priceInfo {
+          today {
+            total
+            startsAt
+          }
+          tomorrow {
+            total
+            startsAt
+          }
+        }
       }
     }
   }
