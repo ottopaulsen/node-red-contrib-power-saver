@@ -150,10 +150,11 @@ If the grid tariff is the same the whole day, you can skip this step i the flow.
 
 This is the step where the value is produced. Based on the prices received, the optimal schedule for you is calculated automatically, based on your configuration. You can choose between the following strategies:
 
-| Strategy     | Node                        | Description                                                     |
-| ------------ | --------------------------- | --------------------------------------------------------------- |
-| Best save    | `ps-strategy-best-save`     | Postpone power consumption when there is most to save.          |
-| Lowest price | `ps--strategy-lowest-price` | Turn on power when the prices are the lowest in a given period. |
+| Strategy       | Node                         | Description                                                                  |
+| -------------- | ---------------------------- | ---------------------------------------------------------------------------- |
+| Best Save      | `ps-strategy-best-save`      | Postpone power consumption when there is most to save.                       |
+| Lowest Price   | `ps-strategy-lowest-price`   | Turn on power when the prices are the lowest in a given period.              |
+| Heat Capacitor | `ps-strategy-heat-capacitor` | Move consumption from expensive to cheap periods utilizing climate entities. |
 
 These nodes must be configured for your purpose. See configuration description and other details in the documentation for each node.
 
@@ -164,11 +165,15 @@ strategy node you choose.
 Choose the best save strategy if you can postpone power consumption, and expect the consumption to occur during the first hour after power is turned on again.
 
 Choose the lowest price strategy if you need the power to be on for x hours, but it is not important when that is. Note that you can select to have all hours on in one consecutive period, or spread around on the cheapest hours.
+
+Choose the heat capacitor strategy for controlling for example room heating, where you can turn the heat a little down when electricity is expensive, and a little up when it is cheap, using trading principles (only that you know up front when the prices will change).
 :::
 
 ### Use schedule signals
 
 Use the outputs to control switches, thermostats or other entities to control your power consumers.
+
+The following os valid for the Best Save and Lowest Price strategies:
 
 **Output 1** is used to turn on. A payload with value `true` is sent every time turning on is scheduled.
 
