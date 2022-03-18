@@ -160,19 +160,6 @@ In this example, data is read from Tibber and used to turn on/off a switch, sche
     "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
     "queryUrl": "https://api.tibber.com/v1-beta/gql",
     "name": "Tibber API"
-  },
-  {
-    "id": "ec4a12a1.b2be9",
-    "type": "server",
-    "name": "Home Assistant",
-    "version": 2,
-    "addon": true,
-    "rejectUnauthorizedCerts": true,
-    "ha_boolean": "y|yes|true|on|home|open",
-    "connectionDelay": true,
-    "cacheJson": true,
-    "heartbeat": false,
-    "heartbeatInterval": 30
   }
 ]
 ```

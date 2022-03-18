@@ -167,19 +167,6 @@ In this example, data is read from the Nord Pool sensor in HA via the `current s
                 "e2578f6a.210a8"
             ]
         ]
-    },
-    {
-        "id": "ec4a12a1.b2be9",
-        "type": "server",
-        "name": "Home Assistant",
-        "version": 2,
-        "addon": true,
-        "rejectUnauthorizedCerts": true,
-        "ha_boolean": "y|yes|true|on|home|open",
-        "connectionDelay": true,
-        "cacheJson": true,
-        "heartbeat": false,
-        "heartbeatInterval": 30
     }
 ]
 ```

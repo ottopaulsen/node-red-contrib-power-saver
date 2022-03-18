@@ -326,19 +326,6 @@ A cascade temperature controller is a controller which utilizes the input/setpoi
     "x": 290,
     "y": 160,
     "wires": [["6f77dd60c21180e1"]]
-  },
-  {
-    "id": "e2dd69fb.8f70a8",
-    "type": "server",
-    "name": "Home Assistant",
-    "version": 2,
-    "addon": true,
-    "rejectUnauthorizedCerts": true,
-    "ha_boolean": "y|yes|true|on|home|open",
-    "connectionDelay": false,
-    "cacheJson": true,
-    "heartbeat": true,
-    "heartbeatInterval": "30"
   }
 ]
 ```

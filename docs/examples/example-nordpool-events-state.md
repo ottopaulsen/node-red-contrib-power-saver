@@ -152,19 +152,6 @@ In this example, data is read from the Nord Pool sensor in HA via the `events: s
     "x": 490,
     "y": 620,
     "wires": [["32f17ab2.927cf6"], ["2a3cd7db.0891f8"], ["ed7202ff.b5725"]]
-  },
-  {
-    "id": "ec4a12a1.b2be9",
-    "type": "server",
-    "name": "Home Assistant",
-    "version": 2,
-    "addon": true,
-    "rejectUnauthorizedCerts": true,
-    "ha_boolean": "y|yes|true|on|home|open",
-    "connectionDelay": true,
-    "cacheJson": true,
-    "heartbeat": false,
-    "heartbeatInterval": 30
   }
 ]
 ```
