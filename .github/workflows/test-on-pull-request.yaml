@@ -3,8 +3,11 @@ on: pull_request
 jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: szenius/set-timezone@v1.0
+        with:
+          timezoneLinux: "Europe/Oslo"
       - run: npm ci
       - run: 'npm run test'
