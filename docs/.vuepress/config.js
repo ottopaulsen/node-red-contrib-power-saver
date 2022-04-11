@@ -1,4 +1,5 @@
 const { path } = require("@vuepress/utils");
+const navbar = require("./navbar");
 
 module.exports = {
   lang: "en-US",
@@ -8,36 +9,7 @@ module.exports = {
   themeConfig: {
     contributors: false,
     logo: "/Ukraine-heart-shape-flag.png",
-    navbar: [
-      {
-        text: "Guide",
-        link: "/guide/",
-      },
-      {
-        text: "Nodes",
-        link: "/nodes/",
-      },
-      {
-        text: "Examples",
-        link: "/examples/",
-      },
-      {
-        text: "FAQ",
-        link: "/faq/",
-      },
-      {
-        text: "Contribute",
-        link: "/contribute/",
-      },
-      {
-        text: "Changes",
-        link: "/changelog/",
-      },
-      {
-        text: "GitHub",
-        link: "https://github.com/ottopaulsen/node-red-contrib-power-saver",
-      },
-    ],
+    navbar,
     sidebar: {
       "/guide/": [{ text: "Guide", children: ["/guide/README.md"] }],
       "/nodes/": [
@@ -59,10 +31,7 @@ module.exports = {
             { text: "Utility nodes", children: ["/nodes/ps-receive-price.md"] },
             {
               text: "Grid tariff nodes",
-              children: [
-                "/nodes/ps-general-add-tariff.md",
-                "/nodes/ps-elvia-add-tariff.md",
-              ],
+              children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],
             },
           ],
         },
@@ -84,17 +53,11 @@ module.exports = {
         },
       ],
       "/faq/": [{ text: "FAQ", children: ["/faq/README.md"] }],
-      "/contribute/": [
-        { text: "Contribute", children: ["/contribute/README.md"] },
-      ],
-      "/changelog/": [
-        { text: "Changelog", children: ["/changelog/README.md"] },
-      ],
+      "/contribute/": [{ text: "Contribute", children: ["/contribute/README.md"] }],
+      "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   },
-  head: [
-    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
-  ],
+  head: [["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }]],
   plugins: [
     [
       "@vuepress/register-components",
