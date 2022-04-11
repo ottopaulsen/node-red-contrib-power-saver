@@ -1,10 +1,13 @@
 name: Run tests on pull request
 on: pull_request
 jobs:
-  build_and_preview:
+  build_and_test:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: szenius/set-timezone@v1.0
+        with:
+          timezoneLinux: "Europe/Oslo"
       - run: npm ci
       - run: 'npm run test'
