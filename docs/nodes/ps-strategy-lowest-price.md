@@ -25,8 +25,14 @@ The node can work on a specific period from 1 to 24 hours during a 24 hour perio
 | Send When Rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. |
 | If No Schedule, Send   | What to do if there is no valid schedule any more (turn on or off).              |
 | Outside Period, Send   | Select the value to send outside the selected period.                            |
+| Context storage        | Select context storage to save data to, if you want other than the default.      |
 
 If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is significant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
+
+::: warning Context storage
+Only use this if you know what you are doing! The value must be one of the values defined under `contextStorage`
+in your Node-RED `settings.js` file.
+:::
 
 ::: tip Example with Consecutive On-Period
 One example to need a consecutive on-period can be if you want to control the washing machine. Let's say it needs 3 hours, and you want it to run between 22:00 and 06:00. Set `From Time = 22:00`, `To Time = 06:00` and check the `Consecutive On-Period` flag. This will turn on the cheapest 3-hour period from 22:00 to 06:00.
@@ -131,6 +137,13 @@ This operation cannot be undone.
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
 :::
 
+### Config saved in context
+
+The nodes config is saved in the nodes context.
+If dynamic config is sent as input, this replaces the saved config.
+It is the config that is saved in context that is used when calculating.
+When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
+
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md)
@@ -210,6 +223,30 @@ Example of output:
 ```
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
+
+## Restarts and saved context
+
+The config, last received prices and the last calculated schedule are saved to the nodes context.
+This may be saved to memory, to file or to another destination based on how your Node-RED is configured.
+You can find this configuration in the `settings.js` file for Node-RED, usually in the node-red config folder.
+In Home Assistant, this is normally `/config/node-red/settings.js`.
+
+Here is an example of a configuration for the context storage:
+
+```js
+contextStorage: {
+	file: { module: "localfilesystem"},
+  default: { module: "memory" }
+}
+```
+
+By default, this node saves context to the `default` context storage. In the example above, context is saved to memory by default. Then it is not preserved over a restart.
+
+If multiple contest storages are defined, you can change what context storage that is used in the nodes config.
+
+The data that is saved is the config, the last used prices and the last calculated schedule. However, when the node starts again, it is recalculating the schedule based on the saved prices. It should result in the same schedule.
+
+Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/context) for more details about this.
 
 ## Tips & tricks
 

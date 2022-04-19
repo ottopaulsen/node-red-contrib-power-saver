@@ -57,14 +57,14 @@ function getDiff(large, small) {
 }
 
 function getEffectiveConfig(node, msg) {
-  const res = node.context().get("config");
+  const res = node.context().get("config", node.contextStorage);
   const isConfigMsg = !!msg?.payload?.config;
   if (isConfigMsg) {
     const inputConfig = msg.payload.config;
     Object.keys(inputConfig).forEach((key) => {
       res[key] = inputConfig[key];
     });
-    node.context().set("config", res);
+    node.context().set("config", res, node.contextStorage);
   }
   return res;
 }
@@ -73,7 +73,7 @@ function loadDayData(node, date) {
   // Load saved schedule for the date (YYYY-MM-DD)
   // Return null if not found
   const key = date.toISODate();
-  const saved = node.context().get(key);
+  const saved = node.context().get(key, node.contextStorage);
   const res = saved ?? {
     schedule: [],
     hours: [],

@@ -14,6 +14,8 @@ function getPriceData(node, msg) {
   priceData = [...input.today, ...input.tomorrow];
   const source = input.source;
   node.context().set("lastPriceData", priceData);
+  const statusMsg = priceData.length + " hours from " + source;
+  node.status({ fill: "green", shape: "ring", text: statusMsg });
   return { priceData, source };
 }
 

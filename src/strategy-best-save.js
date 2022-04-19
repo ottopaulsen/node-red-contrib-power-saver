@@ -15,8 +15,10 @@ module.exports = function (RED) {
       minSaving: parseFloat(config.minSaving),
       sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       outputIfNoSchedule: config.outputIfNoSchedule === "true",
+      contextStorage: config.contextStorage || "default",
     };
-    node.context().set("config", originalConfig);
+    node.context().set("config", originalConfig, originalConfig.contextStorage);
+    node.contextStorage = originalConfig.contextStorage;
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);
@@ -55,7 +57,7 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
   const values = priceData.map((d) => d.value);
   const startTimes = priceData.map((d) => d.start);
   const onOffBefore = dataJustBefore.hours.map((h) => h.onOff);
-  const lastPlanHours = node.context().get("lastPlan")?.hours ?? [];
+  const lastPlanHours = node.context().get("lastPlan", node.contextStorage)?.hours ?? [];
   const plan = makePlan(node, values, startTimes, onOffBefore);
   const includeFromLastPlanHours = lastPlanHours.filter(
     (h) => h.start < plan.hours[0].start && h.start >= priceData[0].start

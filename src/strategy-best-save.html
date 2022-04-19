@@ -26,6 +26,7 @@
         align: "left",
       },
       outputIfNoSchedule: { value: "true", required: true, align: "left" },
+      contextStorage: { value: "default", required: false, align: "left" },
     },
     inputs: 1,
     outputs: 3,
@@ -44,6 +45,14 @@
               { value: "true", label: "On" },
               { value: "false", label: "Off" },
             ],
+          },
+        ],
+      });
+      $("#node-input-contextStorage").typedInput({
+        types: [
+          {
+            value: "storages",
+            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
           },
         ],
       });
@@ -86,6 +95,11 @@
         <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
         </label>
     </div>
+    <h3>Context storage</h3>
+    <div class="form-row">
+      <label for="node-input-contextStorage"><i class="fa fa-archive"></i> Context storage</label>
+      <input type="text" id="node-input-contextStorage" style="width: 160px">
+  </div>
 </script>
 
 <script type="text/markdown" data-help-name="ps-strategy-best-save">

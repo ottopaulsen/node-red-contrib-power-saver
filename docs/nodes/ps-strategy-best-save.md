@@ -21,6 +21,7 @@ The picture at the bottom of the page, under [Integration with MagicMirror](#int
 | Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it? |
 | Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling                                                                                      |
 | If no schedule, send   | What to do if there is no valid schedule any more (turn on or off).                                                                                                  |
+| Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                           |
 
 ::: warning Min recover
 NB! The `Min recover` only has effect if the previous save-period is of length `Max per sequence`. If the save-period is shorter, the following on-period may be as short as one hour.
@@ -107,13 +108,25 @@ This operation cannot be undone.
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
 :::
 
+### Config saved in context
+
+The nodes config is saved in the nodes context.
+If dynamic config is sent as input, this replaces the saved config.
+It is the config that is saved in context that is used when calculating.
+When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
+
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md).
 
 In addition to the prices sent as input,
 the node is using the schedule for the day before it receives data for,
-so that it can calculate the schedule in the beginning of the day according to the configured rules. This requires of course that the node was run the day before.
+so that it can calculate the schedule in the beginning of the day according to the configured rules.
+This requires of course that the node was run the day before.
+
+When a payload with `priceData` is received, this is saved to the nodes context as `lastPriceData`.
+The source is saved as `lastSource`. If config- or command-messages are received without price data,
+the data saved in context is used for replanning.
 
 ## Output
 
@@ -180,9 +193,9 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
 
-### Data saved in context
+### Output saved in context
 
-The node saves some data in the nodes context, so that it can be used on restarts and also taken into consideration when calculating the schedule over midnight.
+The `schedule` and the `hours` arrays from Output 3 are both saved to the nodes context in an object with key `lastPlan`. This may be used in the plan for the next day, for example if an off-period at the end of one day continues into the next day. In that case, the `saving` values for the last hours in the day have to be recalculated, since the next hour on is changed when the new day is calculated.
 
 You can see the saved data if you select the node in Node-RED, and view "Context data", and refresh the Node context.
 
@@ -204,23 +217,29 @@ I say "in most cases", because there is a chance that a group of two or more seq
 
 Normally data is received for one or two whole days, and all this data is used to do the calculation. In addition, if the node has run before, so there is historical data, the last period on or off before the period data is received for, is considered in the calculation, so that the rules in the configuration are followed also between days.
 
-## Restarts
+## Restarts and saved context
 
-The node saves data in the nodes context, so if Node-RED is configured to save context between restarts, the node will replan with the last received data when it restarts.
+The config, last received prices and the last calculated schedule are saved to the nodes context.
+This may be saved to memory, to file or to another destination based on how your Node-RED is configured.
+You can find this configuration in the `settings.js` file for Node-RED, usually in the node-red config folder.
+In Home Assistant, this is normally `/config/node-red/settings.js`.
 
-::: warning
-In Home Assistant, Node-RED is by default configured to save context between restarts. However, if you run Node-RED another way, this may not be the case by default. If context is only stored in memory, it is lost between restarts, and even between re-deployments. This can be changed in the `settings.js` file for Node-RED like this:
+Here is an example of a configuration for the context storage:
 
 ```js
 contextStorage: {
-   default: {
-       module: "localfilesystem"
-   }
+	file: { module: "localfilesystem"},
+  default: { module: "memory" }
 }
 ```
 
+By default, this node saves context to the `default` context storage. In the example above, context is saved to memory by default. Then it is not preserved over a restart.
+
+If multiple contest storages are defined, you can change what context storage that is used in the nodes config.
+
+The data that is saved is the config, the last used prices and the last calculated schedule. However, when the node starts again, it is recalculating the schedule based on the saved prices. It should result in the same schedule.
+
 Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/context) for more details about this.
-:::
 
 ## Integration with MagicMirror
 

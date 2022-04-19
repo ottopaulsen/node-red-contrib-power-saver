@@ -11,7 +11,9 @@ function handleStrategyInput(node, msg, doPlanning) {
   if (msg.payload.commands && msg.payload.commands.reset) {
     node.warn("Resetting node context by command");
     // Reset all saved data
-    node.context().set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined]);
+    node
+      .context()
+      .set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined], node.contextStorage);
     deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
   const { priceData, source } = getPriceData(node, msg);
@@ -38,7 +40,7 @@ function handleStrategyInput(node, msg, doPlanning) {
   const plan = doPlanning(node, effectiveConfig, priceData, planFromTime, dateDayBefore, dateToday);
 
   // Save schedule
-  node.context().set("lastPlan", plan);
+  node.context().set("lastPlan", plan, node.contextStorage);
   dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
   const sentOnCommand = !!msg.payload.commands?.sendSchedule;
@@ -84,14 +86,14 @@ function getPriceData(node, msg) {
   const isCommandMsg = !!msg?.payload?.commands;
   const isPriceMsg = !!msg?.payload?.priceData;
   if ((isConfigMsg || isCommandMsg) && !isPriceMsg) {
-    const priceData = node.context().get("lastPriceData");
-    const source = node.context().get("lastSource");
+    const priceData = node.context().get("lastPriceData", node.contextStorage);
+    const source = node.context().get("lastSource", node.contextStorage);
     return { priceData, source };
   }
   const priceData = msg.payload.priceData;
   const source = msg.payload.source;
-  node.context().set("lastPriceData", priceData);
-  node.context().set("lastSource", source);
+  node.context().set("lastPriceData", priceData, node.contextStorage);
+  node.context().set("lastSource", source, node.contextStorage);
   return { priceData, source };
 }
 
@@ -129,14 +131,14 @@ function deleteSavedScheduleBefore(node, day, checkDays = 0) {
   let count = 0;
   do {
     date = date.plus({ days: -1 });
-    data = node.context().get(date.toISODate());
-    node.context().set(date.toISODate(), undefined);
+    data = node.context().get(date.toISODate(), node.contextStorage);
+    node.context().set(date.toISODate(), undefined, node.contextStorage);
     count++;
   } while (data !== undefined || count <= checkDays);
 }
 
 function saveDayData(node, date, plan) {
-  node.context().set(date, plan);
+  node.context().set(date, plan, node.contextStorage);
 }
 
 function sendSwitch(node, onOff) {
