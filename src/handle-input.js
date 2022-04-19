@@ -8,6 +8,12 @@ function handleStrategyInput(node, msg, doPlanning) {
   if (!validateInput(node, msg)) {
     return;
   }
+  if (msg.payload.commands && !anyLegalCommands(msg.payload.commands)) {
+    const message = "Illegal command";
+    node.warn(message);
+    node.status({ fill: "yellow", shape: "dot", text: message });
+    return;
+  }
   if (msg.payload.commands && msg.payload.commands.reset) {
     node.warn("Resetting node context by command");
     // Reset all saved data
@@ -16,7 +22,15 @@ function handleStrategyInput(node, msg, doPlanning) {
       .set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined], node.contextStorage);
     deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
-  const { priceData, source } = getPriceData(node, msg);
+  let { priceData, source } = getPriceData(node, msg);
+  if (!priceData) {
+    // Use last saved price data
+    priceData = node.context().get("lastPriceData");
+    source = node.context().get("lastSource");
+    const message = "Using saved prices";
+    node.warn(message);
+    node.status({ fill: "green", shape: "ring", text: message });
+  }
   if (!priceData) {
     const message = "No price data";
     node.warn(message);
@@ -181,6 +195,10 @@ function validateInput(node, msg) {
     }
   });
   return true;
+}
+
+function anyLegalCommands(commands) {
+  return ["reset", "replan", "sendOutput", "sendSchedule"].some((v) => commands.hasOwnProperty(v));
 }
 
 module.exports = {

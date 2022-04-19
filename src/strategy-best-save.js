@@ -9,6 +9,8 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const node = this;
 
+    node.status({});
+
     const originalConfig = {
       maxHoursToSaveInSequence: config.maxHoursToSaveInSequence,
       minHoursOnAfterMaxSequenceSaved: config.minHoursOnAfterMaxSequenceSaved,

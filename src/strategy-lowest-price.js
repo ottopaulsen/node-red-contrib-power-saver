@@ -7,6 +7,7 @@ module.exports = function (RED) {
   function StrategyLowestPriceNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
+    node.status({});
 
     const originalConfig = {
       fromTime: config.fromTime,

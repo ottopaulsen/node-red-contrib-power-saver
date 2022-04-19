@@ -34,6 +34,7 @@ It is possible to change config dynamically by sending a config message to the n
 ```json
 "payload": {
   "config": {
+    "contextStorage": "file",
     "maxHoursToSaveInSequence": 4,
     "minHoursOnAfterMaxSequenceSaved": 2,
     "minSaving": 0.02,
@@ -108,6 +109,22 @@ This operation cannot be undone.
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
 :::
 
+#### replan
+
+By sending this command, you can have the node read the last received prices from the context storage,
+and make a plan based on those prices:
+
+```json
+"payload": {
+  "commands": {
+    "replan": true,
+  }
+}
+```
+
+If the context storage is `file` you can use this to create a new schedule after a restart,
+instead of fetching prices again.
+
 ### Config saved in context
 
 The nodes config is saved in the nodes context.
@@ -180,6 +197,7 @@ Example of output:
   ],
   "source": "Nord Pool",
   "config": {
+    "contextStorage": "default",
     "maxHoursToSaveInSequence": 3,
     "minHoursOnAfterMaxSequenceSaved": "1",
     "minSaving": 0.001,
@@ -221,6 +239,12 @@ Normally data is received for one or two whole days, and all this data is used t
 
 The config, last received prices and the last calculated schedule are saved to the nodes context.
 This may be saved to memory, to file or to another destination based on how your Node-RED is configured.
+If multiple context storages are defined, you can select which one to use in the nodes config.
+If there is only one context storage defined, this is normally `memory`. In that case, data is not saved over restarts.
+It is common to have two different context storages defined, `memory` and `file`, but there may be more.
+It is also common to have a `default` context storage defined, and often this points to either `memory` or `file`.
+However, the configuration can be different from this.
+
 You can find this configuration in the `settings.js` file for Node-RED, usually in the node-red config folder.
 In Home Assistant, this is normally `/config/node-red/settings.js`.
 
@@ -228,18 +252,31 @@ Here is an example of a configuration for the context storage:
 
 ```js
 contextStorage: {
-	file: { module: "localfilesystem"},
+  file: { module: "localfilesystem"},
   default: { module: "memory" }
 }
 ```
 
-By default, this node saves context to the `default` context storage. In the example above, context is saved to memory by default. Then it is not preserved over a restart.
-
-If multiple contest storages are defined, you can change what context storage that is used in the nodes config.
-
-The data that is saved is the config, the last used prices and the last calculated schedule. However, when the node starts again, it is recalculating the schedule based on the saved prices. It should result in the same schedule.
-
+By default, this node saves context to the `default` context storage. In the example above, this is memory.
+Then it is not preserved over a restart.
 Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/context) for more details about this.
+
+The data that is saved is the config, the last used prices and the last calculated schedule.
+
+When Node-RED restarts, the config is reset to what is defined in the node config, so by default,
+nothing is read from the context storage after a restart. However, if you send a `replan` command to the
+nodes input, a plan is recalculated, using the last received prices. One way to do this is to use an `inject` node,
+and set `msg.payload` to the following JSON value:
+
+```json
+{
+  "commands": {
+    "replan": true
+  }
+}
+```
+
+This is an alternative to fetching new prices and send as input.
 
 ## Integration with MagicMirror
 

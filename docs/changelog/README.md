@@ -6,6 +6,12 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.5.0
+
+- Select what context storage to store data in the node configuration.
+- New dynamic command: `replan`, that can be sent after a restart in order to create a schedule based on the last received prices, provided `file` is used as context storage (alternatively another permanent storage).
+- Some improvements to node status.
+
 ## 3.4.4
 
 - Fix bug in Best Save Viewer in the documentation (under FAQ)
