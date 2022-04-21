@@ -14,6 +14,7 @@
       If no schedule, output:
       {{ payload.config.outputIfNoSchedule ? "On" : "Off" }}
     </p>
+    <p>Context is saved to: {{ payload.config.contextStorage }}</p>
     <h3>Meta data:</h3>
     <p>Node version: {{ payload.version }}</p>
     <p>Data timestamp: {{ payload.time }}</p>

@@ -25,6 +25,7 @@ The node can work on a specific period from 1 to 24 hours during a 24 hour perio
 | Send When Rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. |
 | If No Schedule, Send   | What to do if there is no valid schedule any more (turn on or off).              |
 | Outside Period, Send   | Select the value to send outside the selected period.                            |
+| Context storage        | Select context storage to save data to, if you want other than the default.      |
 
 If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is significant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
 
@@ -55,6 +56,7 @@ It is possible to change config dynamically by sending a config message to the n
 ```json
 "payload": {
   "config": {
+    "contextStorage": "file",
     "fromTime" : 10,
     "toTime" : 16,
     "hoursOn" : 3,
@@ -131,6 +133,29 @@ This operation cannot be undone.
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
 :::
 
+#### replan
+
+By sending this command, you can have the node read the last received prices from the context storage,
+and make a plan based on those prices:
+
+```json
+"payload": {
+  "commands": {
+    "replan": true,
+  }
+}
+```
+
+If the context storage is `file` you can use this to create a new schedule after a restart,
+instead of fetching prices again.
+
+### Config saved in context
+
+The nodes config is saved in the nodes context.
+If dynamic config is sent as input, this replaces the saved config.
+It is the config that is saved in context that is used when calculating.
+When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
+
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md)
@@ -196,6 +221,7 @@ Example of output:
   ],
   "source": "Tibber",
   "config": {
+    "contextStorage": "default",
     "fromTime": "04",
     "toTime": "18",
     "hoursOn": "06",
@@ -210,6 +236,49 @@ Example of output:
 ```
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
+
+## Restarts and saved context
+
+The config, last received prices and the last calculated schedule are saved to the nodes context.
+This may be saved to memory, to file or to another destination based on how your Node-RED is configured.
+If multiple context storages are defined, you can select which one to use in the nodes config.
+If there is only one context storage defined, this is normally `memory`. In that case, data is not saved over restarts.
+It is common to have two different context storages defined, `memory` and `file`, but there may be more.
+It is also common to have a `default` context storage defined, and often this points to either `memory` or `file`.
+However, the configuration can be different from this.
+
+You can find this configuration in the `settings.js` file for Node-RED, usually in the node-red config folder.
+In Home Assistant, this is normally `/config/node-red/settings.js`.
+
+Here is an example of a configuration for the context storage:
+
+```js
+contextStorage: {
+  file: { module: "localfilesystem"},
+  default: { module: "memory" }
+}
+```
+
+By default, this node saves context to the `default` context storage. In the example above, this is memory.
+Then it is not preserved over a restart.
+Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/context) for more details about this.
+
+The data that is saved is the config, the last used prices and the last calculated schedule.
+
+When Node-RED restarts, the config is reset to what is defined in the node config, so by default,
+nothing is read from the context storage after a restart. However, if you send a `replan` command to the
+nodes input, a plan is recalculated, using the last received prices. One way to do this is to use an `inject` node,
+and set `msg.payload` to the following JSON value:
+
+```json
+{
+  "commands": {
+    "replan": true
+  }
+}
+```
+
+This is an alternative to fetching new prices and send as input.
 
 ## Tips & tricks
 

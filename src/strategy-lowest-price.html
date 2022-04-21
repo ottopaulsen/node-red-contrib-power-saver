@@ -55,6 +55,7 @@
       },
       outputIfNoSchedule: { value: "true", required: true, align: "left" },
       outputOutsidePeriod: { value: "false", required: true, align: "left" },
+      contextStorage: { value: "default", required: false, align: "left" },
     },
     inputs: 1,
     outputs: 3,
@@ -115,6 +116,14 @@
           },
         ],
       });
+      $("#node-input-contextStorage").typedInput({
+        types: [
+          {
+            value: "storages",
+            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
+          },
+        ],
+      });
     },
   });
 </script>
@@ -125,11 +134,11 @@
       <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
   </div>
   <div class="form-row">
-      <label for="node-input-fromTime"><i class="fa fa-arrows-h"></i> From time</label>
+      <label for="node-input-fromTime"><i class="fa fa-clock-o"></i> From time</label>
       <input type="text" id="node-input-fromTime" style="width: 80px">
     </div>
   <div class="form-row">
-      <label for="node-input-toTime"><i class="fa fa-arrows-h"></i> To time</label>
+      <label for="node-input-toTime"><i class="fa fa-clock-o"></i> To time</label>
       <input type="text" id="node-input-toTime" style="width: 80px">
   </div>
   <div class="form-row">
@@ -158,6 +167,10 @@
         <label for="node-input-outputIfNoSchedule">Outside period, send</label>
         <input type="text" id="node-input-outputOutsidePeriod" style="width: 80px">
         </label>
+    </div>
+    <div class="form-row">
+      <label for="node-input-contextStorage"><i class="fa fa-archive"></i> Context storage</label>
+      <input type="text" id="node-input-contextStorage" style="width: 160px">
     </div>
 </script>
 

@@ -7,6 +7,7 @@ module.exports = function (RED) {
   function StrategyLowestPriceNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
+    node.status({});
 
     const originalConfig = {
       fromTime: config.fromTime,
@@ -16,8 +17,9 @@ module.exports = function (RED) {
       sendCurrentValueWhenRescheduling: booleanConfig(config.sendCurrentValueWhenRescheduling),
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       outputOutsidePeriod: booleanConfig(config.outputOutsidePeriod),
+      contextStorage: config.contextStorage || "default",
     };
-    node.context().set("config", originalConfig);
+    node.context().set("config", originalConfig, node.contextStorage);
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);

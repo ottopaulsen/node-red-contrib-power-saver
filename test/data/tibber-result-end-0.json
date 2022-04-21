@@ -157,6 +157,7 @@
   ],
   "source": "Tibber",
   "config": {
+    "contextStorage": "default",
     "fromTime": "16",
     "toTime": "00",
     "hoursOn": 3,
