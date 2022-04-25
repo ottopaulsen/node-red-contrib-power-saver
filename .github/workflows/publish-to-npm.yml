@@ -17,7 +17,7 @@ jobs:
         with:
           timezoneLinux: "Europe/Oslo"
       - run: npm ci
-      - run: npm run test
+      - run: 'npm run test'
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
