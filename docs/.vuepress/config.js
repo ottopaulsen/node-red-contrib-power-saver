@@ -65,5 +65,6 @@ module.exports = {
         componentsDir: path.resolve(__dirname, "./components"),
       },
     ],
+    ["@vuepress/plugin-search"],
   ],
 };

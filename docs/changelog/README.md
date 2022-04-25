@@ -6,6 +6,14 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.5.2
+
+- Re-introduce the search bar, after Vuepress upgrade.
+
+## 3.5.1
+
+- Update github actions to deploy automatically to the npm library.
+
 ## 3.5.0
 
 - Select what context storage to store data in the node configuration.
