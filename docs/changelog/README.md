@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.5.3
+
+- Fix a couple of bugs in how context is used.
+
 ## 3.5.2
 
 - Re-introduce the search bar, after Vuepress upgrade.

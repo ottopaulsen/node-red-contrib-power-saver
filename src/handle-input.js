@@ -22,11 +22,15 @@ function handleStrategyInput(node, msg, doPlanning) {
       .set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined], node.contextStorage);
     deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
+
+  // Store config variables in node
+  Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
+
   let { priceData, source } = getPriceData(node, msg);
   if (!priceData) {
     // Use last saved price data
-    priceData = node.context().get("lastPriceData");
-    source = node.context().get("lastSource");
+    priceData = node.context().get("lastPriceData", node.contextStorage);
+    source = node.context().get("lastSource", node.contextStorage);
     const message = "Using saved prices";
     node.warn(message);
     node.status({ fill: "green", shape: "ring", text: message });
@@ -38,9 +42,6 @@ function handleStrategyInput(node, msg, doPlanning) {
     return;
   }
   const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-
-  // Store config variables in node
-  Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
 
   clearTimeout(node.schedulingTimeout);
 
