@@ -19,7 +19,7 @@ module.exports = function (RED) {
       outputOutsidePeriod: booleanConfig(config.outputOutsidePeriod),
       contextStorage: config.contextStorage || "default",
     };
-    node.context().set("config", originalConfig, node.contextStorage);
+    node.context().set("config", originalConfig, originalConfig.contextStorage);
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);
