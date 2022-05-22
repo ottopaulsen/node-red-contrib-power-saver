@@ -10,6 +10,8 @@
 
 [Cascade temperature control](./example-cascade-temperature-control)
 
+[Visualize on/off, price and consumption in Lovelace](example-visualize-on-off/example-visualize-on-off)
+
 ## User provided examples
 
 [Output schedule to a sensor entity](./example-next-schedule-entity.md) (by Stefan)

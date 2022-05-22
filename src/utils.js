@@ -57,14 +57,18 @@ function getDiff(large, small) {
 }
 
 function getEffectiveConfig(node, msg) {
-  const res = node.context().get("config", node.contextStorage);
+  const res = node.context().get("config");
+  if (!res) {
+    node.error("Node has no config");
+    return {};
+  }
   const isConfigMsg = !!msg?.payload?.config;
   if (isConfigMsg) {
     const inputConfig = msg.payload.config;
     Object.keys(inputConfig).forEach((key) => {
       res[key] = inputConfig[key];
     });
-    node.context().set("config", res, node.contextStorage);
+    node.context().set("config", res);
   }
   return res;
 }

@@ -6,6 +6,11 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.5.4
+
+- Fix bug in context selection
+- Add example for visualization in Lovelace
+
 ## 3.5.3
 
 - Fix a couple of bugs in how context is used.
