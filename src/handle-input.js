@@ -4,6 +4,8 @@ const { version } = require("../package.json");
 
 function handleStrategyInput(node, msg, doPlanning) {
   const effectiveConfig = getEffectiveConfig(node, msg);
+  // Store config variables in node
+  Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
 
   if (!validateInput(node, msg)) {
     return;
@@ -22,9 +24,6 @@ function handleStrategyInput(node, msg, doPlanning) {
       .set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined], node.contextStorage);
     deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
-
-  // Store config variables in node
-  Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
 
   let { priceData, source } = getPriceData(node, msg);
   if (!priceData) {

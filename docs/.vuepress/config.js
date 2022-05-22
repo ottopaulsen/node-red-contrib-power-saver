@@ -49,6 +49,7 @@ module.exports = {
             "/examples/example-tibber-mqtt.md",
             "/examples/example-heat-capacitor.md",
             "/examples/example-cascade-temperature-control.md",
+            "/examples/example-visualize-on-off/example-visualize-on-off.md",
           ],
         },
       ],
