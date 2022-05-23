@@ -22,6 +22,7 @@ module.exports = function (RED) {
     node.context().set("config", originalConfig);
     node.contextStorage = originalConfig.contextStorage;
 
+
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);
     });
