@@ -1,14 +1,12 @@
 const { countAtEnd, makeSchedule, getSavings, getDiff } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { loadDayData } = require("./utils");
-
 const mostSavedStrategy = require("./strategy-best-save-functions");
 
 module.exports = function (RED) {
   function StrategyBestSaveNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
-
     node.status({});
 
     const originalConfig = {
@@ -19,7 +17,7 @@ module.exports = function (RED) {
       outputIfNoSchedule: config.outputIfNoSchedule === "true",
       contextStorage: config.contextStorage || "default",
     };
-    node.context().set("config", originalConfig, originalConfig.contextStorage);
+    node.context().set("config", originalConfig);
     node.contextStorage = originalConfig.contextStorage;
 
     node.on("close", function () {
