@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.5.5
+
+- Fix config storage for Best Save node
+
 ## 3.5.4
 
 - Fix bug in context selection
