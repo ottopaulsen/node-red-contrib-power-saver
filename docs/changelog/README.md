@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.5.6
+
+- Update Elvia nodes so they use the new `digin` API. NB! There is no guarantee this is working right.
+
 ## 3.5.5
 
 - Fix config storage for Best Save node
