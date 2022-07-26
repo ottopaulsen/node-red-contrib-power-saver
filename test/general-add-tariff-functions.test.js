@@ -45,6 +45,7 @@ describe("general-add-tariff-functions", () => {
         { start: "06", value: 10 },
         { start: "22", value: 11 },
       ],
+      days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
     };
     const values = [];
     fillResult(values, 0, 5, 21);
@@ -75,6 +76,7 @@ describe("general-add-tariff-functions", () => {
         { start: "06", value: 10 },
         { start: "22", value: 11 },
       ],
+      days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
     };
     const values = [];
     fillResult(values, 0, 23, 10);

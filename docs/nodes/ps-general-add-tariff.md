@@ -6,9 +6,16 @@ Node to add a value, for example a variable grid tariff, to the price before it 
 
 ## Description
 
-This node is useful if there is an addition to the electricity price that varies over the day, as it might be for the grid tariff.
+This node is useful if there is an addition to the electricity price that varies over the day or the week, as it might be for the grid tariff.
 
 If there is one price for example from 22:00 to 06:00 every day, and another price from 06:00 to 22:00, this is the right node to use. It can be used for more than two periods, as long as the time it changes is the same every day.
+
+If the price is different for some days of the week, use two nodes in series, one for some days and one for the other days.
+
+::: warning Different days
+When using two nodes in series to support for example different rates for weekend than weekdays,
+make sure each day is handled by only one node, else both nodes will add to the price.
+:::
 
 Here is how this node is normally used:
 
@@ -27,6 +34,13 @@ You can have from 1 to 24 periods during the day, with different values to add f
 ### From time and Value
 
 For each period, select the time of the day the value is valid from, and enter the value.
+
+### Days
+
+Check which days the price is valid for. For the price to be added, both the time and the day must be correct.
+
+If there is one price for Mon-Fri, and another price for Sat-Sun, use two nodes in series,
+where one handles Mon, Tue, Wed, Thu and Fri, and the other one Sat and Sun.
 
 ### Valid from date
 

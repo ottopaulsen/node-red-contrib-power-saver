@@ -1,6 +1,7 @@
 <script type="text/javascript">
   const dateRe = /^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
   const priceRe = /^(\d+\.\d*)|(\d+)$/;
+  const defaultDays = { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true };
   RED.nodes.registerType("ps-general-add-tariff", {
     category: "Power Saver",
     color: "#a6bbcf",
@@ -17,6 +18,7 @@
       },
       validFrom: { value: null, required: false, validate: RED.validators.regex(dateRe) },
       validTo: { value: null, required: false, validate: RED.validators.regex(dateRe) },
+      days: { value: { ...defaultDays } },
     },
     hours: [
       "00",
@@ -46,7 +48,6 @@
     ],
     inputs: 1,
     outputs: 1,
-    periodCont: 2,
     icon: "font-awesome/fa-plus",
     color: "#FFCC66",
     label: function () {
@@ -124,7 +125,7 @@
           $("#node-input-fromTime-" + i).typedInput({
             types: [
               {
-                value: "fromtime",
+                value: "fromTime",
                 options: hours.map((h) => ({ value: h, label: h + ":00" })),
               },
             ],
@@ -140,10 +141,55 @@
         }
       };
 
+      const drawDays = function (days) {
+        const dayNames = Object.keys(days);
+        document.getElementById("node-input-days-container").replaceChildren();
+        for (let i = 0; i < dayNames.length; i++) {
+          let day = dayNames[i];
+
+          const id = `node-input-day-${i}`;
+          const label = createElement(
+            "label",
+            [
+              ["for", id],
+              ["style", " margin: 4px 10px 0px 2px;width: 30px; text-align: left;"],
+            ],
+            []
+          );
+          label.innerHTML = day;
+          const attrs = [
+            ["name", "node-input-day"],
+            ["type", "checkbox"],
+            ["id", id],
+            ["style", `width: 15px; margin: 2px 0px 5px 5px;`],
+          ];
+          if (days[day]) {
+            attrs.push(["checked", ""]);
+          }
+          const inp = createElement("input", attrs);
+          inp.value = dayNames[i];
+
+          const el = createElement("span", [["style", "text-align: right;"]], [inp, label]);
+
+          $("#node-input-days-container").append(el);
+
+          $("#node-input-day-" + i).change(function (e) {
+            days[day] = $(this).is(":checked");
+            RED.nodes.dirty(true);
+          });
+        }
+      };
+
       drawPeriods(this.periods);
       $("#add-period-button").on("click", () => {
         addPeriod(this.periods);
       });
+
+      if (!this.days) {
+        // To support nodes created before this was developed
+        this.days = { ...defaultDays };
+      }
+      drawDays(this.days);
     },
   });
 </script>
@@ -160,6 +206,11 @@
 
   <div class="form-row">
     <button type="button" id="add-period-button" class="red-ui-button">Add period</button>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-days-container"><i class="fa fa-calendar-o"></i> Days</label>
+    <span id="node-input-days-container"></span>
   </div>
 
   <h3>Optional:</h3>
@@ -182,5 +233,5 @@
   to the price before it is sent to the strategy nodes.
   Use this node between the receive-price node and any of the strategy nodes.
 
-  Please read more in the [node documentation](https://ottopaulsen.github.io/node-red-contrib-power-saver/nodes/ps-general-add-tariff)
+  Please read more in the [node documentation](https://powersaver.no/nodes/ps-general-add-tariff.html)
 </script>
