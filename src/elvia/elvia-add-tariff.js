@@ -20,11 +20,13 @@ module.exports = function (RED) {
         );
         return;
       }
-      const fromTime = prices[0].start.substr(0, 19);
+      // Convert date to UTC to get correct parameter for the Elvia API (no timezone)
+      const fromTime = DateTime.fromISO(prices[0].start).toUTC().toISO().substring(0, 19);
       const toTime = DateTime.fromISO(prices[prices.length - 1].start)
         .plus({ hours: 1 })
+        .toUTC()
         .toISO()
-        .substr(0, 19);
+        .substring(0, 19);
 
       getTariffForPeriod(node, key, node.tariffKey, fromTime, toTime).then((json) => {
         const tariff = json;
