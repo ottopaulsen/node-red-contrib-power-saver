@@ -33,7 +33,9 @@ function addTariffToPrices(node, config, prices) {
   prices.forEach((p, i) => {
     const date = DateTime.fromISO(p.start.substr(0, 10));
     const hour = DateTime.fromISO(p.start).hour;
-    if (date >= validFrom && date <= validTo) {
+    const day = DateTime.fromISO(p.start).weekday;
+    const dayName = Object.keys(config.days)[day - 1];
+    if (date >= validFrom && date <= validTo && config.days[dayName]) {
       prices[i].value = roundPrice(prices[i].value + allHours[hour]);
     }
   });

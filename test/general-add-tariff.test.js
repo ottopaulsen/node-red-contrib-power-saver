@@ -24,7 +24,7 @@ const prices = {
     },
     {
       value: 2.1,
-      start: "2021-10-12T00:00:00.000+02:00",
+      start: "2021-10-12T00:00:00.000+02:00", // Tuesday
     },
     {
       value: 2.2,
@@ -66,6 +66,7 @@ describe("general-add-tariff node", function () {
           { start: "01", value: "0.50" },
           { start: "03", value: "0.80" },
         ],
+        days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
       },
       { id: "n2", type: "helper" },
     ];
@@ -76,6 +77,41 @@ describe("general-add-tariff node", function () {
     result.priceData[3].value = 2.0345;
     result.priceData[4].value = 2.9;
     result.priceData[5].value = 2.7;
+    result.config = { abc: 123 };
+    helper.load(addTariff, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", result);
+        done();
+      });
+      const payload = cloneDeep(prices);
+      payload.config = { abc: 123 };
+      n1.receive({ payload });
+    });
+  });
+  it("should add to price only for correct days", function (done) {
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-general-add-tariff",
+        name: "Add tariff",
+        wires: [["n2"]],
+        periods: [
+          { start: "01", value: "0.50" },
+          { start: "03", value: "0.80" },
+        ],
+        days: { Mon: true, Tue: false, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
+      },
+      { id: "n2", type: "helper" },
+    ];
+    const result = cloneDeep(prices);
+    result.priceData[0].value = 1.0;
+    result.priceData[1].value = 0.8;
+    result.priceData[2].value = 0.6;
+    result.priceData[3].value = 2.0345;
+    result.priceData[4].value = 2.1;
+    result.priceData[5].value = 2.2;
     result.config = { abc: 123 };
     helper.load(addTariff, flow, function () {
       const n1 = helper.getNode("n1");
@@ -100,6 +136,7 @@ describe("general-add-tariff node", function () {
           { start: "01", value: "0.50" },
           { start: "03", value: "0.80" },
         ],
+        days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
         validFrom: "2021-10-11",
         validTo: "2021-10-11",
       },
@@ -134,6 +171,7 @@ describe("general-add-tariff node", function () {
           { start: "01", value: "0.50" },
           { start: "03", value: "0.80" },
         ],
+        days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
         validFrom: "2021-10-12",
       },
       { id: "n2", type: "helper" },
@@ -163,6 +201,7 @@ describe("general-add-tariff node", function () {
         name: "Add tariff",
         wires: [["n2"]],
         periods: [{ start: "01", value: "0.50" }],
+        days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
       },
       { id: "n2", type: "helper" },
     ];

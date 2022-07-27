@@ -12,6 +12,7 @@ module.exports = function (RED) {
       periods: config.periods,
       validFrom: config.validFrom,
       validTo: config.validTo,
+      days: config.days,
     };
     node.context().set("config", originalConfig);
 
