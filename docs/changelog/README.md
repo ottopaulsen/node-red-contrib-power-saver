@@ -6,6 +6,12 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.5.7
+
+- Add day-filter to general-add-tariff node so it can add one tariff for some days, and another tariff for other days.
+- Fix the elvia-add-tariff node so time is correct. The Elvia API does not handle time zone on the request, so this must be corrected for.
+- Fix link to node-documentation in node edit dialogs.
+
 ## 3.5.6
 
 - Update Elvia nodes so they use the new `digin` API. NB! There is no guarantee this is working right.
