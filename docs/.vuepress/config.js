@@ -58,16 +58,7 @@ module.exports = {
       "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   },
-  head: [
-    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
-    ["script", { async: true, src: "https://www.googletagmanager.com/gtag/js?id=G-Z2QNNCDQZG" }],
-    [
-      "script",
-      {
-        src: "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-Z2QNNCDQZG');",
-      },
-    ],
-  ],
+  head: [["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }]],
   plugins: [
     [
       "@vuepress/register-components",
@@ -76,5 +67,6 @@ module.exports = {
       },
     ],
     ["@vuepress/plugin-search"],
+    ["@vuepress/google-analytics", { id: "G-Z2QNNCDQZG" }],
   ],
 };
