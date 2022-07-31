@@ -67,6 +67,6 @@ module.exports = {
       },
     ],
     ["@vuepress/plugin-search"],
-    ["@vuepress/google-analytics", { id: "G-Z2QNNCDQZG" }],
+    ["@vuepress/google-analytics", { ga: "G-Z2QNNCDQZG" }],
   ],
 };
