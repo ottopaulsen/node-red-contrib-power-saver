@@ -43,6 +43,14 @@
         value: "12",
         required: true,
       },
+      maxPrice: {
+        value: null,
+        required: false,
+        validate: function (v) {
+          console.log("validating " + v);
+          return v == null || v == "" || (!isNaN(parseFloat(v)) && isFinite(v));
+        },
+      },
       doNotSplit: {
         value: "false",
         required: true,
@@ -144,6 +152,10 @@
   <div class="form-row">
       <label for="node-input-hoursOn"><i class="fa fa-arrows-h"></i> Hours on</label>
       <input type="text" id="node-input-hoursOn" style="width: 80px">
+  </div>
+  <div class="form-row">
+    <label for="node-input-maxPrice"><i class="fa fa-eur"></i> Max price</label>
+    <input type="text" id="node-input-maxPrice" placeholder="Max price" style="width: 80px">
   </div>
   <div class="form-row">
       <label for="node-input-doNotSplit">Consecutive on-period</label>
