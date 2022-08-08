@@ -14,6 +14,7 @@
     "doNotSplit": false,
     "fromTime": "00",
     "hoursOn": 8,
+    "maxPrice": null,
     "outputIfNoSchedule": true,
     "outputOutsidePeriod": false,
     "sendCurrentValueWhenRescheduling": true,

@@ -313,6 +313,7 @@
     "fromTime": "16",
     "toTime": "00",
     "hoursOn": 3,
+    "maxPrice": null,
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": false,

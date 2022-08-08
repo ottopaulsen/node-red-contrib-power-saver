@@ -124,12 +124,16 @@ function makePlan(node, values, onOff, fromIndex, toIndex) {
     ? getBestContinuous(valuesInPeriod, node.hoursOn)
     : getBestX(valuesInPeriod, node.hoursOn);
   const sumPriceOn = res.reduce((p, v, i) => {
-    p += v ? valuesInPeriod[i] : 0;
+    return p + (v ? valuesInPeriod[i] : 0);
   }, 0);
-  const average = sumPriceOn / hoursOn;
+  const average = sumPriceOn / node.hoursOn;
   res.forEach((v, i) => {
     onOff[fromIndex + i] =
-      node.maxPrice == null ? v : node.doNotSplit ? v && average <= node.maxPrice : valuesInPeriod[i] <= node.maxPrice;
+      node.maxPrice == null
+        ? v
+        : node.doNotSplit
+        ? v && average <= node.maxPrice
+        : v && valuesInPeriod[i] <= node.maxPrice;
   });
   return onOff;
 }

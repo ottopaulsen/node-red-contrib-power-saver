@@ -91,6 +91,55 @@ describe("ps-strategy-lowest-price node", function () {
       n1.receive({ payload: makePayload(prices, time) });
     });
   });
+  it("should plan correct continuous schedule with max price ok", function (done) {
+    const resultContinuousMax = require("./data/lowest-price-result-cont-max.json");
+    const flow = makeFlow(4, 1.0);
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg.payload).toHaveProperty("schedule", resultContinuousMax.schedule);
+        expect(msg.payload).toHaveProperty("config", resultContinuousMax.config);
+        n1.warn.should.not.be.called;
+        done();
+      });
+      const time = DateTime.fromISO(prices.priceData[10].start);
+      n1.receive({ payload: makePayload(prices, time) });
+    });
+  });
+  it("should plan correct continuous schedule with max price too high", function (done) {
+    const resultContinuousMax = require("./data/lowest-price-result-cont-max-fail.json");
+    const flow = makeFlow(4, 0.23);
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg.payload).toHaveProperty("schedule", resultContinuousMax.schedule);
+        expect(msg.payload).toHaveProperty("config", resultContinuousMax.config);
+        n1.warn.should.not.be.called;
+        done();
+      });
+      const time = DateTime.fromISO(prices.priceData[10].start);
+      n1.receive({ payload: makePayload(prices, time) });
+    });
+  });
+  it("should plan correct splitted schedule with max price", function (done) {
+    const resultSplittedMax = require("./data/lowest-price-result-split-max.json");
+    const flow = makeFlow(6, 0.51);
+    flow[0].doNotSplit = false;
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg.payload).toHaveProperty("schedule", resultSplittedMax.schedule);
+        expect(msg.payload).toHaveProperty("config", resultSplittedMax.config);
+        n1.warn.should.not.be.called;
+        done();
+      });
+      const time = DateTime.fromISO(prices.priceData[10].start);
+      n1.receive({ payload: makePayload(prices, time) });
+    });
+  });
   it("should plan correct for all day period - 00-00", function (done) {
     const resultAllDay = require("./data/lowest-price-result-split-allday.json");
     const flow = makeFlow(8);
@@ -451,6 +500,7 @@ describe("ps-strategy-lowest-price node", function () {
         fromTime: "16",
         toTime: "00",
         hoursOn: 3,
+        maxPrice: null,
         doNotSplit: false,
         sendCurrentValueWhenRescheduling: true,
         outputIfNoSchedule: false,
@@ -485,6 +535,7 @@ describe("ps-strategy-lowest-price node", function () {
         fromTime: "16",
         toTime: "00",
         hoursOn: 3,
+        maxPrice: null,
         doNotSplit: false,
         sendCurrentValueWhenRescheduling: true,
         outputIfNoSchedule: false,
@@ -519,6 +570,7 @@ describe("ps-strategy-lowest-price node", function () {
         fromTime: "22",
         toTime: "08",
         hoursOn: 3,
+        maxPrice: null,
         doNotSplit: true,
         sendCurrentValueWhenRescheduling: true,
         outputIfNoSchedule: false,
@@ -544,7 +596,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
 });
 
-function makeFlow(hoursOn) {
+function makeFlow(hoursOn, maxPrice = null) {
   return [
     {
       id: "n1",
@@ -553,6 +605,7 @@ function makeFlow(hoursOn) {
       fromTime: "10",
       toTime: "20",
       hoursOn: hoursOn,
+      maxPrice: maxPrice,
       doNotSplit: true,
       sendCurrentValueWhenRescheduling: true,
       outputIfNoSchedule: true,
