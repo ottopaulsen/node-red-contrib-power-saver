@@ -1,0 +1,14 @@
+{
+  "schedule": [{ "time": "2021-10-11T00:00:00.000+02:00", "value": false }],
+  "config": {
+    "contextStorage": "default",
+    "doNotSplit": true,
+    "fromTime": "10",
+    "hoursOn": 4,
+    "maxPrice": 0.23,
+    "outputIfNoSchedule": true,
+    "outputOutsidePeriod": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "toTime": "20"
+  }
+}

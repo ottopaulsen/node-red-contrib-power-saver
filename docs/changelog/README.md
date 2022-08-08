@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.6.0
+
+- New feature `Max price` for Lowest Price node. Can be set to only turn on if prices is below or equal to the max price.
+
 ## 3.5.7
 
 - Add day-filter to general-add-tariff node so it can add one tariff for some days, and another tariff for other days.

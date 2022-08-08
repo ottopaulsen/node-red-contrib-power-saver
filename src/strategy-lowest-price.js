@@ -13,6 +13,7 @@ module.exports = function (RED) {
       fromTime: config.fromTime,
       toTime: config.toTime,
       hoursOn: parseInt(config.hoursOn),
+      maxPrice: config.maxPrice == null || config.maxPrice == "" ? null : parseFloat(config.maxPrice),
       doNotSplit: booleanConfig(config.doNotSplit),
       sendCurrentValueWhenRescheduling: booleanConfig(config.sendCurrentValueWhenRescheduling),
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
@@ -21,7 +22,6 @@ module.exports = function (RED) {
     };
     node.context().set("config", originalConfig);
     node.contextStorage = originalConfig.contextStorage;
-
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);
@@ -123,8 +123,17 @@ function makePlan(node, values, onOff, fromIndex, toIndex) {
   const res = node.doNotSplit
     ? getBestContinuous(valuesInPeriod, node.hoursOn)
     : getBestX(valuesInPeriod, node.hoursOn);
+  const sumPriceOn = res.reduce((p, v, i) => {
+    return p + (v ? valuesInPeriod[i] : 0);
+  }, 0);
+  const average = sumPriceOn / node.hoursOn;
   res.forEach((v, i) => {
-    onOff[fromIndex + i] = v;
+    onOff[fromIndex + i] =
+      node.maxPrice == null
+        ? v
+        : node.doNotSplit
+        ? v && average <= node.maxPrice
+        : v && valuesInPeriod[i] <= node.maxPrice;
   });
   return onOff;
 }
