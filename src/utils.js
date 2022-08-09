@@ -138,13 +138,16 @@ function countAtEnd(arr, value) {
 function makeSchedule(onOff, startTimes, initial = null) {
   const res = [];
   let prev = initial;
+  let prevRecord;
   for (let i = 0; i < startTimes.length; i++) {
     const value = onOff[i];
-    if (value !== prev) {
+    if (value !== prev || i === 0) {
       const time = startTimes[i];
-      res.push({ time, value });
+      prevRecord = { time, value, countHours: 0 };
+      res.push(prevRecord);
       prev = value;
     }
+    prevRecord.countHours++;
   }
   return res;
 }

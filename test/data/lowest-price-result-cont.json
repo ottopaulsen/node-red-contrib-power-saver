@@ -1,10 +1,10 @@
 {
   "schedule": [
-    { "time": "2021-10-11T00:00:00.000+02:00", "value": false },
-    { "time": "2021-10-11T11:00:00.000+02:00", "value": true },
-    { "time": "2021-10-11T15:00:00.000+02:00", "value": false },
-    { "time": "2021-10-12T12:00:00.000+02:00", "value": true },
-    { "time": "2021-10-12T16:00:00.000+02:00", "value": false }
+    { "time": "2021-10-11T00:00:00.000+02:00", "value": false, "countHours": 11 },
+    { "time": "2021-10-11T11:00:00.000+02:00", "value": true, "countHours": 4 },
+    { "time": "2021-10-11T15:00:00.000+02:00", "value": false, "countHours": 21 },
+    { "time": "2021-10-12T12:00:00.000+02:00", "value": true, "countHours": 4 },
+    { "time": "2021-10-12T16:00:00.000+02:00", "value": false, "countHours": 8 }
   ],
   "config": {
     "contextStorage": "default",

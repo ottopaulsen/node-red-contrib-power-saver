@@ -235,12 +235,14 @@ describe("ps-strategy-lowest-price node", function () {
         const schedule = cloneDeep(resultSplitted.schedule);
         const config = cloneDeep(resultSplitted.config);
         schedule[0].value = true;
-        schedule.splice(1, 0, { time: "2021-10-11T10:00:00.000+02:00", value: false });
-        schedule.splice(4, 0, { time: "2021-10-11T20:00:00.000+02:00", value: true });
-        schedule.splice(5, 0, { time: "2021-10-12T10:00:00.000+02:00", value: false });
+        schedule.splice(1, 0, { time: "2021-10-11T10:00:00.000+02:00", value: false, countHours: 10 });
+        schedule.splice(4, 0, { time: "2021-10-11T20:00:00.000+02:00", value: true, countHours: 14 });
+        schedule.splice(5, 0, { time: "2021-10-12T10:00:00.000+02:00", value: false, countHours: 14 });
         schedule.splice(schedule.length - 1, 1);
         config.outputOutsidePeriod = true;
-        expect(msg.payload).toHaveProperty("schedule", schedule);
+        const res = msg.payload.schedule.map((s) => ({ time: s.time, value: s.value }));
+        const exp = schedule.map((s) => ({ time: s.time, value: s.value }));
+        expect(res).toEqual(exp);
         expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
         done();
@@ -267,7 +269,9 @@ describe("ps-strategy-lowest-price node", function () {
         schedule.splice(schedule.length, 0, { time: "2021-10-12T20:00:00.000+02:00", value: true });
         // schedule.splice(schedule.length - 1, 1);
         config.outputOutsidePeriod = true;
-        expect(msg.payload).toHaveProperty("schedule", schedule);
+        const res = msg.payload.schedule.map((s) => ({ time: s.time, value: s.value }));
+        const exp = schedule.map((s) => ({ time: s.time, value: s.value }));
+        expect(res).toEqual(exp);
         expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
         done();
@@ -277,7 +281,7 @@ describe("ps-strategy-lowest-price node", function () {
     });
   });
   it("should work with 0 hours on", function (done) {
-    const result = [{ time: "2021-10-11T00:00:00.000+02:00", value: false }];
+    const result = [{ time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 48 }];
     const flow = makeFlow(0);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -293,11 +297,11 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should work with 0 hours on outside on", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: true },
-      { time: "2021-10-11T10:00:00.000+02:00", value: false },
-      { time: "2021-10-11T20:00:00.000+02:00", value: true },
-      { time: "2021-10-12T10:00:00.000+02:00", value: false },
-      { time: "2021-10-12T20:00:00.000+02:00", value: true },
+      { time: "2021-10-11T00:00:00.000+02:00", value: true, countHours: 10 },
+      { time: "2021-10-11T10:00:00.000+02:00", value: false, countHours: 10 },
+      { time: "2021-10-11T20:00:00.000+02:00", value: true, countHours: 14 },
+      { time: "2021-10-12T10:00:00.000+02:00", value: false, countHours: 10 },
+      { time: "2021-10-12T20:00:00.000+02:00", value: true, countHours: 4 },
     ];
     const flow = makeFlow(0);
     flow[0].outputOutsidePeriod = true;
@@ -315,11 +319,11 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should work with 1 hours on", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false },
-      { time: "2021-10-11T12:00:00.000+02:00", value: true },
-      { time: "2021-10-11T13:00:00.000+02:00", value: false },
-      { time: "2021-10-12T14:00:00.000+02:00", value: true },
-      { time: "2021-10-12T15:00:00.000+02:00", value: false },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 12 },
+      { time: "2021-10-11T12:00:00.000+02:00", value: true, countHours: 1 },
+      { time: "2021-10-11T13:00:00.000+02:00", value: false, countHours: 25 },
+      { time: "2021-10-12T14:00:00.000+02:00", value: true, countHours: 1 },
+      { time: "2021-10-12T15:00:00.000+02:00", value: false, countHours: 9 },
     ];
     const flow = makeFlow(1);
     helper.load(lowestPrice, flow, function () {
@@ -336,11 +340,11 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should work with 24 hours on", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false },
-      { time: "2021-10-11T10:00:00.000+02:00", value: true },
-      { time: "2021-10-11T20:00:00.000+02:00", value: false },
-      { time: "2021-10-12T10:00:00.000+02:00", value: true },
-      { time: "2021-10-12T20:00:00.000+02:00", value: false },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 10 },
+      { time: "2021-10-11T10:00:00.000+02:00", value: true, countHours: 10 },
+      { time: "2021-10-11T20:00:00.000+02:00", value: false, countHours: 14 },
+      { time: "2021-10-12T10:00:00.000+02:00", value: true, countHours: 10 },
+      { time: "2021-10-12T20:00:00.000+02:00", value: false, countHours: 4 },
     ];
     const flow = makeFlow(24);
     helper.load(lowestPrice, flow, function () {
@@ -360,9 +364,9 @@ describe("ps-strategy-lowest-price node", function () {
     const oneDayPrices = {};
     oneDayPrices.priceData = prices.priceData.filter((d) => d.start.startsWith("2021-10-11"));
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false },
-      { time: "2021-10-11T12:00:00.000+02:00", value: true },
-      { time: "2021-10-11T13:00:00.000+02:00", value: false },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 12 },
+      { time: "2021-10-11T12:00:00.000+02:00", value: true, countHours: 1 },
+      { time: "2021-10-11T13:00:00.000+02:00", value: false, countHours: 11 },
     ];
     const flow = makeFlow(1);
     helper.load(lowestPrice, flow, function () {
@@ -389,7 +393,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
 
   it("should handle hours on > period", function (done) {
-    const result = [{ time: "2021-10-11T00:00:00.000+02:00", value: true }];
+    const result = [{ time: "2021-10-11T00:00:00.000+02:00", value: true, countHours: 48 }];
     const flow = [
       {
         id: "n1",
@@ -437,11 +441,11 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should handle hours on > period, false outside", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false },
-      { time: "2021-10-11T17:00:00.000+02:00", value: true },
-      { time: "2021-10-11T22:00:00.000+02:00", value: false },
-      { time: "2021-10-12T17:00:00.000+02:00", value: true },
-      { time: "2021-10-12T22:00:00.000+02:00", value: false },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 17 },
+      { time: "2021-10-11T17:00:00.000+02:00", value: true, countHours: 5 },
+      { time: "2021-10-11T22:00:00.000+02:00", value: false, countHours: 19 },
+      { time: "2021-10-12T17:00:00.000+02:00", value: true, countHours: 5 },
+      { time: "2021-10-12T22:00:00.000+02:00", value: false, countHours: 2 },
     ];
     const flow = [
       {
