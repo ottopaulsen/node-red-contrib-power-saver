@@ -2,23 +2,28 @@
   "schedule": [
     {
       "time": "2022-01-03T00:00:00+01:00",
-      "value": false
+      "value": false,
+      "countHours": 28
     },
     {
       "time": "2022-01-04T04:00:00+01:00",
-      "value": true
+      "value": true,
+      "countHours": 1
     },
     {
       "time": "2022-01-04T05:00:00+01:00",
-      "value": false
+      "value": false,
+      "countHours": 22
     },
     {
       "time": "2022-01-05T03:00:00+01:00",
-      "value": true
+      "value": true,
+      "countHours": 1
     },
     {
       "time": "2022-01-05T04:00:00+01:00",
-      "value": false
+      "value": false,
+      "countHours": 20
     }
   ],
   "hours": [

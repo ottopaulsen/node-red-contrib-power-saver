@@ -70,18 +70,19 @@ describe("utils", () => {
       "2021-06-20T09:00:00+02:00",
     ];
     expect(makeSchedule(onOff, startTimes)).toEqual([
-      { time: "2021-06-20T05:00:00+02:00", value: false },
-      { time: "2021-06-20T07:00:00+02:00", value: true },
-      { time: "2021-06-20T09:00:00+02:00", value: false },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
     expect(makeSchedule(onOff, startTimes, true)).toEqual([
-      { time: "2021-06-20T05:00:00+02:00", value: false },
-      { time: "2021-06-20T07:00:00+02:00", value: true },
-      { time: "2021-06-20T09:00:00+02:00", value: false },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
     expect(makeSchedule(onOff, startTimes, false)).toEqual([
-      { time: "2021-06-20T07:00:00+02:00", value: true },
-      { time: "2021-06-20T09:00:00+02:00", value: false },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 }, // Right???
+      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
   });
 
