@@ -94,10 +94,14 @@ function calculate(
   while (savingsList.length > 0) {
     const { hour, count } = savingsList[0];
     const onOffCopy = [...onOff];
+    let alreadyTaken = false;
     for (let c = 0; c < count; c++) {
+      if (!onOff[hour + c]) {
+        alreadyTaken = true;
+      }
       onOff[hour + c] = false;
     }
-    if (isOnOffSequencesOk([...dayBefore, ...onOff], maxOffInARow, minOnAfterMaxOffInARow)) {
+    if (isOnOffSequencesOk([...dayBefore, ...onOff], maxOffInARow, minOnAfterMaxOffInARow) && !alreadyTaken) {
       savingsList = savingsList.filter((s) => s.hour < hour || s.hour >= hour + count);
     } else {
       onOff = [...onOffCopy];
