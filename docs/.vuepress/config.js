@@ -50,6 +50,7 @@ module.exports = {
             "/examples/example-heat-capacitor.md",
             "/examples/example-cascade-temperature-control.md",
             "/examples/example-visualize-on-off/example-visualize-on-off.md",
+            "/examples/example-grid-tariff-capacity-part.md",
           ],
         },
       ],

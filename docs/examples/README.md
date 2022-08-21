@@ -12,7 +12,7 @@
 
 [Visualize on/off, price and consumption in Lovelace](example-visualize-on-off/example-visualize-on-off)
 
-[Capacity part of grid tariff](./grid-tariff-capacity-part)
+[Capacity part of grid tariff](./example-grid-tariff-capacity-part)
 
 ## User provided examples
 
