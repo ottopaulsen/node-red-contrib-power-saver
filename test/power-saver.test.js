@@ -85,14 +85,17 @@ describe("power-saver Node", function () {
       {
         time: "2021-06-20T01:50:00.000+02:00",
         value: true,
+        countHours: 7,
       },
       {
         time: "2021-06-20T01:50:00.070+02:00",
         value: false,
+        countHours: 2,
       },
       {
         time: "2021-06-20T01:50:00.090+02:00",
         value: true,
+        countHours: 1,
       },
     ];
     const flow = makeFlow(4, 2);
@@ -121,14 +124,17 @@ describe("power-saver Node", function () {
       {
         time: "2021-06-20T01:50:00.000+02:00",
         value: true,
+        countHours: 7,
       },
       {
         time: "2021-06-20T01:50:00.070+02:00",
         value: false,
+        countHours: 4,
       },
       {
         time: "2021-06-20T01:50:00.110+02:00",
         value: true,
+        countHours: 9,
       },
     ];
     const flow = makeFlow(4, 2);

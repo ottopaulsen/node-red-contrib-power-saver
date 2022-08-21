@@ -18,13 +18,14 @@ The node can work on a specific period from 1 to 24 hours during a 24 hour perio
 
 | Value                  | Description                                                                      |
 | ---------------------- | -------------------------------------------------------------------------------- |
-| From Time              | The start time of the selected period.                                           |
-| To Time                | The end time of the selected period.                                             |
-| Hours On               | The number of hours that shall be turned on.                                     |
-| Consecutive On-Period  | Check this if you need the on-period to be consecutive.                          |
-| Send When Rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. |
-| If No Schedule, Send   | What to do if there is no valid schedule any more (turn on or off).              |
-| Outside Period, Send   | Select the value to send outside the selected period.                            |
+| From time              | The start time of the selected period.                                           |
+| To time                | The end time of the selected period.                                             |
+| Hours on               | The number of hours that shall be turned on.                                     |
+| Max price              | If set, does not turn on if price is over this limit. See below.                 |
+| Consecutive on-period  | Check this if you need the on-period to be consecutive.                          |
+| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off).              |
+| Outside period, send   | Select the value to send outside the selected period.                            |
 | Context storage        | Select context storage to save data to, if you want other than the default.      |
 
 If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is significant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
@@ -49,6 +50,18 @@ Unless the period you select is 24 hours (`From Time` and `To Time` are the same
 If you select a period for example from 10:00 to 02:00, it may not be possible to calculate before the period starts. This is because electricity prices for the next day (in the Nord Pool area) normally are received around 13:00. The node cannot calculate the period until it has price data for the whole period.
 :::
 
+::: warning Max price
+Use this to set a maximum price for hours to be on.
+Leave this blank if you don't understand how it works.!
+If this is set, the number of hours on may be less then configured for `Hours on`.
+
+If `Consecutive on period` is off (not checked), hours will be turned on only if the price is below or equal to `Max price`.
+
+If `Consecutive on period` is on (checked), hours will be turned on only if the average price for the whole period is below or equal to `Max price`. If the average price for the hours that are supposed to be turned on is higher then `Max price`, then **all hours** will be off. This is to make sure that if the switch (or whatever you have connected) is turned on, it is turned on the whole period.
+
+If you leave `Max price` blank, it has no effect.
+:::
+
 ### Dynamic config
 
 It is possible to change config dynamically by sending a config message to the node. The config messages has a payload with a config object like this example:
@@ -57,12 +70,13 @@ It is possible to change config dynamically by sending a config message to the n
 "payload": {
   "config": {
     "contextStorage": "file",
-    "fromTime" : 10,
-    "toTime" : 16,
-    "hoursOn" : 3,
-    "doNotSplit" : false,
-    "sendCurrentValueWhenRescheduling" : true,
-    "outputIfNoSchedule" : false,
+    "fromTime": 10,
+    "toTime": 16,
+    "hoursOn": 3,
+    "maxPrice": null,
+    "doNotSplit": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": false,
     "outputOutsidePeriod": false
   }
 }

@@ -43,6 +43,14 @@
         value: "12",
         required: true,
       },
+      maxPrice: {
+        value: null,
+        required: false,
+        validate: function (v) {
+          console.log("validating " + v);
+          return v == null || v == "" || (!isNaN(parseFloat(v)) && isFinite(v));
+        },
+      },
       doNotSplit: {
         value: "false",
         required: true,
@@ -146,6 +154,10 @@
       <input type="text" id="node-input-hoursOn" style="width: 80px">
   </div>
   <div class="form-row">
+    <label for="node-input-maxPrice"><i class="fa fa-minus"></i> Max price</label>
+    <input type="text" id="node-input-maxPrice" placeholder="Max price" style="width: 80px">
+  </div>
+  <div class="form-row">
       <label for="node-input-doNotSplit">Consecutive on-period</label>
       <input type="checkbox" id="node-input-doNotSplit" style="display:inline-block; width:22px; vertical-align:top;">
       </label>
@@ -177,5 +189,5 @@
 <script type="text/markdown" data-help-name="ps-strategy-lowest-price">
   A node to turn on a switch the hours when the price is lowest.
 
-  Please read more in the [node documentation](https://ottopaulsen.github.io/node-red-contrib-power-saver/nodes/ps-strategy-lowest-price)
+  Please read more in the [node documentation](https://powersaver.no/nodes/ps-strategy-lowest-price)
 </script>

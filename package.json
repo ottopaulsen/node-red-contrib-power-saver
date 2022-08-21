@@ -1,7 +1,6 @@
 {
   "name": "node-red-contrib-power-saver",
-  "version": "3.5.5",
-
+  "version": "3.6.1",
   "description": "A module for Node-RED that you can use to turn on and off a switch based on power prices",
   "main": "index.js",
   "scripts": {
@@ -47,6 +46,7 @@
   },
   "devDependencies": {
     "@vuepress/bundler-vite": "^2.0.0-beta.36",
+    "@vuepress/plugin-google-analytics": "^2.0.0-beta.36",
     "@vuepress/plugin-register-components": "^2.0.0-beta.36",
     "@vuepress/plugin-search": "^2.0.0-beta.38",
     "@vuepress/utils": "^2.0.0-beta.35",

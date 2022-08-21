@@ -168,11 +168,13 @@ Example of output:
   "schedule": [
     {
       "time": "2021-09-30T00:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 1
     },
     {
       "time": "2021-09-30T01:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 2
     }
   ],
   "hours": [

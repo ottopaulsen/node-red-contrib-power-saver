@@ -6,6 +6,25 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.6.1
+
+- Fix bug in Best Save node, so a better saving is not overwritten by a not as good saving in an overlapping period. This bug could occur in rare cases when a shorter savings period gave better results than a longer.
+
+## 3.6.0
+
+- New feature `Max price` for Lowest Price node. Can be set to only turn on if prices is below or equal to the max price.
+- New value in output 3 from the Lowest Price and Best Save nodes, `countHours`, telling the number of hours that the value will stay.
+
+## 3.5.7
+
+- Add day-filter to general-add-tariff node so it can add one tariff for some days, and another tariff for other days.
+- Fix the elvia-add-tariff node so time is correct. The Elvia API does not handle time zone on the request, so this must be corrected for.
+- Fix link to node-documentation in node edit dialogs.
+
+## 3.5.6
+
+- Update Elvia nodes so they use the new `digin` API. NB! There is no guarantee this is working right.
+
 ## 3.5.5
 
 - Fix config storage for Best Save node
