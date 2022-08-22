@@ -39,6 +39,9 @@ function get(node, subscriptionKey, url, setResultStatus) {
       setNodeStatus(node, res.status);
     }
     return res.json().then((json) => {
+      if (json.statusCode === 401) {
+        console.error("Elvia API error: " + json.message);
+      }
       return json;
     });
   });
