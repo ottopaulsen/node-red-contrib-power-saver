@@ -6,6 +6,10 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 3.6.2
+
+- Fix bug in Elvia API causing Node-RED to crash when the API key was wrong. Not it shows status `Unauthorized` and survive.
+
 ## 3.6.1
 
 - Fix bug in Best Save node, so a better saving is not overwritten by a not as good saving in an overlapping period. This bug could occur in rare cases when a shorter savings period gave better results than a longer.

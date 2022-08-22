@@ -30,10 +30,9 @@ module.exports = function (RED) {
 
       getTariffForPeriod(node, key, node.tariffKey, fromTime, toTime).then((json) => {
         const tariff = json;
-        const priceInfo = tariff.gridTariff.tariffPrice.hours;
+        const priceInfo = tariff.gridTariff?.tariffPrice?.hours || [];
         if (priceInfo.length !== prices.length) {
           node.warn(`Elvia tariff count mismatch. Expected ${prices.length} items, but got ${priceInfo.length}`);
-          node.status({ fill: "red", shape: "dot", text: "Tariff error" });
         } else {
           prices.forEach((p, i) => {
             p.powerPrice = p.value;
