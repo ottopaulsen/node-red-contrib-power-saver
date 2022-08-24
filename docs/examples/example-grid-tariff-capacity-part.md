@@ -405,16 +405,16 @@ turn off. If this is not possible, the code must be changed in order to work.
 
 Each item in the `actions` array contains the following data:
 
-| Variable name         | Description                                                                                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| sensor                | The entity_id of a sensor that gives the consumption that will be reduced by taking the action.                                             |
-| name                  | The name of the actions. Can be any thing.                                                                                                  |
-| id                    | A unique id of the action.                                                                                                                  |
-| minAlarmLevel         | The minimum alarm level that must be present to take this action.                                                                           |
-| reduceWhenRecommended | If `true` the action will be taken when `Reduction Recommended` > 0. If `false` the action will be taken only when `Reduction Required` > 0 |
-| minTimeOffSec         | The action will not be reset until minimum this number of seconds has passed since the action was taken.                                    |
-| payloadToTakeAction   | The payload that shall be sent to the `call service` node to take the action (for example turn off a switch).                               |
-| payloadToResetAction  | The payload that shall be sent to the `call service` node to reset the action (for example turn a switch back on again).                    |
+| Variable name         | Description                                                                                                                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| consumption           | The consumption that will be reduced by taking the action, given as either a) (Recommended) The entity_id of a sensor that gives the consumption, or b) A number with the consumption in kWh, or c) a function returning the consumption. |
+| name                  | The name of the actions. Can be any thing.                                                                                                                                                                                                |
+| id                    | A unique id of the action.                                                                                                                                                                                                                |
+| minAlarmLevel         | The minimum alarm level that must be present to take this action.                                                                                                                                                                         |
+| reduceWhenRecommended | If `true` the action will be taken when `Reduction Recommended` > 0. If `false` the action will be taken only when `Reduction Required` > 0                                                                                               |
+| minTimeOffSec         | The action will not be reset until minimum this number of seconds has passed since the action was taken.                                                                                                                                  |
+| payloadToTakeAction   | The payload that shall be sent to the `call service` node to take the action (for example turn off a switch).                                                                                                                             |
+| payloadToResetAction  | The payload that shall be sent to the `call service` node to reset the action (for example turn a switch back on again).                                                                                                                  |
 
 ::: tip Actions order
 Actions to reduce consumption are taken in the order they appear in the `actions` array until enough reduction has been done,
