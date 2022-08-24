@@ -35,6 +35,11 @@ You can have from 1 to 24 periods during the day, with different values to add f
 
 For each period, select the time of the day the value is valid from, and enter the value.
 
+::: danger Price unit
+Be careful to use the correct unit when entering the price here. If the price is `28 øre` enter `0.28`.
+If the price is `36 cents` enter `0.36`.
+:::
+
 ### Days
 
 Check which days the price is valid for. For the price to be added, both the time and the day must be correct.
