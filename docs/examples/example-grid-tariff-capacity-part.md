@@ -1,5 +1,78 @@
 # Capacity part of grid tariff
 
+::: danger Bug-fix 12. September 2022
+
+::: details A bug was found 12. sep 2022. Here is how to fix:
+
+### 1. Node "Find highest per day":
+
+Replace this line:
+
+```js
+const highestToday = days.get(new Date().getDate());
+```
+
+With this code:
+
+```js
+const highestToday = days.get(new Date().getDate()) ?? 0;
+```
+
+This will set the `highestToday` to 0 during the first hour.
+
+### 2. Node "Calculate values":
+
+Above this line:
+
+```js
+  function calculateLevel(hourEstimate, ...
+```
+
+Insert this code:
+
+```js
+function isNull(value) {
+  return value === null || value === undefined;
+}
+```
+
+Further down the code you can find these 3 lines with 4 lines between:
+
+```js
+if (!highestPerDay) {
+if (!highestToday) {
+if (!hourEstimate) {
+```
+
+Change these to:
+
+```js
+if (isNull(highestPerDay)) {
+if (isNull(highestToday)) {
+if (isNull(hourEstimate)) {
+```
+
+Then these will not fail the first hour.
+
+### 3. Node "Build query for consumption":
+
+Find this line:
+
+```js
+const hour = time.getMinutes(); // NB Change to getMinutes()
+```
+
+Change it to:
+
+```js
+const hour = time.getHour();
+```
+
+The bug fixed on no. 3 does so data for hours are read every minute,
+instead of every hour. This is not necessary.
+However, it does not lead to any error.
+:::
+
 ## Introduction
 
 I Norway, there has been introduced a monthly fee for grid capacity.
@@ -277,6 +350,69 @@ This is a function node that is used to build a Tibber query. It runs for all th
 This node needs the tibber home id, so you must find it in the [Tibber Developer Pages](https://developer.tibber.com/) and set the vale of `TIBBER_HOME_ID` in the beginning of the code.
 :::
 
+::: details Code
+
+<CodeGroup>
+  <CodeGroupItem title="On Start">
+
+```js
+context.set("previousHour", undefined);
+```
+
+  </CodeGroupItem>
+
+  <CodeGroupItem title="On Message" active>
+
+```js
+/*
+   Calculate number of hours to receive consumption for,
+   that is number of hours in the month until now.
+   Constructs a tibber query to get consumption per hour.
+*/
+
+const TIBBER_HOME_ID = "142c4839-64cf-4df4-ba6d-942527a757c4";
+
+const timestamp = msg.payload.timestamp;
+
+// Stop if hour has not changed
+const time = new Date(timestamp);
+const hour = time.getHours();
+const previousHour = context.get("previousHour");
+if (previousHour !== undefined && hour === previousHour) {
+  return;
+}
+context.set("previousHour", hour);
+
+// Calculate number of hours to query
+const date = time.getDate() - 1;
+const hour2 = time.getHours();
+const count = date * 24 + hour2;
+
+// Build query
+const query = `
+{
+  viewer {
+    home (id: "${TIBBER_HOME_ID}") {
+      consumption(resolution: HOURLY, last: ${count}) {
+        nodes {
+          from
+          consumption
+        }
+      }
+    }
+  }
+}
+`;
+
+msg.payload = query;
+return msg;
+```
+
+  </CodeGroupItem>
+</CodeGroup>
+
+:::
+
 ### Get consumption
 
 This is a `tibber-query` node used to get consumption per hour for passed hours. It takes a Tibber query as input, and sends the result as output. The query is built by the previous node.
@@ -346,6 +482,80 @@ As outputs it sends the following:
 | `hourEstimate`                   | The estimated consumption for the total hour.                                                                                                    |
 | `currentHour`                    | The time of the current hour.                                                                                                                    |
 
+::: details Code
+
+<CodeGroup>
+  <CodeGroupItem title="On Start">
+
+```js
+context.set("buffer", []);
+```
+
+  </CodeGroupItem>
+
+  <CodeGroupItem title="On Message" active>
+
+```js
+// Number of minutes used to calculate assumed consumption:
+const ESTIMATION_TIME_MINUTES = 1;
+
+const buffer = context.get("buffer") || [];
+
+// Add new record to buffer
+const time = new Date(msg.payload.timestamp);
+const timeMs = time.getTime();
+const accumulatedConsumption = msg.payload.accumulatedConsumption;
+const accumulatedConsumptionLastHour = msg.payload.accumulatedConsumptionLastHour;
+buffer.push({ timeMs, accumulatedConsumption });
+
+const currentHour = new Date(msg.payload.timestamp);
+currentHour.setMinutes(0);
+currentHour.setSeconds(0);
+
+// Remove too old records from buffer
+const maxAgeMs = ESTIMATION_TIME_MINUTES * 60 * 1000;
+let oldest = buffer[0];
+while (timeMs - oldest.timeMs > maxAgeMs) {
+  buffer.splice(0, 1);
+  oldest = buffer[0];
+}
+context.set("buffer", buffer);
+
+// Calculate buffer
+const periodMs = buffer[buffer.length - 1].timeMs - buffer[0].timeMs;
+const consumptionInPeriod = buffer[buffer.length - 1].accumulatedConsumption - buffer[0].accumulatedConsumption;
+if (periodMs === 0) {
+  return; // First item in buffer
+}
+
+// Estimate remaining of current hour
+const timeLeftMs = 60 * 60 * 1000 - (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds());
+const consumptionLeft = (consumptionInPeriod / periodMs) * timeLeftMs;
+const averageConsumptionNow = (consumptionInPeriod / periodMs) * 60 * 60 * 1000;
+
+// Estimate total hour
+const hourEstimate = accumulatedConsumptionLastHour + consumptionLeft + 0; // Change for testing
+
+msg.payload = {
+  accumulatedConsumption,
+  accumulatedConsumptionLastHour,
+  periodMs,
+  consumptionInPeriod,
+  averageConsumptionNow,
+  timeLeftMs,
+  consumptionLeft,
+  hourEstimate,
+  currentHour,
+};
+
+return msg;
+```
+
+  </CodeGroupItem>
+</CodeGroup>
+
+:::
+
 ### Find highest per day
 
 Based on the result from the tibber query, gives the following output:
@@ -358,6 +568,42 @@ Based on the result from the tibber query, gives the following output:
 | currentMonthlyEstimate | The average of the 3 highest days until now this month. That is the capacity that will be used unless it is increased.        |
 
 Output is sent when the query is run, that is on startup and when the hour changes.
+
+::: details Code
+
+<CodeGroup>
+  <CodeGroupItem title="On Message" active>
+
+```js
+const MAX_COUNTING = 3;
+const hours = msg.payload.viewer.home.consumption.nodes;
+const days = new Map();
+hours.forEach((h) => {
+  const date = new Date(h.from).getDate();
+  if (!days.has(date) || h.consumption > days.get(date).consumption) {
+    days.set(date, { from: h.from, consumption: h.consumption });
+  }
+});
+const highestToday = days.get(new Date().getDate()) ?? 0;
+const highestPerDay = [...days.values()].sort((a, b) => b.consumption - a.consumption);
+const highestCounting = highestPerDay.slice(0, MAX_COUNTING);
+const currentMonthlyMaxAverage =
+  highestCounting.length === 0
+    ? 0
+    : highestCounting.reduce((prev, val) => prev + val.consumption, 0) / highestCounting.length;
+msg.payload = {
+  highestPerDay,
+  highestCounting,
+  highestToday,
+  currentMonthlyMaxAverage,
+};
+return msg;
+```
+
+  </CodeGroupItem>
+</CodeGroup>
+
+:::
 
 ### Calculate values
 
@@ -374,6 +620,185 @@ const ALARM = 8; // Min level that causes status to be alarm
 ```
 
 See [Calculated sensor values](#calculated-sensor-values) for description of the output.
+
+::: details Code
+
+<CodeGroup>
+  <CodeGroupItem title="On Message" active>
+
+```js
+const STEPS = [2, 5, 10, 15, 20];
+const MAX_COUNTING = 3; // Number of days to calculate month
+const BUFFER = 0.5; // Closer to limit increases level
+const SAFE_ZONE = 2; // Further from limit reduces level
+const ALARM = 8; // Min level that causes status to be alarm
+
+const ha = global.get("homeassistant").homeAssistant;
+if (!ha.isConnected) {
+  return;
+}
+
+function isNull(value) {
+  return value === null || value === undefined;
+}
+
+function calculateLevel(hourEstimate, currentHourRanking, highestCountingAverageWithCurrent, nextStep) {
+  if (currentHourRanking === 0) {
+    return 0;
+  }
+  if (highestCountingAverageWithCurrent > nextStep) {
+    return 9;
+  }
+  if (highestCountingAverageWithCurrent > nextStep - BUFFER) {
+    return 8;
+  }
+  if (hourEstimate > nextStep) {
+    return 7;
+  }
+  if (hourEstimate > nextStep - BUFFER) {
+    return 6;
+  }
+  if (currentHourRanking === 1 && nextStep - hourEstimate < SAFE_ZONE) {
+    return 5;
+  }
+  if (currentHourRanking === 2 && nextStep - hourEstimate < SAFE_ZONE) {
+    return 4;
+  }
+  if (currentHourRanking === 3 && nextStep - hourEstimate < SAFE_ZONE) {
+    return 3;
+  }
+  if (currentHourRanking === 1) {
+    return 2;
+  }
+  if (currentHourRanking === 2) {
+    return 1;
+  }
+  return 0;
+}
+
+if (msg.payload.highestPerDay) {
+  context.set("highestPerDay", msg.payload.highestPerDay);
+  context.set("highestCounting", msg.payload.highestCounting);
+  context.set("highestToday", msg.payload.highestToday);
+  context.set("currentMonthlyMaxAverage", msg.payload.currentMonthlyMaxAverage);
+  node.status({ fill: "green", shape: "ring", text: "Got ranking" });
+  return;
+}
+
+const highestPerDay = context.get("highestPerDay");
+const highestCounting = context.get("highestCounting");
+const highestToday = context.get("highestToday");
+const currentMonthlyMaxAverage = context.get("currentMonthlyMaxAverage");
+const hourEstimate = msg.payload.hourEstimate;
+const timeLeftMs = msg.payload.timeLeftMs;
+const timeLeftSec = timeLeftMs / 1000;
+const periodMs = msg.payload.periodMs;
+const accumulatedConsumption = msg.payload.accumulatedConsumption;
+const accumulatedConsumptionLastHour = msg.payload.accumulatedConsumptionLastHour;
+const consumptionLeft = msg.payload.consumptionLeft;
+const averageConsumptionNow = msg.payload.averageConsumptionNow;
+const currentHour = msg.payload.currentHour;
+
+if (timeLeftSec === 0) {
+  return null;
+}
+
+if (isNull(highestPerDay)) {
+  node.status({ fill: "red", shape: "dot", text: "No highest per day" });
+  return;
+}
+if (isNull(highestToday)) {
+  node.status({ fill: "red", shape: "dot", text: "No highest today" });
+  return;
+}
+if (isNull(hourEstimate)) {
+  node.status({ fill: "red", shape: "dot", text: "No estimate" });
+  return;
+}
+
+const currentStep = STEPS.reduceRight(
+  (prev, val) => (val > currentMonthlyMaxAverage ? val : prev),
+  STEPS[STEPS.length - 1]
+);
+
+// Set currentHourRanking
+let currentHourRanking = MAX_COUNTING + 1;
+for (let i = highestCounting.length - 1; i >= 0; i--) {
+  if (hourEstimate > highestCounting[i].consumption) {
+    currentHourRanking = i + 1;
+  }
+}
+if (hourEstimate < highestToday.consumption) {
+  currentHourRanking = 0;
+}
+
+const current = { from: currentHour, consumption: hourEstimate };
+const highestCountingWithCurrent = [...highestCounting, current]
+  .sort((a, b) => b.consumption - a.consumption)
+  .slice(0, highestCounting.length);
+const currentMonthlyEstimate =
+  highestCountingWithCurrent.length === 0
+    ? 0
+    : highestCountingWithCurrent.reduce((prev, val) => prev + val.consumption, 0) / highestCountingWithCurrent.length;
+
+// Set alarm level
+const alarmLevel = calculateLevel(hourEstimate, currentHourRanking, currentMonthlyEstimate, currentStep);
+
+// Evaluate status
+const status = alarmLevel >= ALARM ? "Alarm" : alarmLevel > 0 ? "Warning" : "Ok";
+
+// Calculate reduction
+const reductionRequired =
+  alarmLevel < ALARM
+    ? 0
+    : (Math.max((currentMonthlyEstimate - currentStep) * highestCounting.length, 0) * 3600) / timeLeftSec;
+const reductionRecommended =
+  alarmLevel < 3 ? 0 : (Math.max(hourEstimate + SAFE_ZONE - currentStep, 0) * 3600) / timeLeftSec;
+
+// Calculate increase possible
+const increasePossible =
+  alarmLevel >= 3 ? 0 : (Math.max(currentStep - hourEstimate - SAFE_ZONE, 0) * 3600) / timeLeftSec;
+
+// Create output
+const fill = status === "Ok" ? "green" : status === "Alarm" ? "red" : "yellow";
+node.status({ fill, shape: "dot", text: "Working" });
+
+const RESOLUTION = 1000;
+
+const payload = {
+  status, // Ok, Warning, Alarm
+  statusOk: status === "Ok",
+  statusWarning: status === "Warning",
+  statusAlarm: status === "Alarm",
+  alarmLevel,
+  highestPerDay,
+  highestCounting,
+  highestCountingWithCurrent,
+  highestToday,
+  currentMonthlyEstimate: Math.round(currentMonthlyEstimate * RESOLUTION) / RESOLUTION,
+  accumulatedConsumptionLastHour: Math.round(accumulatedConsumptionLastHour * RESOLUTION) / RESOLUTION,
+  consumptionLeft: Math.round(consumptionLeft * RESOLUTION) / RESOLUTION,
+  hourEstimate: Math.round(hourEstimate * RESOLUTION) / RESOLUTION,
+  averageConsumptionNow: Math.round(averageConsumptionNow * RESOLUTION) / RESOLUTION,
+  reductionRequired: Math.round(reductionRequired * RESOLUTION) / RESOLUTION,
+  reductionRecommended: Math.round(reductionRecommended * RESOLUTION) / RESOLUTION,
+  increasePossible: Math.round(increasePossible * RESOLUTION) / RESOLUTION,
+  currentStep,
+  currentHourRanking,
+  timeLeftSec,
+  periodMs,
+  accumulatedConsumption,
+};
+
+msg.payload = payload;
+
+return msg;
+```
+
+  </CodeGroupItem>
+</CodeGroup>
+
+:::
 
 ### Reduction Actions
 
@@ -423,55 +848,6 @@ so put first the actions you want to take first, and last those actions that you
 
 Here is an example of an `actions` array with two items (a water heater and a heating cable):
 
-```js
-const actions = [
-  {
-    sensor: "sensor.varmtvannsbereder_electric_consumption_w",
-    name: "Varmtvannsbereder",
-    id: "vvb",
-    minAlarmLevel: 3,
-    reduceWhenRecommended: false,
-    minTimeOffSec: 300,
-    payloadToTakeAction: {
-      domain: "switch",
-      service: "turn_off",
-      target: {
-        entity_id: ["switch.varmtvannsbereder"],
-      },
-    },
-    payloadToResetAction: {
-      domain: "switch",
-      service: "turn_on",
-      target: {
-        entity_id: ["switch.varmtvannsbereder"],
-      },
-    },
-  },
-  {
-    sensor: "sensor.varme_gulv_bad_electric_consumption_w",
-    name: "Varme gulv bad 1. etg.",
-    id: "gulvbad",
-    minAlarmLevel: 3,
-    reduceWhenRecommended: true,
-    minTimeOffSec: 300,
-    payloadToTakeAction: {
-      domain: "climate",
-      service: "turn_off",
-      target: {
-        entity_id: ["climate.varme_gulv_bad"],
-      },
-    },
-    payloadToResetAction: {
-      domain: "climate",
-      service: "turn_on",
-      target: {
-        entity_id: ["climate.varme_gulv_bad"],
-      },
-    },
-  },
-];
-```
-
 ::: danger On Start code
 Please note that there is a small piece of code after the `actions` array
 in the `On Start` tab. Make sure you do not delete that code.
@@ -482,12 +858,256 @@ If you don't want the actions, or you want to control actions another way,
 you can omit the action-related nodes and only use the nodes creating the sensors.
 :::
 
+::: details Code
+
+<CodeGroup>
+  <CodeGroupItem title="On Start">
+
+```js
+// You MUST edit the actions array with your own actions.
+
+const actions = [
+  {
+    consumption: "sensor.varmtvannsbereder_electric_consumption_w",
+    name: "Varmtvannsbereder",
+    id: "vvb",
+    minAlarmLevel: 3,
+    reduceWhenRecommended: true,
+    minTimeOffSec: 300,
+    payloadToTakeAction: {
+      domain: "switch",
+      service: "turn_off",
+      target: {
+        entity_id: ["switch.varmtvannsbereder"],
+      },
+    },
+    payloadToResetAction: {
+      domain: "switch",
+      service: "turn_on",
+      target: {
+        entity_id: ["switch.varmtvannsbereder"],
+      },
+    },
+  },
+  {
+    consumption: "sensor.varme_gulv_bad_electric_consumption_w_2",
+    name: "Varme gulv bad 1. etg.",
+    id: "gulvbad",
+    minAlarmLevel: 3,
+    reduceWhenRecommended: true,
+    minTimeOffSec: 300,
+    payloadToTakeAction: {
+      domain: "climate",
+      service: "turn_off",
+      target: {
+        entity_id: ["climate.varme_gulv_bad_2"],
+      },
+    },
+    payloadToResetAction: {
+      domain: "climate",
+      service: "turn_on",
+      target: {
+        entity_id: ["climate.varme_gulv_bad_2"],
+      },
+    },
+  },
+  {
+    consumption: "sensor.varme_gulv_gang_electric_consumption_w",
+    name: "Varme gulv gang 1. etg.",
+    id: "gulvgang",
+    minAlarmLevel: 3,
+    reduceWhenRecommended: true,
+    minTimeOffSec: 300,
+    payloadToTakeAction: {
+      domain: "climate",
+      service: "turn_off",
+      target: {
+        entity_id: ["climate.varme_gulv_gang"],
+      },
+    },
+    payloadToResetAction: {
+      domain: "climate",
+      service: "turn_on",
+      target: {
+        entity_id: ["climate.varme_gulv_gang"],
+      },
+    },
+  },
+  {
+    consumption: "sensor.varme_gulv_kjellerstue_electric_consumption_w",
+    name: "Varme gulv kjellerstue",
+    id: "gulvkjeller",
+    minAlarmLevel: 3,
+    reduceWhenRecommended: true,
+    minTimeOffSec: 300,
+    payloadToTakeAction: {
+      domain: "climate",
+      service: "turn_off",
+      target: {
+        entity_id: ["climate.varme_gulv_kjellerstue"],
+      },
+    },
+    payloadToResetAction: {
+      domain: "climate",
+      service: "turn_on",
+      target: {
+        entity_id: ["climate.varme_gulv_kjellerstue"],
+      },
+    },
+  },
+  {
+    consumption: 0.1,
+    name: "Test",
+    id: "test",
+    minAlarmLevel: 3,
+    reduceWhenRecommended: true,
+    minTimeOffSec: 30,
+    payloadToTakeAction: {
+      domain: "switch",
+      service: "turn_off",
+      target: {
+        entity_id: ["switch.lys_kjokkenskap_switch"],
+      },
+    },
+    payloadToResetAction: {
+      domain: "switch",
+      service: "turn_on",
+      target: {
+        entity_id: ["switch.lys_kjokkenskap_switch"],
+      },
+    },
+  },
+];
+// End of actions array
+
+// DO NOT DELETE THE CODE BELOW
+
+// Set default values for all actions
+actions.forEach((a) => {
+  a.actionTaken = false;
+  a.savedConsumption = 0;
+});
+
+flow.set("actions", actions);
+```
+
+  </CodeGroupItem>
+
+  <CodeGroupItem title="On Message" active>
+
+```js
+const MIN_CONSUMPTION_TO_CARE = 0.05; // Do not reduce unless at least 50W
+
+const actions = flow.get("actions");
+const ha = global.get("homeassistant").homeAssistant;
+
+let reductionRequired = msg.payload.reductionRequired;
+let reductionRecommended = msg.payload.reductionRecommended;
+
+if (reductionRecommended <= 0) {
+  return null;
+}
+
+function takeAction(action, consumption) {
+  const info = {
+    time: new Date().toISOString(),
+    name: "Reduction action",
+    data: msg.payload,
+    action,
+  };
+  node.send([{ payload: action.payloadToTakeAction }, { payload: info }]);
+  reductionRequired = Math.max(0, reductionRequired - consumption);
+  reductionRecommended = Math.max(0, reductionRecommended - consumption);
+  action.actionTaken = true;
+  action.actionTime = Date.now();
+  action.savedConsumption = consumption;
+  flow.set("actions", actions);
+}
+
+function getConsumption(consumption) {
+  if (typeof consumption === "string") {
+    const sensor = ha.states[consumption];
+    return sensor.state;
+  } else if (typeof consumption === "number") {
+    return consumption;
+  } else if (typeof consumption === "function") {
+    return consumption();
+  } else {
+    node.warn("Config error: consumption has illegal type: " + typeof consumption);
+    return 0;
+  }
+}
+
+actions
+  .filter((a) => msg.payload.alarmLevel >= a.minAlarmLevel && !a.actionTaken)
+  .forEach((a) => {
+    const consumption = getConsumption(a.consumption);
+    if (consumption < MIN_CONSUMPTION_TO_CARE) {
+      return;
+    }
+    if (reductionRequired > 0 || (reductionRecommended > 0 && a.reduceWhenRecommended)) {
+      takeAction(a, consumption);
+    }
+  });
+```
+
+  </CodeGroupItem>
+</CodeGroup>
+
+:::
+
 ### Reset Actions
 
 This node will reset actions when there is enough capacity available, that is for example turning switches back on again.
 
 In the script, there is a `BUFFER_TO_RESET` constant used to set a buffer (in kW) so actions are not reset until there is
 some spare capacity. By default is it set to 1 kW.
+
+::: details Code
+
+<CodeGroup>
+  <CodeGroupItem title="On Message" active>
+
+```js
+const actions = flow.get("actions");
+const ha = global.get("homeassistant").homeAssistant;
+
+const BUFFER_TO_RESET = 1; // Must have 1kW extra to perform reset
+
+let increasePossible = msg.payload.increasePossible;
+
+if (increasePossible <= 0) {
+  return null;
+}
+
+function resetAction(action) {
+  const info = {
+    time: new Date().toISOString(),
+    name: "Reset action",
+    data: msg.paylaod,
+    action,
+  };
+  node.send([{ payload: action.payloadToResetAction }, { payload: info }]);
+  increasePossible -= action.savedConsumption;
+  action.actionTaken = false;
+  action.savedConsumption = 0;
+  flow.set("actions", actions);
+}
+
+actions
+  .filter(
+    (a) =>
+      a.actionTaken &&
+      a.savedConsumption + BUFFER_TO_RESET <= increasePossible &&
+      Date.now() - a.actionTime > a.minTimeOffSec * 1000
+  )
+  .forEach((a) => resetAction(a));
+```
+
+  </CodeGroupItem>
+</CodeGroup>
+
+:::
 
 ### Perform action
 

@@ -55,7 +55,7 @@ If the number is black, it could be used, but only if all other criteria are sat
 
 ## Something seems wrong
 
-The tool is not using the same code as the node, so in case there is a bg in the node (or in the tool) the numbers may not match.
+The tool is not using the same code as the node, so in case there is a bug in the node (or in the tool) the numbers may not match.
 
 <hr/>
 
