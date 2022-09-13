@@ -65,7 +65,7 @@ const hour = time.getMinutes(); // NB Change to getMinutes()
 Change it to:
 
 ```js
-const hour = time.getHour();
+const hour = time.getHours();
 ```
 
 The bug fixed on no. 3 does so data for hours are read every minute,
