@@ -15,7 +15,10 @@ const highestToday = days.get(new Date().getDate());
 With this code:
 
 ```js
-const highestToday = days.get(new Date().getDate()) ?? 0;
+const highestToday = days.get(new Date().getDate()) ?? {
+  consumption: 0,
+  from: null,
+};
 ```
 
 This will set the `highestToday` to 0 during the first hour.
@@ -370,7 +373,7 @@ context.set("previousHour", undefined);
    Constructs a tibber query to get consumption per hour.
 */
 
-const TIBBER_HOME_ID = "142c4839-64cf-4df4-ba6d-942527a757c4";
+const TIBBER_HOME_ID = "put your tibber ome id here";
 
 const timestamp = msg.payload.timestamp;
 
@@ -612,12 +615,23 @@ This is where calculation is done to produce all the output sensor values.
 In the beginning of the script there are some constants you can configure:
 
 ```js
+const HA_NAME = "homeAssistant"; // Your HA name
 const STEPS = [2, 5, 10, 15, 20]; // Grid tariff steps in kWh
 const MAX_COUNTING = 3; // Number of days to calculate month average of
 const BUFFER = 0.5; // kWh - Closer to limit increases alarm level
 const SAFE_SONE = 2; // kWh - Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
 ```
+
+The `HA_NAME` must be set to the name you have given your Home Assistant. One place to find this is in Node-RED,
+in the `Context Data` window (next to the `Debug` window), under `Global`, click the refresh button and see the `homeassistant` object.
+Find the name used to the right.
+In this example the value you are looking for is `homeAssistant`:
+
+![Global context window](../images/global-context-window.png)
+
+You must configure the `STEPS` array to contain steps relevant for you.
+You should omit steps you do not plan to go under, to avoid non-necessary actions and warnings.
 
 See [Calculated sensor values](#calculated-sensor-values) for description of the output.
 
@@ -627,13 +641,14 @@ See [Calculated sensor values](#calculated-sensor-values) for description of the
   <CodeGroupItem title="On Message" active>
 
 ```js
+const HA_NAME = "homeAssistant"; // Your HA name
 const STEPS = [2, 5, 10, 15, 20];
 const MAX_COUNTING = 3; // Number of days to calculate month
 const BUFFER = 0.5; // Closer to limit increases level
 const SAFE_ZONE = 2; // Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
 
-const ha = global.get("homeassistant").homeAssistant;
+const ha = global.get("homeassistant")[HA_NAME];
 if (!ha.isConnected) {
   return;
 }
