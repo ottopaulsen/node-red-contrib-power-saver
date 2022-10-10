@@ -1,8 +1,8 @@
-const { extractPlanForDate, getEffectiveConfig, validationFailure } = require("./utils");
+const { extractPlanForDate, getEffectiveConfig, loadDayData, makeSchedule, validationFailure } = require("./utils");
 const { DateTime } = require("luxon");
 const { version } = require("../package.json");
 
-function handleStrategyInput(node, msg, doPlanning) {
+function handleStrategyInput(node, msg, doPlanning, calcSavings) {
   const effectiveConfig = getEffectiveConfig(node, msg);
   // Store config variables in node
   Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
@@ -10,6 +10,7 @@ function handleStrategyInput(node, msg, doPlanning) {
   if (!validateInput(node, msg)) {
     return;
   }
+
   if (msg.payload.commands && !anyLegalCommands(msg.payload.commands)) {
     const message = "Illegal command";
     node.warn(message);
@@ -50,8 +51,37 @@ function handleStrategyInput(node, msg, doPlanning) {
   const dateToday = DateTime.fromISO(dates[0]);
   const dateDayBefore = DateTime.fromISO(dates[0]).plus({ days: -1 });
 
+  const dataJustBefore = loadDataJustBefore(node, dateDayBefore);
+
   // Make plan
-  const plan = doPlanning(node, effectiveConfig, priceData, planFromTime, dateDayBefore, dateToday);
+  const onOff = doPlanning(node, effectiveConfig, priceData, planFromTime, dateDayBefore, dateToday, dataJustBefore);
+
+  const startTimes = priceData.map((d) => d.start);
+  const onOffBefore = dataJustBefore.hours.map((h) => h.onOff);
+  const lastValueDayBefore = onOffBefore[onOffBefore.length - 1];
+  const values = priceData.map((d) => d.value);
+
+  const schedule = makeSchedule(onOff, startTimes, lastValueDayBefore);
+  const savings = calcSavings(values, onOff);
+  const hours = values.map((v, i) => ({
+    price: v,
+    onOff: onOff[i],
+    start: startTimes[i],
+    saving: savings[i],
+  }));
+
+  const lastPlanHours = node.context().get("lastPlan", node.contextStorage)?.hours ?? [];
+
+  const includeFromLastPlanHours = lastPlanHours.filter(
+    (h) => h.start < hours[0].start && h.start >= priceData[0].start
+  );
+  adjustSavingsPassedHours(hours, includeFromLastPlanHours);
+  hours.splice(0, 0, ...includeFromLastPlanHours);
+
+  const plan = {
+    hours,
+    schedule,
+  };
 
   // Save schedule
   node.context().set("lastPlan", plan, node.contextStorage);
@@ -64,18 +94,19 @@ function handleStrategyInput(node, msg, doPlanning) {
   let output2 = null;
   let output3 = {
     payload: {
-      schedule: plan.schedule,
-      hours: plan.hours,
+      schedule,
+      hours,
       source,
       config: effectiveConfig,
       sentOnCommand,
       time: planFromTime.toISO(),
       version,
+      strategyNodeId: node.id,
     },
   };
 
   // Find current output, and set output (if configured to do)
-  const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
+  const pastSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
 
   const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
   const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
@@ -92,7 +123,28 @@ function handleStrategyInput(node, msg, doPlanning) {
   node.send([output1, output2, output3]);
 
   // Run schedule
-  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, sendNow);
+  node.schedulingTimeout = runSchedule(node, schedule, planFromTime, sendNow);
+}
+
+function adjustSavingsPassedHours(hours, includeFromLastPlanHours) {
+  const firstOnIndex = hours.findIndex((h) => h.onOff);
+  if (firstOnIndex < 0) {
+    return;
+  }
+  const nextOnValue = hours[firstOnIndex].price;
+  let adjustIndex = includeFromLastPlanHours.length - 1;
+  while (adjustIndex >= 0 && !includeFromLastPlanHours[adjustIndex].onOff) {
+    includeFromLastPlanHours[adjustIndex].saving = getDiff(includeFromLastPlanHours[adjustIndex].price, nextOnValue);
+    adjustIndex--;
+  }
+}
+
+function loadDataJustBefore(node, dateDayBefore) {
+  const dataDayBefore = loadDayData(node, dateDayBefore);
+  return {
+    schedule: [...dataDayBefore.schedule],
+    hours: [...dataDayBefore.hours],
+  };
 }
 
 function getPriceData(node, msg) {

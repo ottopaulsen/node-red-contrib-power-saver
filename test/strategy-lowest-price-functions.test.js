@@ -4,7 +4,7 @@ const { getBestContinuous, getBestX } = require("../src/strategy-lowest-price-fu
 const convertedPrices = require("./data/converted-prices.json");
 const cloneDeep = require("lodash.clonedeep");
 
-describe("strategy-utils", () => {
+describe("strategy-lowest-price-functions", () => {
   it("can find best x", () => {
     const values = convertedPrices.priceData.slice(0, 48).map((p) => p.value);
     const result = cloneDeep(values).fill(false);

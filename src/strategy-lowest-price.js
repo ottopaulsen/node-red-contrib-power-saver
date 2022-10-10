@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { booleanConfig, makeSchedule, loadDayData } = require("./utils");
+const { booleanConfig, calcNullSavings, makeSchedule, loadDayData } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
 
@@ -28,14 +28,14 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      handleStrategyInput(node, msg, doPlanning);
+      handleStrategyInput(node, msg, doPlanning, calcNullSavings);
     });
   }
 
   RED.nodes.registerType("ps-strategy-lowest-price", StrategyLowestPriceNode);
 };
 
-function doPlanning(node, _, priceData, _, dateDayBefore, _) {
+function doPlanning(node, _, priceData, _, dateDayBefore, _, _) {
   const dataDayBefore = loadDayData(node, dateDayBefore);
   const values = [...dataDayBefore.hours.map((h) => h.price), ...priceData.map((pd) => pd.value)];
   const startTimes = [...dataDayBefore.hours.map((h) => h.start), ...priceData.map((pd) => pd.start)];
@@ -104,18 +104,20 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _) {
     makePlan(node, values, onOff, s, endIndexes[i]);
   });
 
-  const schedule = makeSchedule(onOff, startTimes, !onOff[0]);
+  return onOff;
 
-  const hours = values.map((v, i) => ({
-    price: v,
-    onOff: onOff[i],
-    start: startTimes[i],
-    saving: null,
-  }));
-  return {
-    hours,
-    schedule,
-  };
+  // const schedule = makeSchedule(onOff, startTimes, !onOff[0]);
+
+  // const hours = values.map((v, i) => ({
+  //   price: v,
+  //   onOff: onOff[i],
+  //   start: startTimes[i],
+  //   saving: null,
+  // }));
+  // return {
+  //   hours,
+  //   schedule,
+  // };
 }
 
 function makePlan(node, values, onOff, fromIndex, toIndex) {

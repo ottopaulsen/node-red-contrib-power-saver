@@ -496,6 +496,8 @@ describe("ps-strategy-lowest-price node", function () {
     const input = require("./data/tibber-data-end-0.json");
     const result = require("./data/tibber-result-end-0.json");
     result.version = version;
+    result.strategyNodeId = "n1";
+    result.current = undefined;
     const flow = [
       {
         id: "n1",
@@ -531,6 +533,8 @@ describe("ps-strategy-lowest-price node", function () {
     const input = require("./data/tibber-data-end-0-24h.json");
     const result = require("./data/tibber-result-end-0-24h.json");
     result.version = version;
+    result.strategyNodeId = "n1";
+    result.current = undefined;
     const flow = [
       {
         id: "n1",
@@ -566,6 +570,8 @@ describe("ps-strategy-lowest-price node", function () {
     const input = require("./data/lowest-price-input-missing-end.json");
     const result = require("./data/lowest-price-result-missing-end.json");
     result.payload.version = version;
+    result.payload.strategyNodeId = "n1";
+    result.payload.current = undefined;
     const flow = [
       {
         id: "n1",

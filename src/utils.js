@@ -4,6 +4,10 @@ function booleanConfig(value) {
   return value === "true" || value === true;
 }
 
+function calcNullSavings(values, _) {
+  return values.map(() => null);
+}
+
 /**
  * Sort values in array and return array with index of original array
  * in sorted order. Highest value first.
@@ -97,8 +101,8 @@ function roundPrice(value) {
  *                   to use for the last hours.
  * @returns Array with how much you save on the off-hours, null on the others.
  */
-function getSavings(values, onOff, nextOn = null) {
-  return getDiffToNextOn(values, onOff, nextOn).map((v, i) => (onOff[i] ? null : v));
+function getSavings(values, onOff) {
+  return getDiffToNextOn(values, onOff, null).map((v, i) => (onOff[i] ? null : v));
 }
 
 /**
@@ -152,6 +156,14 @@ function makeSchedule(onOff, startTimes, initial = null) {
   return res;
 }
 
+function makeScheduleFromHours(hours, initial = null) {
+  return makeSchedule(
+    hours.map((h) => h.onOff),
+    hours.map((h) => h.start),
+    initial
+  );
+}
+
 function fillArray(value, count) {
   if (value === undefined || count <= 0) {
     return [];
@@ -189,6 +201,7 @@ function validationFailure(node, message, status = null) {
 
 module.exports = {
   booleanConfig,
+  calcNullSavings,
   countAtEnd,
   extractPlanForDate,
   fillArray,
@@ -201,6 +214,7 @@ module.exports = {
   isSameDate,
   loadDayData,
   makeSchedule,
+  makeScheduleFromHours,
   roundPrice,
   sortedIndex,
   validationFailure,

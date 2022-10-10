@@ -1,0 +1,73 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-schedule-merger", {
+    category: "Power Saver",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Schedule Merger" },
+      sendCurrentValueWhenRescheduling: {
+        value: true,
+        required: true,
+        align: "left",
+      },
+      logicFunction: { value: "OR", required: true, align: "left" },
+      contextStorage: { value: "default", required: false, align: "left" },
+    },
+    inputs: 1,
+    outputs: 3,
+    icon: "font-awesome/fa-compress",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "Best Save";
+    },
+    outputLabels: ["on", "off", "schedule"],
+    oneditprepare: function () {
+      $("#node-input-logicFunction").typedInput({
+        types: [
+          {
+            value: "logic",
+            options: ["OR", "AND"],
+          },
+        ],
+      });
+      $("#node-input-contextStorage").typedInput({
+        types: [
+          {
+            value: "storages",
+            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
+          },
+        ],
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="schedule-merger">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
+    </div>
+    <div class="form-row">
+        <label for="node-input-logicFunction">Function</label>
+        <input type="text" id="node-input-logicFunction" style="width: 80px">
+        </label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
+        <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
+        </label>
+    </div>
+    <div class="form-row">
+      <label for="node-input-contextStorage"><i class="fa fa-archive"></i> Context storage</label>
+      <input type="text" id="node-input-contextStorage" style="width: 160px">
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-schedule-merger">
+  A node you can use to merge multiple schedules to one.
+
+  Function OR will turn on if any of the input schedules are on.
+
+  Function AND will turn on only when all input schedules are on.
+
+  Please read more in the [node documentation](https://powersaver.no/nodes/schedule-merger)
+</script>
