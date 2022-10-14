@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { booleanConfig, calcNullSavings, makeSchedule, loadDayData } = require("./utils");
+const { booleanConfig, calcNullSavings, saveOriginalConfig } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
 
@@ -9,7 +9,7 @@ module.exports = function (RED) {
     const node = this;
     node.status({});
 
-    const originalConfig = {
+    saveOriginalConfig(node, {
       fromTime: config.fromTime,
       toTime: config.toTime,
       hoursOn: parseInt(config.hoursOn),
@@ -19,9 +19,7 @@ module.exports = function (RED) {
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       outputOutsidePeriod: booleanConfig(config.outputOutsidePeriod),
       contextStorage: config.contextStorage || "default",
-    };
-    node.context().set("config", originalConfig);
-    node.contextStorage = originalConfig.contextStorage;
+    });
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);
@@ -35,10 +33,9 @@ module.exports = function (RED) {
   RED.nodes.registerType("ps-strategy-lowest-price", StrategyLowestPriceNode);
 };
 
-function doPlanning(node, _, priceData, _, dateDayBefore, _, _) {
-  const dataDayBefore = loadDayData(node, dateDayBefore);
-  const values = [...dataDayBefore.hours.map((h) => h.price), ...priceData.map((pd) => pd.value)];
-  const startTimes = [...dataDayBefore.hours.map((h) => h.start), ...priceData.map((pd) => pd.start)];
+function doPlanning(node, priceData) {
+  const values = priceData.map((pd) => pd.value);
+  const startTimes = priceData.map((pd) => pd.start);
 
   const from = parseInt(node.fromTime);
   const to = parseInt(node.toTime);
@@ -78,18 +75,6 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _, _) {
 
   const onOff = [];
 
-  // Fill in data from previous plan for StartMissing
-  const lastStartMissing = periodStatus.lastIndexOf((s) => s === "StartMissing");
-  if (lastStartMissing >= 0 && dataDayBefore?.hours?.length > 0) {
-    const lastBefore = DateTime.fromISO(dataDayBefore.hours[dataDayBefore.hours.length - 1].start);
-    if (lastBefore >= DateTime.fromISO(startTimes[lastStartMissing])) {
-      for (let i = 0; i <= lastStartMissing; i++) {
-        onOff[i] = dataDayBefore.hours.find((h) => h.start === startTimes[i]);
-        periodStatus[i] = "Backfilled";
-      }
-    }
-  }
-
   // Set onOff for hours that will not be planned
   periodStatus.forEach((s, i) => {
     onOff[i] =
@@ -105,19 +90,6 @@ function doPlanning(node, _, priceData, _, dateDayBefore, _, _) {
   });
 
   return onOff;
-
-  // const schedule = makeSchedule(onOff, startTimes, !onOff[0]);
-
-  // const hours = values.map((v, i) => ({
-  //   price: v,
-  //   onOff: onOff[i],
-  //   start: startTimes[i],
-  //   saving: null,
-  // }));
-  // return {
-  //   hours,
-  //   schedule,
-  // };
 }
 
 function makePlan(node, values, onOff, fromIndex, toIndex) {

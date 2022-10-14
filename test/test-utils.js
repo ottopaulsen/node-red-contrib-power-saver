@@ -63,6 +63,7 @@ function equalPlan(expected, actual) {
       }
     });
   });
+
   expected.hours.forEach((s, i) => {
     ["price", "onOff", "start", "saving"].forEach((key) => {
       if (s[key] != actual.hours[i][key]) {
@@ -93,8 +94,29 @@ function equalPlan(expected, actual) {
   return res;
 }
 
+function equalHours(expected, actual, properties = ["price", "onOff", "start", "saving"]) {
+  let res = true;
+  if (expected.length !== actual.length) {
+    console.log("Hours have different lengths: Expected " + expected.hours.length + ", got " + actual.hours.length);
+  }
+
+  expected.forEach((s, i) => {
+    properties.forEach((key) => {
+      if (s[key] != actual[i][key]) {
+        console.log(
+          "Different hour values for " + key + " at index " + i + ": Expected " + s[key] + ", got " + actual[i][key]
+        );
+        res = false;
+      }
+    });
+  });
+
+  return res;
+}
+
 module.exports = {
   testPlan,
   makePayload,
   equalPlan,
+  equalHours,
 };

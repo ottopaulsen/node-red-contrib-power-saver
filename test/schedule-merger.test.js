@@ -1,13 +1,9 @@
-const cloneDeep = require("lodash.clonedeep");
-const { DateTime } = require("luxon");
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const scheduleMerger = require("../src/schedule-merger.js");
-const prices = require("./data/converted-prices.json");
-const result = require("./data/best-save-result.json");
-const { testPlan: plan, equalPlan } = require("./test-utils");
+const { testPlan: plan, equalPlan, equalHours } = require("./test-utils");
 const { version } = require("../package.json");
-const { allOff, allOn, someOn } = require("./data/merge-schedule-data.js");
+const { allOff, allOn, someOn, theOtherOn } = require("./data/merge-schedule-data.js");
 
 helper.init(require.resolve("node-red"));
 
@@ -47,19 +43,95 @@ describe("schedule-merger node", function () {
     });
   });
 
-  it("sends a merged schedule on output 3", function (done) {
+  it("can merge two schedules with OR", function (done) {
     const flow = makeFlow("OR");
     helper.load(scheduleMerger, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
-      const n3 = helper.getNode("n3");
-      const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        // expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
         n1.warn.should.not.be.called;
         done();
       });
       n1.receive({ payload: makePayload("s1", someOn) });
+      n1.receive({ payload: makePayload("s2", allOff) });
+    });
+  });
+
+  it("can merge two schedules with AND", function (done) {
+    const flow = makeFlow("AND");
+    helper.load(scheduleMerger, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        n1.warn.should.not.be.called;
+        done();
+      });
+      n1.receive({ payload: makePayload("s1", someOn) });
+      n1.receive({ payload: makePayload("s2", allOn) });
+    });
+  });
+
+  it("can merge two schedules with OR all on", function (done) {
+    const flow = makeFlow("OR");
+    helper.load(scheduleMerger, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        n1.warn.should.not.be.called;
+        done();
+      });
+      n1.receive({ payload: makePayload("s1", someOn) });
+      n1.receive({ payload: makePayload("s2", allOn) });
+    });
+  });
+
+  it("can merge two schedules with AND all off", function (done) {
+    const flow = makeFlow("AND");
+    helper.load(scheduleMerger, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        n1.warn.should.not.be.called;
+        done();
+      });
+      n1.receive({ payload: makePayload("s1", someOn) });
+      n1.receive({ payload: makePayload("s2", allOff) });
+    });
+  });
+
+  it("can merge three schedules with OR", function (done) {
+    const flow = makeFlow("OR");
+    helper.load(scheduleMerger, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        n1.warn.should.not.be.called;
+        done();
+      });
+      n1.receive({ payload: makePayload("s1", someOn) });
+      n1.receive({ payload: makePayload("s2", allOff) });
+      n1.receive({ payload: makePayload("s3", theOtherOn) });
+    });
+  });
+
+  it("can merge three schedules with AND", function (done) {
+    const flow = makeFlow("AND");
+    helper.load(scheduleMerger, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        n1.warn.should.not.be.called;
+        done();
+      });
+      n1.receive({ payload: makePayload("s1", someOn) });
+      n1.receive({ payload: makePayload("s2", allOn) });
+      n1.receive({ payload: makePayload("s3", theOtherOn) });
     });
   });
 });

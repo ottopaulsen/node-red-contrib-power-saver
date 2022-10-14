@@ -63,18 +63,18 @@ function mergeSchedules(node, logicFunction) {
   const sortedHours = Object.keys(transposed).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
 
   // Merge
-  const mergedHours = sortedHours.map((from) => {
-    const sources = transposed[from];
+  const mergedHours = sortedHours.map((start) => {
+    const sources = transposed[start];
     const onOff =
       logicFunction === "OR"
         ? Object.keys(sources).some((s) => sources[s].hour.onOff)
         : Object.keys(sources).every((s) => sources[s].hour.onOff);
-    const res = { from, onOff, sources };
+    const price = sources[Object.keys(sources)[0]].hour.price;
+    const saving = null;
+    const res = { start, onOff, sources, price, saving };
     return res;
   });
   return mergedHours;
 }
 
-function runSchedule(node, schedule) {}
-
-module.exports = { validateSchedule, saveSchedule, mergeSchedules, runSchedule };
+module.exports = { validateSchedule, saveSchedule, mergeSchedules };

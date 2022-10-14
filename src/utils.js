@@ -9,6 +9,18 @@ function calcNullSavings(values, _) {
 }
 
 /**
+ * Save the config object in the context, and set
+ * all values directly on the node.
+ *
+ * @param {*} node
+ * @param {*} originalConfig Object with config values
+ */
+function saveOriginalConfig(node, originalConfig) {
+  node.context().set("config", originalConfig);
+  node.contextStorage = originalConfig.contextStorage;
+}
+
+/**
  * Sort values in array and return array with index of original array
  * in sorted order. Highest value first.
  */
@@ -101,8 +113,8 @@ function roundPrice(value) {
  *                   to use for the last hours.
  * @returns Array with how much you save on the off-hours, null on the others.
  */
-function getSavings(values, onOff) {
-  return getDiffToNextOn(values, onOff, null).map((v, i) => (onOff[i] ? null : v));
+function getSavings(values, onOff, nextOn = null) {
+  return getDiffToNextOn(values, onOff, nextOn).map((v, i) => (onOff[i] ? null : v));
 }
 
 /**
@@ -199,6 +211,40 @@ function validationFailure(node, message, status = null) {
   node.warn(message);
 }
 
+function sendSwitch(node, onOff) {
+  const output1 = onOff ? { payload: true } : null;
+  const output2 = onOff ? null : { payload: false };
+  node.send([output1, output2, null]);
+}
+
+function runSchedule(node, schedule, time, currentSent = false) {
+  let remainingSchedule = schedule.filter((entry) => {
+    return DateTime.fromISO(entry.time) > time;
+  });
+  if (remainingSchedule.length > 0) {
+    const entry = remainingSchedule[0];
+    const nextTime = DateTime.fromISO(entry.time);
+    const wait = nextTime - time;
+    const onOff = entry.value ? "on" : "off";
+    node.log("Switching " + onOff + " in " + wait + " milliseconds");
+    const statusMessage = `${remainingSchedule.length} changes - ${
+      remainingSchedule[0].value ? "on" : "off"
+    } at ${nextTime.toLocaleString(DateTime.TIME_SIMPLE)}`;
+    node.status({ fill: "green", shape: "dot", text: statusMessage });
+    return setTimeout(() => {
+      sendSwitch(node, entry.value);
+      node.schedulingTimeout = runSchedule(node, remainingSchedule, nextTime);
+    }, wait);
+  } else {
+    const message = "No schedule";
+    node.warn(message);
+    node.status({ fill: "yellow", shape: "dot", text: message });
+    if (!currentSent) {
+      sendSwitch(node, node.outputIfNoSchedule);
+    }
+  }
+}
+
 module.exports = {
   booleanConfig,
   calcNullSavings,
@@ -216,6 +262,8 @@ module.exports = {
   makeSchedule,
   makeScheduleFromHours,
   roundPrice,
+  runSchedule,
+  saveOriginalConfig,
   sortedIndex,
   validationFailure,
 };
