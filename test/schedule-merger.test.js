@@ -143,6 +143,7 @@ function makeFlow(logicFunction) {
       type: "ps-schedule-merger",
       name: "test name",
       logicFunction,
+      schedulingDelay: 10, // May need to increase on a slow computer
       sendCurrentValueWhenRescheduling: true,
       wires: [["n3"], ["n4"], ["n2"]],
     },

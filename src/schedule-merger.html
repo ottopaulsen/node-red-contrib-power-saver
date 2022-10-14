@@ -10,6 +10,11 @@
         align: "left",
       },
       logicFunction: { value: "OR", required: true, align: "left" },
+      schedulingDelay: {
+        value: 2000,
+        required: true,
+        validate: RED.validators.number(),
+      },
       contextStorage: { value: "default", required: false, align: "left" },
     },
     inputs: 1,
@@ -21,6 +26,17 @@
     },
     outputLabels: ["on", "off", "schedule"],
     oneditprepare: function () {
+      $("#node-input-outputIfNoSchedule").typedInput({
+        types: [
+          {
+            value: "onoff",
+            options: [
+              { value: "true", label: "On" },
+              { value: "false", label: "Off" },
+            ],
+          },
+        ],
+      });
       $("#node-input-logicFunction").typedInput({
         types: [
           {
@@ -41,7 +57,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="schedule-merger">
+<script type="text/html" data-template-name="ps-schedule-merger">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
@@ -52,6 +68,11 @@
         </label>
     </div>
     <div class="form-row">
+      <label for="node-input-schedulingDelay"><i class="fa fa-clock-o"></i> Delay</label>
+      <input type="text" id="node-input-schedulingDelay" placeholder="milliseconds" style="width: 80px">
+      milliseconds
+  </div>
+  <div class="form-row">
         <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
         <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
         </label>
@@ -68,6 +89,9 @@
   Function OR will turn on if any of the input schedules are on.
 
   Function AND will turn on only when all input schedules are on.
+
+  Delay is milliseconds before the merged schedule is sent. It is useful to wait for all schedules
+  to arrive before they are merged.
 
   Please read more in the [node documentation](https://powersaver.no/nodes/schedule-merger)
 </script>
