@@ -1,8 +1,9 @@
 const { mergeSchedules, saveSchedule, validateSchedule } = require("./schedule-merger-functions.js");
-const { getEffectiveConfig, makeScheduleFromHours, runSchedule, saveOriginalConfig } = require("./utils.js");
+const { getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
 const { version } = require("../package.json");
 const { DateTime } = require("luxon");
 const nanoTime = require("nano-time");
+const { runSchedule } = require("./handle-output");
 
 module.exports = function (RED) {
   function ScheduleMerger(config) {
@@ -14,6 +15,7 @@ module.exports = function (RED) {
       logicFunction: config.logicFunction,
       sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       contextStorage: config.contextStorage || "default",
+      schedulingDelay: config.schedulingDelay || 2000,
     });
 
     node.on("close", function () {
@@ -21,9 +23,7 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      const effectiveConfig = getEffectiveConfig(node, msg);
-      // Store config variables in node
-      Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
+      const config = getEffectiveConfig(node, msg);
 
       const validationError = validateSchedule(msg);
       if (validationError) {
@@ -45,11 +45,12 @@ module.exports = function (RED) {
           return;
         }
 
-        const resultingHours = mergeSchedules(node, node.logicFunction);
-
-        const schedule = makeScheduleFromHours(resultingHours);
+        const hours = mergeSchedules(node, node.logicFunction);
+        const schedule = makeScheduleFromHours(hours);
 
         const sentOnCommand = false;
+
+        const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
         // Prepare output
         let output1 = null;
@@ -57,17 +58,15 @@ module.exports = function (RED) {
         let output3 = {
           payload: {
             schedule,
-            hours: resultingHours,
+            hours,
             source: node.name,
-            config: effectiveConfig,
+            config,
             sentOnCommand,
-            time: resultingHours[0].start,
+            time: planFromTime.toISO(),
             version,
             strategyNodeId: node.id,
           },
         };
-
-        const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
         // Find current output, and set output (if configured to do)
         const pastSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
@@ -86,7 +85,7 @@ module.exports = function (RED) {
         // Run schedule
         clearTimeout(node.schedulingTimeout);
         node.schedulingTimeout = runSchedule(node, schedule, planFromTime, sendNow);
-      }, 1000);
+      }, node.schedulingDelay);
     });
   }
   RED.nodes.registerType("ps-schedule-merger", ScheduleMerger);

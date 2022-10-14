@@ -1,18 +1,10 @@
-const {
-  extractPlanForDate,
-  getEffectiveConfig,
-  loadDayData,
-  makeSchedule,
-  runSchedule,
-  validationFailure,
-} = require("./utils");
+const { extractPlanForDate, getEffectiveConfig, loadDayData, makeSchedule, validationFailure } = require("./utils");
+const { runSchedule } = require("./handle-output");
 const { DateTime } = require("luxon");
 const { version } = require("../package.json");
 
 function handleStrategyInput(node, msg, doPlanning, calcSavings) {
-  const effectiveConfig = getEffectiveConfig(node, msg);
-  // Store config variables in node
-  Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
+  const config = getEffectiveConfig(node, msg);
 
   if (!validateInput(node, msg)) {
     return;
@@ -40,8 +32,6 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
     node.status({ fill: "yellow", shape: "dot", text: message });
     return;
   }
-
-  const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
   const dates = [...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate()))];
 
@@ -77,6 +67,8 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
 
   const sentOnCommand = !!commands.sendSchedule;
 
+  const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
+
   // Prepare output
   let output1 = null;
   let output2 = null;
@@ -85,7 +77,7 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
       schedule,
       hours,
       source,
-      config: effectiveConfig,
+      config,
       sentOnCommand,
       time: planFromTime.toISO(),
       version,
