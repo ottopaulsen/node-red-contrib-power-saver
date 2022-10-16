@@ -309,6 +309,7 @@
     ],
     "source": "Nordpool",
     "config": {
+      "hasChanged": false,
       "contextStorage": "default",
       "fromTime": "22",
       "toTime": "08",

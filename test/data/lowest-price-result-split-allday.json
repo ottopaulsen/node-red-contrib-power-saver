@@ -10,6 +10,7 @@
     { "time": "2021-10-12T15:00:00.000+02:00", "value": false, "countHours": 9 }
   ],
   "config": {
+    "hasChanged": false,
     "contextStorage": "default",
     "doNotSplit": false,
     "fromTime": "00",

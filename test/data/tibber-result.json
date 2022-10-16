@@ -363,6 +363,7 @@
   ],
   "source": "Tibber",
   "config": {
+    "hasChanged": false,
     "maxHoursToSaveInSequence": 4,
     "minHoursOnAfterMaxSequenceSaved": 2,
     "minSaving": 0.001,

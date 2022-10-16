@@ -78,11 +78,15 @@ function getEffectiveConfig(node, msg) {
     node.error("Node has no config");
     return {};
   }
+  res.hasChanged = false;
   const isConfigMsg = !!msg?.payload?.config;
   if (isConfigMsg) {
     const inputConfig = msg.payload.config;
     Object.keys(inputConfig).forEach((key) => {
-      res[key] = inputConfig[key];
+      if (res[key] !== inputConfig[key]) {
+        res[key] = inputConfig[key];
+        res.hasChanged = true;
+      }
     });
     node.context().set("config", res);
   }

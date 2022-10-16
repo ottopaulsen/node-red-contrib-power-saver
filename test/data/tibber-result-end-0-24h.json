@@ -313,6 +313,7 @@
   ],
   "source": "Tibber",
   "config": {
+    "hasChanged": false,
     "contextStorage": "default",
     "fromTime": "16",
     "toTime": "00",

@@ -21,16 +21,70 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
     deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
 
-  const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedLastPriceData(node);
-  if (msgHasPriceData(msg)) {
-    saveLastPriceData(node, priceData, source);
+  let plan = null;
+
+  if (msgHasPriceData(msg) || config.hasChanged) {
+    const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedLastPriceData(node);
+    if (msgHasPriceData(msg)) {
+      saveLastPriceData(node, priceData, source);
+    }
+
+    plan = makePlanFromPriceData(node, priceData, source, doPlanning, calcSavings);
+  } else {
+    // Load last saved plan
+    plan = node.context().get("lastPlan", node.contextStorage);
   }
 
-  if (!priceData) {
+  // If still no plan?
+  if (!plan) {
     const message = "No price data";
     node.warn(message);
     node.status({ fill: "yellow", shape: "dot", text: message });
     return;
+  }
+
+  const sentOnCommand = !!commands.sendSchedule;
+
+  const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
+
+  // Prepare output
+  let output1 = null;
+  let output2 = null;
+  let output3 = {
+    payload: {
+      schedule: plan.schedule,
+      hours: plan.hours,
+      source: plan.source,
+      config,
+      sentOnCommand,
+      time: planFromTime.toISO(),
+      version,
+      strategyNodeId: node.id,
+    },
+  };
+
+  // Find current output, and set output (if configured to do)
+  const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
+
+  const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
+  const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
+  if (sendNow || commands.sendOutput) {
+    output1 = currentValue ? { payload: true } : null;
+    output2 = currentValue ? null : { payload: false };
+  }
+  output3.payload.current = currentValue;
+
+  // Send output
+  node.send([output1, output2, output3]);
+
+  // Run schedule
+  clearTimeout(node.schedulingTimeout);
+  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, sendNow);
+}
+
+function makePlanFromPriceData(node, priceData, source, doPlanning, calcSavings) {
+  if (!priceData) {
+    return null;
   }
 
   const dates = [...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate()))];
@@ -54,55 +108,20 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
   }));
   const schedule = makeSchedule(onOff, startTimes);
 
-  const plan = {
+  plan = {
     hours,
     schedule,
+    source,
   };
 
   // Save schedule
   node.context().set("lastPlan", plan, node.contextStorage);
   dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
-  const sentOnCommand = !!commands.sendSchedule;
-
-  const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-
-  // Prepare output
-  let output1 = null;
-  let output2 = null;
-  let output3 = {
-    payload: {
-      schedule,
-      hours,
-      source,
-      config,
-      sentOnCommand,
-      time: planFromTime.toISO(),
-      version,
-      strategyNodeId: node.id,
-    },
-  };
-
-  // Find current output, and set output (if configured to do)
-  const pastSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
-
-  const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
-  const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-  if (sendNow || commands.sendOutput) {
-    output1 = currentValue ? { payload: true } : null;
-    output2 = currentValue ? null : { payload: false };
-  }
-  output3.payload.current = currentValue;
-
   // Delete old data
   deleteSavedScheduleBefore(node, dateDayBefore);
 
-  // Send output
-  node.send([output1, output2, output3]);
-
-  // Run schedule
-  clearTimeout(node.schedulingTimeout);
-  node.schedulingTimeout = runSchedule(node, schedule, planFromTime, sendNow);
+  return plan;
 }
 
 // Commands
