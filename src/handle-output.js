@@ -1,4 +1,43 @@
 const { DateTime } = require("luxon");
+const { version } = require("../package.json");
+
+function handleOutput(node, config, plan, commands, planFromTime) {
+  const sentOnCommand = !!commands.sendSchedule;
+
+  // Prepare output
+  let output1 = null;
+  let output2 = null;
+  let output3 = {
+    payload: {
+      schedule: plan.schedule,
+      hours: plan.hours,
+      source: plan.source,
+      config,
+      sentOnCommand,
+      time: planFromTime.toISO(),
+      version,
+      strategyNodeId: node.id,
+    },
+  };
+
+  // Find current output, and set output (if configured to do)
+  const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
+
+  const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
+  const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
+  if (sendNow || commands.sendOutput) {
+    output1 = currentValue ? { payload: true } : null;
+    output2 = currentValue ? null : { payload: false };
+  }
+  output3.payload.current = currentValue;
+
+  // Send output
+  node.send([output1, output2, output3]);
+
+  // Run schedule
+  clearTimeout(node.schedulingTimeout);
+  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, sendNow);
+}
 
 function sendSwitch(node, onOff) {
   const output1 = onOff ? { payload: true } : null;
@@ -35,5 +74,5 @@ function runSchedule(node, schedule, time, currentSent = false) {
 }
 
 module.exports = {
-  runSchedule,
+  handleOutput,
 };

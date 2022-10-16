@@ -1,9 +1,9 @@
 const { mergeSchedules, saveSchedule, validateSchedule } = require("./schedule-merger-functions.js");
 const { getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
-const { version } = require("../package.json");
 const { DateTime } = require("luxon");
 const nanoTime = require("nano-time");
-const { runSchedule } = require("./handle-output");
+const { handleOutput } = require("./handle-output");
+const { getCommands } = require("./handle-input");
 
 module.exports = function (RED) {
   function ScheduleMerger(config) {
@@ -24,6 +24,10 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
       const config = getEffectiveConfig(node, msg);
+
+      const commands = getCommands(msg);
+
+      // TODO (otto): Handle commands, also if only commands are sent
 
       const validationError = validateSchedule(msg);
       if (validationError) {
@@ -48,43 +52,15 @@ module.exports = function (RED) {
         const hours = mergeSchedules(node, node.logicFunction);
         const schedule = makeScheduleFromHours(hours);
 
-        const sentOnCommand = false;
+        const plan = {
+          hours,
+          schedule,
+          source: node.name,
+        };
 
         const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
-        // Prepare output
-        let output1 = null;
-        let output2 = null;
-        let output3 = {
-          payload: {
-            schedule,
-            hours,
-            source: node.name,
-            config,
-            sentOnCommand,
-            time: planFromTime.toISO(),
-            version,
-            strategyNodeId: node.id,
-          },
-        };
-
-        // Find current output, and set output (if configured to do)
-        const pastSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
-
-        const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
-        const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-        if (sendNow || !!msg.payload.commands?.sendOutput) {
-          output1 = currentValue ? { payload: true } : null;
-          output2 = currentValue ? null : { payload: false };
-        }
-        output3.payload.current = currentValue;
-
-        // Send output
-        node.send([output1, output2, output3]);
-
-        // Run schedule
-        clearTimeout(node.schedulingTimeout);
-        node.schedulingTimeout = runSchedule(node, schedule, planFromTime, sendNow);
+        handleOutput(node, config, plan, commands, planFromTime);
       }, node.schedulingDelay);
     });
   }

@@ -1,5 +1,5 @@
 const { extractPlanForDate, getEffectiveConfig, loadDayData, makeSchedule, validationFailure } = require("./utils");
-const { runSchedule } = require("./handle-output");
+const { handleOutput } = require("./handle-output");
 const { DateTime } = require("luxon");
 const { version } = require("../package.json");
 
@@ -21,19 +21,10 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
     deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
 
-  let plan = null;
-
-  if (msgHasPriceData(msg) || config.hasChanged) {
-    const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedLastPriceData(node);
-    if (msgHasPriceData(msg)) {
-      saveLastPriceData(node, priceData, source);
-    }
-
-    plan = makePlanFromPriceData(node, priceData, source, doPlanning, calcSavings);
-  } else {
-    // Load last saved plan
-    plan = node.context().get("lastPlan", node.contextStorage);
-  }
+  const plan =
+    msgHasPriceData(msg) || config.hasChanged
+      ? makePlanFromPriceData(node, msg, doPlanning, calcSavings)
+      : node.context().get("lastPlan", node.contextStorage);
 
   // If still no plan?
   if (!plan) {
@@ -43,46 +34,17 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
     return;
   }
 
-  const sentOnCommand = !!commands.sendSchedule;
-
   const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
-  // Prepare output
-  let output1 = null;
-  let output2 = null;
-  let output3 = {
-    payload: {
-      schedule: plan.schedule,
-      hours: plan.hours,
-      source: plan.source,
-      config,
-      sentOnCommand,
-      time: planFromTime.toISO(),
-      version,
-      strategyNodeId: node.id,
-    },
-  };
-
-  // Find current output, and set output (if configured to do)
-  const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
-
-  const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
-  const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-  if (sendNow || commands.sendOutput) {
-    output1 = currentValue ? { payload: true } : null;
-    output2 = currentValue ? null : { payload: false };
-  }
-  output3.payload.current = currentValue;
-
-  // Send output
-  node.send([output1, output2, output3]);
-
-  // Run schedule
-  clearTimeout(node.schedulingTimeout);
-  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, sendNow);
+  handleOutput(node, config, plan, commands, planFromTime);
 }
 
-function makePlanFromPriceData(node, priceData, source, doPlanning, calcSavings) {
+function makePlanFromPriceData(node, msg, doPlanning, calcSavings) {
+  const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedLastPriceData(node);
+  if (msgHasPriceData(msg)) {
+    saveLastPriceData(node, priceData, source);
+  }
+
   if (!priceData) {
     return null;
   }
@@ -224,6 +186,7 @@ function validateInput(node, msg) {
 }
 
 module.exports = {
+  getCommands,
   handleStrategyInput,
   validateInput,
 };
