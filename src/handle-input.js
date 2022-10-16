@@ -21,7 +21,7 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
     deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
 
-  const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedPriceData(node);
+  const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedLastPriceData(node);
   if (msgHasPriceData(msg)) {
     saveLastPriceData(node, priceData, source);
   }
@@ -131,7 +131,7 @@ function getPriceDataFromMessage(msg) {
   return { priceData, source };
 }
 
-function getSavedPriceData(node) {
+function getSavedLastPriceData(node) {
   const priceData = node.context().get("lastPriceData", node.contextStorage);
   const source = node.context().get("lastSource", node.contextStorage);
   return { priceData, source };
