@@ -80,7 +80,7 @@ describe("ps-strategy-best-save node", function () {
         setTimeout(() => {
           console.log("countOn = " + countOn + ", countOff = " + countOff);
           expect(countOn).toEqual(7);
-          expect(countOff).toEqual(7);
+          expect(countOff).toEqual(8);
           done();
         }, 900);
       });

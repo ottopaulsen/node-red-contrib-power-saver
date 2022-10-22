@@ -1,8 +1,21 @@
 const { DateTime } = require("luxon");
 const { version } = require("../package.json");
 
-function handleOutput(node, config, plan, commands, planFromTime) {
-  const sentOnCommand = !!commands.sendSchedule;
+function handleOutput(node, config, plan, outputCommands, planFromTime) {
+  /*
+      The plan received here must contain previous schedule so current value can be sent.
+
+      Functions to perform is in the outputCommands object:
+        sendOutput: Send current output on either output 1 or 2 (on or off).
+        sendSchedule: Send current schedule on output 3.
+        runSchedule: Reset schedule and run it for remaining plan.
+
+      TODO (otto): Expand outputCommands with "override", that can be either 
+                   on/true, off/false or none/null.
+  */
+
+  // TODO (otto): Remove this feature:
+  const sentOnCommand = outputCommands.sentOnCommand;
 
   // Prepare output
   let output1 = null;
@@ -23,20 +36,32 @@ function handleOutput(node, config, plan, commands, planFromTime) {
   // Find current output, and set output (if configured to do)
   const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
 
-  const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
+  // const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
   const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-  if (sendNow || commands.sendOutput) {
-    output1 = currentValue ? { payload: true } : null;
-    output2 = currentValue ? null : { payload: false };
-  }
+  // if (sendNow || outputCommands.sendOutput) {
+  //   output1 = currentValue ? { payload: true } : null;
+  //   output2 = currentValue ? null : { payload: false };
+  // }
+
+  output1 = currentValue ? { payload: true } : null;
+  output2 = currentValue ? null : { payload: false };
   output3.payload.current = currentValue;
 
   // Send output
-  node.send([output1, output2, output3]);
+  if (outputCommands.sendOutput) {
+    node.send([output1, output2, null]);
+  }
+
+  // Send schedule
+  if (outputCommands.sendSchedule) {
+    node.send([null, null, output3]);
+  }
 
   // Run schedule
-  clearTimeout(node.schedulingTimeout);
-  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, sendNow);
+  if (outputCommands.runSchedule) {
+    clearTimeout(node.schedulingTimeout);
+    node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, true);
+  }
 }
 
 function sendSwitch(node, onOff) {

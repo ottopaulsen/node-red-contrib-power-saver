@@ -61,7 +61,14 @@ module.exports = function (RED) {
 
         const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
-        handleOutput(node, config, plan, commands, planFromTime);
+        const outputCommands = {
+          sendOutput: commands.sendOutput !== false,
+          sendSchedule: commands.sendSchedule !== false,
+          runSchedule: true,
+          sentOnCommand: !!commands.sendSchedule,
+        };
+
+        handleOutput(node, config, plan, outputCommands, planFromTime);
       }, node.schedulingDelay);
     });
   }

@@ -26,9 +26,15 @@ module.exports = function (RED) {
     node.on("input", function (msg) {
       const config = getEffectiveConfig(node, msg);
       const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, getSavings);
+      const outputCommands = {
+        sendOutput: commands.sendOutput !== false,
+        sendSchedule: commands.sendSchedule !== false,
+        runSchedule: true,
+        sentOnCommand: !!commands.sendSchedule,
+      };
       if (plan || commands) {
         const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-        handleOutput(node, config, plan, commands, planFromTime);
+        handleOutput(node, config, plan, outputCommands, planFromTime);
       }
     });
   }
