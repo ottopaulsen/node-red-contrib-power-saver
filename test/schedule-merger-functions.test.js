@@ -6,19 +6,6 @@ const mergeData = require("./data/merge-schedule-data.js");
 const cloneDeep = require("lodash.clonedeep");
 
 describe("schedule-merger-functions", () => {
-  it("validateSchedule", () => {
-    expect(validateSchedule({})).toEqual("Missing payload");
-    const cloneDeep = require("lodash.clonedeep");
-    const msg = { payload: cloneDeep(bestSaveResult) };
-    expect(validateSchedule(msg)).toEqual("Missing strategyNodeId");
-    msg.payload.strategyNodeId = "123";
-    expect(validateSchedule(msg)).toEqual("");
-    msg.payload.hours = [];
-    expect(validateSchedule(msg)).toEqual("Empty hours");
-    delete msg.payload.hours;
-    expect(validateSchedule(msg)).toEqual("Missing hours");
-  });
-
   it("saveSchedule", () => {
     const node = useNodeMock();
     const msg = { payload: cloneDeep(bestSaveResult) };

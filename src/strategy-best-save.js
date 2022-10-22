@@ -1,6 +1,8 @@
-const { getSavings, saveOriginalConfig } = require("./utils");
+const { getEffectiveConfig, getSavings, saveOriginalConfig } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const mostSavedStrategy = require("./strategy-best-save-functions");
+const { handleOutput } = require("./handle-output");
+const { DateTime } = require("luxon");
 
 module.exports = function (RED) {
   function StrategyBestSaveNode(config) {
@@ -22,7 +24,12 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      handleStrategyInput(node, msg, doPlanning, getSavings);
+      const config = getEffectiveConfig(node, msg);
+      const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, getSavings);
+      if (plan || commands) {
+        const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
+        handleOutput(node, config, plan, commands, planFromTime);
+      }
     });
   }
   RED.nodes.registerType("ps-strategy-best-save", StrategyBestSaveNode);

@@ -50,6 +50,7 @@
     "@vuepress/plugin-register-components": "^2.0.0-beta.36",
     "@vuepress/plugin-search": "^2.0.0-beta.38",
     "@vuepress/utils": "^2.0.0-beta.35",
+    "eslint": "^8.25.0",
     "expect": "^27.5.1",
     "mocha": "^9.2.0",
     "node-red": "^2.2.2",

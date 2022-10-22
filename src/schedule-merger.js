@@ -1,4 +1,4 @@
-const { mergeSchedules, saveSchedule, validateSchedule } = require("./schedule-merger-functions.js");
+const { msgHasSchedule, mergeSchedules, saveSchedule, validateSchedule } = require("./schedule-merger-functions.js");
 const { getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
 const { DateTime } = require("luxon");
 const nanoTime = require("nano-time");
@@ -29,19 +29,20 @@ module.exports = function (RED) {
 
       // TODO (otto): Handle commands, also if only commands are sent
 
-      const validationError = validateSchedule(msg);
-      if (validationError) {
-        node.warn(validationError);
-        node.status({ fill: "red", shape: "dot", text: validationError });
-        return;
+      const myTime = nanoTime();
+      if (msgHasSchedule(msg)) {
+        const validationError = validateSchedule(msg);
+        if (validationError) {
+          node.warn(validationError);
+          node.status({ fill: "red", shape: "dot", text: validationError });
+          return;
+        }
+        saveSchedule(node, msg);
+        // Wait for more schedules to arrive before proceeding
+        node.lastSavedScheduleTime = myTime;
       }
-      saveSchedule(node, msg);
 
       // Perform actions based on commands here
-
-      // Wait for more schedules to arrive before proceeding
-      const myTime = nanoTime();
-      node.lastSavedScheduleTime = myTime;
 
       setTimeout(() => {
         if (node.lastSavedScheduleTime !== myTime) {

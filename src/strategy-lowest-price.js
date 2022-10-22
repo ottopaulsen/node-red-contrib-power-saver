@@ -1,7 +1,8 @@
 const { DateTime } = require("luxon");
-const { booleanConfig, calcNullSavings, saveOriginalConfig } = require("./utils");
+const { booleanConfig, calcNullSavings, getEffectiveConfig, saveOriginalConfig } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
+const { handleOutput } = require("./handle-output");
 
 module.exports = function (RED) {
   function StrategyLowestPriceNode(config) {
@@ -26,7 +27,12 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      handleStrategyInput(node, msg, doPlanning, calcNullSavings);
+      const config = getEffectiveConfig(node, msg);
+      const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, calcNullSavings);
+      if (plan) {
+        const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
+        handleOutput(node, config, plan, commands, planFromTime);
+      }
     });
   }
 

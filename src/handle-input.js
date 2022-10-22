@@ -1,11 +1,7 @@
-const { extractPlanForDate, getEffectiveConfig, loadDayData, makeSchedule, validationFailure } = require("./utils");
-const { handleOutput } = require("./handle-output");
+const { extractPlanForDate, loadDayData, makeSchedule, validationFailure } = require("./utils");
 const { DateTime } = require("luxon");
-const { version } = require("../package.json");
 
-function handleStrategyInput(node, msg, doPlanning, calcSavings) {
-  const config = getEffectiveConfig(node, msg);
-
+function handleStrategyInput(node, msg, config, doPlanning, calcSavings) {
   if (!validateInput(node, msg)) {
     return;
   }
@@ -34,9 +30,7 @@ function handleStrategyInput(node, msg, doPlanning, calcSavings) {
     return;
   }
 
-  const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-
-  handleOutput(node, config, plan, commands, planFromTime);
+  return { plan, commands };
 }
 
 function makePlanFromPriceData(node, msg, doPlanning, calcSavings) {
