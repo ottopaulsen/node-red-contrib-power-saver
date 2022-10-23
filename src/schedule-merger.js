@@ -30,9 +30,7 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
       const config = getEffectiveConfig(node, msg);
-
       const commands = getCommands(msg);
-
       const myTime = nanoTime();
       if (msgHasSchedule(msg)) {
         const validationError = validateSchedule(msg);
@@ -45,8 +43,6 @@ module.exports = function (RED) {
         // Wait for more schedules to arrive before proceeding
         node.lastSavedScheduleTime = myTime;
       }
-
-      // Perform actions based on commands here
 
       setTimeout(() => {
         if (node.lastSavedScheduleTime !== myTime && msgHasSchedule(msg)) {

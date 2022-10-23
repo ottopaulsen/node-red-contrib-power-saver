@@ -1,15 +1,7 @@
 const { DateTime } = require("luxon");
-const {
-  booleanConfig,
-  calcNullSavings,
-  getEffectiveConfig,
-  msgHasConfig,
-  msgHasPriceData,
-  saveOriginalConfig,
-} = require("./utils");
-const { handleStrategyInput } = require("./handle-input");
+const { booleanConfig, calcNullSavings, saveOriginalConfig } = require("./utils");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
-const { handleOutput, shallSendOutput, strategyShallSendSchedule } = require("./handle-output");
+const { strategyOnInput } = require("./strategy-functions");
 
 module.exports = function (RED) {
   function StrategyLowestPriceNode(config) {
@@ -34,21 +26,9 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      const config = getEffectiveConfig(node, msg);
-      const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, calcNullSavings);
-      const outputCommands = {
-        sendOutput: shallSendOutput(msg, commands),
-        sendSchedule: strategyShallSendSchedule(msg, commands),
-        runSchedule: commands.runSchedule !== false,
-        sentOnCommand: !!commands.sendSchedule,
-      };
-      if (plan) {
-        const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-        handleOutput(node, config, plan, outputCommands, planFromTime);
-      }
+      strategyOnInput(node, msg, doPlanning, calcNullSavings);
     });
   }
-
   RED.nodes.registerType("ps-strategy-lowest-price", StrategyLowestPriceNode);
 };
 

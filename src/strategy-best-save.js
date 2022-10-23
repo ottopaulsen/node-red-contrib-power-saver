@@ -1,8 +1,6 @@
-const { getEffectiveConfig, getSavings, msgHasConfig, msgHasPriceData, saveOriginalConfig } = require("./utils");
-const { handleStrategyInput } = require("./handle-input");
+const { getSavings, saveOriginalConfig } = require("./utils");
 const mostSavedStrategy = require("./strategy-best-save-functions");
-const { handleOutput, shallSendOutput, strategyShallSendSchedule } = require("./handle-output");
-const { DateTime } = require("luxon");
+const { strategyOnInput } = require("./strategy-functions");
 
 module.exports = function (RED) {
   function StrategyBestSaveNode(config) {
@@ -24,19 +22,7 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      const config = getEffectiveConfig(node, msg);
-      const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, getSavings);
-      const outputCommands = {
-        sendOutput: shallSendOutput(msg, commands),
-        sendSchedule: strategyShallSendSchedule(msg, commands),
-        // msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule,
-        runSchedule: commands.runSchedule !== false,
-        sentOnCommand: !!commands.sendSchedule,
-      };
-      if (plan || commands) {
-        const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-        handleOutput(node, config, plan, outputCommands, planFromTime);
-      }
+      strategyOnInput(node, msg, doPlanning, getSavings);
     });
   }
   RED.nodes.registerType("ps-strategy-best-save", StrategyBestSaveNode);
