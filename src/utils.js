@@ -219,6 +219,14 @@ function validationFailure(node, message, status = null) {
   node.warn(message);
 }
 
+function msgHasPriceData(msg) {
+  return !!msg?.payload?.priceData;
+}
+
+function msgHasConfig(msg) {
+  return !!msg?.payload?.config;
+}
+
 module.exports = {
   booleanConfig,
   calcNullSavings,
@@ -235,6 +243,8 @@ module.exports = {
   loadDayData,
   makeSchedule,
   makeScheduleFromHours,
+  msgHasConfig,
+  msgHasPriceData,
   roundPrice,
   saveOriginalConfig,
   sortedIndex,

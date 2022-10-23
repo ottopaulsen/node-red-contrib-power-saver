@@ -1,5 +1,12 @@
 const { DateTime } = require("luxon");
-const { booleanConfig, calcNullSavings, getEffectiveConfig, saveOriginalConfig } = require("./utils");
+const {
+  booleanConfig,
+  calcNullSavings,
+  getEffectiveConfig,
+  msgHasConfig,
+  msgHasPriceData,
+  saveOriginalConfig,
+} = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
 const { handleOutput } = require("./handle-output");
@@ -30,8 +37,9 @@ module.exports = function (RED) {
       const config = getEffectiveConfig(node, msg);
       const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, calcNullSavings);
       const outputCommands = {
-        sendOutput: commands.sendOutput !== false,
-        sendSchedule: commands.sendSchedule !== false,
+        sendOutput: msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendOutput !== false : !!commands.sendOutput,
+        sendSchedule:
+          msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule,
         runSchedule: true,
         sentOnCommand: !!commands.sendSchedule,
       };

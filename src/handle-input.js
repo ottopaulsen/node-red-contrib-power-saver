@@ -1,4 +1,4 @@
-const { extractPlanForDate, loadDayData, makeSchedule, validationFailure } = require("./utils");
+const { extractPlanForDate, loadDayData, makeSchedule, msgHasPriceData, validationFailure } = require("./utils");
 const { DateTime } = require("luxon");
 
 function handleStrategyInput(node, msg, config, doPlanning, calcSavings) {
@@ -95,10 +95,6 @@ function getCommands(msg) {
 }
 
 // Price data
-
-function msgHasPriceData(msg) {
-  return !!msg?.payload?.priceData;
-}
 
 function getPriceDataFromMessage(msg) {
   const priceData = msg.payload.priceData;

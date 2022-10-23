@@ -37,50 +37,14 @@ function makePayload(prices, time) {
 
 function equalPlan(expected, actual) {
   let res = true;
-  if (expected.schedule.length !== actual.schedule.length) {
-    console.log(
-      "Schedules have different lengths: Expected " + expected.schedule.length + ", got " + actual.schedule.length
-    );
+
+  if (!equalSchedule(expected.schedule, actual.schedule)) {
     res = false;
   }
-  if (expected.hours.length !== actual.hours.length) {
-    console.log("Hours have different lengths: Expected " + expected.hours.length + ", got " + actual.hours.length);
-  }
-  expected.schedule.forEach((s, i) => {
-    ["time", "value"].forEach((key) => {
-      if (s[key] != actual.schedule[i][key]) {
-        console.log(
-          "Different schedule values for " +
-            key +
-            " at index " +
-            i +
-            ": Expected " +
-            s[key] +
-            ", got " +
-            actual.schedule[i][key]
-        );
-        res = false;
-      }
-    });
-  });
 
-  expected.hours.forEach((s, i) => {
-    ["price", "onOff", "start", "saving"].forEach((key) => {
-      if (s[key] != actual.hours[i][key]) {
-        console.log(
-          "Different hour values for " +
-            key +
-            " at index " +
-            i +
-            ": Expected " +
-            s[key] +
-            ", got " +
-            actual.hours[i][key]
-        );
-        res = false;
-      }
-    });
-  });
+  if (!equalHours(expected.hours, actual.hours)) {
+    res = false;
+  }
 
   ["maxHoursToSaveInSequence", "minHoursOnAfterMaxSequenceSaved", "minSaving", "outputIfNoSchedule"].forEach((key) => {
     if (expected.config[key] != actual.config[key]) {
@@ -91,6 +55,26 @@ function equalPlan(expected, actual) {
     }
   });
 
+  return res;
+}
+
+function equalSchedule(expected, actual) {
+  let res = true;
+  if (expected.length !== actual.length) {
+    console.log("Schedules have different lengths: Expected " + expected.length + ", got " + actual.length);
+    res = false;
+  }
+
+  expected.forEach((s, i) => {
+    ["time", "value"].forEach((key) => {
+      if (s[key] != actual[i][key]) {
+        console.log(
+          "Different schedule values for " + key + " at index " + i + ": Expected " + s[key] + ", got " + actual[i][key]
+        );
+        res = false;
+      }
+    });
+  });
   return res;
 }
 
@@ -119,4 +103,5 @@ module.exports = {
   makePayload,
   equalPlan,
   equalHours,
+  equalSchedule,
 };

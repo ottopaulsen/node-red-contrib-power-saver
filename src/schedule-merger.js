@@ -1,5 +1,5 @@
 const { msgHasSchedule, mergeSchedules, saveSchedule, validateSchedule } = require("./schedule-merger-functions.js");
-const { getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
+const { getEffectiveConfig, makeScheduleFromHours, msgHasConfig, saveOriginalConfig } = require("./utils.js");
 const { DateTime } = require("luxon");
 const nanoTime = require("nano-time");
 const { handleOutput } = require("./handle-output");
@@ -45,7 +45,7 @@ module.exports = function (RED) {
       // Perform actions based on commands here
 
       setTimeout(() => {
-        if (node.lastSavedScheduleTime !== myTime) {
+        if (node.lastSavedScheduleTime !== myTime && msgHasSchedule(msg)) {
           // Another schedule has arrived later
           return;
         }
@@ -62,8 +62,9 @@ module.exports = function (RED) {
         const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
         const outputCommands = {
-          sendOutput: commands.sendOutput !== false,
-          sendSchedule: commands.sendSchedule !== false,
+          sendOutput: msgHasConfig(msg) || msgHasSchedule(msg) ? commands.sendOutput !== false : !!commands.sendOutput,
+          sendSchedule:
+            msgHasConfig(msg) || msgHasSchedule(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule,
           runSchedule: true,
           sentOnCommand: !!commands.sendSchedule,
         };

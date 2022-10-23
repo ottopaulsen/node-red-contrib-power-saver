@@ -4,8 +4,8 @@ const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/converted-prices.json");
-const { testPlan: plan } = require("./test-utils");
 const { version } = require("../package.json");
+const { makeFlow, makePayload } = require("./strategy-lowest-price-test-utils");
 
 helper.init(require.resolve("node-red"));
 
@@ -605,35 +605,3 @@ describe("ps-strategy-lowest-price node", function () {
     });
   });
 });
-
-function makeFlow(hoursOn, maxPrice = null) {
-  return [
-    {
-      id: "n1",
-      type: "ps-strategy-lowest-price",
-      name: "test name",
-      fromTime: "10",
-      toTime: "20",
-      hoursOn: hoursOn,
-      maxPrice: maxPrice,
-      doNotSplit: true,
-      sendCurrentValueWhenRescheduling: true,
-      outputIfNoSchedule: true,
-      wires: [["n3"], ["n4"], ["n2"]],
-    },
-    { id: "n2", type: "helper" },
-    { id: "n3", type: "helper" },
-    { id: "n4", type: "helper" },
-  ];
-}
-
-function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
-  payload.time = time;
-  // let entryTime = DateTime.fromISO(payload.time);
-  // payload.priceData.forEach((e) => {
-  //   e.start = entryTime.toISO();
-  //   entryTime = entryTime.plus({ milliseconds: 10 });
-  // });
-  return payload;
-}

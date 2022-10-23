@@ -1,14 +1,14 @@
 const expect = require("expect");
 const helper = require("node-red-node-test-helper");
-const bestSave = require("../src/strategy-best-save.js");
+const bestSave = require("../src/strategy-lowest-price.js");
 const prices = require("./data/converted-prices.json");
-const result = require("./data/best-save-result.json");
-const { testPlan, equalPlan } = require("./test-utils");
-const { makeFlow, makePayload } = require("./strategy-best-save-test-utils");
+const result = require("./data/lowest-price-result-cont.json");
+const { testPlan, equalPlan, equalSchedule } = require("./test-utils");
+const { makeFlow, makePayload } = require("./strategy-lowest-price-test-utils");
 
 helper.init(require.resolve("node-red"));
 
-describe("send command as input", () => {
+describe("send command as input to lowest price", () => {
   beforeEach(function (done) {
     helper.startServer(done);
   });
@@ -20,7 +20,7 @@ describe("send command as input", () => {
   });
 
   it("should send output on command", function (done) {
-    const flow = makeFlow(3, 2, true);
+    const flow = makeFlow(4);
     let pass = 1;
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
@@ -30,12 +30,12 @@ describe("send command as input", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalSchedule(result.schedule, msg.payload.schedule)).toBeTruthy();
             expect(msg.payload.sentOnCommand).toBeFalsy();
             n1.receive({ payload: { commands: { sendSchedule: true } } });
             break;
           case 2:
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalSchedule(result.schedule, msg.payload.schedule)).toBeTruthy();
             expect(msg.payload.sentOnCommand).toBeTruthy();
             done();
             break;
