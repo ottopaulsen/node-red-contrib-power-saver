@@ -1,28 +1,12 @@
 "use strict";
 
+const { msgHasConfig } = require("./utils.js");
+
 function msgHasSchedule(msg) {
   return msg.payload.hours?.length > 0;
 }
 
 function validateSchedule(msg) {
-  // Validate that the msg holds a schedule.
-  // Returns "" if ok, else an error message for the status
-  // if (!msg.payload) {
-  //   return "Missing payload";
-  // }
-
-  // if (typeof msg.payload.hours === "undefined") {
-  //   return "Missing hours";
-  // }
-
-  // if (msg.payload.hours.length === 0) {
-  //   return "Empty hours";
-  // }
-
-  // if (!msg.payload.strategyNodeId) {
-  //   return "Missing strategyNodeId";
-  // }
-
   return "";
 }
 
@@ -81,4 +65,8 @@ function mergeSchedules(node, logicFunction) {
   return mergedHours;
 }
 
-module.exports = { msgHasSchedule, validateSchedule, saveSchedule, mergeSchedules };
+function mergerShallSendSchedule(msg, commands) {
+  return msgHasConfig(msg) || msgHasSchedule(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule;
+}
+
+module.exports = { msgHasSchedule, validateSchedule, saveSchedule, mergeSchedules, mergerShallSendSchedule };

@@ -1,4 +1,5 @@
 const expect = require("expect");
+const cloneDeep = require("lodash.clonedeep");
 const helper = require("node-red-node-test-helper");
 const prices = require("./data/converted-prices.json");
 const { testPlan, equalHours } = require("./test-utils");
@@ -19,19 +20,7 @@ describe("send command as input to schedule merger", () => {
     });
   });
 
-  it("should send output on command", function (done) {
-    // helper.load(scheduleMerger, flow, function () {
-    //   const n1 = helper.getNode("n1");
-    //   const n2 = helper.getNode("n2");
-    //   n2.on("input", function (msg) {
-    //     expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
-    //     n1.warn.should.not.be.called;
-    //     done();
-    //   });
-    //   n1.receive({ payload: makePayload("s1", someOn) });
-    //   n1.receive({ payload: makePayload("s2", allOff) });
-    // });
-
+  it("should send schedule on command", function (done) {
     const flow = makeFlow("OR");
     let pass = 1;
     helper.load(scheduleMerger, flow, function () {
@@ -53,6 +42,47 @@ describe("send command as input to schedule merger", () => {
             break;
         }
       });
+      n1.receive({ payload: makePayload("s1", someOn) });
+      n1.receive({ payload: makePayload("s2", allOff) });
+    });
+  });
+
+  it("should send output on command", function (done) {
+    const flow = makeFlow("OR");
+    let pass = 1;
+    helper.load(scheduleMerger, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      let countOn = 0;
+      let countOff = 0;
+      n2.on("input", function (msg) {
+        switch (pass) {
+          case 1:
+            pass++;
+            expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+            n1.warn.should.not.be.called;
+            expect(msg.payload.sentOnCommand).toBeFalsy();
+            n1.receive({ payload: { commands: { sendOutput: true }, time: "2021-06-20T01:05:00.000+02:00" } });
+            setTimeout(() => {
+              console.log("countOn = " + countOn + ", countOff = " + countOff);
+              expect(countOn).toEqual(0);
+              expect(countOff).toEqual(1);
+              done();
+            }, 50);
+            break;
+        }
+      });
+      n3.on("input", function (msg) {
+        countOn++;
+        expect(msg).toHaveProperty("payload", true);
+      });
+      n4.on("input", function (msg) {
+        countOff++;
+        expect(msg).toHaveProperty("payload", false);
+      });
+
       n1.receive({ payload: makePayload("s1", someOn) });
       n1.receive({ payload: makePayload("s2", allOff) });
     });

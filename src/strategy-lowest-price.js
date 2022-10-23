@@ -9,7 +9,7 @@ const {
 } = require("./utils");
 const { handleStrategyInput } = require("./handle-input");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
-const { handleOutput } = require("./handle-output");
+const { handleOutput, shallSendOutput, strategyShallSendSchedule } = require("./handle-output");
 
 module.exports = function (RED) {
   function StrategyLowestPriceNode(config) {
@@ -37,10 +37,9 @@ module.exports = function (RED) {
       const config = getEffectiveConfig(node, msg);
       const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, calcNullSavings);
       const outputCommands = {
-        sendOutput: msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendOutput !== false : !!commands.sendOutput,
-        sendSchedule:
-          msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule,
-        runSchedule: true,
+        sendOutput: shallSendOutput(msg, commands),
+        sendSchedule: strategyShallSendSchedule(msg, commands),
+        runSchedule: commands.runSchedule !== false,
         sentOnCommand: !!commands.sendSchedule,
       };
       if (plan) {

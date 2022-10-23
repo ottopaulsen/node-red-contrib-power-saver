@@ -1,8 +1,14 @@
-const { msgHasSchedule, mergeSchedules, saveSchedule, validateSchedule } = require("./schedule-merger-functions.js");
-const { getEffectiveConfig, makeScheduleFromHours, msgHasConfig, saveOriginalConfig } = require("./utils.js");
+const {
+  msgHasSchedule,
+  mergeSchedules,
+  saveSchedule,
+  validateSchedule,
+  mergerShallSendSchedule,
+} = require("./schedule-merger-functions.js");
+const { getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
 const { DateTime } = require("luxon");
 const nanoTime = require("nano-time");
-const { handleOutput } = require("./handle-output");
+const { handleOutput, shallSendOutput } = require("./handle-output");
 const { getCommands } = require("./handle-input");
 
 module.exports = function (RED) {
@@ -26,8 +32,6 @@ module.exports = function (RED) {
       const config = getEffectiveConfig(node, msg);
 
       const commands = getCommands(msg);
-
-      // TODO (otto): Handle commands, also if only commands are sent
 
       const myTime = nanoTime();
       if (msgHasSchedule(msg)) {
@@ -62,10 +66,9 @@ module.exports = function (RED) {
         const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
         const outputCommands = {
-          sendOutput: msgHasConfig(msg) || msgHasSchedule(msg) ? commands.sendOutput !== false : !!commands.sendOutput,
-          sendSchedule:
-            msgHasConfig(msg) || msgHasSchedule(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule,
-          runSchedule: true,
+          sendOutput: shallSendOutput(msg, commands),
+          sendSchedule: mergerShallSendSchedule(msg, commands),
+          runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
           sentOnCommand: !!commands.sendSchedule,
         };
 

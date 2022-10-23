@@ -1,5 +1,6 @@
 const { DateTime } = require("luxon");
 const { version } = require("../package.json");
+const { msgHasConfig, msgHasPriceData } = require("./utils.js");
 
 function handleOutput(node, config, plan, outputCommands, planFromTime) {
   /*
@@ -98,6 +99,16 @@ function runSchedule(node, schedule, time, currentSent = false) {
   }
 }
 
+function shallSendOutput(msg, commands) {
+  return msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendOutput !== false : !!commands.sendOutput;
+}
+
+function strategyShallSendSchedule(msg, commands) {
+  return msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule;
+}
+
 module.exports = {
   handleOutput,
+  shallSendOutput,
+  strategyShallSendSchedule,
 };
