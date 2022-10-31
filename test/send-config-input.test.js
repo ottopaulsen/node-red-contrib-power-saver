@@ -37,12 +37,12 @@ describe("send config as input", () => {
             break;
           case 2:
             pass++;
-            expect(msg.payload.schedule.length).toEqual(1);
+            expect(msg.payload.schedule.length).toEqual(2);
             n1.receive({ payload: makePayload(prices, testPlan.time) });
             break;
           case 3:
             pass++;
-            expect(msg.payload.schedule.length).toEqual(1);
+            expect(msg.payload.schedule.length).toEqual(2);
             done();
         }
       });

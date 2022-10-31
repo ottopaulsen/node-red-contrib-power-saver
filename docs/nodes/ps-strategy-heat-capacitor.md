@@ -1,3 +1,8 @@
+---
+prev: ./ps-strategy-lowest-price.md
+next: ./ps-receive-price.md
+---
+
 # ps-strategy-heat-capacitor <Badge type="warning">Experimental</Badge>
 
 ![ps-strategy-lowest-price](../images/node-ps-strategy-heat-capacitor.png)

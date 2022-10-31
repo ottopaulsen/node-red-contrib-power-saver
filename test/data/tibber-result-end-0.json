@@ -9,6 +9,11 @@
       "time": "2021-12-14T21:00:00.000+01:00",
       "value": true,
       "countHours": 3
+    },
+    {
+      "time": "2021-12-15T00:00:00.000+01:00",
+      "value": false,
+      "countHours": null
     }
   ],
   "hours": [
@@ -170,7 +175,6 @@
     "outputIfNoSchedule": false,
     "outputOutsidePeriod": false
   },
-  "sentOnCommand": false,
   "time": "2021-10-11T10:00:00.000+02:00",
   "version": "1.2.3"
 }

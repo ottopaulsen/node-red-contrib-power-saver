@@ -1,3 +1,8 @@
+---
+prev: ./ps-schedule-merger.md
+next: ./ps-elvia-add-tariff.md
+---
+
 # ps-general-add-tariff
 
 ![ps-general-add-tariff](../images/node-ps-general-add-tariff.png)

@@ -49,6 +49,11 @@
       "time": "2022-08-17T23:00:00.000+02:00",
       "value": true,
       "countHours": 1
+    },
+    {
+      "time": "2022-08-18T00:00:00.000+02:00",
+      "value": false,
+      "countHours": null
     }
   ],
   "hours": [
@@ -350,7 +355,6 @@
     "outputIfNoSchedule": false,
     "contextStorage": "default"
   },
-  "sentOnCommand": false,
   "time": "2022-08-16T17:14:35.673+02:00",
   "version": "3.6.0",
   "current": false

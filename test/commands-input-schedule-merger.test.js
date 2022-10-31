@@ -32,12 +32,10 @@ describe("send command as input to schedule merger", () => {
             pass++;
             expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
             n1.warn.should.not.be.called;
-            expect(msg.payload.sentOnCommand).toBeFalsy();
             n1.receive({ payload: { commands: { sendSchedule: true } } });
             break;
           case 2:
             expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
-            expect(msg.payload.sentOnCommand).toBeTruthy();
             done();
             break;
         }
@@ -63,7 +61,6 @@ describe("send command as input to schedule merger", () => {
             pass++;
             expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
             n1.warn.should.not.be.called;
-            expect(msg.payload.sentOnCommand).toBeFalsy();
             n1.receive({ payload: { commands: { sendOutput: true }, time: "2021-06-20T01:05:00.000+02:00" } });
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
@@ -95,7 +92,6 @@ describe("send command as input to schedule merger", () => {
       n2.on("input", function (msg) {
         expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
         n1.warn.should.not.be.called;
-        expect(msg.payload.sentOnCommand).toBeFalsy();
         n1.receive({ payload: { commands: { reset: true } } });
         n1.warn.should.be.calledWithExactly("No schedule");
         done();
@@ -117,7 +113,6 @@ describe("send command as input to schedule merger", () => {
             pass++;
             expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
             n1.warn.should.not.be.called;
-            expect(msg.payload.sentOnCommand).toBeFalsy();
             n1.receive({ payload: { commands: { replan: true }, time: "2021-06-19T00:00:00.000+02:00" } });
             break;
           case 2:

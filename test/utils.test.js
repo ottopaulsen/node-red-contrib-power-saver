@@ -202,6 +202,10 @@ describe("utils", () => {
     const hours = cloneDeep(testResult.hours);
     const schedule = makeScheduleFromHours(hours, null);
     const resultToValidate = schedule.map((s) => ({ time: s.time, value: s.value }));
+    resultToValidate.push({
+      time: "2021-06-20T02:50:00.470+02:00",
+      value: false,
+    });
     expect(resultToValidate).toEqual(testResult.schedule);
   });
 });

@@ -19,7 +19,7 @@ function handleStrategyInput(node, msg, config, doPlanning, calcSavings) {
 
   const plan =
     msgHasPriceData(msg) || config.hasChanged
-      ? makePlanFromPriceData(node, msg, doPlanning, calcSavings)
+      ? makePlanFromPriceData(node, msg, config, doPlanning, calcSavings)
       : node.context().get("lastPlan", node.contextStorage);
 
   // If still no plan?
@@ -33,7 +33,7 @@ function handleStrategyInput(node, msg, config, doPlanning, calcSavings) {
   return { plan, commands };
 }
 
-function makePlanFromPriceData(node, msg, doPlanning, calcSavings) {
+function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedLastPriceData(node);
   if (msgHasPriceData(msg)) {
     saveLastPriceData(node, priceData, source);
@@ -63,6 +63,7 @@ function makePlanFromPriceData(node, msg, doPlanning, calcSavings) {
     saving: savings[i],
   }));
   const schedule = makeSchedule(onOff, startTimes);
+  addLastSwitchIfNoSchedule(schedule, hours, config);
 
   plan = {
     hours,
@@ -114,6 +115,17 @@ function saveLastPriceData(node, priceData, source) {
 }
 
 // Other
+
+function addLastSwitchIfNoSchedule(schedule, hours, config) {
+  if (!hours.length) {
+    return;
+  }
+  if (schedule.length > 0 && schedule[schedule.length - 1].value === config.outputIfNoSchedule) {
+    return;
+  }
+  const nextHour = DateTime.fromISO(hours[hours.length - 1].start).plus({ hours: 1 });
+  schedule.push({ time: nextHour.toISO(), value: config.outputIfNoSchedule, countHours: null });
+}
 
 function loadDataJustBefore(node, dateDayBefore) {
   const dataDayBefore = loadDayData(node, dateDayBefore);
@@ -176,6 +188,7 @@ function validateInput(node, msg) {
 }
 
 module.exports = {
+  addLastSwitchIfNoSchedule,
   getCommands,
   handleStrategyInput,
   validateInput,

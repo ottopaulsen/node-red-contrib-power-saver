@@ -6,6 +6,32 @@ sidebar: "auto"
 
 List the most significant changes, starting in version 1.0.9.
 
+## 4.0.0
+
+This is a major rewrite of some of the central code, in order to lay ground for further development and maintenance.
+Such a rewrite may lead to changes in behavior, intended or not. In addition, some intended breaking changes have been done.
+This is the main reason for the major version update (from 3 to 4).
+I will try to list all changes here, but some may have been missed.
+
+### New features
+
+- New node `ps-schedule-merger` or `Schedule Merger`, used to merge schedules from multiple Best Save and/or Lowest Price nodes.
+
+### Breaking changes
+
+- The old Power Saver node has been removed, as it has been deprecated for a long time.
+- The `sentOnCommand` output has been removed.
+- Some bug-fixes may be regarded as breaking.
+
+### Bug fixes
+
+- Fix so the `If no schedule, send` config works as one should expect for the end of the schedule.
+  If the last scheduled switch is different from this setting, a switch to the
+  value set by this setting will be scheduled on the first hour after the whole schedule, normally at midnight.
+  The `countHours` value for this schedule will be `null`, as it is impossible to say how many hours it will last for.
+
+  NB! This may be a breaking change for some.
+
 ## 3.6.2
 
 - Fix bug in Elvia API causing Node-RED to crash when the API key was wrong. Not it shows status `Unauthorized` and survive.

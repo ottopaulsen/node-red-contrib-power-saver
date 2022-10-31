@@ -15,9 +15,6 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
                    on/true, off/false or none/null.
   */
 
-  // TODO (otto): Remove this feature:
-  const sentOnCommand = outputCommands.sentOnCommand;
-
   // Prepare output
   let output1 = null;
   let output2 = null;
@@ -27,7 +24,6 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
       hours: plan.hours,
       source: plan.source,
       config,
-      sentOnCommand,
       time: planFromTime.toISO(),
       version,
       strategyNodeId: node.id,
@@ -36,13 +32,7 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
 
   // Find current output, and set output (if configured to do)
   const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
-
-  // const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
   const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-  // if (sendNow || outputCommands.sendOutput) {
-  //   output1 = currentValue ? { payload: true } : null;
-  //   output2 = currentValue ? null : { payload: false };
-  // }
 
   output1 = currentValue ? { payload: true } : null;
   output2 = currentValue ? null : { payload: false };

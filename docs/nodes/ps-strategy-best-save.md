@@ -1,3 +1,7 @@
+---
+next: ./ps-strategy-lowest-price.md
+---
+
 # ps-strategy-best-save
 
 ![ps-strategy-best-save](../images/node-ps-strategy-best-save.png)
@@ -35,6 +39,7 @@ It is possible to change config dynamically by sending a config message to the n
 "payload": {
   "config": {
     "contextStorage": "file",
+    "hasChanged": false,
     "maxHoursToSaveInSequence": 4,
     "minHoursOnAfterMaxSequenceSaved": 2,
     "minSaving": 0.02,
@@ -174,7 +179,12 @@ Example of output:
     {
       "time": "2021-09-30T01:00:00.000+02:00",
       "value": true,
-      "countHours": 2
+      "countHours": 23
+    },
+    {
+      "time": "2021-09-31T00:00:00.000+02:00",
+      "value": false,
+      "countHours": null
     }
   ],
   "hours": [
@@ -195,11 +205,12 @@ Example of output:
       "onOff": true,
       "start": "2021-09-30T02:00:00.000+02:00",
       "saving": null
-    }
+    } // ...
   ],
   "source": "Nord Pool",
   "config": {
     "contextStorage": "default",
+    "hasChanged": false,
     "maxHoursToSaveInSequence": 3,
     "minHoursOnAfterMaxSequenceSaved": "1",
     "minSaving": 0.001,

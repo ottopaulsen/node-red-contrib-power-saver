@@ -10,7 +10,6 @@ function strategyOnInput(node, msg, doPlanning, calcSavings) {
     sendOutput: shallSendOutput(msg, commands),
     sendSchedule: strategyShallSendSchedule(msg, commands),
     runSchedule: commands.replan !== false,
-    sentOnCommand: !!commands.sendSchedule,
   };
   if (plan) {
     const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();

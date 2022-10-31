@@ -1,5 +1,6 @@
 ---
-next: ./ps-receive-price.md
+prev: ./ps-strategy-best-save.md
+next: ./ps-strategy-heat-capacitor.md
 ---
 
 # ps-strategy-lowest-price
@@ -72,6 +73,7 @@ It is possible to change config dynamically by sending a config message to the n
     "contextStorage": "file",
     "fromTime": 10,
     "toTime": 16,
+    "hasChanged": false,
     "hoursOn": 3,
     "maxPrice": null,
     "doNotSplit": false,
@@ -238,6 +240,7 @@ Example of output:
     "contextStorage": "default",
     "fromTime": "04",
     "toTime": "18",
+    "hasChanged": false,
     "hoursOn": "06",
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,

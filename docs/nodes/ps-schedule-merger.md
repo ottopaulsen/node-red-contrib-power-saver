@@ -1,8 +1,17 @@
+---
+prev: ./ps-receive-price.md
+next: ./ps-general-add-tariff.md
+---
+
 # ps-schedule-merger
+
+![ps-schedule-merger](../images/node-ps-schedule-merger.png)
 
 ## Description
 
 This node can be used to merge schedules from multiple strategy nodes, and create one resulting schedule. It can be useful for example to have multiple lowest price nodes to cover different periods of the day. Send all schedules as input to this node and get one schedule as output. It works for schedules from Lowest Price and Best Save.
+
+![Schedule Merger Example](../images/schedule-merger-example-1.png)
 
 All incoming schedules are saved, and after a timeout, a new resulting schedule is calculated based on all incoming schedules. The timeout can be configured, and should be long enough for all preceding strategy nodes to finish their calculation. Normally all strategy nodes will receive the same set of prices at the same time, and do their calculations almost simultaneously, so all strategies can send their schedules at the same time.
 
@@ -36,7 +45,6 @@ Only if all schedules has the hour set to `on` will the resulting schedule have 
 | Function             | Merging function, either OR or AND (see above).                                                                                                                               |
 | Delay                | Delay in milliseconds from a schedule is received until a new schedule is calculated. Use this so all schedules can be received before a new schedule is calculated and used. |
 | If no schedule, send | What to do if there is no valid schedule any more (turn on or off).                                                                                                           |
-| Context storage      | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                    |
 
 ### Dynamic config
 
@@ -47,7 +55,6 @@ It is possible to change config dynamically by sending a config message to the n
   "config": {
     "logicFunction": "OR",
     "schedulingDelay": 2000,
-    "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": true,
   }
 }
@@ -59,13 +66,13 @@ The config sent like this will be valid until a new config is sent the same way,
 
 When a config is sent like this, and without a schedule, the schedule will be replanned based on the previously received schedules. If no schedules has been received, no scheduling is done.
 
-However, you can send config and price data in the same message. Then both will be used.
+You cannot send config and other schedules in the same message. If you do, the config is ignored.
 
 ### Dynamic commands
 
 You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
 
-Commands can be sent together with config and/or price data, but the exact behavior is not defined.
+Commands can be sent together with config or price data.
 
 #### sendSchedule
 
@@ -79,8 +86,6 @@ You can get the schedule sent to output 3 any time by sending a message like thi
 }
 ```
 
-When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
-
 #### sendOutput
 
 You can get the node to send the current output to output 1 or 2 any time by sending a message like this to the node:
@@ -92,8 +97,6 @@ You can get the node to send the current output to output 1 or 2 any time by sen
   }
 }
 ```
-
-When you do this, the current schedule is actually recalculated based on the last received data. The current output is sent to output 1 or 2, and the schedule is sent to output 3.
 
 #### reset
 
@@ -122,9 +125,6 @@ By sending this command, the saved schedules are merged, and new output is sent:
 ```
 
 This is equivalent to sending both `sendSchedule` and `sendOutput` commands.
-
-If the context storage is `file` you can use this to create a new schedule after a restart,
-instead of fetching prices again.
 
 ### Config saved in context
 
@@ -185,47 +185,82 @@ Example of output:
 ```json
 {
   "schedule": [
-    {
-      "time": "2021-09-30T00:00:00.000+02:00",
-      "value": false,
-      "countHours": 1
-    },
-    {
-      "time": "2021-09-30T01:00:00.000+02:00",
-      "value": true,
-      "countHours": 2
-    }
+    { "time": "2022-10-31T00:00:00.000+01:00", "value": true, "countHours": 5 },
+    { "time": "2022-10-31T05:00:00.000+01:00", "value": false, "countHours": 1 },
+    { "time": "2022-10-31T06:00:00.000+01:00", "value": true, "countHours": 3 },
+    { "time": "2022-10-31T09:00:00.000+01:00", "value": false, "countHours": 2 },
+    { "time": "2022-10-31T11:00:00.000+01:00", "value": true, "countHours": 21 },
+    { "time": "2022-11-01T08:00:00.000+01:00", "value": false, "countHours": 3 },
+    { "time": "2022-11-01T11:00:00.000+01:00", "value": true, "countHours": 3 },
+    { "time": "2022-11-01T14:00:00.000+01:00", "value": false, "countHours": 3 },
+    { "time": "2022-11-01T17:00:00.000+01:00", "value": true, "countHours": 7 },
+    { "time": "2022-11-02T00:00:00.000+01:00", "value": false, "countHours": null }
   ],
   "hours": [
     {
-      "price": 1.2584,
-      "onOff": false,
-      "start": "2021-09-30T00:00:00.000+02:00",
-      "saving": 0.2034
-    },
-    {
-      "price": 1.055,
+      "start": "2022-10-31T00:00:00.000+01:00",
       "onOff": true,
-      "start": "2021-09-30T01:00:00.000+02:00",
+      "sources": {
+        "01e61b1bc2b094e5": {
+          "hour": { "start": "2022-10-31T00:00:00.000+01:00", "price": 0.5197, "onOff": false, "saving": null }
+        },
+        "7c8126f3a95f9cc0": {
+          "hour": { "start": "2022-10-31T00:00:00.000+01:00", "price": 0.5197, "onOff": true, "saving": null }
+        },
+        "e4ded64403d92b14": {
+          "hour": { "start": "2022-10-31T00:00:00.000+01:00", "price": 0.5197, "onOff": false, "saving": null }
+        }
+      },
+      "price": 0.5197,
       "saving": null
     },
     {
-      "price": 1.2054,
+      "start": "2022-10-31T01:00:00.000+01:00",
       "onOff": true,
-      "start": "2021-09-30T02:00:00.000+02:00",
+      "sources": {
+        "01e61b1bc2b094e5": {
+          "hour": { "start": "2022-10-31T01:00:00.000+01:00", "price": 0.5117, "onOff": false, "saving": null }
+        },
+        "7c8126f3a95f9cc0": {
+          "hour": { "start": "2022-10-31T01:00:00.000+01:00", "price": 0.5117, "onOff": true, "saving": null }
+        },
+        "e4ded64403d92b14": {
+          "hour": { "start": "2022-10-31T01:00:00.000+01:00", "price": 0.5117, "onOff": true, "saving": null }
+        }
+      },
+      "price": 0.5117,
+      "saving": null
+    },
+    // ...
+    {
+      "start": "2022-11-01T23:00:00.000+01:00",
+      "onOff": true,
+      "sources": {
+        "01e61b1bc2b094e5": {
+          "hour": { "start": "2022-11-01T23:00:00.000+01:00", "price": 0.2233, "onOff": true, "saving": null }
+        },
+        "7c8126f3a95f9cc0": {
+          "hour": { "start": "2022-11-01T23:00:00.000+01:00", "price": 0.2233, "onOff": true, "saving": null }
+        },
+        "e4ded64403d92b14": {
+          "hour": { "start": "2022-11-01T23:00:00.000+01:00", "price": 0.2233, "onOff": false, "saving": null }
+        }
+      },
+      "price": 0.2233,
       "saving": null
     }
   ],
-  "source": "Nord Pool",
+  "source": "Schedule Merger",
   "config": {
     "logicFunction": "OR",
-    "schedulingDelay": 2000,
-    "contextStorage": "default",
-    "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": false
+    "schedulingDelay": "2000",
+    "outputIfNoSchedule": false,
+    "hasChanged": false
   },
-  "time": "2021-09-30T23:45:12.123+02:00",
-  "version": "4.0.0"
+  "time": "2022-10-31T21:56:51.178+01:00",
+  "version": "4.0.0",
+  "strategyNodeId": "796f2d96a83aa709",
+  "current": true
 }
 ```
 

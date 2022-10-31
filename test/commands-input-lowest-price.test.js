@@ -32,12 +32,10 @@ describe("send command as input to lowest price", () => {
           case 1:
             pass++;
             expect(equalSchedule(result.schedule, msg.payload.schedule)).toBeTruthy();
-            expect(msg.payload.sentOnCommand).toBeFalsy();
             n1.receive({ payload: { commands: { sendSchedule: true } } });
             break;
           case 2:
             expect(equalSchedule(result.schedule, msg.payload.schedule)).toBeTruthy();
-            expect(msg.payload.sentOnCommand).toBeTruthy();
             done();
             break;
         }
@@ -97,7 +95,6 @@ describe("send command as input to lowest price", () => {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(equalPlan(result, msg.payload)).toBeTruthy();
-        expect(msg.payload.sentOnCommand).toBeFalsy();
         n1.receive({ payload: { commands: { reset: true } } });
         n1.warn.should.be.calledWithExactly("No price data");
         done();

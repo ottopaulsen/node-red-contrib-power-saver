@@ -4,7 +4,7 @@ const navbar = require("./navbar");
 module.exports = {
   lang: "en-US",
   title: "Power Saver",
-  description: "A Node-RED note to save money on hourly changing power prices",
+  description: "A Node-RED node collection to save money on hourly changing power prices",
   base: "/",
   themeConfig: {
     contributors: false,
@@ -16,7 +16,6 @@ module.exports = {
         {
           text: "Nodes",
           children: [
-            { text: "Power Saver", link: "/nodes/power-saver.md" },
             {
               text: "Strategy nodes",
               children: [
@@ -28,7 +27,7 @@ module.exports = {
                 },
               ],
             },
-            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md"] },
+            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md", "/nodes/ps-schedule-merger.md"] },
             {
               text: "Grid tariff nodes",
               children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],

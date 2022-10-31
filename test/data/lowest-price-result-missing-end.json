@@ -319,8 +319,7 @@
       "sendCurrentValueWhenRescheduling": true,
       "outputIfNoSchedule": false,
       "outputOutsidePeriod": false
-    },
-    "sentOnCommand": false
+    }
   },
   "_msgid": "892aabf20811e69f"
 }

@@ -198,6 +198,18 @@ There are many ways you can use the output:
 
 For users of Magic Mirror and Tibber, the `ps-best-save` node can send its schedule to the MMM-Tibber module. See more details in the `ps-best-save` node documentation.
 
+### Combine schedules
+
+With the Schedule Merger node, you can combine multiple schedules in order to get more control of the result.
+You can combine the schedule output from Best Save or Lowest Price nodes using logical `OR`or `AND` algorithms.
+Here is an example:
+
+![Schedule Merger Example](../images/schedule-merger-example-1.png)
+
+In this example, the result ow two Lowest Price nodes and one Best Save node are combined in a Schedule Merger node, resulting in one schedule. The output from the Schedule Merger node is used to control a switch.
+
+Se the Schedule Merger node for more details.
+
 ### More information
 
 There are more details and more information in the documentation for each [node](/nodes/) and in the [examples](/examples/).

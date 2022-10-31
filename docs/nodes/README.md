@@ -2,12 +2,6 @@
 
 Here is an overview of the nodes, and links to detailed descriptions for eah of them.
 
-## [Power Saver](./power-saver) <Badge type="warning" text="deprecated" vertical="middle" />
-
-![Power Saver node](../images/node-power-saver.png)
-
-The old node from version 2 is still working, but should be replaced.
-
 ## Strategy nodes
 
 These are the nodes used to calculate and control saving.
@@ -37,6 +31,12 @@ A strategy for moving consumption from expensive to cheap periods utilizing clim
 ![ps-receive-price](../images/node-ps-receive-price.png)
 
 Node to convert different types of input data to the format used by the strategy nodes.
+
+### [ps-schedule-merger](./ps-schedule-merger)
+
+![ps-schedule-merger](../images/node-ps-schedule-merger.png)
+
+Node to combine multiple schedules into one schedule.
 
 ## Grid tariff nodes
 

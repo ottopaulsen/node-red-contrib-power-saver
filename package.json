@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-power-saver",
-  "version": "3.6.2",
+  "version": "4.0.0",
   "description": "A module for Node-RED that you can use to turn on and off a switch based on power prices",
   "main": "index.js",
   "scripts": {
@@ -21,11 +21,11 @@
   ],
   "node-red": {
     "nodes": {
-      "power-saver": "src/power-saver.js",
       "ps-receive-price": "src/receive-price.js",
       "ps-strategy-best-save": "src/strategy-best-save.js",
       "ps-strategy-lowest-price": "src/strategy-lowest-price.js",
       "ps-strategy-heat-capacitor": "src/strategy-heat-capacitor.js",
+      "ps-schedule-merger": "src/schedule-merger.js",
       "ps-elvia-config": "src/elvia/elvia-config.js",
       "ps-elvia-tariff-types": "src/elvia/elvia-tariff-types.js",
       "ps-elvia-tariff": "src/elvia/elvia-tariff.js",

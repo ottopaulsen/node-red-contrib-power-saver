@@ -24,6 +24,11 @@
       "time": "2021-10-12T16:00:00.000+02:00",
       "value": false,
       "countHours": 8
+    },
+    {
+      "time": "2021-10-13T00:00:00.000+02:00",
+      "value": true,
+      "countHours": null
     }
   ],
   "hours": [
@@ -329,7 +334,6 @@
     "contextStorage": "default",
     "hasChanged": false
   },
-  "sentOnCommand": false,
   "time": "2021-10-10T00:00:05.000+02:00",
   "version": "3.6.2",
   "strategyNodeId": "n1"

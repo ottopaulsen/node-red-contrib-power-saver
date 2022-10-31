@@ -5,11 +5,11 @@ const {
   validateSchedule,
   mergerShallSendSchedule,
 } = require("./schedule-merger-functions.js");
-const { getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
+const { booleanConfig, getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
 const { DateTime } = require("luxon");
 const nanoTime = require("nano-time");
 const { handleOutput, shallSendOutput } = require("./handle-output");
-const { getCommands } = require("./handle-input");
+const { addLastSwitchIfNoSchedule, getCommands } = require("./handle-input");
 
 module.exports = function (RED) {
   function ScheduleMerger(config) {
@@ -19,9 +19,8 @@ module.exports = function (RED) {
 
     saveOriginalConfig(node, {
       logicFunction: config.logicFunction,
-      sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       schedulingDelay: config.schedulingDelay || 2000,
-      outputIfNoSchedule: config.outputIfNoSchedule === "true",
+      outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
     });
 
     node.on("close", function () {
@@ -60,6 +59,7 @@ module.exports = function (RED) {
 
           const hours = mergeSchedules(node, node.logicFunction);
           const schedule = makeScheduleFromHours(hours);
+          addLastSwitchIfNoSchedule(schedule, hours, node);
 
           const plan = {
             hours,
@@ -73,7 +73,6 @@ module.exports = function (RED) {
             sendOutput: shallSendOutput(msg, commands),
             sendSchedule: mergerShallSendSchedule(msg, commands),
             runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
-            sentOnCommand: !!commands.sendSchedule,
           };
 
           handleOutput(node, config, plan, outputCommands, planFromTime);

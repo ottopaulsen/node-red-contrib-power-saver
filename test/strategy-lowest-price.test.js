@@ -242,6 +242,7 @@ describe("ps-strategy-lowest-price node", function () {
         config.outputOutsidePeriod = true;
         const res = msg.payload.schedule.map((s) => ({ time: s.time, value: s.value }));
         const exp = schedule.map((s) => ({ time: s.time, value: s.value }));
+        exp.pop();
         expect(res).toEqual(exp);
         expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
@@ -267,10 +268,10 @@ describe("ps-strategy-lowest-price node", function () {
         schedule.splice(4, 0, { time: "2021-10-11T20:00:00.000+02:00", value: true });
         schedule.splice(5, 0, { time: "2021-10-12T10:00:00.000+02:00", value: false });
         schedule.splice(schedule.length, 0, { time: "2021-10-12T20:00:00.000+02:00", value: true });
-        // schedule.splice(schedule.length - 1, 1);
         config.outputOutsidePeriod = true;
         const res = msg.payload.schedule.map((s) => ({ time: s.time, value: s.value }));
         const exp = schedule.map((s) => ({ time: s.time, value: s.value }));
+        exp.splice(8, 1);
         expect(res).toEqual(exp);
         expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
@@ -281,7 +282,10 @@ describe("ps-strategy-lowest-price node", function () {
     });
   });
   it("should work with 0 hours on", function (done) {
-    const result = [{ time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 48 }];
+    const result = [
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 48 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
+    ];
     const flow = makeFlow(0);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -324,6 +328,7 @@ describe("ps-strategy-lowest-price node", function () {
       { time: "2021-10-11T13:00:00.000+02:00", value: false, countHours: 25 },
       { time: "2021-10-12T14:00:00.000+02:00", value: true, countHours: 1 },
       { time: "2021-10-12T15:00:00.000+02:00", value: false, countHours: 9 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
     ];
     const flow = makeFlow(1);
     helper.load(lowestPrice, flow, function () {
@@ -345,6 +350,7 @@ describe("ps-strategy-lowest-price node", function () {
       { time: "2021-10-11T20:00:00.000+02:00", value: false, countHours: 14 },
       { time: "2021-10-12T10:00:00.000+02:00", value: true, countHours: 10 },
       { time: "2021-10-12T20:00:00.000+02:00", value: false, countHours: 4 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
     ];
     const flow = makeFlow(24);
     helper.load(lowestPrice, flow, function () {
@@ -367,6 +373,7 @@ describe("ps-strategy-lowest-price node", function () {
       { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 12 },
       { time: "2021-10-11T12:00:00.000+02:00", value: true, countHours: 1 },
       { time: "2021-10-11T13:00:00.000+02:00", value: false, countHours: 11 },
+      { time: "2021-10-12T00:00:00.000+02:00", value: true, countHours: null },
     ];
     const flow = makeFlow(1);
     helper.load(lowestPrice, flow, function () {
@@ -393,7 +400,10 @@ describe("ps-strategy-lowest-price node", function () {
   });
 
   it("should handle hours on > period", function (done) {
-    const result = [{ time: "2021-10-11T00:00:00.000+02:00", value: true, countHours: 48 }];
+    const result = [
+      { time: "2021-10-11T00:00:00.000+02:00", value: true, countHours: 48 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: false, countHours: null },
+    ];
     const flow = [
       {
         id: "n1",
@@ -446,6 +456,7 @@ describe("ps-strategy-lowest-price node", function () {
       { time: "2021-10-11T22:00:00.000+02:00", value: false, countHours: 19 },
       { time: "2021-10-12T17:00:00.000+02:00", value: true, countHours: 5 },
       { time: "2021-10-12T22:00:00.000+02:00", value: false, countHours: 2 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
     ];
     const flow = [
       {

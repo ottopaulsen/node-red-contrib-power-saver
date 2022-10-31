@@ -43,12 +43,15 @@ describe("schedule-merger node", function () {
   });
 
   it("can merge two schedules with AND", function (done) {
-    const flow = makeFlow("AND");
+    const flow = makeFlow("AND", false);
     helper.load(scheduleMerger, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        expect(msg.payload.schedule.length).toBe(6);
+        expect(msg.payload.schedule[5].value).toBeFalsy();
+        expect(msg.payload.schedule[5].countHours).toBeNull();
         n1.warn.should.not.be.called;
         done();
       });
@@ -64,6 +67,7 @@ describe("schedule-merger node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        expect(msg.payload.schedule.length).toBe(1);
         n1.warn.should.not.be.called;
         done();
       });
@@ -79,6 +83,9 @@ describe("schedule-merger node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        expect(msg.payload.schedule.length).toBe(2);
+        expect(msg.payload.schedule[1].value).toBeTruthy();
+        expect(msg.payload.schedule[1].countHours).toBeNull();
         n1.warn.should.not.be.called;
         done();
       });
@@ -94,6 +101,7 @@ describe("schedule-merger node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        expect(msg.payload.schedule.length).toBe(1);
         n1.warn.should.not.be.called;
         done();
       });
@@ -104,12 +112,13 @@ describe("schedule-merger node", function () {
   });
 
   it("can merge three schedules with AND", function (done) {
-    const flow = makeFlow("AND");
+    const flow = makeFlow("AND", false);
     helper.load(scheduleMerger, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        expect(msg.payload.schedule.length).toBe(1);
         n1.warn.should.not.be.called;
         done();
       });

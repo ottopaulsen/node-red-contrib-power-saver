@@ -1,4 +1,4 @@
-const { getSavings, saveOriginalConfig } = require("./utils");
+const { booleanConfig, getSavings, saveOriginalConfig } = require("./utils");
 const mostSavedStrategy = require("./strategy-best-save-functions");
 const { strategyOnInput } = require("./strategy-functions");
 
@@ -13,7 +13,7 @@ module.exports = function (RED) {
       minHoursOnAfterMaxSequenceSaved: config.minHoursOnAfterMaxSequenceSaved,
       minSaving: parseFloat(config.minSaving),
       sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
-      outputIfNoSchedule: config.outputIfNoSchedule === "true",
+      outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       contextStorage: config.contextStorage || "default",
     });
 
