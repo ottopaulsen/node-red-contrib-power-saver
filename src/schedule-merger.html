@@ -15,7 +15,6 @@
         required: true,
         validate: RED.validators.number(),
       },
-      contextStorage: { value: "default", required: false, align: "left" },
     },
     inputs: 1,
     outputs: 3,
@@ -45,14 +44,6 @@
           },
         ],
       });
-      $("#node-input-contextStorage").typedInput({
-        types: [
-          {
-            value: "storages",
-            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
-          },
-        ],
-      });
     },
   });
 </script>
@@ -77,10 +68,6 @@
         <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
         </label>
     </div>
-    <div class="form-row">
-      <label for="node-input-contextStorage"><i class="fa fa-archive"></i> Context storage</label>
-      <input type="text" id="node-input-contextStorage" style="width: 160px">
-  </div>
 </script>
 
 <script type="text/markdown" data-help-name="ps-schedule-merger">

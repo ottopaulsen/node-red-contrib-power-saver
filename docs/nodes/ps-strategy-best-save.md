@@ -6,7 +6,7 @@ Strategy node to postpone power consumption until the price is lower.
 
 ## Description
 
-This strategy turns off the hours where the price difference is largest compared to the next hour that is on. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on. This would fit well for turning off a water heater or another thermostat controlled heater.
+This strategy turns off the hours where the price difference is largest compared to the next hour that is on. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on (during the first hour). This would fit well for turning off a water heater or another thermostat controlled heater.
 
 The picture at the bottom of the page, under [Integration with MagicMirror](#integration-with-magicmirror), illustrates this by the purple strokes, taking the price from the top of the price curve to the level of the first hour after the save-period.
 

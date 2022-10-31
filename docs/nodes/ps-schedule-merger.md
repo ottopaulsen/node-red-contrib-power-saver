@@ -1,0 +1,232 @@
+# ps-schedule-merger
+
+## Description
+
+This node can be used to merge schedules from multiple strategy nodes, and create one resulting schedule. It can be useful for example to have multiple lowest price nodes to cover different periods of the day. Send all schedules as input to this node and get one schedule as output. It works for schedules from Lowest Price and Best Save.
+
+All incoming schedules are saved, and after a timeout, a new resulting schedule is calculated based on all incoming schedules. The timeout can be configured, and should be long enough for all preceding strategy nodes to finish their calculation. Normally all strategy nodes will receive the same set of prices at the same time, and do their calculations almost simultaneously, so all strategies can send their schedules at the same time.
+
+The schedules that are merged must be for the exact same period and have the exact same number of hours. If only one schedule is received, it is used unchanged.
+
+::: warning Different period
+If a schedule with prices for a different period is received, all saved schedules are deleted, and not used any more.
+:::
+
+The merge can be done using one of two functions:
+
+- OR
+- AND
+
+### OR
+
+For each hour, all schedules are compared. If any of them is `on`, the hour in the resulting schedule is `on`.
+Only if all schedules has the hour set to `off` will the resulting schedule have the hour `off`.
+
+### AND
+
+For each hour, all schedules are compared. If any of them is `off`, the hour in the resulting schedule is `off`.
+Only if all schedules has the hour set to `on` will the resulting schedule have the hour `on``.
+
+## Configuration
+
+![Schedule Merger Config](../images/schedule-merger-config.png)
+
+| Value                | Description                                                                                                                                                                   |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Function             | Merging function, either OR or AND (see above).                                                                                                                               |
+| Delay                | Delay in milliseconds from a schedule is received until a new schedule is calculated. Use this so all schedules can be received before a new schedule is calculated and used. |
+| If no schedule, send | What to do if there is no valid schedule any more (turn on or off).                                                                                                           |
+| Context storage      | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                    |
+
+### Dynamic config
+
+It is possible to change config dynamically by sending a config message to the node. The config messages has a payload with a config object like this example:
+
+```json
+"payload": {
+  "config": {
+    "logicFunction": "OR",
+    "schedulingDelay": 2000,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": true,
+  }
+}
+```
+
+All the variables in the config object are optional. You can send only those you want to change.
+
+The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
+
+When a config is sent like this, and without a schedule, the schedule will be replanned based on the previously received schedules. If no schedules has been received, no scheduling is done.
+
+However, you can send config and price data in the same message. Then both will be used.
+
+### Dynamic commands
+
+You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
+
+Commands can be sent together with config and/or price data, but the exact behavior is not defined.
+
+#### sendSchedule
+
+You can get the schedule sent to output 3 any time by sending a message like this to the node:
+
+```json
+"payload": {
+  "commands": {
+    "sendSchedule": true,
+  }
+}
+```
+
+When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
+
+#### sendOutput
+
+You can get the node to send the current output to output 1 or 2 any time by sending a message like this to the node:
+
+```json
+"payload": {
+  "commands": {
+    "sendOutput": true,
+  }
+}
+```
+
+When you do this, the current schedule is actually recalculated based on the last received data. The current output is sent to output 1 or 2, and the schedule is sent to output 3.
+
+#### reset
+
+You can reset data the node has saved in context by sending this message:
+
+```json
+"payload": {
+  "commands": {
+    "reset": true,
+  }
+}
+```
+
+When you do this, all schedules are cleared.
+
+#### replan
+
+By sending this command, the saved schedules are merged, and new output is sent:
+
+```json
+"payload": {
+  "commands": {
+    "replan": true,
+  }
+}
+```
+
+This is equivalent to sending both `sendSchedule` and `sendOutput` commands.
+
+If the context storage is `file` you can use this to create a new schedule after a restart,
+instead of fetching prices again.
+
+### Config saved in context
+
+The nodes config is saved in the nodes context.
+If dynamic config is sent as input, this replaces the saved config.
+It is the config that is saved in context that is used when calculating.
+When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
+
+## Input
+
+Input is the same as the output from the Lowest Price node and the Best Save node, but only the `hours` array is used.
+
+You can make your own input by supplying a payload containing an hours array. Example:
+
+```json
+{
+  "hours": [
+    {
+      "price": 1.2584,
+      "onOff": false,
+      "start": "2021-09-30T00:00:00.000+02:00",
+      "saving": 0.2034
+    },
+    {
+      "price": 1.055,
+      "onOff": true,
+      "start": "2021-09-30T01:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 1.2054,
+      "onOff": true,
+      "start": "2021-09-30T02:00:00.000+02:00",
+      "saving": null
+    }
+  ]
+}
+```
+
+## Output
+
+There are three outputs. You use only those you need for your purpose.
+
+### Output 1
+
+A payload with the word `true` is sent to output 1 whenever the power / switch shall be turned on.
+
+### Output 2
+
+A payload with the word `false` is sent to output 2 whenever the power / switch shall be turned off.
+
+### Output 3
+
+When valid input is received, and the schedule is recalculated (after the timeout), the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
+
+Example of output:
+
+```json
+{
+  "schedule": [
+    {
+      "time": "2021-09-30T00:00:00.000+02:00",
+      "value": false,
+      "countHours": 1
+    },
+    {
+      "time": "2021-09-30T01:00:00.000+02:00",
+      "value": true,
+      "countHours": 2
+    }
+  ],
+  "hours": [
+    {
+      "price": 1.2584,
+      "onOff": false,
+      "start": "2021-09-30T00:00:00.000+02:00",
+      "saving": 0.2034
+    },
+    {
+      "price": 1.055,
+      "onOff": true,
+      "start": "2021-09-30T01:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 1.2054,
+      "onOff": true,
+      "start": "2021-09-30T02:00:00.000+02:00",
+      "saving": null
+    }
+  ],
+  "source": "Nord Pool",
+  "config": {
+    "logicFunction": "OR",
+    "schedulingDelay": 2000,
+    "contextStorage": "default",
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": false
+  },
+  "time": "2021-09-30T23:45:12.123+02:00",
+  "version": "4.0.0"
+}
+```
+
+The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off and the start time of the hour. The `saving` value is always `null`.

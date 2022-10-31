@@ -11,7 +11,7 @@ function validateSchedule(msg) {
 }
 
 function saveSchedule(node, msg) {
-  let savedSchedules = node.context().get("savedSchedules", node.contextStorage) || {};
+  let savedSchedules = node.context().get("savedSchedules") || {};
 
   // If the saved schedule has a different start period, delete them
   const ids = Object.keys(savedSchedules);
@@ -29,13 +29,19 @@ function saveSchedule(node, msg) {
 
   const id = msg.payload.strategyNodeId;
   savedSchedules[id] = msg.payload;
-  node.context().set("savedSchedules", savedSchedules, node.contextStorage);
+  node.context().set("savedSchedules", savedSchedules);
 }
 
 function mergeSchedules(node, logicFunction) {
   // Transpose all schedules
   const transposed = {};
-  const savedSchedules = node.context().get("savedSchedules", node.contextStorage);
+  const savedSchedules = node.context().get("savedSchedules");
+  if (!savedSchedules) {
+    const msg = "No schedules";
+    node.warn(msg);
+    node.status({ fill: "red", shape: "dot", text: msg });
+    return [];
+  }
   const sourceNodes = Object.keys(savedSchedules);
   sourceNodes.forEach((strategyNodeId) => {
     const hours = savedSchedules[strategyNodeId].hours;
@@ -66,7 +72,10 @@ function mergeSchedules(node, logicFunction) {
 }
 
 function mergerShallSendSchedule(msg, commands) {
-  return msgHasConfig(msg) || msgHasSchedule(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule;
+  if (commands.sendSchedule !== undefined) {
+    return commands.sendSchedule;
+  }
+  return msgHasConfig(msg) || msgHasSchedule(msg) || commands.replan;
 }
 
 module.exports = { msgHasSchedule, validateSchedule, saveSchedule, mergeSchedules, mergerShallSendSchedule };

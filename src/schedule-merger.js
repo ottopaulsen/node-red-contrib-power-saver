@@ -20,15 +20,22 @@ module.exports = function (RED) {
     saveOriginalConfig(node, {
       logicFunction: config.logicFunction,
       sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
-      contextStorage: config.contextStorage || "default",
       schedulingDelay: config.schedulingDelay || 2000,
+      outputIfNoSchedule: config.outputIfNoSchedule === "true",
     });
 
     node.on("close", function () {
+      const node = this;
       clearTimeout(node.schedulingTimeout);
     });
 
     node.on("input", function (msg) {
+      const node = this;
+      if (msg.payload.hours) {
+        // Delete config from strategy nodes so it does not merge
+        // with config for this node.
+        delete msg.payload.config;
+      }
       const config = getEffectiveConfig(node, msg);
       const commands = getCommands(msg);
       const myTime = nanoTime();
@@ -44,32 +51,35 @@ module.exports = function (RED) {
         node.lastSavedScheduleTime = myTime;
       }
 
-      setTimeout(() => {
-        if (node.lastSavedScheduleTime !== myTime && msgHasSchedule(msg)) {
-          // Another schedule has arrived later
-          return;
-        }
+      setTimeout(
+        () => {
+          if (node.lastSavedScheduleTime !== myTime && msgHasSchedule(msg) && !commands.replan) {
+            // Another schedule has arrived later
+            return;
+          }
 
-        const hours = mergeSchedules(node, node.logicFunction);
-        const schedule = makeScheduleFromHours(hours);
+          const hours = mergeSchedules(node, node.logicFunction);
+          const schedule = makeScheduleFromHours(hours);
 
-        const plan = {
-          hours,
-          schedule,
-          source: node.name,
-        };
+          const plan = {
+            hours,
+            schedule,
+            source: node.name,
+          };
 
-        const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
+          const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
-        const outputCommands = {
-          sendOutput: shallSendOutput(msg, commands),
-          sendSchedule: mergerShallSendSchedule(msg, commands),
-          runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
-          sentOnCommand: !!commands.sendSchedule,
-        };
+          const outputCommands = {
+            sendOutput: shallSendOutput(msg, commands),
+            sendSchedule: mergerShallSendSchedule(msg, commands),
+            runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
+            sentOnCommand: !!commands.sendSchedule,
+          };
 
-        handleOutput(node, config, plan, outputCommands, planFromTime);
-      }, node.schedulingDelay);
+          handleOutput(node, config, plan, outputCommands, planFromTime);
+        },
+        commands.replan ? 0 : node.schedulingDelay
+      );
     });
   }
   RED.nodes.registerType("ps-schedule-merger", ScheduleMerger);

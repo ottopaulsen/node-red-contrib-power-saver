@@ -100,11 +100,17 @@ function runSchedule(node, schedule, time, currentSent = false) {
 }
 
 function shallSendOutput(msg, commands) {
-  return msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendOutput !== false : !!commands.sendOutput;
+  if (commands.sendOutput !== undefined) {
+    return commands.sendOutput;
+  }
+  return msgHasConfig(msg) || msgHasPriceData(msg) || commands.replan;
 }
 
 function strategyShallSendSchedule(msg, commands) {
-  return msgHasConfig(msg) || msgHasPriceData(msg) ? commands.sendSchedule !== false : !!commands.sendSchedule;
+  if (commands.sendSchedule !== undefined) {
+    return commands.sendSchedule;
+  }
+  return msgHasConfig(msg) || msgHasPriceData(msg) || commands.replan;
 }
 
 module.exports = {

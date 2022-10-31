@@ -9,7 +9,7 @@ function strategyOnInput(node, msg, doPlanning, calcSavings) {
   const outputCommands = {
     sendOutput: shallSendOutput(msg, commands),
     sendSchedule: strategyShallSendSchedule(msg, commands),
-    runSchedule: commands.runSchedule !== false,
+    runSchedule: commands.replan !== false,
     sentOnCommand: !!commands.sendSchedule,
   };
   if (plan) {

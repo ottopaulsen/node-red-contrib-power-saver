@@ -17,7 +17,6 @@ function calcNullSavings(values, _) {
  */
 function saveOriginalConfig(node, originalConfig) {
   node.context().set("config", originalConfig);
-  node.contextStorage = originalConfig.contextStorage;
 }
 
 /**
@@ -101,7 +100,7 @@ function loadDayData(node, date) {
   // Load saved schedule for the date (YYYY-MM-DD)
   // Return null if not found
   const key = date.toISODate();
-  const saved = node.context().get(key, node.contextStorage);
+  const saved = node.context().get(key);
   const res = saved ?? {
     schedule: [],
     hours: [],
