@@ -24,12 +24,10 @@ module.exports = function (RED) {
     });
 
     node.on("close", function () {
-      const node = this;
       clearTimeout(node.schedulingTimeout);
     });
 
     node.on("input", function (msg) {
-      const node = this;
       if (msg.payload.hours) {
         // Delete config from strategy nodes so it does not merge
         // with config for this node.

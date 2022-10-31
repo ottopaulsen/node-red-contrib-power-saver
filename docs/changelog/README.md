@@ -16,12 +16,15 @@ I will try to list all changes here, but some may have been missed.
 ### New features
 
 - New node `ps-schedule-merger` or `Schedule Merger`, used to merge schedules from multiple Best Save and/or Lowest Price nodes.
+- The config output on Best Save and Lowest Price (as well as the new Schedule Merger) has a new attribute: `hasChanged`.
+  It is set to `true` of the config just was changed by a config input message.
 
 ### Breaking changes
 
 - The old Power Saver node has been removed, as it has been deprecated for a long time.
 - The `sentOnCommand` output has been removed.
 - Some bug-fixes may be regarded as breaking.
+- There may be some changes to what data that is stored in the context.
 
 ### Bug fixes
 

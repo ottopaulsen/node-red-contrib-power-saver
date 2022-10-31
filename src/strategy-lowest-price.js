@@ -22,12 +22,10 @@ module.exports = function (RED) {
     });
 
     node.on("close", function () {
-      const node = this;
       clearTimeout(node.schedulingTimeout);
     });
 
     node.on("input", function (msg) {
-      const node = this;
       strategyOnInput(node, msg, doPlanning, calcNullSavings);
     });
   }
