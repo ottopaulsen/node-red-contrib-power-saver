@@ -1,4 +1,4 @@
-const { booleanConfig, getSavings, saveOriginalConfig } = require("./utils");
+const { booleanConfig, fixOutputValues, getSavings, saveOriginalConfig } = require("./utils");
 const mostSavedStrategy = require("./strategy-best-save-functions");
 const { strategyOnInput } = require("./strategy-functions");
 
@@ -8,14 +8,21 @@ module.exports = function (RED) {
     const node = this;
     node.status({});
 
-    saveOriginalConfig(node, {
+    const validConfig = {
       maxHoursToSaveInSequence: config.maxHoursToSaveInSequence,
       minHoursOnAfterMaxSequenceSaved: config.minHoursOnAfterMaxSequenceSaved,
       minSaving: parseFloat(config.minSaving),
       sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
+      outputValueForOn: config.outputValueForOn || true,
+      outputValueForOff: config.outputValueForOff || false,
+      outputValueForOntype: config.outputValueForOntype || "bool",
+      outputValueForOfftype: config.outputValueForOfftype || "bool",
       contextStorage: config.contextStorage || "default",
-    });
+    };
+
+    fixOutputValues(validConfig);
+    saveOriginalConfig(node, validConfig);
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);

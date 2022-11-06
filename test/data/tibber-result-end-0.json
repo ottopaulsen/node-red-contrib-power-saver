@@ -173,6 +173,10 @@
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": false,
+    "outputValueForOff": false,
+    "outputValueForOfftype": "bool",
+    "outputValueForOn": true,
+    "outputValueForOntype": "bool",
     "outputOutsidePeriod": false
   },
   "time": "2021-10-11T10:00:00.000+02:00",

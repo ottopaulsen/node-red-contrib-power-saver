@@ -78,4 +78,18 @@ function mergerShallSendSchedule(msg, commands) {
   return msgHasConfig(msg) || msgHasSchedule(msg) || commands.replan;
 }
 
-module.exports = { msgHasSchedule, validateSchedule, saveSchedule, mergeSchedules, mergerShallSendSchedule };
+function mergerShallSendOutput(msg, commands) {
+  if (commands.sendOutput !== undefined) {
+    return commands.sendOutput;
+  }
+  return msgHasConfig(msg) || msgHasSchedule(msg) || commands.replan;
+}
+
+module.exports = {
+  msgHasSchedule,
+  validateSchedule,
+  saveSchedule,
+  mergeSchedules,
+  mergerShallSendOutput,
+  mergerShallSendSchedule,
+};

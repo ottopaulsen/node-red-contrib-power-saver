@@ -34,8 +34,8 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
   const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
 
-  output1 = currentValue ? { payload: true } : null;
-  output2 = currentValue ? null : { payload: false };
+  output1 = currentValue ? { payload: config.outputValueForOn } : null;
+  output2 = currentValue ? null : { payload: config.outputValueForOn };
   output3.payload.current = currentValue;
 
   // Send output

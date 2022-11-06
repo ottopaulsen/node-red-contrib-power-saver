@@ -3,12 +3,19 @@ const {
   mergeSchedules,
   saveSchedule,
   validateSchedule,
+  mergerShallSendOutput,
   mergerShallSendSchedule,
 } = require("./schedule-merger-functions.js");
-const { booleanConfig, getEffectiveConfig, makeScheduleFromHours, saveOriginalConfig } = require("./utils.js");
+const {
+  booleanConfig,
+  fixOutputValues,
+  getEffectiveConfig,
+  makeScheduleFromHours,
+  saveOriginalConfig,
+} = require("./utils.js");
 const { DateTime } = require("luxon");
 const nanoTime = require("nano-time");
-const { handleOutput, shallSendOutput } = require("./handle-output");
+const { handleOutput } = require("./handle-output");
 const { addLastSwitchIfNoSchedule, getCommands } = require("./handle-input");
 
 module.exports = function (RED) {
@@ -17,11 +24,18 @@ module.exports = function (RED) {
     const node = this;
     node.status({});
 
-    saveOriginalConfig(node, {
+    const validConfig = {
       logicFunction: config.logicFunction,
       schedulingDelay: config.schedulingDelay || 2000,
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
-    });
+      outputValueForOn: config.outputValueForOn || true,
+      outputValueForOff: config.outputValueForOff || false,
+      outputValueForOntype: config.outputValueForOntype || "bool",
+      outputValueForOfftype: config.outputValueForOfftype || "bool",
+    };
+
+    fixOutputValues(validConfig);
+    saveOriginalConfig(node, validConfig);
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);
@@ -68,7 +82,7 @@ module.exports = function (RED) {
           const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
           const outputCommands = {
-            sendOutput: shallSendOutput(msg, commands),
+            sendOutput: mergerShallSendOutput(msg, commands),
             sendSchedule: mergerShallSendSchedule(msg, commands),
             runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
           };

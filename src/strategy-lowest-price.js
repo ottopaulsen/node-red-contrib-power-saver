@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { booleanConfig, calcNullSavings, saveOriginalConfig } = require("./utils");
+const { booleanConfig, calcNullSavings, fixOutputValues, saveOriginalConfig } = require("./utils");
 const { getBestContinuous, getBestX } = require("./strategy-lowest-price-functions");
 const { strategyOnInput } = require("./strategy-functions");
 
@@ -9,7 +9,7 @@ module.exports = function (RED) {
     const node = this;
     node.status({});
 
-    saveOriginalConfig(node, {
+    const validConfig = {
       fromTime: config.fromTime,
       toTime: config.toTime,
       hoursOn: parseInt(config.hoursOn),
@@ -18,8 +18,15 @@ module.exports = function (RED) {
       sendCurrentValueWhenRescheduling: booleanConfig(config.sendCurrentValueWhenRescheduling),
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       outputOutsidePeriod: booleanConfig(config.outputOutsidePeriod),
+      outputValueForOn: config.outputValueForOn || true,
+      outputValueForOff: config.outputValueForOff || false,
+      outputValueForOntype: config.outputValueForOntype || "bool",
+      outputValueForOfftype: config.outputValueForOfftype || "bool",
       contextStorage: config.contextStorage || "default",
-    });
+    };
+
+    fixOutputValues(validConfig);
+    saveOriginalConfig(node, validConfig);
 
     node.on("close", function () {
       clearTimeout(node.schedulingTimeout);

@@ -226,6 +226,21 @@ function msgHasConfig(msg) {
   return !!msg?.payload?.config;
 }
 
+function fixOutputValues(config) {
+  if (config.outputValueForOntype === "bool") {
+    config.outputValueForOn = booleanConfig(config.outputValueForOn);
+  }
+  if (config.outputValueForOntype === "num") {
+    config.outputValueForOn = Number(config.outputValueForOn);
+  }
+  if (config.outputValueForOfftype === "bool") {
+    config.outputValueForOff = booleanConfig(config.outputValueForOff);
+  }
+  if (config.outputValueForOfftype === "num") {
+    config.outputValueForOff = Number(config.outputValueForOff);
+  }
+}
+
 module.exports = {
   booleanConfig,
   calcNullSavings,
@@ -233,6 +248,7 @@ module.exports = {
   extractPlanForDate,
   fillArray,
   firstOn,
+  fixOutputValues,
   getDiff,
   getDiffToNextOn,
   getEffectiveConfig,

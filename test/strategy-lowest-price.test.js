@@ -83,7 +83,6 @@ describe("ps-strategy-lowest-price node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(msg.payload).toHaveProperty("schedule", resultSplitted.schedule);
-        expect(msg.payload).toHaveProperty("config", resultSplitted.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -99,7 +98,6 @@ describe("ps-strategy-lowest-price node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(msg.payload).toHaveProperty("schedule", resultContinuousMax.schedule);
-        expect(msg.payload).toHaveProperty("config", resultContinuousMax.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -115,7 +113,6 @@ describe("ps-strategy-lowest-price node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(msg.payload).toHaveProperty("schedule", resultContinuousMax.schedule);
-        expect(msg.payload).toHaveProperty("config", resultContinuousMax.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -132,7 +129,6 @@ describe("ps-strategy-lowest-price node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(msg.payload).toHaveProperty("schedule", resultSplittedMax.schedule);
-        expect(msg.payload).toHaveProperty("config", resultSplittedMax.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -151,7 +147,6 @@ describe("ps-strategy-lowest-price node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         expect(msg.payload).toHaveProperty("schedule", resultAllDay.schedule);
-        expect(msg.payload).toHaveProperty("config", resultAllDay.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -171,7 +166,6 @@ describe("ps-strategy-lowest-price node", function () {
       n2.on("input", function (msg) {
         const config = cloneDeep(resultAllDay10.config);
         expect(msg.payload).toHaveProperty("schedule", resultAllDay10.schedule);
-        expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -193,7 +187,6 @@ describe("ps-strategy-lowest-price node", function () {
         const config = cloneDeep(resultAllDay10.config);
         config.outputOutsidePeriod = true;
         expect(msg.payload).toHaveProperty("schedule", resultAllDay10.schedule);
-        expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -215,7 +208,6 @@ describe("ps-strategy-lowest-price node", function () {
         const config = cloneDeep(resultAllDay10.config);
         config.outputIfNoSchedule = true;
         expect(msg.payload).toHaveProperty("schedule", resultAllDay10.schedule);
-        expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -244,7 +236,6 @@ describe("ps-strategy-lowest-price node", function () {
         const exp = schedule.map((s) => ({ time: s.time, value: s.value }));
         exp.pop();
         expect(res).toEqual(exp);
-        expect(msg.payload).toHaveProperty("config", config);
         n1.warn.should.not.be.called;
         done();
       });

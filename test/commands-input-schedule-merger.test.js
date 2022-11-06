@@ -64,7 +64,7 @@ describe("send command as input to schedule merger", () => {
             n1.receive({ payload: { commands: { sendOutput: true }, time: "2021-06-20T01:05:00.000+02:00" } });
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
-              expect(countOn).toEqual(0);
+              expect(countOn).toEqual(1);
               expect(countOff).toEqual(1);
               done();
             }, 50);
