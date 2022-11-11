@@ -40,11 +40,14 @@ Only if all schedules has the hour set to `on` will the resulting schedule have 
 
 ![Schedule Merger Config](../images/schedule-merger-config.png)
 
-| Value                | Description                                                                                                                                                                   |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Function             | Merging function, either OR or AND (see above).                                                                                                                               |
-| Delay                | Delay in milliseconds from a schedule is received until a new schedule is calculated. Use this so all schedules can be received before a new schedule is calculated and used. |
-| If no schedule, send | What to do if there is no valid schedule any more (turn on or off).                                                                                                           |
+| Value                  | Description                                                                                                                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Function               | Merging function, either OR or AND (see above).                                                                                                                                                |
+| Delay                  | Delay in milliseconds from a schedule is received until a new schedule is calculated. Use this so all schedules can be received before a new schedule is calculated and used.                  |
+| Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
+| Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
+| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
 
 ### Dynamic config
 
@@ -56,11 +59,22 @@ It is possible to change config dynamically by sending a config message to the n
     "logicFunction": "OR",
     "schedulingDelay": 2000,
     "outputIfNoSchedule": true,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputValueForOn": true,
+    "outputValueForOff": false,
+    "outputValueForOntype": "bool",
+    "outputValueForOfftype": "bool",
   }
 }
 ```
 
-All the variables in the config object are optional. You can send only those you want to change.
+::: tip Send only those you need
+All the variables in the config object are optional. You should send only those you want to change.
+:::
+
+Valid values for `outputValueForOntype` and `outputValueForOfftype` are `bool`, `num` and `str` and must correspond
+with the values for `outputValueForOn` and `outputValueForOff`. Also `str` values must be enclosed by quotes, for example:
+`"outputValueForOn": "myvalue"`, while `num` and `bool` values shall not, for example: `"outputValueForOn": 1`.
 
 The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
 
@@ -72,7 +86,7 @@ You cannot send config and other schedules in the same message. If you do, the c
 
 You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
 
-Commands can be sent together with config or price data.
+Commands can be sent together with config or price data. You can command multiple commands in one message, but then put them all in the same commands-object.
 
 #### sendSchedule
 
@@ -124,8 +138,6 @@ By sending this command, the saved schedules are merged, and new output is sent:
 }
 ```
 
-This is equivalent to sending both `sendSchedule` and `sendOutput` commands.
-
 ### Config saved in context
 
 The nodes config is saved in the nodes context.
@@ -170,11 +182,11 @@ There are three outputs. You use only those you need for your purpose.
 
 ### Output 1
 
-A payload with the word `true` is sent to output 1 whenever the power / switch shall be turned on.
+A payload with the value set in config, default `true`, is sent to output 1 whenever the power / switch shall be turned on.
 
 ### Output 2
 
-A payload with the word `false` is sent to output 2 whenever the power / switch shall be turned off.
+A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
 
 ### Output 3
 

@@ -18,14 +18,16 @@ The picture at the bottom of the page, under [Integration with MagicMirror](#int
 
 ![Best Save Config](../images/best-save-config.png)
 
-| Value                  | Description                                                                                                                                                          |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Max per sequence       | Maximum number of hours to turn off in a sequence.                                                                                                                   |
-| Min recover            | Minimum hours to turn on immediately after a period when turned off the maximum number of hours that is allowed to be turned off                                     |
-| Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it? |
-| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling                                                                                      |
-| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off).                                                                                                  |
-| Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                           |
+| Value                  |                                                                                                                                                                                                |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Max per sequence       | Maximum number of hours to turn off in a sequence                                                                                                                                              |
+| Min recover            | Minimum hours to turn on immediately after a period when turned off the maximum number of hours that is allowed to be turned off                                                               |
+| Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it?                           |
+| Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
+| Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
+| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
+| Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                     |
 
 ::: warning Min recover
 NB! The `Min recover` only has effect if the previous save-period is of length `Max per sequence`. If the save-period is shorter, the following on-period may be as short as one hour.
@@ -39,17 +41,26 @@ It is possible to change config dynamically by sending a config message to the n
 "payload": {
   "config": {
     "contextStorage": "file",
-    "hasChanged": false,
     "maxHoursToSaveInSequence": 4,
     "minHoursOnAfterMaxSequenceSaved": 2,
     "minSaving": 0.02,
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": true,
+    "outputValueForOn": true,
+    "outputValueForOff": false,
+    "outputValueForOntype": "bool",
+    "outputValueForOfftype": "bool",
   }
 }
 ```
 
-All the variables in the config object are optional. You can send only those you want to change.
+::: tip Send only those you need
+All the variables in the config object are optional. You should send only those you want to change.
+:::
+
+Valid values for `outputValueForOntype` and `outputValueForOfftype` are `bool`, `num` and `str` and must correspond
+with the values for `outputValueForOn` and `outputValueForOff`. Also `str` values must be enclosed by quotes, for example:
+`"outputValueForOn": "myvalue"`, while `num` and `bool` values shall not, for example: `"outputValueForOn": 1`.
 
 The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
 
@@ -61,7 +72,7 @@ However, you can send config and price data in the same message. Then both will 
 
 You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
 
-Commands can be sent together with config and/or price data, but the exact behavior is not defined.
+Commands can be sent together with config or price data. You can command multiple commands in one message, but then put them all in the same commands-object.
 
 #### sendSchedule
 
@@ -156,11 +167,11 @@ There are three outputs. You use only those you need for your purpose.
 
 ### Output 1
 
-A payload with the word `true` is sent to output 1 whenever the power / switch shall be turned on.
+A payload with the value set in config, default `true`, is sent to output 1 whenever the power / switch shall be turned on.
 
 ### Output 2
 
-A payload with the word `false` is sent to output 2 whenever the power / switch shall be turned off.
+A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
 
 ### Output 3
 

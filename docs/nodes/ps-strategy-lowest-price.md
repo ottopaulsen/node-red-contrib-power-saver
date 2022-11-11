@@ -17,17 +17,18 @@ The node can work on a specific period from 1 to 24 hours during a 24 hour perio
 
 ![Node Configuration](../images/lowest-price-config.png)
 
-| Value                  | Description                                                                      |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| From time              | The start time of the selected period.                                           |
-| To time                | The end time of the selected period.                                             |
-| Hours on               | The number of hours that shall be turned on.                                     |
-| Max price              | If set, does not turn on if price is over this limit. See below.                 |
-| Consecutive on-period  | Check this if you need the on-period to be consecutive.                          |
-| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. |
-| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off).              |
-| Outside period, send   | Select the value to send outside the selected period.                            |
-| Context storage        | Select context storage to save data to, if you want other than the default.      |
+| Value                  | Description                                                                                                                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| From time              | The start time of the selected period.                                                                                                                                                         |
+| To time                | The end time of the selected period.                                                                                                                                                           |
+| Hours on               | The number of hours that shall be turned on.                                                                                                                                                   |
+| Max price              | If set, does not turn on if price is over this limit. See below.                                                                                                                               |
+| Consecutive on-period  | Check this if you need the on-period to be consecutive.                                                                                                                                        |
+| Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
+| Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
+| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
+| Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                     |
 
 If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is significant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
 
@@ -84,7 +85,13 @@ It is possible to change config dynamically by sending a config message to the n
 }
 ```
 
-All the variables in the config object are optional. You can send only those you want to change.
+::: tip Send only those you need
+All the variables in the config object are optional. You should send only those you want to change.
+:::
+
+Valid values for `outputValueForOntype` and `outputValueForOfftype` are `bool`, `num` and `str` and must correspond
+with the values for `outputValueForOn` and `outputValueForOff`. Also `str` values must be enclosed by quotes, for example:
+`"outputValueForOn": "myvalue"`, while `num` and `bool` values shall not, for example: `"outputValueForOn": 1`.
 
 The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
 
@@ -96,7 +103,7 @@ However, you can send config and price data in the same message. Then both will 
 
 You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
 
-Commands can be sent together with config and/or price data, but the exact behavior is not defined.
+Commands can be sent together with config or price data. You can command multiple commands in one message, but then put them all in the same commands-object.
 
 #### sendSchedule
 
@@ -177,6 +184,18 @@ When Node-RED starts or the flow is redeployed, the config defined in the node r
 The input is the [common strategy input format](./strategy-input.md)
 
 ## Output
+
+There are three outputs. You use only those you need for your purpose.
+
+### Output 1
+
+A payload with the value set in config, default `true`, is sent to output 1 whenever the power / switch shall be turned on.
+
+### Output 2
+
+A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
+
+### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 

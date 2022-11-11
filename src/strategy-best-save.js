@@ -9,16 +9,16 @@ module.exports = function (RED) {
     node.status({});
 
     const validConfig = {
+      contextStorage: config.contextStorage || "default",
       maxHoursToSaveInSequence: config.maxHoursToSaveInSequence,
       minHoursOnAfterMaxSequenceSaved: config.minHoursOnAfterMaxSequenceSaved,
       minSaving: parseFloat(config.minSaving),
-      sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       outputValueForOn: config.outputValueForOn || true,
       outputValueForOff: config.outputValueForOff || false,
       outputValueForOntype: config.outputValueForOntype || "bool",
       outputValueForOfftype: config.outputValueForOfftype || "bool",
-      contextStorage: config.contextStorage || "default",
+      sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
     };
 
     fixOutputValues(validConfig);
