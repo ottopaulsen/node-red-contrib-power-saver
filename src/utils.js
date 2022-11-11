@@ -241,6 +241,11 @@ function fixOutputValues(config) {
   }
 }
 
+function getOutputForTime(schedule, time, defaultValue) {
+  const pastSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) <= time);
+  return pastSchedule.length ? pastSchedule[pastSchedule.length - 1].value : defaultValue;
+}
+
 module.exports = {
   booleanConfig,
   calcNullSavings,
@@ -252,6 +257,7 @@ module.exports = {
   getDiff,
   getDiffToNextOn,
   getEffectiveConfig,
+  getOutputForTime,
   getSavings,
   getStartAtIndex,
   isSameDate,

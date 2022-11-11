@@ -65,8 +65,8 @@ describe("send command as input to lowest price", () => {
             n1.receive({ payload: { commands: { sendOutput: true }, time: "2021-10-11T11:00:05.000+02:00" } });
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
-              expect(countOn).toEqual(0);
-              expect(countOff).toEqual(2);
+              expect(countOn).toEqual(1);
+              expect(countOff).toEqual(1);
               done();
             }, 50);
             break;

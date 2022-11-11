@@ -78,11 +78,14 @@ function mergerShallSendSchedule(msg, commands) {
   return msgHasConfig(msg) || msgHasSchedule(msg) || commands.replan;
 }
 
-function mergerShallSendOutput(msg, commands) {
+function mergerShallSendOutput(msg, commands, currentOutput, plannedOutputNow, sendCurrentValueWhenRescheduling) {
   if (commands.sendOutput !== undefined) {
     return commands.sendOutput;
   }
-  return msgHasConfig(msg) || msgHasSchedule(msg) || commands.replan;
+  if (msgHasConfig(msg) || msgHasSchedule(msg) || commands.replan) {
+    return sendCurrentValueWhenRescheduling ? true : currentOutput !== plannedOutputNow;
+  }
+  return false;
 }
 
 module.exports = {

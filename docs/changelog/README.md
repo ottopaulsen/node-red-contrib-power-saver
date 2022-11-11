@@ -16,8 +16,11 @@ I will try to list all changes here, but some may have been missed.
 ### New features
 
 - New node `ps-schedule-merger` or `Schedule Merger`, used to merge schedules from multiple Best Save and/or Lowest Price nodes.
+- For Best Save and Lowest Price you now can configure the output value, sent on output 1 and 2 to turn on or off.
+  Default is true/false as before, but you can configure to send for example 1 and 0, or "on" and "off", or any
+  other number or string values.
 - The config output on Best Save and Lowest Price (as well as the new Schedule Merger) has a new attribute: `hasChanged`.
-  It is set to `true` of the config just was changed by a config input message.
+  It is set to `true` if the config just was changed by a config input message.
 
 ### Breaking changes
 
@@ -32,6 +35,14 @@ I will try to list all changes here, but some may have been missed.
   If the last scheduled switch is different from this setting, a switch to the
   value set by this setting will be scheduled on the first hour after the whole schedule, normally at midnight.
   The `countHours` value for this schedule will be `null`, as it is impossible to say how many hours it will last for.
+- Fixed also so `If no schedule, send` works if the schedule only exists for the future. Then this value is used until the
+  time for the first scheduled value is reached.
+- Fixed Best Save and Lowest Price so when rescheduling, for example if prices are received,
+  and `Send when rescheduling` is not checked,
+  output to output 1 or output 2 is only sent if it has not been sent before,
+  or if it is changed by the new schedule. This is to avoid sending output when not
+  necessary, that is if there is no change. Of course, if the `Send when rescheduling` is checked,
+  output is sent anyway.
 
   NB! This may be a breaking change for some.
 

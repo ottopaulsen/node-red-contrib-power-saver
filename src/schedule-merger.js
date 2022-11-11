@@ -10,6 +10,7 @@ const {
   booleanConfig,
   fixOutputValues,
   getEffectiveConfig,
+  getOutputForTime,
   makeScheduleFromHours,
   saveOriginalConfig,
 } = require("./utils.js");
@@ -27,6 +28,7 @@ module.exports = function (RED) {
     const validConfig = {
       logicFunction: config.logicFunction,
       schedulingDelay: config.schedulingDelay || 2000,
+      sendCurrentValueWhenRescheduling: config.sendCurrentValueWhenRescheduling,
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       outputValueForOn: config.outputValueForOn || true,
       outputValueForOff: config.outputValueForOff || false,
@@ -80,9 +82,17 @@ module.exports = function (RED) {
           };
 
           const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
+          const currentOutput = node.context().get("currentOutput");
+          const plannedOutputNow = getOutputForTime(plan.schedule, planFromTime, node.outputIfNoSchedule);
 
           const outputCommands = {
-            sendOutput: mergerShallSendOutput(msg, commands),
+            sendOutput: mergerShallSendOutput(
+              msg,
+              commands,
+              currentOutput,
+              plannedOutputNow,
+              node.sendCurrentValueWhenRescheduling
+            ),
             sendSchedule: mergerShallSendSchedule(msg, commands),
             runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
           };

@@ -1,6 +1,6 @@
 const { DateTime } = require("luxon");
 const { version } = require("../package.json");
-const { msgHasConfig, msgHasPriceData } = require("./utils.js");
+const { getOutputForTime, msgHasConfig, msgHasPriceData } = require("./utils.js");
 
 function handleOutput(node, config, plan, outputCommands, planFromTime) {
   /*
@@ -16,8 +16,6 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   */
 
   // Prepare output
-  let output1 = null;
-  let output2 = null;
   let output3 = {
     payload: {
       schedule: plan.schedule,
@@ -31,16 +29,12 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   };
 
   // Find current output, and set output (if configured to do)
-  const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
-  const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-
-  output1 = currentValue ? { payload: config.outputValueForOn } : null;
-  output2 = currentValue ? null : { payload: config.outputValueForOn };
+  const currentValue = getOutputForTime(plan.schedule, planFromTime, node.outputIfNoSchedule);
   output3.payload.current = currentValue;
 
   // Send output
   if (outputCommands.sendOutput) {
-    node.send([output1, output2, null]);
+    sendSwitch(node, currentValue);
   }
 
   // Send schedule
@@ -59,6 +53,7 @@ function sendSwitch(node, onOff) {
   const output1 = onOff ? { payload: true } : null;
   const output2 = onOff ? null : { payload: false };
   node.send([output1, output2, null]);
+  node.context().set("currentOutput", onOff);
 }
 
 function runSchedule(node, schedule, time, currentSent = false) {
@@ -89,11 +84,14 @@ function runSchedule(node, schedule, time, currentSent = false) {
   }
 }
 
-function shallSendOutput(msg, commands) {
+function shallSendOutput(msg, commands, currentOutput, plannedOutputNow, sendCurrentValueWhenRescheduling) {
   if (commands.sendOutput !== undefined) {
     return commands.sendOutput;
   }
-  return msgHasConfig(msg) || msgHasPriceData(msg) || commands.replan;
+  if (msgHasConfig(msg) || msgHasPriceData(msg) || commands.replan) {
+    return sendCurrentValueWhenRescheduling ? true : currentOutput !== plannedOutputNow;
+  }
+  return false;
 }
 
 function strategyShallSendSchedule(msg, commands) {
