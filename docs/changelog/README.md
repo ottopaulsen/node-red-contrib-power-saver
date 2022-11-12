@@ -43,8 +43,7 @@ I will try to list all changes here, but some may have been missed.
   or if it is changed by the new schedule. This is to avoid sending output when not
   necessary, that is if there is no change. Of course, if the `Send when rescheduling` is checked,
   output is sent anyway.
-
-  NB! This may be a breaking change for some.
+- Fix price receiver so it works when price is 0.
 
 ## 3.6.2
 

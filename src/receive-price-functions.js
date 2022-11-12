@@ -61,7 +61,7 @@ function convertMsg(msg) {
     } else if (msg.data?.new_state?.attributes["raw_" + day]) {
       result.source = "Nordpool";
       result[day] = msg.data.new_state.attributes["raw_" + day]
-        .filter((v) => v.value)
+        .filter((v) => v.value !== undefined && v.value !== null)
         .map((v) => ({
           value: v.value,
           start: v.start,
@@ -69,7 +69,7 @@ function convertMsg(msg) {
     } else if (msg.data?.attributes && msg.data?.attributes["raw_" + day]) {
       result.source = "Nordpool";
       result[day] = msg.data.attributes["raw_" + day]
-        .filter((v) => v.value)
+        .filter((v) => v.value !== undefined && v.value !== null)
         .map((v) => ({
           value: v.value,
           start: v.start,
@@ -77,7 +77,7 @@ function convertMsg(msg) {
     } else if (msg.payload?.attributes && msg.payload.attributes["raw_" + day]) {
       result.source = "Nordpool";
       result[day] = msg.payload.attributes["raw_" + day]
-        .filter((v) => v.value)
+        .filter((v) => v.value !== undefined && v.value !== null)
         .map((v) => ({
           value: v.value,
           start: v.start,
