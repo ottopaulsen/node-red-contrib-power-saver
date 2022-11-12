@@ -4,6 +4,7 @@ const expect = require("expect");
 const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/converted-prices.json");
+const negativePrices = require("./data/negative-prices.json");
 const { version } = require("../package.json");
 const { makeFlow, makePayload } = require("./strategy-lowest-price-test-utils");
 
@@ -88,6 +89,38 @@ describe("ps-strategy-lowest-price node", function () {
       });
       const time = DateTime.fromISO(prices.priceData[10].start);
       n1.receive({ payload: makePayload(prices, time) });
+    });
+  });
+  it("should plan correct negative prices continuous schedule", function (done) {
+    const resultContinuous = require("./data/lowest-price-result-neg-cont.json");
+    const flow = makeFlow(5, null, true, "00", "00");
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg.payload).toHaveProperty("schedule", resultContinuous.schedule);
+        expect(msg.payload).toHaveProperty("config", resultContinuous.config);
+        n1.warn.should.not.be.called;
+        done();
+      });
+      const time = DateTime.fromISO(prices.priceData[10].start);
+      n1.receive({ payload: makePayload(negativePrices, time) });
+    });
+  });
+  it("should plan correct negative prices splitted schedule", function (done) {
+    const resultSplitted = require("./data/lowest-price-result-neg-split.json");
+    const flow = makeFlow(5, null, true, "00", "00");
+    flow[0].doNotSplit = false;
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg.payload).toHaveProperty("schedule", resultSplitted.schedule);
+        n1.warn.should.not.be.called;
+        done();
+      });
+      const time = DateTime.fromISO(prices.priceData[10].start);
+      n1.receive({ payload: makePayload(negativePrices, time) });
     });
   });
   it("should plan correct continuous schedule with max price ok", function (done) {

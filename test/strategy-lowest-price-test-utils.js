@@ -1,16 +1,16 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 
-function makeFlow(hoursOn, maxPrice = null, doNotSplit = true) {
+function makeFlow(hoursOn, maxPrice = null, doNotSplit = true, fromTime = "10", toTime = "20") {
   return [
     {
       id: "n1",
       type: "ps-strategy-lowest-price",
       name: "test name",
-      fromTime: "10",
-      toTime: "20",
-      hoursOn: hoursOn,
-      maxPrice: maxPrice,
+      fromTime,
+      toTime,
+      hoursOn,
+      maxPrice,
       doNotSplit,
       sendCurrentValueWhenRescheduling: true,
       outputIfNoSchedule: true,

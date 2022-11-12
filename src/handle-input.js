@@ -179,7 +179,7 @@ function validateInput(node, msg) {
     return;
   }
   msg.payload.priceData.forEach((h) => {
-    if (!h.start || !h.value) {
+    if (!h.start || isNaN(h.value)) {
       validationFailure(node, "Malformed entries in priceData. All entries must contain start and value.");
       return;
     }

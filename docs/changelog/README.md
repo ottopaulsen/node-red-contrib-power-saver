@@ -44,6 +44,7 @@ I will try to list all changes here, but some may have been missed.
   necessary, that is if there is no change. Of course, if the `Send when rescheduling` is checked,
   output is sent anyway.
 - Fix price receiver so it works when price is 0.
+- Fixed bug in lowest proce and best save for 0 prices.
 
 ## 3.6.2
 
