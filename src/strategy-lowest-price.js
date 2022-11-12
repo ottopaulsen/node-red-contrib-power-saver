@@ -22,6 +22,7 @@ module.exports = function (RED) {
       outputValueForOff: config.outputValueForOff || false,
       outputValueForOntype: config.outputValueForOntype || "bool",
       outputValueForOfftype: config.outputValueForOfftype || "bool",
+      override: "auto",
       contextStorage: config.contextStorage || "default",
     };
 

@@ -9,7 +9,7 @@ sidebar: "auto"
 This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.
 
 The solution can be used to control switches or other entities in a smart home system, and for example turn on when the price is low, and turn off when the price is high.
-There are different ways to calculate what hours to turn on and off, and these are implemented as **strategies nodes**. Each strategy node can be configured to fit different purposes.
+There are different ways to calculate what hours to turn on and off, and these are implemented as **strategy nodes**. Each strategy node can be configured to fit different purposes.
 
 The strategies need price data to work. These can be received from different sources, for example Tibber, Nord Pool or custom sources.
 
@@ -41,7 +41,7 @@ May also be installed via npm:
 
 `npm install node-red-contrib-power-saver`
 
-Make sure that you upgrade now and then to get the latest version. See [changelog](CHANGELOG) for changes.
+Make sure that you upgrade now and then to get the latest version. See [changelog](../changelog/README.md) for changes.
 
 ### Get price data
 
@@ -175,9 +175,9 @@ Use the outputs to control switches, thermostats or other entities to control yo
 
 The following os valid for the Best Save and Lowest Price strategies:
 
-**Output 1** is used to turn on. A payload with value `true` is sent every time turning on is scheduled.
+**Output 1** is used to turn on. A payload with value `true` (or another configured value) is sent every time turning on is scheduled.
 
-**Output 2** is used to turn off. A payload with value `false` is sent every time turning off is scheduled.
+**Output 2** is used to turn off. A payload with value `false` (or another configured value) is sent every time turning off is scheduled.
 
 Example using Home Assistant:
 
@@ -206,9 +206,9 @@ Here is an example:
 
 ![Schedule Merger Example](../images/schedule-merger-example-1.png)
 
-In this example, the result ow two Lowest Price nodes and one Best Save node are combined in a Schedule Merger node, resulting in one schedule. The output from the Schedule Merger node is used to control a switch.
+In this example, the result of two Lowest Price nodes and one Best Save node are combined in a Schedule Merger node, resulting in one schedule. The output from the Schedule Merger node is used to control a switch.
 
-Se the Schedule Merger node for more details.
+Se the [Schedule Merger](../nodes/ps-schedule-merger.md) node for more details.
 
 ### More information
 
@@ -216,7 +216,8 @@ There are more details and more information in the documentation for each [node]
 
 ## Migration from v2
 
-The `Power Saver` node from v2 is still here, and it is working exactly as before. However, it will not be further maintained, so you should replace it. You may directly replace the `Power Saver` node by two of the new nodes:
+The `Power Saver` node from v2 has been removed and must be replaced.
+You may directly replace the `Power Saver` node by two of the new nodes (`ps-receive-price` and `ps-strategy-best-save`):
 
 ![Migrate Power Saver](../images/migrate-best-save.png)
 

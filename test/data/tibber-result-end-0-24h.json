@@ -331,7 +331,8 @@
     "outputValueForOfftype": "bool",
     "outputValueForOn": true,
     "outputValueForOntype": "bool",
-    "outputOutsidePeriod": false
+    "outputOutsidePeriod": false,
+    "override": "auto"
   },
   "time": "2021-10-11T10:00:00.000+02:00",
   "version": "1.2.3"

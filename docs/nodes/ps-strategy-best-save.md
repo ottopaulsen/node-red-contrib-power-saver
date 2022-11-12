@@ -35,111 +35,29 @@ NB! The `Min recover` only has effect if the previous save-period is of length `
 
 ### Dynamic config
 
-It is possible to change config dynamically by sending a config message to the node. The config messages has a payload with a config object like this example:
+The following config values can be changed dynamically:
 
-```json
-"payload": {
-  "config": {
-    "contextStorage": "file",
-    "maxHoursToSaveInSequence": 4,
-    "minHoursOnAfterMaxSequenceSaved": 2,
-    "minSaving": 0.02,
-    "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": true,
-    "outputValueForOn": true,
-    "outputValueForOff": false,
-    "outputValueForOntype": "bool",
-    "outputValueForOfftype": "bool",
-  }
-}
-```
+| Name                               | Description                                              |
+| ---------------------------------- | -------------------------------------------------------- |
+| `contextStorage`                   | String                                                   |
+| `maxHoursToSaveInSequence`         | Number                                                   |
+| `minHoursOnAfterMaxSequenceSaved`  | Number                                                   |
+| `minSaving`                        | Number                                                   |
+| `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
+| `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
+| `sendCurrentValueWhenRescheduling` | Legal values: `true`, `false`                            |
+| `outputValueForOn`                 | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOff`                | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOntype`             | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOfftype`            | See description in [Dynamic Config](./dynamic-config.md) |
+| `override`                         | Legal values: `"on"`, `"off"`, `"auto"`                  |
 
-::: tip Send only those you need
-All the variables in the config object are optional. You should send only those you want to change.
-:::
-
-Valid values for `outputValueForOntype` and `outputValueForOfftype` are `bool`, `num` and `str` and must correspond
-with the values for `outputValueForOn` and `outputValueForOff`. Also `str` values must be enclosed by quotes, for example:
-`"outputValueForOn": "myvalue"`, while `num` and `bool` values shall not, for example: `"outputValueForOn": 1`.
-
-The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
-
-When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
-
-However, you can send config and price data in the same message. Then both will be used.
+See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
 ### Dynamic commands
 
-You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
-
-Commands can be sent together with config or price data. You can command multiple commands in one message, but then put them all in the same commands-object.
-
-#### sendSchedule
-
-You can get the schedule sent to output 3 any time by sending a message like this to the node:
-
-```json
-"payload": {
-  "commands": {
-    "sendSchedule": true,
-  }
-}
-```
-
-When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
-
-#### sendOutput
-
-You can get the node to send the current output to output 1 or 2 any time by sending a message like this to the node:
-
-```json
-"payload": {
-  "commands": {
-    "sendOutput": true,
-  }
-}
-```
-
-When you do this, the current schedule is actually recalculated based on the last received data. The current output is sent to output 1 or 2, and the schedule is sent to output 3.
-
-#### reset
-
-You can reset data the node has saved in context by sending this message:
-
-```json
-"payload": {
-  "commands": {
-    "reset": true,
-  }
-}
-```
-
-When you do this, all historical data the node has saved is deleted, including the current schedule, so the result will be
-that the node shows status "No price data". When new price data is received, a schedule is calculated without considering any history.
-
-The nodes config is not deleted, as the node depends on it to work.
-
-::: warning
-This operation cannot be undone.
-
-However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
-:::
-
-#### replan
-
-By sending this command, you can have the node read the last received prices from the context storage,
-and make a plan based on those prices:
-
-```json
-"payload": {
-  "commands": {
-    "replan": true,
-  }
-}
-```
-
-If the context storage is `file` you can use this to create a new schedule after a restart,
-instead of fetching prices again.
+You can send dynamic commands to this node, for example to make it resend output.
+See [Dynamic Commands](./dynamic-commands.md) for details and how to send dynamic commands.
 
 ### Config saved in context
 

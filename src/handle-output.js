@@ -11,8 +11,6 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
         sendSchedule: Send current schedule on output 3.
         runSchedule: Reset schedule and run it for remaining plan.
 
-      TODO (otto): Expand outputCommands with "override", that can be either 
-                   on/true, off/false or none/null.
   */
 
   // Prepare output
@@ -29,7 +27,10 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   };
 
   // Find current output, and set output (if configured to do)
-  const currentValue = getOutputForTime(plan.schedule, planFromTime, node.outputIfNoSchedule);
+  const currentValue =
+    node.override === "auto"
+      ? getOutputForTime(plan.schedule, planFromTime, node.outputIfNoSchedule)
+      : node.override === "on";
   output3.payload.current = currentValue;
 
   // Send output

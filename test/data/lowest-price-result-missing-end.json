@@ -322,7 +322,8 @@
       "outputValueForOfftype": "bool",
       "outputValueForOn": true,
       "outputValueForOntype": "bool",
-      "outputOutsidePeriod": false
+      "outputOutsidePeriod": false,
+      "override": "auto"
     }
   },
   "_msgid": "892aabf20811e69f"

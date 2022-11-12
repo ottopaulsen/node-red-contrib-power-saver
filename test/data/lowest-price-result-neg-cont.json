@@ -20,6 +20,7 @@
     "outputValueForOfftype": "bool",
     "outputValueForOn": true,
     "outputValueForOntype": "bool",
+    "override": "auto",
     "sendCurrentValueWhenRescheduling": true,
     "toTime": "00"
   }

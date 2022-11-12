@@ -35,8 +35,8 @@ module.exports = {
           ],
         },
         {
-          text: "Data format",
-          children: ["/nodes/strategy-input.md"],
+          text: "Node features",
+          children: ["/nodes/strategy-input.md", "/nodes/dynamic-config.md", "/nodes/dynamic-commands.md"],
         },
       ],
       "/examples/": [

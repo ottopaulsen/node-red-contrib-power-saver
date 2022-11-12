@@ -546,6 +546,7 @@ describe("ps-strategy-lowest-price node", function () {
         sendCurrentValueWhenRescheduling: true,
         outputIfNoSchedule: false,
         outputOutsidePeriod: false,
+        override: "auto",
         wires: [["n3"], ["n4"], ["n2"]],
       },
       { id: "n2", type: "helper" },

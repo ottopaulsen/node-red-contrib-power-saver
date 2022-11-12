@@ -113,6 +113,49 @@ describe("send config as input", () => {
       n1.receive({ payload: makePayload(prices, testPlan.time) });
     });
   });
+  it("can override", function (done) {
+    const flow = makeFlow(3, 2, false);
+    helper.load(bestSave, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      let countOn = 0;
+      let countOff = 0;
+      let pass = 0;
+      n2.on("input", function (msg) {
+        pass++;
+        n1.warn.should.not.be.called;
+        if (pass === 1) {
+          setTimeout(() => {
+            console.log("countOn = " + countOn + ", countOff = " + countOff);
+            expect(countOn).toEqual(2);
+            expect(countOff).toEqual(2);
+            done();
+          }, 900);
+        }
+      });
+      n3.on("input", function (msg) {
+        countOn++;
+        expect(msg).toHaveProperty("payload", true);
+        if (countOn === 2) {
+          n1.receive({ payload: { config: { override: "on" } } });
+        }
+      });
+      n4.on("input", function (msg) {
+        countOff++;
+        expect(msg).toHaveProperty("payload", false);
+        if (countOff === 1) {
+          n1.receive({ payload: { config: { override: "on" }, name: "wrong name" } });
+        }
+        if (countOff === 2) {
+          n1.receive({ payload: { config: { override: "on" } } });
+        }
+      });
+      const time = prices.priceData[0].start;
+      n1.receive({ payload: makePayload(prices, time) });
+    });
+  });
 });
 
 function makePayloadWithConfigAndPrices(prices, time) {
