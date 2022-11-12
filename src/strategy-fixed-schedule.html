@@ -1,17 +1,14 @@
 <script type="text/javascript">
-  const defaultDaysGat = { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true };
-  RED.nodes.registerType("ps-general-add-tariff", {
+  const defaultDaysSfs = { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true };
+  RED.nodes.registerType("ps-strategy-fixed-schedule", {
     category: "Power Saver",
     color: "#a6bbcf",
     defaults: {
-      name: { value: "Add General Tariff" },
+      name: { value: "Fixed Schedule" },
       periods: {
-        value: [
-          { start: "22", value: 0.0 },
-          { start: "06", value: 0.0 },
-        ],
+        value: [{ start: "00", value: true }],
         validate: function () {
-          return !this.periods.some((p) => !/^(\d+\.\d*)|(\d+)$/.test("" + p.value));
+          return !this.periods.some((p) => !/^(true)|(false)$/.test("" + p.value));
         },
       },
       validFrom: {
@@ -24,7 +21,32 @@
         required: false,
         validate: RED.validators.regex(/^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/),
       },
-      days: { value: { ...defaultDaysGat } },
+      days: { value: { ...defaultDaysSfs } },
+      sendCurrentValueWhenRescheduling: {
+        value: true,
+        required: true,
+        align: "left",
+      },
+      outputValueForOn: {
+        value: true,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOntype", false),
+      },
+      outputValueForOff: {
+        value: false,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOfftype", false),
+      },
+      outputValueForOntype: {
+        value: "bool",
+        required: true,
+      },
+      outputValueForOfftype: {
+        value: "bool",
+        required: true,
+      },
+      outputIfNoSchedule: { value: "false", required: true, align: "left" },
+      contextStorage: { value: "default", required: false, align: "left" },
     },
     hours: [
       "00",
@@ -53,14 +75,43 @@
       "23",
     ],
     inputs: 1,
-    outputs: 1,
-    icon: "font-awesome/fa-plus",
+    outputs: 3,
+    icon: "font-awesome/fa-bar-chart",
     color: "#FFCC66",
     label: function () {
-      return this.name || "Add Tariff";
+      return this.name || "Fixed Schedule";
     },
-
+    outputLabels: ["on", "off", "schedule"],
     oneditprepare: function () {
+      $("#node-input-outputIfNoSchedule").typedInput({
+        types: [
+          {
+            value: "onoff",
+            options: [
+              { value: "true", label: "On" },
+              { value: "false", label: "Off" },
+            ],
+          },
+        ],
+      });
+      $("#node-input-contextStorage").typedInput({
+        types: [
+          {
+            value: "storages",
+            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
+          },
+        ],
+      });
+      $("#node-input-outputValueForOn").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOntype"),
+        types: ["bool", "num", "str"],
+      });
+      $("#node-input-outputValueForOff").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOfftype"),
+        types: ["bool", "num", "str"],
+      });
       const createElement = function (type, attrs = [], children = []) {
         const el = document.createElement(type);
         attrs.forEach((attr) => {
@@ -88,6 +139,7 @@
           ["id", id],
           ["style", `width: 80px; ${inpStyle};`],
         ]);
+
         inp.value = value;
         return createElement("span", [["style", "text-align: right;"]], [label, inp]);
       };
@@ -121,6 +173,7 @@
             delButton.innerText = "X";
             delButton.addEventListener("click", () => {
               removePeriod(periods, i);
+              setTypedInputOnValues(periods.length);
             });
             li = createElement("div", [["style", "text-align: left;"]], [timeEl, valEl, delButton]);
           } else {
@@ -186,26 +239,46 @@
         }
       };
 
+      const setTypedInputOnValues = function (length) {
+        for (let i = 0; i < length; i++) {
+          $("#node-input-value-" + i).typedInput({
+            types: [
+              {
+                value: "onoff",
+                options: [
+                  { value: "true", label: "On" },
+                  { value: "false", label: "Off" },
+                ],
+              },
+            ],
+          });
+        }
+      };
+
       drawPeriods(this.periods);
       $("#add-period-button").on("click", () => {
         addPeriod(this.periods);
+        setTypedInputOnValues(this.periods.length);
       });
+
+      // Set typed input for value on all periods
+      setTypedInputOnValues(this.periods.length);
 
       if (!this.days) {
         // To support nodes created before this was developed
-        this.days = { ...defaultDaysGat };
+        this.days = { ...defaultDaysSfs };
       }
       drawDays(this.days);
     },
   });
 </script>
 
-<script type="text/html" data-template-name="ps-general-add-tariff">
-  <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name" />
-  </div>
-
+<script type="text/html" data-template-name="ps-strategy-fixed-schedule">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
+    </div>
+  <h3>Schedule</h3>
   <div class="form-row node-input-period-container-row">
     <div id="node-input-period-container"></div>
   </div>
@@ -219,8 +292,6 @@
     <span id="node-input-days-container"></span>
   </div>
 
-  <h3>Optional:</h3>
-
   <div class="form-row">
     <label for="node-input-validFrom"><i class="fa fa-calendar"></i> Valid from date</label>
     <input type="text" id="node-input-validFrom" placeholder="YYYY-MM-DD" />
@@ -230,14 +301,39 @@
     <label for="node-input-validTo"><i class="fa fa-calendar"></i> Valid to date</label>
     <input type="text" id="node-input-validTo" placeholder="YYYY-MM-DD" />
   </div>
+  <h3>Output</h3>
+    <div class="form-row">
+      <div class="form-row">
+        <label for="node-input-outputValueForOn">Output value for on</label>
+        <input type="text" id="node-input-outputValueForOn" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOntype">
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputValueForOff">Output value for off</label>
+        <input type="text" id="node-input-outputValueForOff" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOfftype">
+    </div>
+        <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">
+        <input type="checkbox"
+               id="node-input-sendCurrentValueWhenRescheduling"
+               style="display:inline-block; width:22px; vertical-align:top;"
+               autocomplete="off"><span>Send when rescheduling</span>
+        </label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
+        <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
+        </label>
+    </div>
+    <h3>Context storage</h3>
+    <div class="form-row">
+      <label for="node-input-contextStorage"><i class="fa fa-archive"></i> Context storage</label>
+      <input type="text" id="node-input-contextStorage" style="width: 160px">
+  </div>
 </script>
 
-<script type="text/markdown" data-help-name="ps-general-add-tariff">
-  # Add Tariff
+<script type="text/markdown" data-help-name="ps-strategy-fixed-schedule">
+  A node you can use to save money by turning off and on a switch based on power prices.
 
-  A node to add a tariff that is fixed for periods of the day/year
-  to the price before it is sent to the strategy nodes.
-  Use this node between the receive-price node and any of the strategy nodes.
-
-  Please read more in the [node documentation](https://powersaver.no/nodes/ps-general-add-tariff.html)
+  Please read more in the [node documentation](https://powersaver.no/nodes/ps-strategy-fixed-schedule)
 </script>

@@ -25,6 +25,7 @@
       "ps-strategy-best-save": "src/strategy-best-save.js",
       "ps-strategy-lowest-price": "src/strategy-lowest-price.js",
       "ps-strategy-heat-capacitor": "src/strategy-heat-capacitor.js",
+      "ps-strategy-fixed-schedule": "src/strategy-fixed-schedule.js",
       "ps-schedule-merger": "src/schedule-merger.js",
       "ps-elvia-config": "src/elvia/elvia-config.js",
       "ps-elvia-tariff-types": "src/elvia/elvia-tariff-types.js",

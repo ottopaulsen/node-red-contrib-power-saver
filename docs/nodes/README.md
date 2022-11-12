@@ -24,6 +24,12 @@ Strategy to find the x hours with lowest price in a given period each day.
 
 A strategy for moving consumption from expensive to cheap periods utilizing climate entities and trading principles.
 
+### [ps-strategy-fixed-schedule](./ps-strategy-fixed-schedule)
+
+![ps-strategy-fixed-schedule](../images/node-ps-strategy-fixed-schedule.png)
+
+A strategy for setting a fixed daily or weekly schedule.
+
 ## Utility nodes
 
 ### [ps-receive-price](./ps-receive-price)

@@ -9,7 +9,7 @@ next: ./ps-general-add-tariff.md
 
 ## Description
 
-This node can be used to merge schedules from multiple strategy nodes, and create one resulting schedule. It can be useful for example to have multiple lowest price nodes to cover different periods of the day. Send all schedules as input to this node and get one schedule as output. It works for schedules from Lowest Price and Best Save.
+This node can be used to merge schedules from multiple strategy nodes, and create one resulting schedule. It can be useful for example to have multiple lowest price nodes to cover different periods of the day. Send all schedules as input to this node and get one schedule as output. It works for schedules from Lowest Price, Best Save and Fixed Schedule.
 
 ![Schedule Merger Example](../images/schedule-merger-example-1.png)
 
@@ -35,6 +35,12 @@ Only if all schedules has the hour set to `off` will the resulting schedule have
 
 For each hour, all schedules are compared. If any of them is `off`, the hour in the resulting schedule is `off`.
 Only if all schedules has the hour set to `on` will the resulting schedule have the hour `on``.
+
+::: tip Combine with Fixed Schedule
+Use the Fixed Schedule strategy node to create a mask for a period of the day when you want to make
+sure the switch is turned on or off, and then merge the schedule from the Fixed Schedule strategy with
+the schedule from for example the Lowest Price node, using the Schedule Merger node.
+:::
 
 ## Configuration
 
@@ -71,13 +77,6 @@ See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic co
 
 You can send dynamic commands to this node, for example to make it resend output.
 See [Dynamic Commands](./dynamic-commands.md) for details and how to send dynamic commands.
-
-### Config saved in context
-
-The nodes config is saved in the nodes context.
-If dynamic config is sent as input, this replaces the saved config.
-It is the config that is saved in context that is used when calculating.
-When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
 
 ## Input
 

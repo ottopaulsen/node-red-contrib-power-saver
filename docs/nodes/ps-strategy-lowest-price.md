@@ -93,13 +93,6 @@ See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic co
 You can send dynamic commands to this node, for example to make it resend output.
 See [Dynamic Commands](./dynamic-commands.md) for details and how to send dynamic commands.
 
-### Config saved in context
-
-The nodes config is saved in the nodes context.
-If dynamic config is sent as input, this replaces the saved config.
-It is the config that is saved in context that is used when calculating.
-When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
-
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md)

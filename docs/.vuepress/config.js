@@ -21,10 +21,8 @@ module.exports = {
               children: [
                 "/nodes/ps-strategy-best-save.md",
                 "/nodes/ps-strategy-lowest-price.md",
-                {
-                  text: "ps-strategy-heat-capacitor",
-                  link: "/nodes/ps-strategy-heat-capacitor.md",
-                },
+                "/nodes/ps-strategy-heat-capacitor.md",
+                "/nodes/ps-strategy-fixed-schedule.md",
               ],
             },
             { text: "Utility nodes", children: ["/nodes/ps-receive-price.md", "/nodes/ps-schedule-merger.md"] },

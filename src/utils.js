@@ -241,6 +241,12 @@ function fixOutputValues(config) {
   }
 }
 
+function fixPeriods(config) {
+  config.periods.forEach((p) => {
+    p.value = p.value === "true";
+  });
+}
+
 function getOutputForTime(schedule, time, defaultValue) {
   const pastSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) <= time);
   return pastSchedule.length ? pastSchedule[pastSchedule.length - 1].value : defaultValue;
@@ -254,6 +260,7 @@ module.exports = {
   fillArray,
   firstOn,
   fixOutputValues,
+  fixPeriods,
   getDiff,
   getDiffToNextOn,
   getEffectiveConfig,

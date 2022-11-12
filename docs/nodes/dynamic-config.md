@@ -67,3 +67,10 @@ Legal values for override are:
 | `"on"`   | The node will only send output `on`                                                      |
 | `"off"`  | The node will only send output `off`                                                     |
 | `"auto"` | The node will work according to the schedule. This is the standard and the default mode. |
+
+## Config saved in context
+
+The nodes config is saved in the nodes context.
+If dynamic config is sent as input, this replaces the saved config.
+It is the config that is saved in context that is used when calculating.
+When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.

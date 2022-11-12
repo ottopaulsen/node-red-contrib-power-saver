@@ -5,7 +5,6 @@ const { getEffectiveConfig } = require("./utils");
 module.exports = function (RED) {
   function PsGeneralAddTariffNode(config) {
     RED.nodes.createNode(this, config);
-    this.range = config.range;
     const node = this;
 
     const originalConfig = {
