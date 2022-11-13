@@ -1,4 +1,11 @@
-const { booleanConfig, fixOutputValues, fixPeriods, getSavings, saveOriginalConfig } = require("./utils");
+const {
+  booleanConfig,
+  calcNullSavings,
+  fixOutputValues,
+  fixPeriods,
+  getSavings,
+  saveOriginalConfig,
+} = require("./utils");
 const { strategyOnInput } = require("./strategy-functions");
 const { DateTime } = require("luxon");
 const cloneDeep = require("lodash.clonedeep");
@@ -10,10 +17,10 @@ module.exports = function (RED) {
     node.status({});
 
     const validConfig = {
-      periods: config.periods,
+      periods: config.periods || [],
       validFrom: config.validFrom,
       validTo: config.validTo,
-      days: config.days,
+      days: config.days || { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
       contextStorage: config.contextStorage || "default",
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       outputValueForOn: config.outputValueForOn || true,
@@ -33,7 +40,7 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
-      strategyOnInput(node, msg, doPlanning, getSavings);
+      strategyOnInput(node, msg, doPlanning, calcNullSavings);
     });
   }
   RED.nodes.registerType("ps-strategy-fixed-schedule", StrategyFixedScheduleNode);

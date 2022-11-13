@@ -29,33 +29,37 @@ describe("ps-strategy-fixed-schedule node", function () {
     });
   });
 
-  it("should send schedule on output 3", function (done) {
+  it("should turn on 2 to 6", function (done) {
     const flow = makeFlow();
     const expected = cloneDeep(result);
     helper.load(fixedSchedule, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
-      const n3 = helper.getNode("n3");
-      const n4 = helper.getNode("n4");
-      let countOn = 0;
-      let countOff = 0;
       n2.on("input", function (msg) {
         expect(equalPlan(expected, msg.payload)).toBeTruthy();
         n1.warn.should.not.be.called;
-        setTimeout(() => {
-          console.log("countOn = " + countOn + ", countOff = " + countOff);
-          expect(countOn).toEqual(0);
-          expect(countOff).toEqual(1);
-          done();
-        }, 90);
+        done();
       });
-      n3.on("input", function (msg) {
-        countOn++;
-        expect(msg).toHaveProperty("payload", true);
-      });
-      n4.on("input", function (msg) {
-        countOff++;
-        expect(msg).toHaveProperty("payload", false);
+      n1.receive({ payload: prices, time: prices.priceData[0].start });
+    });
+  });
+  it("should send correct if no schedule", function (done) {
+    const flow = makeFlow(true);
+    const expected = cloneDeep(result);
+    expected.schedule.push({
+      time: "2021-10-13T00:00:00.000+02:00",
+      value: true,
+      countHours: null,
+    });
+    expected.config.outputIfNoSchedule = true;
+
+    helper.load(fixedSchedule, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        n1.warn.should.not.be.called;
+        done();
       });
       n1.receive({ payload: prices, time: prices.priceData[0].start });
     });
@@ -73,7 +77,7 @@ function makePayload(prices, time) {
   return payload;
 }
 
-function makeFlow() {
+function makeFlow(outputIfNoSchedule = false) {
   return [
     {
       id: "n1",
@@ -85,6 +89,7 @@ function makeFlow() {
         { start: "06", value: false },
       ],
       sendCurrentValueWhenRescheduling: true,
+      outputIfNoSchedule,
       // validFrom: null,
       // validTo: null,
       wires: [["n3"], ["n4"], ["n2"]],
