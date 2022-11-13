@@ -6,7 +6,6 @@
       name: { value: "Add Elvia Grid Tariff" },
       elviaConfig: { value: "", type: "ps-elvia-config" },
       tariffKey: { value: "", required: true },
-      range: { value: "today", required: true },
     },
     inputs: 1,
     outputs: 1,
@@ -67,7 +66,7 @@
 </script>
 
 <script type="text/markdown" data-help-name="ps-elvia-add-tariff">
-  # Elvia Add Tariff (deprecated)
+  # Elvia Add Tariff
 
   A node to get the tariff from Elvia and add it to the price before it is sent to the power saver strategy nodes.
   Use this node between the receive-price node and any of the strategy nodes.

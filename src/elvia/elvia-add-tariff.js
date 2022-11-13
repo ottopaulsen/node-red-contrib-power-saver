@@ -8,7 +8,6 @@ module.exports = function (RED) {
     this.elviaConfig = RED.nodes.getNode(config.elviaConfig);
     const key = this.elviaConfig.credentials.elviaSubscriptionKey;
     this.tariffKey = config.tariffKey;
-    this.range = config.range;
     const node = this;
     ping(node, key);
 
