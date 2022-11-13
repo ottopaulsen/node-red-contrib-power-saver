@@ -23,13 +23,6 @@ Here is an example of how to combine it with the Lowest Price node:
 
 ![ps-strategy-fixed-schedule-example](../images/ps-strategy-fixed-schedule-example.png)
 
-::: tip Turn on every morning
-If you want to make sure that a switch is turned on at least 2 hours every morning from 04:00 to 06:00,
-even if you are using the Lowest Price node to turn it on only the 4 cheapest hours during
-the whole day, you can use this node to make sure it is on this period, and then merge it with the
-Lowest Price schedule using the Schedule Merger node with the `OR` function.
-:::
-
 ## Configuration
 
 ![Fixed Schedule Config](../images/fixed-schedule-config.png)
@@ -97,3 +90,19 @@ A payload with the value set in config, default `false` is sent to output 2 when
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
 The aoutput is similar to the output from the other strategy nodes.
+
+## Usage ideas
+
+### Turn on every morning
+
+If you want to make sure that a switch is turned on at least 2 hours every morning from 04:00 to 06:00,
+even if you are using the Lowest Price node to turn it on only the 4 cheapest hours during
+the whole day, you can use this node to make sure it is on this period, and then merge it with the
+Lowest Price schedule using the Schedule Merger node with the `OR` function.
+
+### Day-filter for strategy nodes
+
+If you have a strategy node, for example Lowest Price or Best Save, that you want to have effect only on weekdays,
+make a Fixed Schedule node with all hours on, but only valid for weekdays, then merge the two of them with
+the Schedule Merger function `"AND"`. Make sure the `If no schedule, send` is set to `off` so that this will be the
+values for the other days.

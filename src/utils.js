@@ -243,7 +243,7 @@ function fixOutputValues(config) {
 
 function fixPeriods(config) {
   config.periods.forEach((p) => {
-    p.value = p.value === "true";
+    p.value = p.value === "true" || p.value === true;
   });
 }
 

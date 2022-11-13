@@ -31,13 +31,13 @@
       "start": "2021-10-11T00:00:00.000+02:00",
       "price": 0.2494,
       "onOff": false,
-      "saving": 0.0395
+      "saving": null
     },
     {
       "start": "2021-10-11T01:00:00.000+02:00",
       "price": 0.2209,
       "onOff": false,
-      "saving": 0.011
+      "saving": null
     },
     {
       "start": "2021-10-11T02:00:00.000+02:00",
@@ -67,121 +67,121 @@
       "start": "2021-10-11T06:00:00.000+02:00",
       "price": 0.5433,
       "onOff": false,
-      "saving": 0.1396
+      "saving": null
     },
     {
       "start": "2021-10-11T07:00:00.000+02:00",
       "price": 0.5667,
       "onOff": false,
-      "saving": 0.163
+      "saving": null
     },
     {
       "start": "2021-10-11T08:00:00.000+02:00",
       "price": 0.5847,
       "onOff": false,
-      "saving": 0.181
+      "saving": null
     },
     {
       "start": "2021-10-11T09:00:00.000+02:00",
       "price": 0.5762,
       "onOff": false,
-      "saving": 0.1725
+      "saving": null
     },
     {
       "start": "2021-10-11T10:00:00.000+02:00",
       "price": 0.5391,
       "onOff": false,
-      "saving": 0.1354
+      "saving": null
     },
     {
       "start": "2021-10-11T11:00:00.000+02:00",
       "price": 0.5124,
       "onOff": false,
-      "saving": 0.1087
+      "saving": null
     },
     {
       "start": "2021-10-11T12:00:00.000+02:00",
       "price": 0.504,
       "onOff": false,
-      "saving": 0.1003
+      "saving": null
     },
     {
       "start": "2021-10-11T13:00:00.000+02:00",
       "price": 0.5057,
       "onOff": false,
-      "saving": 0.102
+      "saving": null
     },
     {
       "start": "2021-10-11T14:00:00.000+02:00",
       "price": 0.5066,
       "onOff": false,
-      "saving": 0.1029
+      "saving": null
     },
     {
       "start": "2021-10-11T15:00:00.000+02:00",
       "price": 0.5136,
       "onOff": false,
-      "saving": 0.1099
+      "saving": null
     },
     {
       "start": "2021-10-11T16:00:00.000+02:00",
       "price": 0.5143,
       "onOff": false,
-      "saving": 0.1106
+      "saving": null
     },
     {
       "start": "2021-10-11T17:00:00.000+02:00",
       "price": 0.5306,
       "onOff": false,
-      "saving": 0.1269
+      "saving": null
     },
     {
       "start": "2021-10-11T18:00:00.000+02:00",
       "price": 0.5534,
       "onOff": false,
-      "saving": 0.1497
+      "saving": null
     },
     {
       "start": "2021-10-11T19:00:00.000+02:00",
       "price": 0.5511,
       "onOff": false,
-      "saving": 0.1474
+      "saving": null
     },
     {
       "start": "2021-10-11T20:00:00.000+02:00",
       "price": 0.5491,
       "onOff": false,
-      "saving": 0.1454
+      "saving": null
     },
     {
       "start": "2021-10-11T21:00:00.000+02:00",
       "price": 0.5485,
       "onOff": false,
-      "saving": 0.1448
+      "saving": null
     },
     {
       "start": "2021-10-11T22:00:00.000+02:00",
       "price": 0.5481,
       "onOff": false,
-      "saving": 0.1444
+      "saving": null
     },
     {
       "start": "2021-10-11T23:00:00.000+02:00",
       "price": 0.5218,
       "onOff": false,
-      "saving": 0.1181
+      "saving": null
     },
     {
       "start": "2021-10-12T00:00:00.000+02:00",
       "price": 0.4533,
       "onOff": false,
-      "saving": 0.0496
+      "saving": null
     },
     {
       "start": "2021-10-12T01:00:00.000+02:00",
       "price": 0.4196,
       "onOff": false,
-      "saving": 0.0159
+      "saving": null
     },
     {
       "start": "2021-10-12T02:00:00.000+02:00",
@@ -211,109 +211,109 @@
       "start": "2021-10-12T06:00:00.000+02:00",
       "price": 0.4903,
       "onOff": false,
-      "saving": -0.0349
+      "saving": null
     },
     {
       "start": "2021-10-12T07:00:00.000+02:00",
       "price": 0.5028,
       "onOff": false,
-      "saving": -0.0224
+      "saving": null
     },
     {
       "start": "2021-10-12T08:00:00.000+02:00",
       "price": 0.5163,
       "onOff": false,
-      "saving": -0.0089
+      "saving": null
     },
     {
       "start": "2021-10-12T09:00:00.000+02:00",
       "price": 0.5264,
       "onOff": false,
-      "saving": 0.0012
+      "saving": null
     },
     {
       "start": "2021-10-12T10:00:00.000+02:00",
       "price": 0.5346,
       "onOff": false,
-      "saving": 0.0094
+      "saving": null
     },
     {
       "start": "2021-10-12T11:00:00.000+02:00",
       "price": 0.5224,
       "onOff": false,
-      "saving": -0.0028
+      "saving": null
     },
     {
       "start": "2021-10-12T12:00:00.000+02:00",
       "price": 0.5071,
       "onOff": false,
-      "saving": -0.0181
+      "saving": null
     },
     {
       "start": "2021-10-12T13:00:00.000+02:00",
       "price": 0.5045,
       "onOff": false,
-      "saving": -0.0207
+      "saving": null
     },
     {
       "start": "2021-10-12T14:00:00.000+02:00",
       "price": 0.5024,
       "onOff": false,
-      "saving": -0.0228
+      "saving": null
     },
     {
       "start": "2021-10-12T15:00:00.000+02:00",
       "price": 0.5038,
       "onOff": false,
-      "saving": -0.0214
+      "saving": null
     },
     {
       "start": "2021-10-12T16:00:00.000+02:00",
       "price": 0.5118,
       "onOff": false,
-      "saving": -0.0134
+      "saving": null
     },
     {
       "start": "2021-10-12T17:00:00.000+02:00",
       "price": 0.5111,
       "onOff": false,
-      "saving": -0.0141
+      "saving": null
     },
     {
       "start": "2021-10-12T18:00:00.000+02:00",
       "price": 0.5108,
       "onOff": false,
-      "saving": -0.0144
+      "saving": null
     },
     {
       "start": "2021-10-12T19:00:00.000+02:00",
       "price": 0.5055,
       "onOff": false,
-      "saving": -0.0197
+      "saving": null
     },
     {
       "start": "2021-10-12T20:00:00.000+02:00",
       "price": 0.5042,
       "onOff": false,
-      "saving": -0.021
+      "saving": null
     },
     {
       "start": "2021-10-12T21:00:00.000+02:00",
       "price": 0.5259,
       "onOff": false,
-      "saving": 0.0007
+      "saving": null
     },
     {
       "start": "2021-10-12T22:00:00.000+02:00",
       "price": 0.5282,
       "onOff": false,
-      "saving": 0.003
+      "saving": null
     },
     {
       "start": "2021-10-12T23:00:00.000+02:00",
       "price": 0.5252,
       "onOff": false,
-      "saving": 0
+      "saving": null
     }
   ],
   "source": "Tibber",
