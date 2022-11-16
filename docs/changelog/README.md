@@ -26,6 +26,7 @@ There are some breaking changes, but most users should not be affected by them.
   other number or string values.
 - The config output on Best Save and Lowest Price (as well as the new Schedule Merger) has a new attribute: `hasChanged`.
   It is set to `true` if the config just was changed by a config input message.
+- You can now donate using Vipps :-)
 
 ### Breaking changes
 
