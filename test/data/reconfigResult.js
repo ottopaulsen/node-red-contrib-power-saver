@@ -12,6 +12,7 @@ module.exports = {
     { time: "2021-06-20T01:50:00.360+02:00", value: true },
     { time: "2021-06-20T01:50:00.410+02:00", value: false },
     { time: "2021-06-20T01:50:00.440+02:00", value: true },
+    { time: "2021-06-20T02:50:00.470+02:00", value: false },
   ],
   hours: [
     { price: 0.2494, onOff: false, start: "2021-06-20T01:50:00.000+02:00", saving: 0.0395 },

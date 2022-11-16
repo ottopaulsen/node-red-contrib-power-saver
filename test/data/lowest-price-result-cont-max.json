@@ -4,9 +4,11 @@
     { "time": "2021-10-11T11:00:00.000+02:00", "value": true, "countHours": 4 },
     { "time": "2021-10-11T15:00:00.000+02:00", "value": false, "countHours": 21 },
     { "time": "2021-10-12T12:00:00.000+02:00", "value": true, "countHours": 4 },
-    { "time": "2021-10-12T16:00:00.000+02:00", "value": false, "countHours": 8 }
+    { "time": "2021-10-12T16:00:00.000+02:00", "value": false, "countHours": 8 },
+    { "time": "2021-10-13T00:00:00.000+02:00", "value": true, "countHours": null }
   ],
   "config": {
+    "hasChanged": false,
     "contextStorage": "default",
     "doNotSplit": true,
     "fromTime": "10",

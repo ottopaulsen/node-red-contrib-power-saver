@@ -1,3 +1,4 @@
+const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("expect");
 const {
@@ -8,10 +9,12 @@ const {
   getSavings,
   countAtEnd,
   makeSchedule,
+  makeScheduleFromHours,
   fillArray,
   extractPlanForDate,
   isSameDate,
 } = require("../src/utils");
+const testResult = require("./data/best-save-result.json");
 
 describe("utils", () => {
   it("can test boolean config", () => {
@@ -194,5 +197,15 @@ describe("utils", () => {
       ],
     };
     expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).toEqual(part1);
+  });
+  it("Can make schedule from hours", () => {
+    const hours = cloneDeep(testResult.hours);
+    const schedule = makeScheduleFromHours(hours, null);
+    const resultToValidate = schedule.map((s) => ({ time: s.time, value: s.value }));
+    resultToValidate.push({
+      time: "2021-06-20T02:50:00.470+02:00",
+      value: false,
+    });
+    expect(resultToValidate).toEqual(testResult.schedule);
   });
 });

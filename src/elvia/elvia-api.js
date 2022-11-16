@@ -38,6 +38,10 @@ function get(node, subscriptionKey, url, setResultStatus) {
     if (setResultStatus && node) {
       setNodeStatus(node, res.status);
     }
+    if (res.status === 500) {
+      console.error("Elvia internal server error (status 500)");
+      return;
+    }
     return res.json().then((json) => {
       if (json.statusCode === 401) {
         console.error("Elvia API error: " + json.message);
@@ -54,6 +58,8 @@ function setNodeStatus(node, status) {
     node.status({ fill: "red", shape: "dot", text: "Unauthorized" });
   } else if (status === 403) {
     node.status({ fill: "red", shape: "dot", text: "Forbidden" });
+  } else if (status === 500) {
+    node.status({ fill: "red", shape: "dot", text: "Elvia server error" });
   }
 }
 

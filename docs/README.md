@@ -17,10 +17,10 @@ actions:
 features:
   - title: Automatic scheduling
     details: Automatically calculate best plan and send signal to turn on and off.
-  - title: Best Save Strategy
-    details: Postpone power consumption when there is most to save, perfect for the water heater.
-  - title: Lowest Price Strategy
-    details: Turn on power when the prices are the lowest, perfect for smart charging or heating.
+  - title: Multiple strategies
+    details: Different strategies for different purposes. See Best Save, Lowest Price and Heat Capacitor.
+  - title: Grid Capacity Optimization
+    details: Automatically turn off consumption to avoid breaking capacity limits.
   - title: Add variable grid tariff
     details: Automatically add values that varies on fixed hours, or use API to get grid tariff from Elvia.
   - title: Perfect with Home Assistant

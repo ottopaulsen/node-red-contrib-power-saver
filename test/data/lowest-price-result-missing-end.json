@@ -309,6 +309,7 @@
     ],
     "source": "Nordpool",
     "config": {
+      "hasChanged": false,
       "contextStorage": "default",
       "fromTime": "22",
       "toTime": "08",
@@ -317,9 +318,13 @@
       "doNotSplit": true,
       "sendCurrentValueWhenRescheduling": true,
       "outputIfNoSchedule": false,
-      "outputOutsidePeriod": false
-    },
-    "sentOnCommand": false
+      "outputValueForOff": false,
+      "outputValueForOfftype": "bool",
+      "outputValueForOn": true,
+      "outputValueForOntype": "bool",
+      "outputOutsidePeriod": false,
+      "override": "auto"
+    }
   },
   "_msgid": "892aabf20811e69f"
 }

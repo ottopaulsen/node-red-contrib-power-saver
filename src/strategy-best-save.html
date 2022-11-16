@@ -22,8 +22,25 @@
       sendCurrentValueWhenRescheduling: {
         value: true,
         required: true,
-        // validate: RED.validators.number(),
         align: "left",
+      },
+      outputValueForOn: {
+        value: true,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOntype", false),
+      },
+      outputValueForOff: {
+        value: false,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOfftype", false),
+      },
+      outputValueForOntype: {
+        value: "bool",
+        required: true,
+      },
+      outputValueForOfftype: {
+        value: "bool",
+        required: true,
       },
       outputIfNoSchedule: { value: "true", required: true, align: "left" },
       contextStorage: { value: "default", required: false, align: "left" },
@@ -56,6 +73,16 @@
           },
         ],
       });
+      $("#node-input-outputValueForOn").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOntype"),
+        types: ["bool", "num", "str"],
+      });
+      $("#node-input-outputValueForOff").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOfftype"),
+        types: ["bool", "num", "str"],
+      });
     },
   });
 </script>
@@ -83,6 +110,16 @@
     </div>
   <h3>Output</h3>
     <div class="form-row">
+      <div class="form-row">
+        <label for="node-input-outputValueForOn">Output value for on</label>
+        <input type="text" id="node-input-outputValueForOn" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOntype">
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputValueForOff">Output value for off</label>
+        <input type="text" id="node-input-outputValueForOff" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOfftype">
+    </div>
         <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">
         <input type="checkbox"
                id="node-input-sendCurrentValueWhenRescheduling"

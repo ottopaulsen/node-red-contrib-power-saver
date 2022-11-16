@@ -170,6 +170,7 @@ module.exports = {
   ],
   source: "Other",
   config: {
+    hasChanged: false,
     maxHoursToSaveInSequence: 3,
     minHoursOnAfterMaxSequenceSaved: 2,
     minSaving: 0.001,

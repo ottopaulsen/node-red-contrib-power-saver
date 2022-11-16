@@ -1,5 +1,6 @@
 ---
-prev: ./ps-strategy-lowest-price.md
+prev: ./ps-strategy-heat-capacitor.md
+next: ./ps-schedule-merger.md
 ---
 
 # ps-receive-price

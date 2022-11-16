@@ -9,6 +9,11 @@
       "time": "2021-12-14T21:00:00.000+01:00",
       "value": true,
       "countHours": 3
+    },
+    {
+      "time": "2021-12-15T00:00:00.000+01:00",
+      "value": false,
+      "countHours": null
     }
   ],
   "hours": [
@@ -159,6 +164,7 @@
   ],
   "source": "Tibber",
   "config": {
+    "hasChanged": false,
     "contextStorage": "default",
     "fromTime": "16",
     "toTime": "00",
@@ -167,9 +173,13 @@
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": false,
-    "outputOutsidePeriod": false
+    "outputValueForOff": false,
+    "outputValueForOfftype": "bool",
+    "outputValueForOn": true,
+    "outputValueForOntype": "bool",
+    "outputOutsidePeriod": false,
+    "override": "auto"
   },
-  "sentOnCommand": false,
   "time": "2021-10-11T10:00:00.000+02:00",
   "version": "1.2.3"
 }

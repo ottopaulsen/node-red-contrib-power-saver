@@ -4,6 +4,21 @@ function booleanConfig(value) {
   return value === "true" || value === true;
 }
 
+function calcNullSavings(values, _) {
+  return values.map(() => null);
+}
+
+/**
+ * Save the config object in the context, and set
+ * all values directly on the node.
+ *
+ * @param {*} node
+ * @param {*} originalConfig Object with config values
+ */
+function saveOriginalConfig(node, originalConfig) {
+  node.context().set("config", originalConfig);
+}
+
 /**
  * Sort values in array and return array with index of original array
  * in sorted order. Highest value first.
@@ -62,14 +77,22 @@ function getEffectiveConfig(node, msg) {
     node.error("Node has no config");
     return {};
   }
+  res.hasChanged = false;
   const isConfigMsg = !!msg?.payload?.config;
   if (isConfigMsg) {
     const inputConfig = msg.payload.config;
     Object.keys(inputConfig).forEach((key) => {
-      res[key] = inputConfig[key];
+      if (res[key] !== inputConfig[key]) {
+        res[key] = inputConfig[key];
+        res.hasChanged = true;
+      }
     });
     node.context().set("config", res);
   }
+
+  // Store config variables in node
+  Object.keys(res).forEach((key) => (node[key] = res[key]));
+
   return res;
 }
 
@@ -77,7 +100,7 @@ function loadDayData(node, date) {
   // Load saved schedule for the date (YYYY-MM-DD)
   // Return null if not found
   const key = date.toISODate();
-  const saved = node.context().get(key, node.contextStorage);
+  const saved = node.context().get(key);
   const res = saved ?? {
     schedule: [],
     hours: [],
@@ -152,6 +175,14 @@ function makeSchedule(onOff, startTimes, initial = null) {
   return res;
 }
 
+function makeScheduleFromHours(hours, initial = null) {
+  return makeSchedule(
+    hours.map((h) => h.onOff),
+    hours.map((h) => h.start),
+    initial
+  );
+}
+
 function fillArray(value, count) {
   if (value === undefined || count <= 0) {
     return [];
@@ -187,21 +218,63 @@ function validationFailure(node, message, status = null) {
   node.warn(message);
 }
 
+function msgHasPriceData(msg) {
+  return !!msg?.payload?.priceData;
+}
+
+function msgHasConfig(msg) {
+  return !!msg?.payload?.config;
+}
+
+function fixOutputValues(config) {
+  if (config.outputValueForOntype === "bool") {
+    config.outputValueForOn = booleanConfig(config.outputValueForOn);
+  }
+  if (config.outputValueForOntype === "num") {
+    config.outputValueForOn = Number(config.outputValueForOn);
+  }
+  if (config.outputValueForOfftype === "bool") {
+    config.outputValueForOff = booleanConfig(config.outputValueForOff);
+  }
+  if (config.outputValueForOfftype === "num") {
+    config.outputValueForOff = Number(config.outputValueForOff);
+  }
+}
+
+function fixPeriods(config) {
+  config.periods.forEach((p) => {
+    p.value = p.value === "true" || p.value === true;
+  });
+}
+
+function getOutputForTime(schedule, time, defaultValue) {
+  const pastSchedule = schedule.filter((entry) => DateTime.fromISO(entry.time) <= time);
+  return pastSchedule.length ? pastSchedule[pastSchedule.length - 1].value : defaultValue;
+}
+
 module.exports = {
   booleanConfig,
+  calcNullSavings,
   countAtEnd,
   extractPlanForDate,
   fillArray,
   firstOn,
+  fixOutputValues,
+  fixPeriods,
   getDiff,
   getDiffToNextOn,
   getEffectiveConfig,
+  getOutputForTime,
   getSavings,
   getStartAtIndex,
   isSameDate,
   loadDayData,
   makeSchedule,
+  makeScheduleFromHours,
+  msgHasConfig,
+  msgHasPriceData,
   roundPrice,
+  saveOriginalConfig,
   sortedIndex,
   validationFailure,
 };

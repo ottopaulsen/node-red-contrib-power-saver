@@ -1,6 +1,10 @@
 {
-  "schedule": [{ "time": "2021-10-11T00:00:00.000+02:00", "value": false, "countHours": 48 }],
+  "schedule": [
+    { "time": "2021-10-11T00:00:00.000+02:00", "value": false, "countHours": 48 },
+    { "time": "2021-10-13T00:00:00.000+02:00", "value": true, "countHours": null }
+  ],
   "config": {
+    "hasChanged": false,
     "contextStorage": "default",
     "doNotSplit": true,
     "fromTime": "10",

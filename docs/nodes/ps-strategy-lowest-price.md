@@ -1,5 +1,6 @@
 ---
-next: ./ps-receive-price.md
+prev: ./ps-strategy-best-save.md
+next: ./ps-strategy-heat-capacitor.md
 ---
 
 # ps-strategy-lowest-price
@@ -16,17 +17,18 @@ The node can work on a specific period from 1 to 24 hours during a 24 hour perio
 
 ![Node Configuration](../images/lowest-price-config.png)
 
-| Value                  | Description                                                                      |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| From time              | The start time of the selected period.                                           |
-| To time                | The end time of the selected period.                                             |
-| Hours on               | The number of hours that shall be turned on.                                     |
-| Max price              | If set, does not turn on if price is over this limit. See below.                 |
-| Consecutive on-period  | Check this if you need the on-period to be consecutive.                          |
-| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. |
-| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off).              |
-| Outside period, send   | Select the value to send outside the selected period.                            |
-| Context storage        | Select context storage to save data to, if you want other than the default.      |
+| Value                  | Description                                                                                                                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| From time              | The start time of the selected period.                                                                                                                                                         |
+| To time                | The end time of the selected period.                                                                                                                                                           |
+| Hours on               | The number of hours that shall be turned on.                                                                                                                                                   |
+| Max price              | If set, does not turn on if price is over this limit. See below.                                                                                                                               |
+| Consecutive on-period  | Check this if you need the on-period to be consecutive.                                                                                                                                        |
+| Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
+| Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
+| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
+| Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                     |
 
 If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is significant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
 
@@ -64,117 +66,50 @@ If you leave `Max price` blank, it has no effect.
 
 ### Dynamic config
 
-It is possible to change config dynamically by sending a config message to the node. The config messages has a payload with a config object like this example:
+The following config values can be changed dynamically:
 
-```json
-"payload": {
-  "config": {
-    "contextStorage": "file",
-    "fromTime": 10,
-    "toTime": 16,
-    "hoursOn": 3,
-    "maxPrice": null,
-    "doNotSplit": false,
-    "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": false,
-    "outputOutsidePeriod": false
-  }
-}
-```
+| Name                               | Description                                              |
+| ---------------------------------- | -------------------------------------------------------- |
+| `contextStorage`                   | String                                                   |
+| `fromTime`                         | String with number, 2 digits, "00"-"23"                  |
+| `toTime`                           | String with number, 2 digits, "00"-"23"                  |
+| `hoursOn`                          | Number                                                   |
+| `maxPrice`                         | Number                                                   |
+| `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
+| `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
+| `doNotSplit`                       | Legal values: `true`, `false`                            |
+| `outputOutsidePeriod`              | Legal values: `true`, `false`                            |
+| `sendCurrentValueWhenRescheduling` | Legal values: `true`, `false`                            |
+| `outputValueForOn`                 | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOff`                | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOntype`             | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOfftype`            | See description in [Dynamic Config](./dynamic-config.md) |
+| `override`                         | Legal values: `"on"`, `"off"`, `"auto"`                  |
 
-All the variables in the config object are optional. You can send only those you want to change.
-
-The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
-
-When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
-
-However, you can send config and price data in the same message. Then both will be used .
+See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
 ### Dynamic commands
 
-You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
-
-Commands can be sent together with config and/or price data, but the exact behavior is not defined.
-
-#### sendSchedule
-
-You can get the schedule sent to output 3 any time by sending a message like this to the node:
-
-```json
-"payload": {
-  "commands": {
-    "sendSchedule": true,
-  }
-}
-```
-
-When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
-
-#### sendOutput
-
-You can get the node to send the current output to output 1 or 2 any time by sending a message like this to the node:
-
-```json
-"payload": {
-  "commands": {
-    "sendOutput": true,
-  }
-}
-```
-
-When you do this, the current schedule is actually recalculated based on the last received data. The current output is sent to output 1 or 2, and the schedule is sent to output 3.
-
-#### reset
-
-You can reset data the node has saved in context by sending this message:
-
-```json
-"payload": {
-  "commands": {
-    "reset": true,
-  }
-}
-```
-
-When you do this, all historical data the node has saved is deleted, including the current schedule, so the result will be
-that the node shows status "No price data". When new price data is received, a schedule is calculated without considering any history.
-
-The nodes config is not deleted, as the node depends on it to work.
-
-::: warning
-This operation cannot be undone.
-
-However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
-:::
-
-#### replan
-
-By sending this command, you can have the node read the last received prices from the context storage,
-and make a plan based on those prices:
-
-```json
-"payload": {
-  "commands": {
-    "replan": true,
-  }
-}
-```
-
-If the context storage is `file` you can use this to create a new schedule after a restart,
-instead of fetching prices again.
-
-### Config saved in context
-
-The nodes config is saved in the nodes context.
-If dynamic config is sent as input, this replaces the saved config.
-It is the config that is saved in context that is used when calculating.
-When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
+You can send dynamic commands to this node, for example to make it resend output.
+See [Dynamic Commands](./dynamic-commands.md) for details and how to send dynamic commands.
 
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md)
 
 ## Output
+
+There are three outputs. You use only those you need for your purpose.
+
+### Output 1
+
+A payload with the value set in config, default `true`, is sent to output 1 whenever the power / switch shall be turned on.
+
+### Output 2
+
+A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
+
+### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
@@ -238,6 +173,7 @@ Example of output:
     "contextStorage": "default",
     "fromTime": "04",
     "toTime": "18",
+    "hasChanged": false,
     "hoursOn": "06",
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,
@@ -298,7 +234,10 @@ This is an alternative to fetching new prices and send as input.
 
 ### Multiple nodes works together
 
-You can use multiple nodes simultanously, for different periods, if you want more hours on one part of the day than another part, or to make sure there are at least some hours on during each period.
+You can use multiple nodes simultanously, for different periods, for example if you want more hours on one part of the day than another part, or to make sure there are at least some hours on during each period. In this case set up one Lowest Price node for each period and
+combine the output from them into one schedule using the Schedule Merger node:
+
+![Combine two lowest price nodes](../images/combine-two-lowest-price.png)
 
 ### Highest price
 

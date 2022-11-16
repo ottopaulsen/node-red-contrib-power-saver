@@ -1,0 +1,339 @@
+<script type="text/javascript">
+  const defaultDaysSfs = { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true };
+  RED.nodes.registerType("ps-strategy-fixed-schedule", {
+    category: "Power Saver",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Fixed Schedule" },
+      periods: {
+        value: [{ start: "00", value: true }],
+        validate: function () {
+          return !this.periods.some((p) => !/^(true)|(false)$/.test("" + p.value));
+        },
+      },
+      validFrom: {
+        value: null,
+        required: false,
+        validate: RED.validators.regex(/^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/),
+      },
+      validTo: {
+        value: null,
+        required: false,
+        validate: RED.validators.regex(/^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/),
+      },
+      days: { value: { ...defaultDaysSfs } },
+      sendCurrentValueWhenRescheduling: {
+        value: true,
+        required: true,
+        align: "left",
+      },
+      outputValueForOn: {
+        value: true,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOntype", false),
+      },
+      outputValueForOff: {
+        value: false,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOfftype", false),
+      },
+      outputValueForOntype: {
+        value: "bool",
+        required: true,
+      },
+      outputValueForOfftype: {
+        value: "bool",
+        required: true,
+      },
+      outputIfNoSchedule: { value: "false", required: true, align: "left" },
+      contextStorage: { value: "default", required: false, align: "left" },
+    },
+    hours: [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+    ],
+    inputs: 1,
+    outputs: 3,
+    icon: "font-awesome/fa-bar-chart",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "Fixed Schedule";
+    },
+    outputLabels: ["on", "off", "schedule"],
+    oneditprepare: function () {
+      $("#node-input-outputIfNoSchedule").typedInput({
+        types: [
+          {
+            value: "onoff",
+            options: [
+              { value: "true", label: "On" },
+              { value: "false", label: "Off" },
+            ],
+          },
+        ],
+      });
+      $("#node-input-contextStorage").typedInput({
+        types: [
+          {
+            value: "storages",
+            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
+          },
+        ],
+      });
+      $("#node-input-outputValueForOn").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOntype"),
+        types: ["bool", "num", "str"],
+      });
+      $("#node-input-outputValueForOff").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOfftype"),
+        types: ["bool", "num", "str"],
+      });
+      const createElement = function (type, attrs = [], children = []) {
+        const el = document.createElement(type);
+        attrs.forEach((attr) => {
+          el.setAttribute(attr[0], attr[1]);
+        });
+        children.forEach((child) => {
+          el.append(child);
+        });
+        return el;
+      };
+
+      const createInputPart = function (name, i, text, inpStyle, value) {
+        const id = `node-input-${name}-${i}`;
+        const label = createElement(
+          "label",
+          [
+            ["for", id],
+            ["style", "margin-right: 10px;"],
+          ],
+          []
+        );
+        label.innerHTML = text;
+        const inp = createElement("input", [
+          ["type", "text"],
+          ["id", id],
+          ["style", `width: 80px; ${inpStyle};`],
+        ]);
+
+        inp.value = value;
+        return createElement("span", [["style", "text-align: right;"]], [label, inp]);
+      };
+
+      const addPeriod = function (periods) {
+        const prev = periods[periods.length - 1].start;
+        const next = prev === "23" ? "00" : "" + (parseInt(prev) + 1);
+        periods.push({ start: next, value: null });
+        drawPeriods(periods);
+      };
+
+      const removePeriod = function (periods, i) {
+        periods.splice(i, 1);
+        drawPeriods(periods);
+        RED.nodes.dirty(true);
+      };
+
+      const drawPeriods = function (periods) {
+        document.getElementById("node-input-period-container").replaceChildren();
+        for (let i = 0; i < periods.length; i++) {
+          let period = periods[i];
+
+          const timeEl = createInputPart("fromTime", i, "From time:", "margin-right: 20px;", period.start);
+          const valEl = createInputPart("value", i, "Value:", "margin-right: 20px;", period.value);
+
+          let li;
+          if (periods.length > 1) {
+            // Delete button
+            const delButton = document.createElement("button");
+            delButton.setAttribute("style", "width: 24px;");
+            delButton.innerText = "X";
+            delButton.addEventListener("click", () => {
+              removePeriod(periods, i);
+              setTypedInputOnValues(periods.length);
+            });
+            li = createElement("div", [["style", "text-align: left;"]], [timeEl, valEl, delButton]);
+          } else {
+            li = createElement("div", [["style", "text-align: left;"]], [timeEl, valEl]);
+          }
+          $("#node-input-period-container").append(li);
+
+          $("#node-input-fromTime-" + i).typedInput({
+            types: [
+              {
+                value: "fromTime",
+                options: hours.map((h) => ({ value: h, label: h + ":00" })),
+              },
+            ],
+          });
+          $("#node-input-fromTime-" + i).change(function () {
+            periods[i].start = this.value;
+            RED.nodes.dirty(true);
+          });
+          $("#node-input-value-" + i).change(function () {
+            periods[i].value = this.value;
+            RED.nodes.dirty(true);
+          });
+        }
+      };
+
+      const drawDays = function (days) {
+        const dayNames = Object.keys(days);
+        document.getElementById("node-input-days-container").replaceChildren();
+        for (let i = 0; i < dayNames.length; i++) {
+          let day = dayNames[i];
+
+          const id = `node-input-day-${i}`;
+          const label = createElement(
+            "label",
+            [
+              ["for", id],
+              ["style", " margin: 4px 10px 0px 2px;width: 30px; text-align: left;"],
+            ],
+            []
+          );
+          label.innerHTML = day;
+          const attrs = [
+            ["name", "node-input-day"],
+            ["type", "checkbox"],
+            ["id", id],
+            ["style", `width: 15px; margin: 2px 0px 5px 5px;`],
+          ];
+          if (days[day]) {
+            attrs.push(["checked", ""]);
+          }
+          const inp = createElement("input", attrs);
+          inp.value = dayNames[i];
+
+          const el = createElement("span", [["style", "text-align: right;"]], [inp, label]);
+
+          $("#node-input-days-container").append(el);
+
+          $("#node-input-day-" + i).change(function (e) {
+            days[day] = $(this).is(":checked");
+            RED.nodes.dirty(true);
+          });
+        }
+      };
+
+      const setTypedInputOnValues = function (length) {
+        for (let i = 0; i < length; i++) {
+          $("#node-input-value-" + i).typedInput({
+            types: [
+              {
+                value: "onoff",
+                options: [
+                  { value: "true", label: "On" },
+                  { value: "false", label: "Off" },
+                ],
+              },
+            ],
+          });
+        }
+      };
+
+      drawPeriods(this.periods);
+      $("#add-period-button").on("click", () => {
+        addPeriod(this.periods);
+        setTypedInputOnValues(this.periods.length);
+      });
+
+      // Set typed input for value on all periods
+      setTypedInputOnValues(this.periods.length);
+
+      if (!this.days) {
+        // To support nodes created before this was developed
+        this.days = { ...defaultDaysSfs };
+      }
+      drawDays(this.days);
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-strategy-fixed-schedule">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
+    </div>
+  <h3>Schedule</h3>
+  <div class="form-row node-input-period-container-row">
+    <div id="node-input-period-container"></div>
+  </div>
+
+  <div class="form-row">
+    <button type="button" id="add-period-button" class="red-ui-button">Add period</button>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-days-container"><i class="fa fa-calendar-o"></i> Days</label>
+    <span id="node-input-days-container"></span>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-validFrom"><i class="fa fa-calendar"></i> Valid from date</label>
+    <input type="text" id="node-input-validFrom" placeholder="YYYY-MM-DD" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-validTo"><i class="fa fa-calendar"></i> Valid to date</label>
+    <input type="text" id="node-input-validTo" placeholder="YYYY-MM-DD" />
+  </div>
+  <h3>Output</h3>
+    <div class="form-row">
+      <div class="form-row">
+        <label for="node-input-outputValueForOn">Output value for on</label>
+        <input type="text" id="node-input-outputValueForOn" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOntype">
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputValueForOff">Output value for off</label>
+        <input type="text" id="node-input-outputValueForOff" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOfftype">
+    </div>
+        <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">
+        <input type="checkbox"
+               id="node-input-sendCurrentValueWhenRescheduling"
+               style="display:inline-block; width:22px; vertical-align:top;"
+               autocomplete="off"><span>Send when rescheduling</span>
+        </label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
+        <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
+        </label>
+    </div>
+    <h3>Context storage</h3>
+    <div class="form-row">
+      <label for="node-input-contextStorage"><i class="fa fa-archive"></i> Context storage</label>
+      <input type="text" id="node-input-contextStorage" style="width: 160px">
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-strategy-fixed-schedule">
+  A node you can use to save money by turning off and on a switch based on power prices.
+
+  Please read more in the [node documentation](https://powersaver.no/nodes/ps-strategy-fixed-schedule)
+</script>

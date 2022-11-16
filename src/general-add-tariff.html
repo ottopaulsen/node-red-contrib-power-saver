@@ -1,7 +1,5 @@
 <script type="text/javascript">
-  const dateRe = /^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
-  const priceRe = /^(\d+\.\d*)|(\d+)$/;
-  const defaultDays = { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true };
+  const defaultDaysGat = { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true };
   RED.nodes.registerType("ps-general-add-tariff", {
     category: "Power Saver",
     color: "#a6bbcf",
@@ -13,12 +11,20 @@
           { start: "06", value: 0.0 },
         ],
         validate: function () {
-          return !this.periods.some((p) => !priceRe.test("" + p.value));
+          return !this.periods.some((p) => !/^(\d+\.\d*)|(\d+)$/.test("" + p.value));
         },
       },
-      validFrom: { value: null, required: false, validate: RED.validators.regex(dateRe) },
-      validTo: { value: null, required: false, validate: RED.validators.regex(dateRe) },
-      days: { value: { ...defaultDays } },
+      validFrom: {
+        value: null,
+        required: false,
+        validate: RED.validators.regex(/^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/),
+      },
+      validTo: {
+        value: null,
+        required: false,
+        validate: RED.validators.regex(/^$|^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/),
+      },
+      days: { value: { ...defaultDaysGat } },
     },
     hours: [
       "00",
@@ -187,7 +193,7 @@
 
       if (!this.days) {
         // To support nodes created before this was developed
-        this.days = { ...defaultDays };
+        this.days = { ...defaultDaysGat };
       }
       drawDays(this.days);
     },

@@ -1,10 +1,64 @@
 ---
 sidebar: "auto"
+sidebarDepth: 1
 ---
 
 # Change Log
 
-List the most significant changes, starting in version 1.0.9.
+List the most significant changes.
+
+## 4.0.0
+
+This is a major rewrite of some of the central code, in order to lay ground for further development and maintenance.
+There are a couple of new nodes that open for many interesting use cases.
+A rewrite like this may lead to changes in behavior, intended or not.
+There are some breaking changes, but most users should not be affected by them.
+
+### New features
+
+- New node `ps-schedule-merger` or `Schedule Merger`, used to merge schedules from multiple Best Save and/or Lowest Price nodes,
+  as well as the new Fixed Schedule node.
+- New strategy node `ps-strategy-fixed-schedule` or `Fixed Schedule`, to set a fixed daily or weekly schedule.
+  The main purpose of this node is to function as a mask for other strategies when merged using the Schedule Merger,
+  but it can also be used alone.
+- For Best Save and Lowest Price you now can configure the output value, sent on output 1 and 2 to turn on or off.
+  Default is true/false as before, but you can configure to send for example 1 and 0, or "on" and "off", or any
+  other number or string values.
+- The config output on Best Save and Lowest Price (as well as the new Schedule Merger) has a new attribute: `hasChanged`.
+  It is set to `true` if the config just was changed by a config input message.
+- You can now donate using Vipps :-)
+
+### Breaking changes
+
+- The old Power Saver node has been removed, as it has been deprecated for a long time.
+- The `sentOnCommand` output has been removed.
+- Some bug-fixes may be regarded as breaking.
+- There may be some changes to what data that is stored in the context.
+
+### Bug fixes
+
+- Fix so the `If no schedule, send` config works as one should expect for the end of the schedule.
+  If the last scheduled switch is different from this setting, a switch to the
+  value set by this setting will be scheduled on the first hour after the whole schedule, normally at midnight.
+  The `countHours` value for this schedule will be `null`, as it is impossible to say how many hours it will last for.
+- Fixed also so `If no schedule, send` works if the schedule only exists for the future. Then this value is used until the
+  time for the first scheduled value is reached.
+- Fixed Best Save and Lowest Price so when rescheduling, for example if prices are received,
+  and `Send when rescheduling` is not checked,
+  output to output 1 or output 2 is only sent if it has not been sent before,
+  or if it is changed by the new schedule. This is to avoid sending output when not
+  necessary, that is if there is no change. Of course, if the `Send when rescheduling` is checked,
+  output is sent anyway.
+
+  NB! If for some reason a switch did not catch the last output, this may lead to it not being switched
+  until the next scheduled switch. If you get trouble with that, you can always enforce switch output
+  by sending the [`sendOutput` command](../nodes/dynamic-commands.html#sendoutput).
+
+- Fix price receiver so it works when price is 0.
+- Fixed bug in Lowest Price and Best Save for 0 prices.
+- Improved error handling for Elvia Add Tariff.
+
+<VippsPlakat/>
 
 ## 3.6.2
 

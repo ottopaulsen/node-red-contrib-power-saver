@@ -1,3 +1,7 @@
+---
+prev: ./ps-general-add-tariff.md
+---
+
 # ps-elvia-add-tariff
 
 ![ps-elvia-add-tariff](../images/node-ps-elvia-add-tariff.png)
