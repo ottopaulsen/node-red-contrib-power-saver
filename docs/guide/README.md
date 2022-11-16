@@ -222,3 +222,5 @@ You may directly replace the `Power Saver` node by two of the new nodes (`ps-rec
 ![Migrate Power Saver](../images/migrate-best-save.png)
 
 See more details in the [documentation for the `ps-strategy-best-save`](../nodes/ps-strategy-best-save.md) node.
+
+<VippsPlakat/>

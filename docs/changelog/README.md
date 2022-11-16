@@ -57,6 +57,8 @@ There are some breaking changes, but most users should not be affected by them.
 - Fixed bug in Lowest Price and Best Save for 0 prices.
 - Improved error handling for Elvia Add Tariff.
 
+<VippsPlakat/>
+
 ## 3.6.2
 
 - Fix bug in Elvia API causing Node-RED to crash when the API key was wrong. Not it shows status `Unauthorized` and survive.

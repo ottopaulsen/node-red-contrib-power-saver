@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <div class="left">
+    <div v-if="paypal" class="left">
       <form action="https://www.paypal.com/donate" method="post" target="_blank">
         <input type="hidden" name="business" value="5K5SRZU27TAC8" />
         <input type="hidden" name="no_recurring" value="0" />
@@ -16,7 +16,7 @@
         />
       </form>
     </div>
-    <div class="right">
+    <div v-if="patreon" class="center">
       <a
         class="patreonButton"
         href="https://www.patreon.com/bePatron?u=65948417"
@@ -25,15 +25,28 @@
         >Become a Patron!
       </a>
     </div>
+    <div v-if="vipps" class="right vipps-box">
+      <span>
+        <img src="../../images/vipps-smiling-rgb-orange-pos.png" height="30" />
+      </span>
+      <span class="vippsnummer">#781437 </span>
+    </div>
   </div>
   <div><br /></div>
 </template>
-<script setup></script>
+<script setup>
+const props = defineProps({
+  paypal: { type: Boolean, required: false, default: true },
+  patreon: { type: Boolean, required: false, default: true },
+  vipps: { type: Boolean, required: false, default: true },
+});
+</script>
 
 <style scoped>
 .box {
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
 }
 left {
   flex: 1 1 auto;
@@ -82,5 +95,15 @@ right {
   font-size: 0.875rem !important;
   text-decoration: none;
   cursor: pointer;
+}
+
+.vipps-box {
+  display: flex;
+  align-items: flex-start;
+}
+
+.vippsnummer {
+  font-size: 1.3rem;
+  margin-left: 10px;
 }
 </style>

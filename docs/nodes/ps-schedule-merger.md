@@ -210,3 +210,18 @@ Example of output:
 ```
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off and the start time of the hour. The `saving` value is always `null`.
+
+## Usage ideas
+
+### Multiple Lowest Price
+
+If you want a switch to be on for example two of the cheapest hours between 00:00 and 08:00, and then the two cheapest hours between 12:00 and 20:00, you can do this by combining the schedule from two Lowest Price nodes, one for each of the mentioned periods. Merge the two using a Schedule Merger node with the `OR` function. Make sure to send `off` if no schedule for all nodes.
+
+### Day-filter for strategy nodes
+
+If you have a strategy node, for example Lowest Price or Best Save, that you want to have effect only on weekdays,
+make a Fixed Schedule node with all hours on, but only valid for weekdays, then merge the two of them with
+the Schedule Merger function `"AND"`. Make sure the `If no schedule, send` is set to `off` so that this will be the
+values for the other days.
+
+<VippsPlakat/>

@@ -99,10 +99,3 @@ If you want to make sure that a switch is turned on at least 2 hours every morni
 even if you are using the Lowest Price node to turn it on only the 4 cheapest hours during
 the whole day, you can use this node to make sure it is on this period, and then merge it with the
 Lowest Price schedule using the Schedule Merger node with the `OR` function.
-
-### Day-filter for strategy nodes
-
-If you have a strategy node, for example Lowest Price or Best Save, that you want to have effect only on weekdays,
-make a Fixed Schedule node with all hours on, but only valid for weekdays, then merge the two of them with
-the Schedule Merger function `"AND"`. Make sure the `If no schedule, send` is set to `off` so that this will be the
-values for the other days.

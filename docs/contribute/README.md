@@ -6,11 +6,16 @@ sidebar: "auto"
 
 ## Donate
 
-Developing software is time consuming. This solution has taken the better part of all my free time for about 3 quarters of a year. Getting something back would make it easier to also spend future time on this.
+Developing software is time consuming. This solution has taken the better part of all my free time for a couple of years now. Getting something back would make it easier to also spend future time on this.
 
-I am trying out Patreon and PayPals "Donate" to see if it is possible to get something back for the work I do. The software is open source, and you can use it for free, but if you feel it has value, you can support the development by donating or becoming a patron, paying a fee of your choice.
+<VippsPlakat/>
 
-<DonateButtons></DonateButtons>
+The software is open source, and you can use it for free, but if you feel it has value, you can support the development by donating or becoming a patron, paying a fee of your choice.
+
+<br/>
+<br/>
+
+<DonateButtons/>
 
 ## Code
 
