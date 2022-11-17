@@ -156,3 +156,7 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
 ## Output
 
 The output is the [common strategy input format](./strategy-input.md), so it can be sent directly to the strategy nodes, or via any `ps-xxx-add-tariff` node.
+
+###
+
+<AdsenseAdd type="nederst"/>

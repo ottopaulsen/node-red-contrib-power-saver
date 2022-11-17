@@ -54,3 +54,7 @@ The input is the [common strategy input format](./strategy-input.md)
 ## Output
 
 The output is the [common strategy input format](./strategy-input.md)
+
+###
+
+<AdsenseAdd type="nederst"/>

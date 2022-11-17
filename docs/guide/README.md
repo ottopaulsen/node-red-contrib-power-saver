@@ -129,6 +129,10 @@ Data can be sent from both the `current state` node or the `events: state` node.
 
 [See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Add grid tariff
 
 When also the grid tariff changes per hour, it must be added to the electricity price in order to get the calculations right.

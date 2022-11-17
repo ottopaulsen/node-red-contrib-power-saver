@@ -74,3 +74,7 @@ The nodes config is saved in the nodes context.
 If dynamic config is sent as input, this replaces the saved config.
 It is the config that is saved in context that is used when calculating.
 When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
+
+###
+
+<AdsenseAdd type="nederst"/>

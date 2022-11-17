@@ -77,3 +77,7 @@ and make a plan based on those prices:
 
 If the context storage is `file` you can use this to create a new schedule after a restart,
 instead of fetching prices again.
+
+###
+
+<AdsenseAdd type="nederst"/>

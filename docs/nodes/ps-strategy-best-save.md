@@ -229,3 +229,7 @@ Read more about this in the [MMM-Tibber documentation](https://github.com/ottopa
 ## Viewer
 
 If you like to analyze the data output by the node, take a look at the [Best Save Viewer](../faq/best-save-viewer.md).
+
+###
+
+<AdsenseAdd type="nederst"/>

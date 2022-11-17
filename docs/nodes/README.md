@@ -1,3 +1,5 @@
+<AdsenseAdd type="øverst"/>
+
 # Nodes
 
 Here is an overview of the nodes, and links to detailed descriptions for eah of them.
@@ -29,6 +31,10 @@ A strategy for moving consumption from expensive to cheap periods utilizing clim
 ![ps-strategy-fixed-schedule](../images/node-ps-strategy-fixed-schedule.png)
 
 A strategy for setting a fixed daily or weekly schedule.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Utility nodes
 
@@ -72,4 +78,4 @@ Use this to get the Elvia grid tariff for a selected tariff type.
 
 ###
 
-<AdsenseAdd/>
+<AdsenseAdd type="nederst"/>

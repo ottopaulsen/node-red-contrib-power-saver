@@ -246,3 +246,7 @@ If you want to find the `x` hours with the highest prices, do as follows:
 1. Calculate `y` as the total number of hours in the period. For example, if the period is from `08:00` to `20:00`, then `y = 12`.
 2. Configure `Hours On = y - x`, so if `x = 4`, then `Hours On = 12 - 4 = 8`.
 3. Use **Output 2** to get a signal when you have the hours with the highest prices. Just remember that the value sent to output 2 is `false`, not `true` as it is on output 1.
+
+###
+
+<AdsenseAdd type="nederst"/>

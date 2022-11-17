@@ -349,3 +349,7 @@ Full example:
   ]
 }
 ```
+
+###
+
+<AdsenseAdd type="nederst"/>

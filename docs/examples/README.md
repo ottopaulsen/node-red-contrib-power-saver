@@ -1,3 +1,5 @@
+<AdsenseAdd type="øverst"/>
+
 # Examples
 
 [Nord Pool and `current state` node in HA](./example-nordpool-current-state)
@@ -17,3 +19,7 @@
 ## User provided examples
 
 [Output schedule to a sensor entity](./example-next-schedule-entity.md) (by Stefan)
+
+###
+
+<AdsenseAdd type="nederst"/>

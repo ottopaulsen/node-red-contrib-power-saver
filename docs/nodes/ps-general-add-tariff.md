@@ -73,3 +73,7 @@ The input is the [common strategy input format](./strategy-input.md)
 The output is the [common strategy input format](./strategy-input.md)
 
 If there is a config property in the input payload, it is passed on to the output payload.
+
+###
+
+<AdsenseAdd type="nederst"/>
