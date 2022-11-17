@@ -1,4 +1,5 @@
 <template>
+  <br />
   <div>
     <ins
       class="adsbygoogle"
@@ -14,7 +15,6 @@
 <script setup>
 import { onMounted } from "vue";
 onMounted(() => {
-  console.log("This is onMounted");
   (adsbygoogle = window.adsbygoogle || []).push({});
 });
 </script>
