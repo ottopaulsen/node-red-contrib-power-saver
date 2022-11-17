@@ -37,6 +37,10 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 
 The node consumes price information and outputs $\Delta T$ on its first output and the planned schedule and benefit calculations on the second output. The $\Delta T$ is used to adjust the set-point of a climate entity.
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### The impact of **Time +1C**
 
 This time is used to optimize the timing of when to turn up the heat. An increase in temperature from 22 to 23C will cause an increased electricity consumption for quite some time after the change has occurred. For heat-pumps, the air is heated first, then walls, furniture etc., creating a high electricity demand in the first hour or so before the demand slowly reduces down to normal levels. The algorithm uses this time to estimate a period of increased consumption and places this at an optimum point in time.

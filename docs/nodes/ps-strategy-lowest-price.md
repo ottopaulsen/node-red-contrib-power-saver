@@ -64,6 +64,10 @@ If `Consecutive on period` is on (checked), hours will be turned on only if the 
 If you leave `Max price` blank, it has no effect.
 :::
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Dynamic config
 
 The following config values can be changed dynamically:
@@ -112,6 +116,10 @@ A payload with the value set in config, default `false` is sent to output 2 when
 ### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 Example of output:
 

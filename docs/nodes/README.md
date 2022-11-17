@@ -4,6 +4,10 @@
 
 Here is an overview of the nodes, and links to detailed descriptions for eah of them.
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Strategy nodes
 
 These are the nodes used to calculate and control saving.

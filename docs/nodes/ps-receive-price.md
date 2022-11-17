@@ -27,6 +27,10 @@ That is why this is now a separate node.
 
 There is no configuration except from node name.
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Input
 
 ### Tibber input
@@ -119,6 +123,10 @@ Then use the id in the following query, replacing the id with the one you found 
 ```
 
 This is the query you shall put in the `tibber-query` node.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ### Nord Pool input
 

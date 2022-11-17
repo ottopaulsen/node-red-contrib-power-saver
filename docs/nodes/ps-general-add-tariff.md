@@ -9,6 +9,10 @@ next: ./ps-elvia-add-tariff.md
 
 Node to add a value, for example a variable grid tariff, to the price before it is used to calculate savings in the strategy nodes.
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Description
 
 This node is useful if there is an addition to the electricity price that varies over the day or the week, as it might be for the grid tariff.
@@ -63,6 +67,10 @@ If this is empty, the config is valid from the dawn of time.
 Fill in the last date the config is valid.
 
 If this is empty, the config is valid until forever.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Input
 

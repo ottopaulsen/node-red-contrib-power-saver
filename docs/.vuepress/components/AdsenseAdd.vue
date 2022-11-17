@@ -3,7 +3,7 @@
     <ins
       v-if="øverst"
       class="adsbygoogle"
-      style="display: inline-block; width: 740px; height: 50px"
+      style="display: inline-block; width: 740px; height: 90px"
       data-ad-client="ca-pub-9857859182772006"
       data-ad-slot="7524453641"
     ></ins>

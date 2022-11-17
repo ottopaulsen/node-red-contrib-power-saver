@@ -39,6 +39,10 @@ Here is an example of how to combine it with the Lowest Price node:
 | If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.                                                                                                |
 | Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                                                                                                          |
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Dynamic config
 
 The following config values can be changed dynamically:
@@ -90,6 +94,10 @@ A payload with the value set in config, default `false` is sent to output 2 when
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
 The aoutput is similar to the output from the other strategy nodes.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Usage ideas
 

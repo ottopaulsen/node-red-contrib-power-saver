@@ -1,3 +1,7 @@
+###
+
+<AdsenseAdd type="øverst"/>
+
 # Dynamic commands
 
 You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
@@ -38,6 +42,10 @@ You can get the node to send the current output to output 1 or 2 any time by sen
 ```
 
 When you do this, the current schedule is actually recalculated based on the last received data. The current output is sent to output 1 or 2.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ### reset
 

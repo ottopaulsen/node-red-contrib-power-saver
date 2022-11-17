@@ -37,6 +37,10 @@ The picture at the bottom of the page, under [Integration with MagicMirror](#int
 NB! The `Min recover` only has effect if the previous save-period is of length `Max per sequence`. If the save-period is shorter, the following on-period may be as short as one hour.
 :::
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Dynamic config
 
 The following config values can be changed dynamically:
@@ -90,6 +94,10 @@ A payload with the value set in config, default `false` is sent to output 2 when
 ### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 Example of output:
 
@@ -155,6 +163,10 @@ The `schedule` and the `hours` arrays from Output 3 are both saved to the nodes 
 
 You can see the saved data if you select the node in Node-RED, and view "Context data", and refresh the Node context.
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Algorithm
 
 The calculation that decides what hours to turn off works as follows:
@@ -215,6 +227,10 @@ and set `msg.payload` to the following JSON value:
 ```
 
 This is an alternative to fetching new prices and send as input.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Integration with MagicMirror
 

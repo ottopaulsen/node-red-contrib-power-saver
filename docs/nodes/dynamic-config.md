@@ -31,6 +31,10 @@ to be able to override a specific strategy node.
 The `name` is the exact same value as you set as name in the nodes config.
 :::
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Output values
 
 Valid values for `outputValueForOntype` and `outputValueForOfftype` are `bool`, `num` and `str` and must correspond

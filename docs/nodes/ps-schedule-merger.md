@@ -55,6 +55,10 @@ the schedule from for example the Lowest Price node, using the Schedule Merger n
 | Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
 | If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Dynamic config
 
 The following config values can be changed dynamically:

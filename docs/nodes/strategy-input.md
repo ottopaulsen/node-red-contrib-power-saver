@@ -37,3 +37,7 @@ This format is used for:
 - Output of the `ps-receive-price` node
 - Input and output of the `ps-xxx-add-tariff` nodes
 - Input for the strategy nodes (`ps-strategy-xxx-xxx`)
+
+###
+
+<AdsenseAdd type="nederst"/>

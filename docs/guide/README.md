@@ -31,6 +31,10 @@ Here prices are received from Tibber, converted in the `ps-receive-price` node, 
 The node collection fits very well with Home Assistant (HA), as Node-RED is frequently used for automations, and there also is an integration with Nord Pool, but there is no direct dependency to HA, so all nodes can be used also without HA.
 :::
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Getting started
 
 ### Installation
@@ -196,6 +200,10 @@ There are many ways you can use the output:
 - Send a notification
   :::
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Display schedule
 
 **Output 3** can be used to print or display the calculated schedule. If you just want to see it, send it to a debug node. You can also use it to display the result as graphs in HA.
@@ -217,6 +225,10 @@ Se the [Schedule Merger](../nodes/ps-schedule-merger.md) node for more details.
 ### More information
 
 There are more details and more information in the documentation for each [node](/nodes/) and in the [examples](/examples/).
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Migration from v2
 

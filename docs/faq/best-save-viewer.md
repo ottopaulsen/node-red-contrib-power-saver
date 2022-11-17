@@ -15,6 +15,10 @@ Then paste it here and see the result below:
 
 <BestSaveVerificator/>
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Explanation
 
 ### Config
@@ -52,6 +56,10 @@ Above the table you can select to see the average per hour or the su for all sav
 If the average per hour is less than what you have configured as `Minimum saving`, the number is red, and that sequence will not be used.
 
 If the number is black, it could be used, but only if all other criteria are satisfied, and only if it saves more than any other combination.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Something seems wrong
 
