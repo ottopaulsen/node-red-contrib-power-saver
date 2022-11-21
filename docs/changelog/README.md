@@ -7,6 +7,12 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 4.1.0
+
+- Fix bug with override function. It did not override longer than until next scheduled change. Now it overrides until set to auto again.
+- Show override on node status.
+- Fix name filter on schedule merger node.
+
 ## 4.0.0
 
 This is a major rewrite of some of the central code, in order to lay ground for further development and maintenance.

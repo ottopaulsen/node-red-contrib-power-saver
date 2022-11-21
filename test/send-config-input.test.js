@@ -115,6 +115,7 @@ describe("send config as input", () => {
   });
   it("can override", function (done) {
     const flow = makeFlow(3, 2, false);
+    const time = prices.priceData[0].start;
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -131,6 +132,7 @@ describe("send config as input", () => {
             console.log("countOn = " + countOn + ", countOff = " + countOff);
             expect(countOn).toEqual(2);
             expect(countOff).toEqual(2);
+            n1.status.should.be.calledWithExactly({ fill: "yellow", shape: "dot", text: "Override on" });
             done();
           }, 900);
         }
@@ -139,20 +141,19 @@ describe("send config as input", () => {
         countOn++;
         expect(msg).toHaveProperty("payload", true);
         if (countOn === 2) {
-          n1.receive({ payload: { config: { override: "on" } } });
+          n1.receive({ payload: { config: { override: "on" }, time } });
         }
       });
       n4.on("input", function (msg) {
         countOff++;
         expect(msg).toHaveProperty("payload", false);
         if (countOff === 1) {
-          n1.receive({ payload: { config: { override: "on" }, name: "wrong name" } });
+          n1.receive({ payload: { config: { override: "on" }, name: "wrong name" }, time });
         }
         if (countOff === 2) {
-          n1.receive({ payload: { config: { override: "on" } } });
+          n1.receive({ payload: { config: { override: "on" }, time } });
         }
       });
-      const time = prices.priceData[0].start;
       n1.receive({ payload: makePayload(prices, time) });
     });
   });

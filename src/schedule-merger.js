@@ -45,6 +45,10 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg) {
+      if (msg.payload?.name && msg.payload.name !== node.name) {
+        // If payload.name is set, and does not match this nodes name, discard message
+        return;
+      }
       if (msg.payload.hours) {
         // Delete config from strategy nodes so it does not merge
         // with config for this node.
@@ -100,7 +104,7 @@ module.exports = function (RED) {
 
           handleOutput(node, config, plan, outputCommands, planFromTime);
         },
-        commands.replan ? 0 : node.schedulingDelay
+        commands.replan || msg.payload.config ? 0 : node.schedulingDelay
       );
     });
   }

@@ -86,6 +86,9 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
 function getCommands(msg) {
   const legalCommands = ["reset", "replan", "sendOutput", "sendSchedule"];
   const commands = { legal: true };
+  if (msg.payload?.config?.override === "auto") {
+    commands.runSchedule = true;
+  }
   if (!msg?.payload?.commands) {
     return commands;
   }

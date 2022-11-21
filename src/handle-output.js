@@ -13,6 +13,9 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
 
   */
 
+  // Clear status
+  node.status({});
+
   // Prepare output
   let output3 = {
     payload: {
@@ -44,9 +47,14 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   }
 
   // Run schedule
+  clearTimeout(node.schedulingTimeout);
   if (outputCommands.runSchedule) {
-    clearTimeout(node.schedulingTimeout);
-    node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, true);
+    runSchedule(node, plan.schedule, planFromTime, true);
+  }
+
+  // Set status if override
+  if (config.override !== "auto") {
+    node.status({ fill: "yellow", shape: "dot", text: "Override " + config.override });
   }
 }
 

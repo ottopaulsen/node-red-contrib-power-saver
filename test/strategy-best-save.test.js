@@ -96,6 +96,7 @@ describe("ps-strategy-best-save node", function () {
       n1.receive({ payload: makePayload(prices, plan.time) });
     });
   });
+
   it("should not send output when rescheduling", function (done) {
     const flow = makeFlow(3, 2, false);
     helper.load(bestSave, flow, function () {
@@ -138,6 +139,51 @@ describe("ps-strategy-best-save node", function () {
         time: "2021-10-11T01:10:00.000+02:00",
       };
       n1.receive({ payload });
+    });
+  });
+
+  it("should handle override", function (done) {
+    const flow = makeFlow(3, 2);
+    const expected = cloneDeep(result);
+    expected.version = version;
+    expected.time = plan.time;
+    expected.source = "Tibber";
+    expected.current = false;
+    let timeoutSet = false;
+    helper.load(bestSave, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      let countOn = 0;
+      let countOff = 0;
+      n2.on("input", function (msg) {
+        expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        n1.warn.should.not.be.called;
+        if (!timeoutSet) {
+          timeoutSet = true;
+          setTimeout(() => {
+            console.log("countOn = " + countOn + ", countOff = " + countOff);
+            expect(countOn).toEqual(2);
+            expect(countOff).toEqual(2);
+            done();
+          }, 900);
+        }
+      });
+      n3.on("input", function (msg) {
+        console.log("on");
+        countOn++;
+        expect(msg).toHaveProperty("payload", true);
+      });
+      n4.on("input", function (msg) {
+        console.log("off");
+        countOff++;
+        expect(msg).toHaveProperty("payload", false);
+        if (countOff === 2) {
+          n1.receive({ payload: { config: { override: "on" }, time: plan.time } });
+        }
+      });
+      n1.receive({ payload: makePayload(prices, plan.time) });
     });
   });
 });
