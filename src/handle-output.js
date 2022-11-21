@@ -49,7 +49,7 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   // Run schedule
   clearTimeout(node.schedulingTimeout);
   if (outputCommands.runSchedule) {
-    runSchedule(node, plan.schedule, planFromTime, true);
+    node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, true);
   }
 
   // Set status if override
