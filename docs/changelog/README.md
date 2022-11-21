@@ -7,10 +7,6 @@ sidebarDepth: 1
 
 List the most significant changes.
 
-## 4.1.1
-
-- Fix timeout bug
-
 ## 4.1.0
 
 - Fix bug with override function. It did not override longer than until next scheduled change. Now it overrides until set to auto again.
