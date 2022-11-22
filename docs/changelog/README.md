@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 4.1.2
+
+- Catch error from Elvia API so NR does not crash.
+
 ## 4.1.1
 
 - Update dependencies

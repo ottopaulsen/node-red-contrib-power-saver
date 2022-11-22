@@ -756,24 +756,24 @@ You can remove sensors that you do not want.
 
 ```js
 const sensors = [
-  { id: "sensor.ps_cap_status", value: "status" },
-  { id: "binary_sensor.ps_cap_ok", value: "statusOk" },
-  { id: "binary_sensor.ps_cap_warning", value: "statusWarning" },
-  { id: "binary_sensor.ps_cap_alarm", value: "statusAlarm" },
-  { id: "sensor.ps_cap_alarm_level", value: "alarmLevel" },
-  { id: "sensor.ps_cap_current_step", value: "currentStep" },
-  { id: "sensor.ps_cap_hour_estimate", value: "hourEstimate" },
-  { id: "sensor.ps_cap_current_hour_ranking", value: "currentHourRanking" },
-  { id: "sensor.ps_cap_monthly_estimate", value: "currentMonthlyEstimate" },
-  { id: "sensor.ps_cap_highest_today", value: "highestTodayConsumption" },
-  { id: "sensor.ps_cap_highest_today_time", value: "highestTodayFrom" },
-  { id: "sensor.ps_cap_reduction_required", value: "reductionRequired" },
-  { id: "sensor.ps_cap_reduction_recommended", value: "reductionRecommended" },
-  { id: "sensor.ps_cap_increase_possible", value: "increasePossible" },
-  { id: "sensor.ps_cap_estimate_rest_of_hour", value: "consumptionLeft" },
-  { id: "sensor.ps_cap_consumption_accumulated_hour", value: "accumulatedConsumptionLastHour" },
-  { id: "sensor.ps_cap_time_left", value: "timeLeftSec" },
-  { id: "sensor.ps_cap_consumption_now", value: "averageConsumptionNow" },
+  { id: "sensor.ps_cap_status", value: "status", uom: null },
+  { id: "binary_sensor.ps_cap_ok", value: "statusOk", uom: null },
+  { id: "binary_sensor.ps_cap_warning", value: "statusWarning", uom: null },
+  { id: "binary_sensor.ps_cap_alarm", value: "statusAlarm", uom: null },
+  { id: "sensor.ps_cap_alarm_level", value: "alarmLevel", uom: null },
+  { id: "sensor.ps_cap_current_step", value: "currentStep", uom: "kW" },
+  { id: "sensor.ps_cap_hour_estimate", value: "hourEstimate", uom: "kW" },
+  { id: "sensor.ps_cap_current_hour_ranking", value: "currentHourRanking", uom: null },
+  { id: "sensor.ps_cap_monthly_estimate", value: "currentMonthlyEstimate", uom: "kW" },
+  { id: "sensor.ps_cap_highest_today", value: "highestTodayConsumption", uom: "kW" },
+  { id: "sensor.ps_cap_highest_today_time", value: "highestTodayFrom", uom: null },
+  { id: "sensor.ps_cap_reduction_required", value: "reductionRequired", uom: "kW" },
+  { id: "sensor.ps_cap_reduction_recommended", value: "reductionRecommended", uom: "kW" },
+  { id: "sensor.ps_cap_increase_possible", value: "increasePossible", uom: "kW" },
+  { id: "sensor.ps_cap_estimate_rest_of_hour", value: "consumptionLeft", uom: "kW" },
+  { id: "sensor.ps_cap_consumption_accumulated_hour", value: "accumulatedConsumptionLastHour", uom: "kW" },
+  { id: "sensor.ps_cap_time_left", value: "timeLeftSec", uom: "s" },
+  { id: "sensor.ps_cap_consumption_now", value: "averageConsumptionNow", uom: "kW" },
 ];
 
 sensors.forEach((sensor) => {
@@ -783,6 +783,7 @@ sensors.forEach((sensor) => {
     path: "/api/states/" + sensor.id,
     data: {
       state: msg.payload[sensor.value],
+      attributes: { unit_of_measurement: sensor.uom },
     },
   };
   node.send({ payload });
@@ -852,6 +853,10 @@ In order to know how much power that is saved by turning off an action, you shou
 - The entity_id of a sensor that gives the consumption in kW (recommended)
 - A number with the consumption in kW
 - A function returning the consumption.
+
+::: warning Consumption must be kW
+If your sensor gives consumption in W, not the required kW, you should find a way to divide it by 1000.
+:::
 
 #### Actions configuration
 
