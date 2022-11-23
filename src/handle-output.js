@@ -59,8 +59,8 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
 }
 
 function sendSwitch(node, onOff) {
-  const output1 = onOff ? { payload: true } : null;
-  const output2 = onOff ? null : { payload: false };
+  const output1 = onOff ? { payload: node.outputValueForOn } : null;
+  const output2 = onOff ? null : { payload: node.outputValueForOff };
   node.send([output1, output2, null]);
   node.context().set("currentOutput", onOff);
 }

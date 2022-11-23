@@ -171,17 +171,75 @@ describe("ps-strategy-best-save node", function () {
         }
       });
       n3.on("input", function (msg) {
-        console.log("on");
         countOn++;
         expect(msg).toHaveProperty("payload", true);
       });
       n4.on("input", function (msg) {
-        console.log("off");
         countOff++;
         expect(msg).toHaveProperty("payload", false);
         if (countOff === 2) {
           n1.receive({ payload: { config: { override: "on" }, time: plan.time } });
         }
+      });
+      n1.receive({ payload: makePayload(prices, plan.time) });
+    });
+  });
+  it("should send number as output", function (done) {
+    const flow = makeFlow(3, 2);
+    flow[0].outputValueForOn = "1";
+    flow[0].outputValueForOff = "0";
+    flow[0].outputValueForOntype = "num";
+    flow[0].outputValueForOfftype = "num";
+    helper.load(bestSave, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      n2.on("input", function (msg) {
+        expect(msg.payload.config.outputValueForOn).toEqual(1);
+        expect(msg.payload.config.outputValueForOff).toEqual(0);
+        expect(msg.payload.config.outputValueForOntype).toEqual("num");
+        expect(msg.payload.config.outputValueForOfftype).toEqual("num");
+        n1.warn.should.not.be.called;
+        setTimeout(() => {
+          done();
+        }, 100);
+      });
+      n3.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", 1);
+      });
+      n4.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", 0);
+      });
+      n1.receive({ payload: makePayload(prices, plan.time) });
+    });
+  });
+  it("should send text as output", function (done) {
+    const flow = makeFlow(3, 2);
+    flow[0].outputValueForOn = "on";
+    flow[0].outputValueForOff = "off";
+    flow[0].outputValueForOntype = "str";
+    flow[0].outputValueForOfftype = "str";
+    helper.load(bestSave, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      n2.on("input", function (msg) {
+        expect(msg.payload.config.outputValueForOn).toEqual("on");
+        expect(msg.payload.config.outputValueForOff).toEqual("off");
+        expect(msg.payload.config.outputValueForOntype).toEqual("str");
+        expect(msg.payload.config.outputValueForOfftype).toEqual("str");
+        n1.warn.should.not.be.called;
+        setTimeout(() => {
+          done();
+        }, 100);
+      });
+      n3.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", "on");
+      });
+      n4.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", "off");
       });
       n1.receive({ payload: makePayload(prices, plan.time) });
     });

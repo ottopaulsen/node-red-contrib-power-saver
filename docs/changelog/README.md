@@ -9,6 +9,7 @@ List the most significant changes.
 
 ## 4.1.2
 
+- Fix so configured values for output are sent, not only true/false.
 - Catch error from Elvia API so NR does not crash.
 
 ## 4.1.1
