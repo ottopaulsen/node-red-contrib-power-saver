@@ -1105,7 +1105,7 @@ function resetAction(action) {
   const info = {
     time: new Date().toISOString(),
     name: "Reset action",
-    data: msg.paylaod,
+    data: msg.payload,
     action,
   };
   const output1 = action.payloadToResetAction ? { payload: action.payloadToResetAction } : null;
