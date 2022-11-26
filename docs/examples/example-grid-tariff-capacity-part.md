@@ -451,7 +451,10 @@ context.set("buffer", buffer);
 
 // Calculate buffer
 const periodMs = buffer[buffer.length - 1].timeMs - buffer[0].timeMs;
-const consumptionInPeriod = buffer[buffer.length - 1].accumulatedConsumption - buffer[0].accumulatedConsumption;
+let consumptionInPeriod = buffer[buffer.length - 1].accumulatedConsumption - buffer[0].accumulatedConsumption;
+if (consumptionInPeriod < 0) {
+  consumptionInPeriod = 0;
+}
 if (periodMs === 0) {
   return; // First item in buffer
 }
