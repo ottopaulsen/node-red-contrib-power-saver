@@ -87,7 +87,7 @@ module.exports = function (RED) {
           };
 
           const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-          const currentOutput = node.context().get("currentOutput");
+          const currentOutput = node.context().get("currentOutput", node.contextStorage);
           const plannedOutputNow = getOutputForTime(plan.schedule, planFromTime, node.outputIfNoSchedule);
 
           const outputCommands = {

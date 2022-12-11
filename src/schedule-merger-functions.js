@@ -11,7 +11,7 @@ function validateSchedule(msg) {
 }
 
 function saveSchedule(node, msg) {
-  let savedSchedules = node.context().get("savedSchedules") || {};
+  let savedSchedules = node.context().get("savedSchedules", node.contextStorage) || {};
 
   // If the saved schedule has a different start period, delete them
   const ids = Object.keys(savedSchedules);
@@ -35,7 +35,7 @@ function saveSchedule(node, msg) {
 function mergeSchedules(node, logicFunction) {
   // Transpose all schedules
   const transposed = {};
-  const savedSchedules = node.context().get("savedSchedules");
+  const savedSchedules = node.context().get("savedSchedules", node.contextStorage);
   if (!savedSchedules) {
     const msg = "No schedules";
     node.warn(msg);
