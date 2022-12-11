@@ -12,7 +12,7 @@ function strategyOnInput(node, msg, doPlanning, calcSavings) {
   const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, calcSavings);
   if (plan) {
     const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
-    const currentOutput = node.context().get("currentOutput");
+    const currentOutput = node.context().get("currentOutput", node.contextStorage);
     const plannedOutputNow =
       node.override === "auto"
         ? getOutputForTime(plan.schedule, planFromTime, node.outputIfNoSchedule)
