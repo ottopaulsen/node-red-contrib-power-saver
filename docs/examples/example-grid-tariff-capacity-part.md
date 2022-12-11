@@ -898,6 +898,8 @@ If you don't want the actions, or you want to control actions another way,
 you can omit the action-related nodes and only use the nodes creating the sensors.
 :::
 
+The `MIN_MINUTES_INTO_HOUR_TO_TAKE_ACTION` constant in the `On Message` code sets a period (of default 5 minutes) in the beginning of the hour when no reduction action is taken. This is to avoid that a high consumption at the end of the previous hour causes reduction actions to be taken as soon as the hour changes.
+
 ::: details Code
 
 <CodeGroup>
@@ -1011,6 +1013,7 @@ flow.set("actions", actions);
 
 ```js
 const MIN_CONSUMPTION_TO_CARE = 0.05; // Do not reduce unless at least 50W
+const MIN_MINUTES_INTO_HOUR_TO_TAKE_ACTION = 5;
 
 const actions = flow.get("actions");
 const ha = global.get("homeassistant").homeAssistant;
@@ -1018,8 +1021,19 @@ const ha = global.get("homeassistant").homeAssistant;
 let reductionRequired = msg.payload.reductionRequired;
 let reductionRecommended = msg.payload.reductionRecommended;
 
+node.status({});
+
 if (reductionRecommended <= 0) {
   return null;
+}
+
+if (3600 - msg.payload.timeLeftSec < MIN_MINUTES_INTO_HOUR_TO_TAKE_ACTION * 60) {
+  node.status({
+    fill: "yellow",
+    shape: "ring",
+    text: "No action during first " + MIN_MINUTES_INTO_HOUR_TO_TAKE_ACTION + " minutes",
+  });
+  return;
 }
 
 function takeAction(action, consumption) {

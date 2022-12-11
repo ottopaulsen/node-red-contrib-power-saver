@@ -49,7 +49,7 @@ Main developer: [Otto Paulsen](https://github.com/ottopaulsen)
 
 Heat Capacitor developer: [Arne Klaveness](https://github.com/TomTorger)
 
-Example contributors: [Stefan](https://github.com/oakhill87/node-red-contrib-power-saver)
+Example contributors: [Stefan](https://github.com/oakhill87/node-red-contrib-power-saver), [Kim Storøy](https://www.facebook.com/kim.storoy)
 
 ###
 

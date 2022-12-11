@@ -38,3 +38,9 @@ onMounted(() => {
   (adsbygoogle = window.adsbygoogle || []).push({});
 });
 </script>
+
+<style scoped>
+ins {
+  margin-bottom: 30px;
+}
+</style>

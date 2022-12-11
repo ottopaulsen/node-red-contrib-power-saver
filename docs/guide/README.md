@@ -239,4 +239,8 @@ You may directly replace the `Power Saver` node by two of the new nodes (`ps-rec
 
 See more details in the [documentation for the `ps-strategy-best-save`](../nodes/ps-strategy-best-save.md) node.
 
-<VippsPlakat/>
+## Disclaimer
+
+This software is offered for free as open source. You use it totally on your own risk. The developers take no responsibility of any consequences caused by use or misuse of this software.
+
+It is not recommended to reduce the temperature of the water heater or similar over longer periods, due to the risk of legionella. Please read the recommendations of [FHI](https://www.fhi.no/sv/smittsomme-sykdommer/legionella/) about this. You do this at your own risk.
