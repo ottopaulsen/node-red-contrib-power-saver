@@ -1,0 +1,89 @@
+type: custom:apexcharts-card
+header:
+  show: true
+  title: Pris 48t + Forbruk + Powersaver
+now:
+  show: true
+  label: Nå
+graph_span: 2d
+span:
+  start: day
+apex_config:
+  stroke:
+    width: 2
+  dataLabels:
+    enabled: true
+  fill:
+    type: gradient
+    gradient:
+      shadeIntensity: 1
+      inverseColors: false
+      opacityFrom: 0.45
+      opacityTo: 0.05
+      stops:
+        - 10
+        - 50
+        - 75
+        - 1000
+  legend:
+    show: false
+  yaxis:
+    - id: price
+      show: true
+      decimalsInFloat: 1
+      floating: false
+      forceNiceScale: true
+      extend_to: end
+    - id: usage
+      show: true
+      opposite: true
+      decimalsInFloat: 1
+      floating: false
+      forceNiceScale: true
+      extend_to: end
+    - id: powersaver
+      show: false
+      decimalsInFloat: 0
+      floating: false
+      extend_to: now
+series:
+  - entity: sensor.powersaver
+    yaxis_id: price
+    extend_to: now
+    name: Pris
+    type: area
+    curve: smooth
+    color: tomato
+    show:
+      legend_value: false
+    data_generator: |
+      return entity.attributes.hours.map((entry) => {
+        return [new Date(entry.start), entry.price];
+      });
+  - entity: sensor.accumulated_consumption_current_hour_xxxx
+    yaxis_id: usage
+    type: column
+    name: Forbruk
+    group_by:
+      func: max
+    show:
+      legend_value: false
+  - entity: sensor.powersaver
+    data_generator: |
+      return entity.attributes.hours.map((entry) => {
+        return [new Date(entry.start), entry.onOff];
+      });
+    yaxis_id: powersaver
+    name: ' '
+    type: area
+    color: rgb(0, 255, 0)
+    opacity: 0.2
+    stroke_width: 0
+    curve: stepline
+    group_by:
+      func: min
+    show:
+      legend_value: false
+      in_header: false
+      name_in_header: false
+      datalabels: false

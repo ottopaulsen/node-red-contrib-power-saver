@@ -20,43 +20,43 @@ A cascade temperature controller is a controller which utilizes the input/setpoi
 
 ## Requirements
 
-> Home assistant integrated with Node-RED
+- Home assistant integrated with Node-RED
 
-> The PID node installed - https://flows.nodered.org/node/node-red-contrib-pid
+- The PID node installed - https://flows.nodered.org/node/node-red-contrib-pid
 
-> A climate entity
+- A climate entity
 
 ## Instructions
 
-> Create an `input_number` entity in Home Assistant and name it "cascade_setpoint"
+- Create an `input_number` entity in Home Assistant and name it "cascade_setpoint"
 
-> Create an `input_boolean` entity in Home Assistant and name it `cascade_enabled`
+- Create an `input_boolean` entity in Home Assistant and name it `cascade_enabled`
 
-- When set to false, this will disengage the controller
+* When set to false, this will disengage the controller
 
-> Import the flow into Node-RED
+- Import the flow into Node-RED
 
-> Enter the correct sensor tempertaure entity in the `Temp sensor` node
+- Enter the correct sensor tempertaure entity in the `Temp sensor` node
 
-> Change the climate entity name in three places
+- Change the climate entity name in three places
 
-- Current climate settings - node
-- Set Temperature node - two places
+* Current climate settings - node
+* Set Temperature node - two places
   - `Entity ID`
   - `Data`
 
-> (optional) Change the oven setpoint range - see figure below.
+- (optional) Change the oven setpoint range - see figure below.
 
-- This regulates what values the controller sends to the oven. As a default, the value sent is oven_setpoint = setpoint +- 5 degrees. That is, for a setoint of 10C, the controller will be sending setpoints between 5 and 15 C to the oven. This is further limited to whole numbers, a minimum value of 5, and a maximum value of 30.
+* This regulates what values the controller sends to the oven. As a default, the value sent is oven_setpoint = setpoint +- 5 degrees. That is, for a setoint of 10C, the controller will be sending setpoints between 5 and 15 C to the oven. This is further limited to whole numbers, a minimum value of 5, and a maximum value of 30.
 
-> (reccomended) Tune the PID controller - Detailed instructions can be found here: http://blog.clanlaw.org.uk/pid-loop-tuning.html
+- (reccomended) Tune the PID controller - Detailed instructions can be found here: http://blog.clanlaw.org.uk/pid-loop-tuning.html
 
-- Measure the system and find the overshoot time
+* Measure the system and find the overshoot time
   - Set the proportional band to **zero** and place the setpoint a bit above the current measured value (se figure).
   - Wait for the system to overshoot the target temperature and measure the time it takes for the system to return to the setpoint.
-- Set the proportional band. This is the value indicates how much the measured temperature is allowed to deviate from the setpoint before max load is applied.
-- Spesify the integral time. A good value is two times the overshoot time.
-- Insert the derivative time. A good value here is half of the overshoot time.
+* Set the proportional band. This is the value indicates how much the measured temperature is allowed to deviate from the setpoint before max load is applied.
+* Spesify the integral time. A good value is two times the overshoot time.
+* Insert the derivative time. A good value here is half of the overshoot time.
 
 ![oven_setoint](../images/oven-setpoint-calculation.png)
 ![overshoot_time](../images/overshoot-time.png)
@@ -326,20 +326,8 @@ A cascade temperature controller is a controller which utilizes the input/setpoi
     "x": 290,
     "y": 160,
     "wires": [["6f77dd60c21180e1"]]
-  },
-  {
-    "id": "e2dd69fb.8f70a8",
-    "type": "server",
-    "name": "Home Assistant",
-    "version": 2,
-    "addon": true,
-    "rejectUnauthorizedCerts": true,
-    "ha_boolean": "y|yes|true|on|home|open",
-    "connectionDelay": false,
-    "cacheJson": true,
-    "heartbeat": true,
-    "heartbeatInterval": "30"
   }
 ]
 ```
+
 :::

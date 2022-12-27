@@ -1,146 +1,157 @@
-const { extractPlanForDate, getEffectiveConfig, validationFailure } = require("./utils");
+const { extractPlanForDate, loadDayData, makeSchedule, msgHasPriceData, validationFailure } = require("./utils");
 const { DateTime } = require("luxon");
-const { version } = require("../package.json");
 
-function handleStrategyInput(node, msg, doPlanning) {
-  const effectiveConfig = getEffectiveConfig(node, msg);
-
+function handleStrategyInput(node, msg, config, doPlanning, calcSavings) {
   if (!validateInput(node, msg)) {
     return;
   }
-  if (msg.payload.commands && msg.payload.commands.reset) {
+
+  const commands = getCommands(msg);
+
+  if (commands.reset) {
     node.warn("Resetting node context by command");
     // Reset all saved data
-    node.context().set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined]);
-    deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 1 }), 100);
+    node
+      .context()
+      .set(["lastPlan", "lastPriceData", "lastSource"], [undefined, undefined, undefined], node.contextStorage);
+    deleteSavedScheduleBefore(node, DateTime.now().plus({ days: 2 }), 100);
   }
-  const { priceData, source } = getPriceData(node, msg);
-  if (!priceData) {
+
+  const plan =
+    msgHasPriceData(msg) || config.hasChanged
+      ? makePlanFromPriceData(node, msg, config, doPlanning, calcSavings)
+      : node.context().get("lastPlan", node.contextStorage);
+
+  // If still no plan?
+  if (!plan) {
     const message = "No price data";
     node.warn(message);
     node.status({ fill: "yellow", shape: "dot", text: message });
     return;
   }
-  const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
 
-  // Store config variables in node
-  Object.keys(effectiveConfig).forEach((key) => (node[key] = effectiveConfig[key]));
+  return { plan, commands };
+}
 
-  clearTimeout(node.schedulingTimeout);
+function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
+  const { priceData, source } = msgHasPriceData(msg) ? getPriceDataFromMessage(msg) : getSavedLastPriceData(node);
+  if (msgHasPriceData(msg)) {
+    saveLastPriceData(node, priceData, source);
+  }
+
+  if (!priceData) {
+    return null;
+  }
 
   const dates = [...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate()))];
 
   // Load data from day before
-  const dateToday = DateTime.fromISO(dates[0]);
   const dateDayBefore = DateTime.fromISO(dates[0]).plus({ days: -1 });
+  const dataDayBefore = loadDataJustBefore(node, dateDayBefore);
+  const priceDataDayBefore = dataDayBefore.hours.map((h) => ({ value: h.price, start: h.start }));
+  const priceDataWithDayBefore = [...priceDataDayBefore, ...priceData];
 
   // Make plan
-  const plan = doPlanning(node, effectiveConfig, priceData, planFromTime, dateDayBefore, dateToday);
+  const startTimes = priceDataWithDayBefore.map((d) => d.start);
+  const prices = priceDataWithDayBefore.map((d) => d.value);
+  const onOff = doPlanning(node, priceDataWithDayBefore);
+  const savings = calcSavings(prices, onOff);
+  const hours = startTimes.map((v, i) => ({
+    start: startTimes[i],
+    price: prices[i],
+    onOff: onOff[i],
+    saving: savings[i],
+  }));
+  const schedule = makeSchedule(onOff, startTimes);
+  addLastSwitchIfNoSchedule(schedule, hours, config);
 
-  // Save schedule
-  node.context().set("lastPlan", plan);
-  dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
-
-  const sentOnCommand = !!msg.payload.commands?.sendSchedule;
-
-  // Prepare output
-  let output1 = null;
-  let output2 = null;
-  let output3 = {
-    payload: {
-      schedule: plan.schedule,
-      hours: plan.hours,
-      source,
-      config: effectiveConfig,
-      sentOnCommand,
-      time: planFromTime.toISO(),
-      version,
-    },
+  plan = {
+    hours,
+    schedule,
+    source,
   };
 
-  // Find current output, and set output (if configured to do)
-  const pastSchedule = plan.schedule.filter((entry) => DateTime.fromISO(entry.time) <= planFromTime);
-
-  const sendNow = !!node.sendCurrentValueWhenRescheduling && pastSchedule.length > 0 && !sentOnCommand;
-  const currentValue = pastSchedule[pastSchedule.length - 1]?.value;
-  if (sendNow) {
-    output1 = currentValue ? { payload: true } : null;
-    output2 = currentValue ? null : { payload: false };
-  }
-  output3.payload.current = currentValue;
+  // Save schedule
+  node.context().set("lastPlan", plan, node.contextStorage);
+  dates.forEach((d) => saveDayData(node, d, extractPlanForDate(plan, d)));
 
   // Delete old data
   deleteSavedScheduleBefore(node, dateDayBefore);
 
-  // Send output
-  node.send([output1, output2, output3]);
-
-  // Run schedule
-  node.schedulingTimeout = runSchedule(node, plan.schedule, planFromTime, sendNow);
+  return plan;
 }
 
-function getPriceData(node, msg) {
-  const isConfigMsg = !!msg?.payload?.config;
-  const isCommandMsg = !!msg?.payload?.commands;
-  const isPriceMsg = !!msg?.payload?.priceData;
-  if ((isConfigMsg || isCommandMsg) && !isPriceMsg) {
-    const priceData = node.context().get("lastPriceData");
-    const source = node.context().get("lastSource");
-    return { priceData, source };
+// Commands
+
+function getCommands(msg) {
+  const legalCommands = ["reset", "replan", "sendOutput", "sendSchedule"];
+  const commands = { legal: true };
+  if (msg.payload?.config?.override === "auto") {
+    commands.runSchedule = true;
   }
+  if (!msg?.payload?.commands) {
+    return commands;
+  }
+  legalCommands.forEach((c) => {
+    commands[c] = msg.payload.commands[c];
+  });
+  return commands;
+}
+
+// Price data
+
+function getPriceDataFromMessage(msg) {
   const priceData = msg.payload.priceData;
   const source = msg.payload.source;
-  node.context().set("lastPriceData", priceData);
-  node.context().set("lastSource", source);
   return { priceData, source };
 }
 
-function runSchedule(node, schedule, time, currentSent = false) {
-  let remainingSchedule = schedule.filter((entry) => {
-    return DateTime.fromISO(entry.time) > time;
-  });
-  if (remainingSchedule.length > 0) {
-    const entry = remainingSchedule[0];
-    const nextTime = DateTime.fromISO(entry.time);
-    const wait = nextTime - time;
-    const onOff = entry.value ? "on" : "off";
-    node.log("Switching " + onOff + " in " + wait + " milliseconds");
-    const statusMessage = `${remainingSchedule.length} changes - ${
-      remainingSchedule[0].value ? "on" : "off"
-    } at ${nextTime.toLocaleString(DateTime.TIME_SIMPLE)}`;
-    node.status({ fill: "green", shape: "dot", text: statusMessage });
-    return setTimeout(() => {
-      sendSwitch(node, entry.value);
-      node.schedulingTimeout = runSchedule(node, remainingSchedule, nextTime);
-    }, wait);
-  } else {
-    const message = "No schedule";
-    node.warn(message);
-    node.status({ fill: "red", shape: "dot", text: message });
-    if (!currentSent) {
-      sendSwitch(node, node.outputIfNoSchedule);
-    }
+function getSavedLastPriceData(node) {
+  const priceData = node.context().get("lastPriceData", node.contextStorage);
+  const source = node.context().get("lastSource", node.contextStorage);
+  return { priceData, source };
+}
+
+function saveLastPriceData(node, priceData, source) {
+  node.context().set("lastPriceData", priceData, node.contextStorage);
+  node.context().set("lastSource", source, node.contextStorage);
+}
+
+// Other
+
+function addLastSwitchIfNoSchedule(schedule, hours, config) {
+  if (!hours.length) {
+    return;
   }
+  if (schedule.length > 0 && schedule[schedule.length - 1].value === config.outputIfNoSchedule) {
+    return;
+  }
+  const nextHour = DateTime.fromISO(hours[hours.length - 1].start).plus({ hours: 1 });
+  schedule.push({ time: nextHour.toISO(), value: config.outputIfNoSchedule, countHours: null });
+}
+
+function loadDataJustBefore(node, dateDayBefore) {
+  const dataDayBefore = loadDayData(node, dateDayBefore);
+  return {
+    schedule: [...dataDayBefore.schedule],
+    hours: [...dataDayBefore.hours],
+  };
 }
 
 function deleteSavedScheduleBefore(node, day, checkDays = 0) {
   let date = day;
+  let data = null;
   let count = 0;
   do {
     date = date.plus({ days: -1 });
-    data = node.context().set(date.toISO(), undefined);
+    data = node.context().get(date.toISODate(), node.contextStorage);
+    node.context().set(date.toISODate(), undefined, node.contextStorage);
     count++;
-  } while (data || count <= checkDays);
+  } while (data !== undefined || count <= checkDays);
 }
 
 function saveDayData(node, date, plan) {
-  node.context().set(date, plan);
-}
-
-function sendSwitch(node, onOff) {
-  const output1 = onOff ? { payload: true } : null;
-  const output2 = onOff ? null : { payload: false };
-  node.send([output1, output2, null]);
+  node.context().set(date, plan, node.contextStorage);
 }
 
 function validateInput(node, msg) {
@@ -171,7 +182,7 @@ function validateInput(node, msg) {
     return;
   }
   msg.payload.priceData.forEach((h) => {
-    if (!h.start || !h.value) {
+    if (!h.start || isNaN(h.value)) {
       validationFailure(node, "Malformed entries in priceData. All entries must contain start and value.");
       return;
     }
@@ -180,5 +191,8 @@ function validateInput(node, msg) {
 }
 
 module.exports = {
-  handleStrategyInput, validateInput
+  addLastSwitchIfNoSchedule,
+  getCommands,
+  handleStrategyInput,
+  validateInput,
 };

@@ -10,10 +10,8 @@ const {
 } = require("../src/strategy-heat-capacitor-functions");
 const converted_prices = require("./data/converted-prices.json");
 const decreasing_end_prices = require("./data/tibber-decreasing2-24h.json");
-const { cloneDeep } = require("lodash");
-const { stringContaining } = require("expect");
 
-describe("Test heat capacitor strategy functions", () => {
+describe("ps-strategy-heat-capacitor-functions", () => {
   let prices, decreasing_24h_prices, start_date, buy_pattern, sell_pattern;
 
   //User input

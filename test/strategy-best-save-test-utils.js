@@ -1,7 +1,7 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 
-function makeFlow(maxHoursToSaveInSequence, minHoursOnAfterMaxSequenceSaved, sendCurrentValueWhenRescheduling = false) {
+function makeFlow(maxHoursToSaveInSequence, minHoursOnAfterMaxSequenceSaved, sendCurrentValueWhenRescheduling = true) {
   return [
     {
       id: "n1",

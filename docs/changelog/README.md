@@ -1,10 +1,159 @@
 ---
 sidebar: "auto"
+sidebarDepth: 1
 ---
 
 # Change Log
 
-List the most significant changes, starting in version 1.0.9.
+List the most significant changes.
+
+## 4.1.3
+
+- Fix bug that saved some data in wrong context storage.
+
+## 4.1.2
+
+- Fix so configured values for output are sent, not only true/false.
+- Catch error from Elvia API so NR does not crash.
+
+## 4.1.1
+
+- Update dependencies
+
+## 4.1.0
+
+- Fix bug with override function. It did not override longer than until next scheduled change. Now it overrides until set to auto again.
+- Show override on node status.
+- Fix name filter on schedule merger node.
+
+## 4.0.0
+
+This is a major rewrite of some of the central code, in order to lay ground for further development and maintenance.
+There are a couple of new nodes that open for many interesting use cases.
+A rewrite like this may lead to changes in behavior, intended or not.
+There are some breaking changes, but most users should not be affected by them.
+
+### New features
+
+- New node `ps-schedule-merger` or `Schedule Merger`, used to merge schedules from multiple Best Save and/or Lowest Price nodes,
+  as well as the new Fixed Schedule node.
+- New strategy node `ps-strategy-fixed-schedule` or `Fixed Schedule`, to set a fixed daily or weekly schedule.
+  The main purpose of this node is to function as a mask for other strategies when merged using the Schedule Merger,
+  but it can also be used alone.
+- For Best Save and Lowest Price you now can configure the output value, sent on output 1 and 2 to turn on or off.
+  Default is true/false as before, but you can configure to send for example 1 and 0, or "on" and "off", or any
+  other number or string values.
+- The config output on Best Save and Lowest Price (as well as the new Schedule Merger) has a new attribute: `hasChanged`.
+  It is set to `true` if the config just was changed by a config input message.
+- You can now donate using Vipps :-)
+
+### Breaking changes
+
+- The old Power Saver node has been removed, as it has been deprecated for a long time.
+- The `sentOnCommand` output has been removed.
+- Some bug-fixes may be regarded as breaking.
+- There may be some changes to what data that is stored in the context.
+
+### Bug fixes
+
+- Fix so the `If no schedule, send` config works as one should expect for the end of the schedule.
+  If the last scheduled switch is different from this setting, a switch to the
+  value set by this setting will be scheduled on the first hour after the whole schedule, normally at midnight.
+  The `countHours` value for this schedule will be `null`, as it is impossible to say how many hours it will last for.
+- Fixed also so `If no schedule, send` works if the schedule only exists for the future. Then this value is used until the
+  time for the first scheduled value is reached.
+- Fixed Best Save and Lowest Price so when rescheduling, for example if prices are received,
+  and `Send when rescheduling` is not checked,
+  output to output 1 or output 2 is only sent if it has not been sent before,
+  or if it is changed by the new schedule. This is to avoid sending output when not
+  necessary, that is if there is no change. Of course, if the `Send when rescheduling` is checked,
+  output is sent anyway.
+
+  NB! If for some reason a switch did not catch the last output, this may lead to it not being switched
+  until the next scheduled switch. If you get trouble with that, you can always enforce switch output
+  by sending the [`sendOutput` command](../nodes/dynamic-commands.html#sendoutput).
+
+- Fix price receiver so it works when price is 0.
+- Fixed bug in Lowest Price and Best Save for 0 prices.
+- Improved error handling for Elvia Add Tariff.
+
+<VippsPlakat/>
+
+## 3.6.2
+
+- Fix bug in Elvia API causing Node-RED to crash when the API key was wrong. Not it shows status `Unauthorized` and survive.
+
+## 3.6.1
+
+- Fix bug in Best Save node, so a better saving is not overwritten by a not as good saving in an overlapping period. This bug could occur in rare cases when a shorter savings period gave better results than a longer.
+
+## 3.6.0
+
+- New feature `Max price` for Lowest Price node. Can be set to only turn on if prices is below or equal to the max price.
+- New value in output 3 from the Lowest Price and Best Save nodes, `countHours`, telling the number of hours that the value will stay.
+
+## 3.5.7
+
+- Add day-filter to general-add-tariff node so it can add one tariff for some days, and another tariff for other days.
+- Fix the elvia-add-tariff node so time is correct. The Elvia API does not handle time zone on the request, so this must be corrected for.
+- Fix link to node-documentation in node edit dialogs.
+
+## 3.5.6
+
+- Update Elvia nodes so they use the new `digin` API. NB! There is no guarantee this is working right.
+
+## 3.5.5
+
+- Fix config storage for Best Save node
+
+## 3.5.4
+
+- Fix bug in context selection
+- Add example for visualization in Lovelace
+
+## 3.5.3
+
+- Fix a couple of bugs in how context is used.
+
+## 3.5.2
+
+- Re-introduce the search bar, after Vuepress upgrade.
+
+## 3.5.1
+
+- Update github actions to deploy automatically to the npm library.
+
+## 3.5.0
+
+- Select what context storage to store data in the node configuration.
+- New dynamic command: `replan`, that can be sent after a restart in order to create a schedule based on the last received prices, provided `file` is used as context storage (alternatively another permanent storage).
+- Some improvements to node status.
+
+## 3.4.4
+
+- Fix bug in Best Save Viewer in the documentation (under FAQ)
+
+## 3.4.3
+
+- Fix Elvia config so it can be used independently on any node.
+
+## 3.4.2
+
+- Fix bug in reset command. It did not reset daily data properly.
+
+## 3.4.1
+
+- Update examples
+- Update dependencies
+- Move doc to powersaver.no
+
+## 3.4.0
+
+- Added new strategy node Heat Capacitor
+
+## 3.3.2
+
+- Add command sendOutput.
 
 ## 3.3.1
 

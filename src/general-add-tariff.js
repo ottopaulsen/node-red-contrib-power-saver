@@ -5,13 +5,13 @@ const { getEffectiveConfig } = require("./utils");
 module.exports = function (RED) {
   function PsGeneralAddTariffNode(config) {
     RED.nodes.createNode(this, config);
-    this.range = config.range;
     const node = this;
 
     const originalConfig = {
       periods: config.periods,
       validFrom: config.validFrom,
       validTo: config.validTo,
+      days: config.days,
     };
     node.context().set("config", originalConfig);
 

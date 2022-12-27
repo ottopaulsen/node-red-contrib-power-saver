@@ -15,6 +15,10 @@ Then paste it here and see the result below:
 
 <BestSaveVerificator/>
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Explanation
 
 ### Config
@@ -53,9 +57,14 @@ If the average per hour is less than what you have configured as `Minimum saving
 
 If the number is black, it could be used, but only if all other criteria are satisfied, and only if it saves more than any other combination.
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ## Something seems wrong
 
-The tool is not using the same code as the node, so in case there is a bg in the node (or in the tool) the numbers may not match.
+The tool is not using the same code as the node, so in case there is a bug in the node (or in the tool) the numbers may not match.
 
 <hr/>
+
 <DonateButtons/>

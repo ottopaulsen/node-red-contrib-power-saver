@@ -1,4 +1,4 @@
-# Simple heat capacitor strategy flow 
+# Simple heat capacitor strategy flow
 
 ## Description
 
@@ -27,13 +27,15 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 > Import the flow into Node-RED
 
 > Configure the heat-capacitor node:
-  - Insert an approximate time it takes to increase the temperature by 1 Centigrade (could be 90 minutes)
-  - Insert an approximate time it takes to decrease 1 Centigrade
-  - Insert minimum savings for a heating/cooling cycle (should not be zero, as a cycle might have a cost)
+
+- Insert an approximate time it takes to increase the temperature by 1 Centigrade (could be 90 minutes)
+- Insert an approximate time it takes to decrease 1 Centigrade
+- Insert minimum savings for a heating/cooling cycle (should not be zero, as a cycle might have a cost)
 
 > Configure the climate service to target the correct climate entity (this has to be edited in two places)
-  - Change `Entity Id` in the properties menu
-  - Change the `entity_id` value in the `Data` property
+
+- Change `Entity Id` in the properties menu
+- Change the `entity_id` value in the `Data` property
 
 > (optional) If the `input_number` entity was named something else than `setpoint`, change the `entity_id` of the `Setpoint` node accordingly.
 
@@ -48,7 +50,6 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 ![Simple example with Tibber](../images/node-ps-strategy-heat-capacitor-simple-flow-example.png)
 
 ---
-
 
 ::: details [Flow code]
 
@@ -252,20 +253,8 @@ It is a good application for cabins/heated storage spaces, as the entity never a
         "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
         "queryUrl": "https://api.tibber.com/v1-beta/gql",
         "name": "Tibber"
-    },
-    {
-        "id": "e2dd69fb.8f70a8",
-        "type": "server",
-        "name": "Home Assistant",
-        "version": 2,
-        "addon": false,
-        "rejectUnauthorizedCerts": true,
-        "ha_boolean": "y|yes|true|on|home|open",
-        "connectionDelay": false,
-        "cacheJson": true,
-        "heartbeat": false,
-        "heartbeatInterval": 30
     }
 ]
 ```
+
 :::

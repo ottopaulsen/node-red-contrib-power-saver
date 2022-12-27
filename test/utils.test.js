@@ -1,3 +1,4 @@
+const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("expect");
 const {
@@ -5,15 +6,15 @@ const {
   sortedIndex,
   firstOn,
   getDiffToNextOn,
-  isOnOffSequencesOk,
   getSavings,
   countAtEnd,
   makeSchedule,
+  makeScheduleFromHours,
   fillArray,
   extractPlanForDate,
   isSameDate,
-  getStartAtIndex,
 } = require("../src/utils");
+const testResult = require("./data/best-save-result.json");
 
 describe("utils", () => {
   it("can test boolean config", () => {
@@ -72,18 +73,19 @@ describe("utils", () => {
       "2021-06-20T09:00:00+02:00",
     ];
     expect(makeSchedule(onOff, startTimes)).toEqual([
-      { time: "2021-06-20T05:00:00+02:00", value: false },
-      { time: "2021-06-20T07:00:00+02:00", value: true },
-      { time: "2021-06-20T09:00:00+02:00", value: false },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
     expect(makeSchedule(onOff, startTimes, true)).toEqual([
-      { time: "2021-06-20T05:00:00+02:00", value: false },
-      { time: "2021-06-20T07:00:00+02:00", value: true },
-      { time: "2021-06-20T09:00:00+02:00", value: false },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
     expect(makeSchedule(onOff, startTimes, false)).toEqual([
-      { time: "2021-06-20T07:00:00+02:00", value: true },
-      { time: "2021-06-20T09:00:00+02:00", value: false },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 }, // Right???
+      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
   });
 
@@ -195,5 +197,15 @@ describe("utils", () => {
       ],
     };
     expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).toEqual(part1);
+  });
+  it("Can make schedule from hours", () => {
+    const hours = cloneDeep(testResult.hours);
+    const schedule = makeScheduleFromHours(hours, null);
+    const resultToValidate = schedule.map((s) => ({ time: s.time, value: s.value }));
+    resultToValidate.push({
+      time: "2021-06-20T02:50:00.470+02:00",
+      value: false,
+    });
+    expect(resultToValidate).toEqual(testResult.schedule);
   });
 });

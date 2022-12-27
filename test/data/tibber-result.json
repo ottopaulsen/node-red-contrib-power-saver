@@ -2,59 +2,73 @@
   "schedule": [
     {
       "time": "2021-10-11T00:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 2
     },
     {
       "time": "2021-10-11T02:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 5
     },
     {
       "time": "2021-10-11T07:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 4
     },
     {
       "time": "2021-10-11T11:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 7
     },
     {
       "time": "2021-10-11T18:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 2
     },
     {
       "time": "2021-10-11T20:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 1
     },
     {
       "time": "2021-10-11T21:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 4
     },
     {
       "time": "2021-10-12T01:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 8
     },
     {
       "time": "2021-10-12T09:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 4
     },
     {
       "time": "2021-10-12T13:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 3
     },
     {
       "time": "2021-10-12T16:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 4
     },
     {
       "time": "2021-10-12T20:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 2
     },
     {
       "time": "2021-10-12T22:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 1
     },
     {
       "time": "2021-10-12T23:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 1
     }
   ],
   "hours": [
@@ -349,6 +363,7 @@
   ],
   "source": "Tibber",
   "config": {
+    "hasChanged": false,
     "maxHoursToSaveInSequence": 4,
     "minHoursOnAfterMaxSequenceSaved": 2,
     "minSaving": 0.001,

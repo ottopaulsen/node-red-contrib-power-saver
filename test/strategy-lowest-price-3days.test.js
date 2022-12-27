@@ -54,6 +54,37 @@ describe("ps-strategy-lowest-price with data day before", function () {
       }, 100);
     });
   });
+
+  it("should handle new price data after midnight", function (done) {
+    const flow = makeFlow(1);
+    const pricesDay1 = cloneDeep(prices);
+    const pricesDay2 = cloneDeep(prices);
+    const res = cloneDeep(result);
+    res.schedule.splice(3, 2);
+    res.hours.splice(48, 24);
+    res.schedule[2].countHours = 19;
+    pricesDay1.priceData.splice(48, 24);
+    pricesDay2.priceData.splice(48, 24);
+    pricesDay2.priceData.splice(0, 24);
+    helper.load(lowestPrice, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      let count = 0;
+      n2.on("input", function (msg) {
+        if (count === 1) {
+          expect(msg.payload).toHaveProperty("schedule", res.schedule);
+          done();
+        }
+        count++;
+      });
+      let time = DateTime.fromISO(pricesDay1.priceData[10].start);
+      n1.receive({ payload: makePayload(pricesDay1, time) });
+      setTimeout(() => {
+        time = DateTime.fromISO(pricesDay2.priceData[1].start);
+        n1.receive({ payload: makePayload(pricesDay2, time) });
+      }, 100);
+    });
+  });
 });
 
 function makeFlow(hoursOn) {

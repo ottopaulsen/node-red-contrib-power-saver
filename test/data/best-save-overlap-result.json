@@ -1,0 +1,361 @@
+{
+  "schedule": [
+    {
+      "time": "2022-08-16T00:00:00.000+02:00",
+      "value": false,
+      "countHours": 3
+    },
+    {
+      "time": "2022-08-16T03:00:00.000+02:00",
+      "value": true,
+      "countHours": 2
+    },
+    {
+      "time": "2022-08-16T05:00:00.000+02:00",
+      "value": false,
+      "countHours": 8
+    },
+    {
+      "time": "2022-08-16T13:00:00.000+02:00",
+      "value": true,
+      "countHours": 4
+    },
+    {
+      "time": "2022-08-16T17:00:00.000+02:00",
+      "value": false,
+      "countHours": 10
+    },
+    {
+      "time": "2022-08-17T03:00:00.000+02:00",
+      "value": true,
+      "countHours": 4
+    },
+    {
+      "time": "2022-08-17T07:00:00.000+02:00",
+      "value": false,
+      "countHours": 7
+    },
+    {
+      "time": "2022-08-17T14:00:00.000+02:00",
+      "value": true,
+      "countHours": 2
+    },
+    {
+      "time": "2022-08-17T16:00:00.000+02:00",
+      "value": false,
+      "countHours": 7
+    },
+    {
+      "time": "2022-08-17T23:00:00.000+02:00",
+      "value": true,
+      "countHours": 1
+    },
+    {
+      "time": "2022-08-18T00:00:00.000+02:00",
+      "value": false,
+      "countHours": null
+    }
+  ],
+  "hours": [
+    {
+      "price": 5.5759,
+      "onOff": false,
+      "start": "2022-08-16T00:00:00.000+02:00",
+      "saving": 0.5842
+    },
+    {
+      "price": 5.1618,
+      "onOff": false,
+      "start": "2022-08-16T01:00:00.000+02:00",
+      "saving": 0.1701
+    },
+    {
+      "price": 5.1653,
+      "onOff": false,
+      "start": "2022-08-16T02:00:00.000+02:00",
+      "saving": 0.1736
+    },
+    {
+      "price": 4.9917,
+      "onOff": true,
+      "start": "2022-08-16T03:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.0654,
+      "onOff": true,
+      "start": "2022-08-16T04:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.2855,
+      "onOff": false,
+      "start": "2022-08-16T05:00:00.000+02:00",
+      "saving": 0.0618
+    },
+    {
+      "price": 5.3179,
+      "onOff": false,
+      "start": "2022-08-16T06:00:00.000+02:00",
+      "saving": 0.0942
+    },
+    {
+      "price": 5.7233,
+      "onOff": false,
+      "start": "2022-08-16T07:00:00.000+02:00",
+      "saving": 0.4996
+    },
+    {
+      "price": 5.8856,
+      "onOff": false,
+      "start": "2022-08-16T08:00:00.000+02:00",
+      "saving": 0.6619
+    },
+    {
+      "price": 5.6756,
+      "onOff": false,
+      "start": "2022-08-16T09:00:00.000+02:00",
+      "saving": 0.4519
+    },
+    {
+      "price": 5.5708,
+      "onOff": false,
+      "start": "2022-08-16T10:00:00.000+02:00",
+      "saving": 0.3471
+    },
+    {
+      "price": 5.424,
+      "onOff": false,
+      "start": "2022-08-16T11:00:00.000+02:00",
+      "saving": 0.2003
+    },
+    {
+      "price": 5.3128,
+      "onOff": false,
+      "start": "2022-08-16T12:00:00.000+02:00",
+      "saving": 0.0891
+    },
+    {
+      "price": 5.2237,
+      "onOff": true,
+      "start": "2022-08-16T13:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.224,
+      "onOff": true,
+      "start": "2022-08-16T14:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.2958,
+      "onOff": true,
+      "start": "2022-08-16T15:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.4854,
+      "onOff": true,
+      "start": "2022-08-16T16:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.77,
+      "onOff": false,
+      "start": "2022-08-16T17:00:00.000+02:00",
+      "saving": 0.2818
+    },
+    {
+      "price": 5.9207,
+      "onOff": false,
+      "start": "2022-08-16T18:00:00.000+02:00",
+      "saving": 0.4325
+    },
+    {
+      "price": 5.9163,
+      "onOff": false,
+      "start": "2022-08-16T19:00:00.000+02:00",
+      "saving": 0.4281
+    },
+    {
+      "price": 5.8926,
+      "onOff": false,
+      "start": "2022-08-16T20:00:00.000+02:00",
+      "saving": 0.4044
+    },
+    {
+      "price": 5.8729,
+      "onOff": false,
+      "start": "2022-08-16T21:00:00.000+02:00",
+      "saving": 0.3847
+    },
+    {
+      "price": 5.871,
+      "onOff": false,
+      "start": "2022-08-16T22:00:00.000+02:00",
+      "saving": 0.3828
+    },
+    {
+      "price": 5.7373,
+      "onOff": false,
+      "start": "2022-08-16T23:00:00.000+02:00",
+      "saving": 0.2491
+    },
+    {
+      "price": 6.0164,
+      "onOff": false,
+      "start": "2022-08-17T00:00:00.000+02:00",
+      "saving": 0.5282
+    },
+    {
+      "price": 5.7825,
+      "onOff": false,
+      "start": "2022-08-17T01:00:00.000+02:00",
+      "saving": 0.2943
+    },
+    {
+      "price": 5.6423,
+      "onOff": false,
+      "start": "2022-08-17T02:00:00.000+02:00",
+      "saving": 0.1541
+    },
+    {
+      "price": 5.4882,
+      "onOff": true,
+      "start": "2022-08-17T03:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.5498,
+      "onOff": true,
+      "start": "2022-08-17T04:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.718,
+      "onOff": true,
+      "start": "2022-08-17T05:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.7206,
+      "onOff": true,
+      "start": "2022-08-17T06:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 5.9987,
+      "onOff": false,
+      "start": "2022-08-17T07:00:00.000+02:00",
+      "saving": 0.0942
+    },
+    {
+      "price": 6.2019,
+      "onOff": false,
+      "start": "2022-08-17T08:00:00.000+02:00",
+      "saving": 0.2974
+    },
+    {
+      "price": 6.5776,
+      "onOff": false,
+      "start": "2022-08-17T09:00:00.000+02:00",
+      "saving": 0.6731
+    },
+    {
+      "price": 6.5709,
+      "onOff": false,
+      "start": "2022-08-17T10:00:00.000+02:00",
+      "saving": 0.6664
+    },
+    {
+      "price": 6.2955,
+      "onOff": false,
+      "start": "2022-08-17T11:00:00.000+02:00",
+      "saving": 0.391
+    },
+    {
+      "price": 6.0833,
+      "onOff": false,
+      "start": "2022-08-17T12:00:00.000+02:00",
+      "saving": 0.1788
+    },
+    {
+      "price": 5.9871,
+      "onOff": false,
+      "start": "2022-08-17T13:00:00.000+02:00",
+      "saving": 0.0826
+    },
+    {
+      "price": 5.9045,
+      "onOff": true,
+      "start": "2022-08-17T14:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 6.0756,
+      "onOff": true,
+      "start": "2022-08-17T15:00:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 6.4711,
+      "onOff": false,
+      "start": "2022-08-17T16:00:00.000+02:00",
+      "saving": 0.3898
+    },
+    {
+      "price": 6.5347,
+      "onOff": false,
+      "start": "2022-08-17T17:00:00.000+02:00",
+      "saving": 0.4534
+    },
+    {
+      "price": 6.4604,
+      "onOff": false,
+      "start": "2022-08-17T18:00:00.000+02:00",
+      "saving": 0.3791
+    },
+    {
+      "price": 6.4911,
+      "onOff": false,
+      "start": "2022-08-17T19:00:00.000+02:00",
+      "saving": 0.4098
+    },
+    {
+      "price": 6.4908,
+      "onOff": false,
+      "start": "2022-08-17T20:00:00.000+02:00",
+      "saving": 0.4095
+    },
+    {
+      "price": 6.3622,
+      "onOff": false,
+      "start": "2022-08-17T21:00:00.000+02:00",
+      "saving": 0.2809
+    },
+    {
+      "price": 6.5796,
+      "onOff": false,
+      "start": "2022-08-17T22:00:00.000+02:00",
+      "saving": 0.4983
+    },
+    {
+      "price": 6.0813,
+      "onOff": true,
+      "start": "2022-08-17T23:00:00.000+02:00",
+      "saving": null
+    }
+  ],
+  "source": "Tibber",
+  "config": {
+    "maxHoursToSaveInSequence": 12,
+    "minHoursOnAfterMaxSequenceSaved": 1,
+    "minSaving": 0.01,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": false,
+    "contextStorage": "default"
+  },
+  "time": "2022-08-16T17:14:35.673+02:00",
+  "version": "3.6.0",
+  "current": false
+}

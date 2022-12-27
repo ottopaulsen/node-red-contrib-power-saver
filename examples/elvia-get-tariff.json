@@ -1,0 +1,60 @@
+[
+  {
+    "id": "77f2f8de4c2153e7",
+    "type": "ps-elvia-tariff",
+    "z": "7b33d8ec8339db62",
+    "name": "Elvia Tariff",
+    "elviaConfig": "45c5580013db88b3",
+    "tariffKey": "private_tou_daynight2",
+    "range": "today",
+    "x": 290,
+    "y": 440,
+    "wires": [["cd59d4855edd052c"]]
+  },
+  {
+    "id": "551da2a5de1259dc",
+    "type": "inject",
+    "z": "7b33d8ec8339db62",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 120,
+    "y": 440,
+    "wires": [["77f2f8de4c2153e7"]]
+  },
+  {
+    "id": "cd59d4855edd052c",
+    "type": "debug",
+    "z": "7b33d8ec8339db62",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 450,
+    "y": 440,
+    "wires": []
+  },
+  {
+    "id": "45c5580013db88b3",
+    "type": "ps-elvia-config",
+    "name": "Elvia Config"
+  }
+]

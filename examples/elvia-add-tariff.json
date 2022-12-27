@@ -1,0 +1,99 @@
+[
+  {
+    "id": "a621e21fe99857ef",
+    "type": "inject",
+    "z": "7b33d8ec8339db62",
+    "name": "House",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{viewer{home(id:\"12345678-abcd-4df4-ba6d-654321a987ab\"){currentSubscription{priceInfo{today{totalenergytaxstartsAt}tomorrow{totalenergytaxstartsAt}}}}}}",
+    "payloadType": "str",
+    "x": 70,
+    "y": 100,
+    "wires": [["2b55670453ea3277"]]
+  },
+  {
+    "id": "2b55670453ea3277",
+    "type": "tibber-query",
+    "z": "7b33d8ec8339db62",
+    "name": "Get prices",
+    "active": true,
+    "apiEndpointRef": "0b8e6a120837e93c",
+    "x": 210,
+    "y": 100,
+    "wires": [["7eeb5593b6da21f1"]]
+  },
+  {
+    "id": "7eeb5593b6da21f1",
+    "type": "ps-receive-price",
+    "z": "7b33d8ec8339db62",
+    "name": "Price Receiver",
+    "x": 380,
+    "y": 100,
+    "wires": [["5482ec46805cd9fd"]]
+  },
+  {
+    "id": "c65dfd3ad3f7b10d",
+    "type": "ps-strategy-lowest-price",
+    "z": "7b33d8ec8339db62",
+    "name": "Lowest Price",
+    "fromTime": "00",
+    "toTime": "00",
+    "hoursOn": "12",
+    "doNotSplit": "false",
+    "sendCurrentValueWhenRescheduling": "true",
+    "outputIfNoSchedule": "true",
+    "outputOutsidePeriod": "false",
+    "x": 750,
+    "y": 100,
+    "wires": [[], [], ["9eb381b935ec987c"]]
+  },
+  {
+    "id": "5482ec46805cd9fd",
+    "type": "ps-elvia-add-tariff",
+    "z": "7b33d8ec8339db62",
+    "name": "Add Elvia Grid Tariff",
+    "elviaConfig": "45c5580013db88b3",
+    "tariffKey": "private_tou_rush1",
+    "range": "today",
+    "x": 570,
+    "y": 100,
+    "wires": [["c65dfd3ad3f7b10d"]]
+  },
+  {
+    "id": "9eb381b935ec987c",
+    "type": "debug",
+    "z": "7b33d8ec8339db62",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 960,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "0b8e6a120837e93c",
+    "type": "tibber-api-endpoint",
+    "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
+    "queryUrl": "https://api.tibber.com/v1-beta/gql",
+    "name": "Tibber prices"
+  },
+  {
+    "id": "45c5580013db88b3",
+    "type": "ps-elvia-config",
+    "name": "Elvia Config"
+  }
+]

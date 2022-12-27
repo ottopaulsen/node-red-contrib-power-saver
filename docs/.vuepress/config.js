@@ -1,54 +1,31 @@
 const { path } = require("@vuepress/utils");
+const navbar = require("./navbar");
+
 module.exports = {
   lang: "en-US",
   title: "Power Saver",
-  description: "A Node-RED note to save money on hourly changing power prices",
+  description: "A Node-RED node collection to save money on hourly changing power prices",
   base: "/",
-  publicPath: "/node-red-contrib-power-saver/",
   themeConfig: {
     contributors: false,
-    navbar: [
-      {
-        text: "Guide",
-        link: "/guide/",
-      },
-      {
-        text: "Nodes",
-        link: "/nodes/",
-      },
-      {
-        text: "Examples",
-        link: "/examples/",
-      },
-      {
-        text: "FAQ",
-        link: "/faq/",
-      },
-      {
-        text: "Contribute",
-        link: "/contribute/",
-      },
-      {
-        text: "Changes",
-        link: "/changelog/",
-      },
-      {
-        text: "GitHub",
-        link: "https://github.com/ottopaulsen/node-red-contrib-power-saver",
-      },
-    ],
+    logo: "/Ukraine-heart-shape-flag.png",
+    navbar,
     sidebar: {
       "/guide/": [{ text: "Guide", children: ["/guide/README.md"] }],
       "/nodes/": [
         {
           text: "Nodes",
           children: [
-            { text: "Power Saver", link: "/nodes/power-saver.md" },
             {
               text: "Strategy nodes",
-              children: ["/nodes/ps-strategy-best-save.md", "/nodes/ps-strategy-lowest-price.md"],
+              children: [
+                "/nodes/ps-strategy-best-save.md",
+                "/nodes/ps-strategy-lowest-price.md",
+                "/nodes/ps-strategy-heat-capacitor.md",
+                "/nodes/ps-strategy-fixed-schedule.md",
+              ],
             },
-            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md"] },
+            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md", "/nodes/ps-schedule-merger.md"] },
             {
               text: "Grid tariff nodes",
               children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],
@@ -56,8 +33,8 @@ module.exports = {
           ],
         },
         {
-          text: "Data format",
-          children: ["/nodes/strategy-input.md"],
+          text: "Node features",
+          children: ["/nodes/strategy-input.md", "/nodes/dynamic-config.md", "/nodes/dynamic-commands.md"],
         },
       ],
       "/examples/": [
@@ -67,6 +44,10 @@ module.exports = {
             "/examples/example-nordpool-current-state.md",
             "/examples/example-nordpool-events-state.md",
             "/examples/example-tibber-mqtt.md",
+            "/examples/example-heat-capacitor.md",
+            "/examples/example-cascade-temperature-control.md",
+            "/examples/example-visualize-on-off/example-visualize-on-off.md",
+            "/examples/example-grid-tariff-capacity-part.md",
           ],
         },
       ],
@@ -81,8 +62,8 @@ module.exports = {
       "script",
       {
         async: true,
-        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
         crossorigin: "anonymous",
+        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
       },
     ],
   ],
@@ -90,11 +71,10 @@ module.exports = {
     [
       "@vuepress/register-components",
       {
-        components: {
-          BestSaveVerificator: path.resolve(__dirname, "./components/BestSaveVerificator.vue"),
-          DonateButtons: path.resolve(__dirname, "./components/DonateButtons.vue"),
-        },
+        componentsDir: path.resolve(__dirname, "./components"),
       },
     ],
+    ["@vuepress/plugin-search"],
+    ["@vuepress/google-analytics", { id: "G-Z2QNNCDQZG" }],
   ],
 };

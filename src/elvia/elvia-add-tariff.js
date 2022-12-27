@@ -8,7 +8,6 @@ module.exports = function (RED) {
     this.elviaConfig = RED.nodes.getNode(config.elviaConfig);
     const key = this.elviaConfig.credentials.elviaSubscriptionKey;
     this.tariffKey = config.tariffKey;
-    this.range = config.range;
     const node = this;
     ping(node, key);
 
@@ -20,22 +19,23 @@ module.exports = function (RED) {
         );
         return;
       }
-      const fromTime = prices[0].start.substr(0, 19);
+      // Convert date to UTC to get correct parameter for the Elvia API (no timezone)
+      const fromTime = DateTime.fromISO(prices[0].start).toUTC().toISO().substring(0, 19);
       const toTime = DateTime.fromISO(prices[prices.length - 1].start)
         .plus({ hours: 1 })
+        .toUTC()
         .toISO()
-        .substr(0, 19);
+        .substring(0, 19);
 
       getTariffForPeriod(node, key, node.tariffKey, fromTime, toTime).then((json) => {
         const tariff = json;
-        const priceInfo = tariff.gridTariff.tariffPrice.priceInfo;
+        const priceInfo = tariff.gridTariff?.tariffPrice?.hours || [];
         if (priceInfo.length !== prices.length) {
           node.warn(`Elvia tariff count mismatch. Expected ${prices.length} items, but got ${priceInfo.length}`);
-          node.status({ fill: "red", shape: "dot", text: "Tariff error" });
         } else {
           prices.forEach((p, i) => {
             p.powerPrice = p.value;
-            p.gridTariffVariable = priceInfo[i].variablePrice.total;
+            p.gridTariffVariable = priceInfo[i].energyPrice.total;
             p.value = roundPrice(p.powerPrice + p.gridTariffVariable);
           });
         }

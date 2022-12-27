@@ -1,0 +1,135 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-schedule-merger", {
+    category: "Power Saver",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "Schedule Merger" },
+      outputIfNoSchedule: {
+        value: true,
+        required: true,
+        align: "left",
+      },
+      logicFunction: { value: "OR", required: true, align: "left" },
+      schedulingDelay: {
+        value: 2000,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      sendCurrentValueWhenRescheduling: {
+        value: true,
+        required: true,
+        align: "left",
+      },
+      outputValueForOn: {
+        value: true,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOntype", false),
+      },
+      outputValueForOff: {
+        value: false,
+        required: true,
+        validate: RED.validators.typedInput("outputValueForOfftype", false),
+      },
+      outputValueForOntype: {
+        value: "bool",
+        required: true,
+      },
+      outputValueForOfftype: {
+        value: "bool",
+        required: true,
+      },
+    },
+    inputs: 1,
+    outputs: 3,
+    icon: "font-awesome/fa-compress",
+    color: "#FFCC66",
+    label: function () {
+      return this.name || "Best Save";
+    },
+    outputLabels: ["on", "off", "schedule"],
+    oneditprepare: function () {
+      $("#node-input-outputIfNoSchedule").typedInput({
+        types: [
+          {
+            value: "onoff",
+            options: [
+              { value: "true", label: "On" },
+              { value: "false", label: "Off" },
+            ],
+          },
+        ],
+      });
+      $("#node-input-logicFunction").typedInput({
+        types: [
+          {
+            value: "logic",
+            options: ["OR", "AND"],
+          },
+        ],
+      });
+      $("#node-input-outputValueForOn").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOntype"),
+        types: ["bool", "num", "str"],
+      });
+      $("#node-input-outputValueForOff").typedInput({
+        default: "bool",
+        typeField: $("#node-input-outputValueForOfftype"),
+        types: ["bool", "num", "str"],
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-schedule-merger">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
+    </div>
+    <div class="form-row">
+        <label for="node-input-logicFunction">Function</label>
+        <input type="text" id="node-input-logicFunction" style="width: 80px">
+        </label>
+    </div>
+    <div class="form-row">
+      <label for="node-input-schedulingDelay"><i class="fa fa-clock-o"></i> Delay</label>
+      <input type="text" id="node-input-schedulingDelay" placeholder="milliseconds" style="width: 80px">
+      milliseconds
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputValueForOn">Output value for on</label>
+        <input type="text" id="node-input-outputValueForOn" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOntype">
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputValueForOff">Output value for off</label>
+        <input type="text" id="node-input-outputValueForOff" style="text-align: left; width: 120px">
+        <input type="hidden" id="node-input-outputValueForOfftype">
+    </div>
+  </div>
+  <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">
+  <input type="checkbox"
+         id="node-input-sendCurrentValueWhenRescheduling"
+         style="display:inline-block; width:22px; vertical-align:top;"
+         autocomplete="off"><span>Send when rescheduling</span>
+  </label>
+  </div>
+  <div class="form-row">
+        <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
+        <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
+        </label>
+    </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-schedule-merger">
+  A node you can use to merge multiple schedules to one.
+
+  Function OR will turn on if any of the input schedules are on.
+
+  Function AND will turn on only when all input schedules are on.
+
+  Delay is milliseconds before the merged schedule is sent. It is useful to wait for all schedules
+  to arrive before they are merged.
+
+  Please read more in the [node documentation](https://powersaver.no/nodes/schedule-merger)
+</script>

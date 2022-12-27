@@ -10,6 +10,13 @@ module.exports = function (RED) {
     const configList = this.context().global.get("elviaConfigList") || [];
     configList.push(config);
     this.context().global.set("elviaConfigList", configList);
+
+    const key = this.credentials.elviaSubscriptionKey;
+    RED.httpAdmin.get("/elvia-tariff-types", RED.auth.needsPermission("ps-elvia-config.read"), function (req, res) {
+      getTariffTypes(null, key).then((json) => {
+        res.json(json);
+      });
+    });
   }
   RED.nodes.registerType("ps-elvia-config", ElviaConfigNode, {
     credentials: {

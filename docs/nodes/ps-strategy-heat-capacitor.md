@@ -1,3 +1,8 @@
+---
+prev: ./ps-strategy-lowest-price.md
+next: ./ps-strategy-fixed-schedule.md
+---
+
 # ps-strategy-heat-capacitor
 
 ![ps-strategy-lowest-price](../images/node-ps-strategy-heat-capacitor.png)
@@ -30,7 +35,11 @@ It is a good application for cabins/heated storage spaces, as the entity never a
 
 ![Simple example with Tibber](../images/node-ps-strategy-heat-capacitor-simple-flow-example.png)
 
-The node consumes price information and outputs &Delta;T on its first output and the planned schedule and benefit calculations on the second output. The &Delta;T is used to adjust the set-point of a climate entity.
+The node consumes price information and outputs $\Delta T$ on its first output and the planned schedule and benefit calculations on the second output. The $\Delta T$ is used to adjust the set-point of a climate entity.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ### The impact of **Time +1C**
 
@@ -40,32 +49,32 @@ To get started, 90 minutes can be used for air heaters. Later, one can study the
 
 ### Setpoint
 
-The setpoint, S<sub>p</sub>, indicates the ideal temperature.
+The setpoint, $S_p$, indicates the ideal temperature.
 
 ### Max temperature adjustment
 
-A max temperature adjustment $M_{ta}$ value of 0.65 &deg;C will change the setpoint temperature by +- 0.65 &deg;C. Please note that a larger number will indicate a longer heating time (Time +1C = 60 and Max Temp Adj.= 0.75 &deg;C results in a heating time of 60 * 0.75 * 2 = 90 minutes
+A max temperature adjustment $M_{ta}$ value of $0.65~^{\circ}C$ will change the setpoint temperature by $\pm0.65~^{\circ}C$. Please note that a larger number will indicate a longer heating time (Time +1C = 60 and Max Temp Adj.= $0.75~^{\circ}C$ results in a heating time of $60\times0.75\times 2= 90$ minutes
 
 ### Heating Boost [C]
 
-The boost temperatures are used to ensure that a climate entity start to heat during the `investment period` (the period where the temperature increases). Some climate entities fail to respond when their setpoint is changed by a small &Delta;T.
+The boost temperatures are used to ensure that a climate entity start to heat during the `investment period` (the period where the temperature increases). Some climate entities fail to respond when their setpoint is changed by a small $\Delta T$.
 
-The heating boost, H<sub>b</sub>, adds this amount of degrees to the setpoint for the investment period. In the previous example, H<sub>b</sub> = 2 &deg;C will set the temperature to S<sub>p</sub> + 2.75 for the first 90 minutes, and then reduce it to S<sub>p</sub>+0.75.
+The heating boost, $H_b$, adds this amount of degrees to the setpoint for the investment period. In the previous example, $H_b = 2~^{\circ}C$ will set the temperature to $S_p + 2.75$ for the first 90 minutes, and then reduce it to $S_p+0.75$.
 
 ### Cooling Boost [C]
 
-Similarly to the heating boost temperature, the Cooling boost C<sub>b</sub> is used in the `divestment period` (the period where the temperature decreases).
+Similarly to the heating boost temperature, the Cooling boost $C_b$ is used in the `divestment period` (the period where the temperature decreases).
 
-In the scenario where one should invest at 03:00 at night, and divest at 08:00 in the morning, M<sub>ta</sub>=1 &deg;C, H<sub>b</sub>= 2 &deg;C, C<sub>b</sub>=1 &deg;C, and investment and divestment times of 60 minutes will result in the following
+In the scenario where one should invest at 03:00 at night, and divest at 08:00 in the morning, $M_{ta}=1~^{\circ}C$, $H_b= 2~^{\circ}C$, $C_b=1~^{\circ}C$, and investment and divestment times of 60 minutes will result in the following
 
-- 02:00 to 03:00: +3 &deg;C
-- 03:00 to 08:00: +1 &deg;C
-- 08:00 to 09:00: -2 &deg;C
-- 09:00 and onward: -1 &deg;C
+- 02:00 to 03:00: $+3~^{\circ}C$
+- 03:00 to 08:00: $+1~^{\circ}C$
+- 08:00 to 09:00: $-2~^{\circ}C$
+- 09:00 and onward: $-1~^{\circ}C$
 
 ### Min Savings
 
-The heating and cooling periods can be seen as buy - sell pairs. That is, heat is procured at time t, and the same heat is sold at t+dt. The savings can then be estimated as the price difference S=price(t+dt) - price(t). If this saving is less that the minimum savings requirement, it will be removed. The algorithm removes these in a prioritized order, starting with the pair with the smallest gain.
+The heating and cooling periods can be seen as buy - sell pairs. That is, heat is procured at time t, and the same heat is sold at t+dt. The savings can then be estimated as the price difference $S=price(t+dt) - price(t)$. If this saving is less that the minimum savings requirement, it will be removed. The algorithm removes these in a prioritized order, starting with the pair with the smallest gain.
 
 ## Dynamic config
 
@@ -110,7 +119,7 @@ Example:
 }
 ```
 
-### Output 2 - &Delta;T
+### Output 2 - $\Delta T$
 
 The number of degrees which has been added or subtracted to the setpoint
 
@@ -129,7 +138,6 @@ The current schedule as well as some other information. You can use this to see 
 
 The "trades" key contains a list of dictionaries indicating the trades:
 
-
 ```json
 {
   "type": "buy - sell",
@@ -143,7 +151,7 @@ The "trades" key contains a list of dictionaries indicating the trades:
 }
 ```
 
-A trade consists of a `buy action` and a `sell action`. You buy electricity in the heating period, and sell it during the cooling period. `buyPrice` indicates the price at which the electricity is bought, while `sellPrice` indicates the price at which it is sold. This yields the `tradeValue`, which is how much is gained by moving one kWh from the expensive to the cheap period. If you run two 1kWh heaters and is able to turn it off from a 50% load for an hour, you earn 1kWh * 2 * 50% * 0.2558 = 0.2558.
+A trade consists of a `buy action` and a `sell action`. You buy electricity in the heating period, and sell it during the cooling period. `buyPrice` indicates the price at which the electricity is bought, while `sellPrice` indicates the price at which it is sold. This yields the `tradeValue`, which is how much is gained by moving one kWh from the expensive to the cheap period. If you run two 1kWh heaters and is able to turn it off from a 50% load for an hour, you earn 1kWh _ 2 _ 50% \* 0.2558 = 0.2558.
 
 The temperature variations from the setpoint are shown in a list at the end of the dictionary. The array has minute resolution, meaning that the first value is valid from 07.02.2022 00:00 till 00:01. As such, this is an indexed list, and the `buyIndex` and `sellIndex` values is a reference to the index in this array.
 
@@ -345,3 +353,7 @@ Full example:
   ]
 }
 ```
+
+###
+
+<AdsenseAdd type="nederst"/>

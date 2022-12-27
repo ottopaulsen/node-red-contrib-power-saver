@@ -3,15 +3,18 @@
     "schedule": [
       {
         "time": "2021-12-15T00:00:00+01:00",
-        "value": false
+        "value": false,
+        "countHours": 22
       },
       {
         "time": "2021-12-15T22:00:00+01:00",
-        "value": true
+        "value": true,
+        "countHours": 3
       },
       {
         "time": "2021-12-16T01:00:00+01:00",
-        "value": false
+        "value": false,
+        "countHours": 23
       }
     ],
     "hours": [
@@ -306,15 +309,22 @@
     ],
     "source": "Nordpool",
     "config": {
+      "hasChanged": false,
+      "contextStorage": "default",
       "fromTime": "22",
       "toTime": "08",
       "hoursOn": 3,
+      "maxPrice": null,
       "doNotSplit": true,
       "sendCurrentValueWhenRescheduling": true,
       "outputIfNoSchedule": false,
-      "outputOutsidePeriod": false
-    },
-    "sentOnCommand": false
+      "outputValueForOff": false,
+      "outputValueForOfftype": "bool",
+      "outputValueForOn": true,
+      "outputValueForOntype": "bool",
+      "outputOutsidePeriod": false,
+      "override": "auto"
+    }
   },
   "_msgid": "892aabf20811e69f"
 }

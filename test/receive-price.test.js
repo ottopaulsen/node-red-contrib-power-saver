@@ -142,4 +142,26 @@ describe("receive-price node", function () {
       n1.receive({ payload: nordpoolPrices.payload });
     });
   });
+  it("should convert nordpool zero prices", function (done) {
+    const nordpoolPrices = require("./data/nordpool-zero-prices.json");
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-receive-price",
+        name: "Receive prices",
+        wires: [["n2"]],
+      },
+      { id: "n2", type: "helper" },
+    ];
+    helper.load(receivePrices, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg.payload.priceData.length).toEqual(48);
+        expect(msg.payload.source).toEqual("Nordpool");
+        done();
+      });
+      n1.receive(nordpoolPrices);
+    });
+  });
 });

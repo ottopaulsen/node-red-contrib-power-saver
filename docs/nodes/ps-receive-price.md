@@ -1,5 +1,6 @@
 ---
-prev: ./ps-strategy-lowest-price.md
+prev: ./ps-strategy-heat-capacitor.md
+next: ./ps-schedule-merger.md
 ---
 
 # ps-receive-price
@@ -25,6 +26,10 @@ That is why this is now a separate node.
 ## Configuration
 
 There is no configuration except from node name.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Input
 
@@ -119,6 +124,10 @@ Then use the id in the following query, replacing the id with the one you found 
 
 This is the query you shall put in the `tibber-query` node.
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Nord Pool input
 
 This is especially designed to work for Home Assistant (HA), and the [Nord Pool custom component](https://github.com/custom-components/nordpool). The Nord Pool component provides a _sensor_ that gives price per hour for today and tomorrow (after 13:00). Send the output from this sensor directly to the `ps-receive-price` node. Make sure this is done whenever the node is updated, as well as when the system starts up.
@@ -155,3 +164,7 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
 ## Output
 
 The output is the [common strategy input format](./strategy-input.md), so it can be sent directly to the strategy nodes, or via any `ps-xxx-add-tariff` node.
+
+###
+
+<AdsenseAdd type="nederst"/>

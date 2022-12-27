@@ -11,3 +11,4 @@ mostSavedStrategy_v2.js
 .cache
 dist/
 deploy.sh
+*.cache

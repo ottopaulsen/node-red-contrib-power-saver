@@ -1,3 +1,7 @@
+---
+next: ./ps-strategy-lowest-price.md
+---
+
 # ps-strategy-best-save
 
 ![ps-strategy-best-save](../images/node-ps-strategy-best-save.png)
@@ -6,7 +10,11 @@ Strategy node to postpone power consumption until the price is lower.
 
 ## Description
 
-This strategy turns off the hours where the price difference is largest compared to the next hour that is on. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on. This would fit well for turning off a water heater or another thermostat controlled heater.
+This strategy turns off the hours where the price difference is largest compared to the next hour that is on. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on (during the first hour). This would fit well for turning off a water heater or another thermostat controlled heater.
+
+::: danger 70°C
+Be aware that the norwegian [FHI](https://www.fhi.no/nettpub/legionellaveilederen/) recommends that the temperature in the water heater is at least 70°C.
+:::
 
 The picture at the bottom of the page, under [Integration with MagicMirror](#integration-with-magicmirror), illustrates this by the purple strokes, taking the price from the top of the price curve to the level of the first hour after the save-period.
 
@@ -14,84 +22,49 @@ The picture at the bottom of the page, under [Integration with MagicMirror](#int
 
 ![Best Save Config](../images/best-save-config.png)
 
-| Value                  | Description                                                                                                                                                          |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Max per sequence       | Maximum number of hours to turn off in a sequence.                                                                                                                   |
-| Min recover            | Minimum hours to turn on immediately after a period when turned off the maximum number of hours that is allowed to be turned off                                     |
-| Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it? |
-| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling                                                                                      |
-| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off).                                                                                                  |
+| Value                  |                                                                                                                                                                                                |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Max per sequence       | Maximum number of hours to turn off in a sequence                                                                                                                                              |
+| Min recover            | Minimum hours to turn on immediately after a period when turned off the maximum number of hours that is allowed to be turned off                                                               |
+| Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it?                           |
+| Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
+| Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
+| Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
+| Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                     |
 
 ::: warning Min recover
 NB! The `Min recover` only has effect if the previous save-period is of length `Max per sequence`. If the save-period is shorter, the following on-period may be as short as one hour.
 :::
 
+###
+
+<AdsenseAdd type="artikkel"/>
+
 ### Dynamic config
 
-It is possible to change config dynamically by sending a config message to the node. The config messages has a payload with a config object like this example:
+The following config values can be changed dynamically:
 
-```json
-"payload": {
-  "config": {
-    "maxHoursToSaveInSequence": 4,
-    "minHoursOnAfterMaxSequenceSaved": 2,
-    "minSaving": 0.02,
-    "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": true,
-  }
-}
-```
+| Name                               | Description                                              |
+| ---------------------------------- | -------------------------------------------------------- |
+| `contextStorage`                   | String                                                   |
+| `maxHoursToSaveInSequence`         | Number                                                   |
+| `minHoursOnAfterMaxSequenceSaved`  | Number                                                   |
+| `minSaving`                        | Number                                                   |
+| `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
+| `sendCurrentValueWhenRescheduling` | Legal values: `true`, `false`                            |
+| `outputValueForOn`                 | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOff`                | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOntype`             | See description in [Dynamic Config](./dynamic-config.md) |
+| `outputValueForOfftype`            | See description in [Dynamic Config](./dynamic-config.md) |
+| `override`                         | Legal values: `"on"`, `"off"`, `"auto"`                  |
 
-All the variables in the config object are optional. You can send only those you want to change.
-
-The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
-
-When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
-
-However, you can send config and price data in the same message. Then both will be used.
+See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
 ### Dynamic commands
 
-You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
-
-Commands can be sent together with config and/or price data, but the exact behavior is not defined.
-
-#### sendSchedule
-
-You can get the schedule sent to output 3 any time by sending a message like this to the node:
-
-```json
-"payload": {
-  "commands": {
-    "sendSchedule": true,
-  }
-}
-```
-
-When you do this, the current schedule is actually recalculated based on the last received data, and then sent to output 3 the same way as when it was originally planned.
-
-#### reset
-
-You can reset data the node has saved in context by sending this message:
-
-```json
-"payload": {
-  "commands": {
-    "reset": true,
-  }
-}
-```
-
-When you do this, all historical data the node has saved is deleted, including the current schedule, so the result will be
-that the node shows status "No price data". When new price data is received, a schedule is calculated without considering any history.
-
-The nodes config is not deleted, as the node depends on it to work.
-
-::: warning
-This operation cannot be undone.
-
-However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
-:::
+You can send dynamic commands to this node, for example to make it resend output.
+See [Dynamic Commands](./dynamic-commands.md) for details and how to send dynamic commands.
 
 ## Input
 
@@ -99,7 +72,12 @@ The input is the [common strategy input format](./strategy-input.md).
 
 In addition to the prices sent as input,
 the node is using the schedule for the day before it receives data for,
-so that it can calculate the schedule in the beginning of the day according to the configured rules. This requires of course that the node was run the day before.
+so that it can calculate the schedule in the beginning of the day according to the configured rules.
+This requires of course that the node was run the day before.
+
+When a payload with `priceData` is received, this is saved to the nodes context as `lastPriceData`.
+The source is saved as `lastSource`. If config- or command-messages are received without price data,
+the data saved in context is used for replanning.
 
 ## Output
 
@@ -107,15 +85,19 @@ There are three outputs. You use only those you need for your purpose.
 
 ### Output 1
 
-A payload with the word `true` is sent to output 1 whenever the power / switch shall be turned on.
+A payload with the value set in config, default `true`, is sent to output 1 whenever the power / switch shall be turned on.
 
 ### Output 2
 
-A payload with the word `false` is sent to output 2 whenever the power / switch shall be turned off.
+A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
 
 ### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 Example of output:
 
@@ -124,11 +106,18 @@ Example of output:
   "schedule": [
     {
       "time": "2021-09-30T00:00:00.000+02:00",
-      "value": false
+      "value": false,
+      "countHours": 1
     },
     {
       "time": "2021-09-30T01:00:00.000+02:00",
-      "value": true
+      "value": true,
+      "countHours": 23
+    },
+    {
+      "time": "2021-09-31T00:00:00.000+02:00",
+      "value": false,
+      "countHours": null
     }
   ],
   "hours": [
@@ -149,10 +138,12 @@ Example of output:
       "onOff": true,
       "start": "2021-09-30T02:00:00.000+02:00",
       "saving": null
-    }
+    } // ...
   ],
   "source": "Nord Pool",
   "config": {
+    "contextStorage": "default",
+    "hasChanged": false,
     "maxHoursToSaveInSequence": 3,
     "minHoursOnAfterMaxSequenceSaved": "1",
     "minSaving": 0.001,
@@ -166,11 +157,15 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
 
-### Data saved in context
+### Output saved in context
 
-The node saves some data in the nodes context, so that it can be used on restarts and also taken into consideration when calculating the schedule over midnight.
+The `schedule` and the `hours` arrays from Output 3 are both saved to the nodes context in an object with key `lastPlan`. This may be used in the plan for the next day, for example if an off-period at the end of one day continues into the next day. In that case, the `saving` values for the last hours in the day have to be recalculated, since the next hour on is changed when the new day is calculated.
 
 You can see the saved data if you select the node in Node-RED, and view "Context data", and refresh the Node context.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Algorithm
 
@@ -190,23 +185,52 @@ I say "in most cases", because there is a chance that a group of two or more seq
 
 Normally data is received for one or two whole days, and all this data is used to do the calculation. In addition, if the node has run before, so there is historical data, the last period on or off before the period data is received for, is considered in the calculation, so that the rules in the configuration are followed also between days.
 
-## Restarts
+## Restarts and saved context
 
-The node saves data in the nodes context, so if Node-RED is configured to save context between restarts, the node will replan with the last received data when it restarts.
+The config, last received prices and the last calculated schedule are saved to the nodes context.
+This may be saved to memory, to file or to another destination based on how your Node-RED is configured.
+If multiple context storages are defined, you can select which one to use in the nodes config.
+If there is only one context storage defined, this is normally `memory`. In that case, data is not saved over restarts.
+It is common to have two different context storages defined, `memory` and `file`, but there may be more.
+It is also common to have a `default` context storage defined, and often this points to either `memory` or `file`.
+However, the configuration can be different from this.
 
-::: warning
-In Home Assistant, Node-RED is by default configured to save context between restarts. However, if you run Node-RED another way, this may not be the case by default. If context is only stored in memory, it is lost between restarts, and even between re-deployments. This can be changed in the `settings.js` file for Node-RED like this:
+You can find this configuration in the `settings.js` file for Node-RED, usually in the node-red config folder.
+In Home Assistant, this is normally `/config/node-red/settings.js`.
+
+Here is an example of a configuration for the context storage:
 
 ```js
 contextStorage: {
-   default: {
-       module: "localfilesystem"
-   }
+  file: { module: "localfilesystem"},
+  default: { module: "memory" }
 }
 ```
 
+By default, this node saves context to the `default` context storage. In the example above, this is memory.
+Then it is not preserved over a restart.
 Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/context) for more details about this.
-:::
+
+The data that is saved is the config, the last used prices and the last calculated schedule.
+
+When Node-RED restarts, the config is reset to what is defined in the node config, so by default,
+nothing is read from the context storage after a restart. However, if you send a `replan` command to the
+nodes input, a plan is recalculated, using the last received prices. One way to do this is to use an `inject` node,
+and set `msg.payload` to the following JSON value:
+
+```json
+{
+  "commands": {
+    "replan": true
+  }
+}
+```
+
+This is an alternative to fetching new prices and send as input.
+
+###
+
+<AdsenseAdd type="artikkel"/>
 
 ## Integration with MagicMirror
 
@@ -221,3 +245,7 @@ Read more about this in the [MMM-Tibber documentation](https://github.com/ottopa
 ## Viewer
 
 If you like to analyze the data output by the node, take a look at the [Best Save Viewer](../faq/best-save-viewer.md).
+
+###
+
+<AdsenseAdd type="nederst"/>

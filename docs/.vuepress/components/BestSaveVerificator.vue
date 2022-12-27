@@ -6,8 +6,15 @@
     <p>Max in sequence: {{ payload.config.maxHoursToSaveInSequence }}</p>
     <p>Min on after max: {{ payload.config.minHoursOnAfterMaxSequenceSaved }}</p>
     <p>Minimum saving: {{ payload.config.minSaving }}</p>
-    <p>Send when rescheduling: {{ payload.config.sendCurrentValueWhenRescheduling ? "Yes" : "No" }}</p>
-    <p>If no schedule, output: {{ payload.config.outputIfNoSchedule ? "On" : "Off" }}</p>
+    <p>
+      Send when rescheduling:
+      {{ payload.config.sendCurrentValueWhenRescheduling ? "Yes" : "No" }}
+    </p>
+    <p>
+      If no schedule, output:
+      {{ payload.config.outputIfNoSchedule ? "On" : "Off" }}
+    </p>
+    <p>Context is saved to: {{ payload.config.contextStorage }}</p>
     <h3>Meta data:</h3>
     <p>Node version: {{ payload.version }}</p>
     <p>Data timestamp: {{ payload.time }}</p>
@@ -78,7 +85,9 @@
       </tr>
       <tr v-for="(hour, i) in payload.hours" :key="hour.start">
         <td>{{ DateTime.fromISO(hour.start).day }}</td>
-        <td>{{ DateTime.fromISO(hour.start).toLocaleString(DateTime.TIME_SIMPLE) }}</td>
+        <td>
+          {{ DateTime.fromISO(hour.start).toLocaleString(DateTime.TIME_SIMPLE) }}
+        </td>
         <td :class="priceClasses(i)">{{ hour.price }}</td>
         <td>{{ hour.onOff ? "On" : "Off" }}</td>
         <td>{{ hour.saving ?? "" }}</td>
@@ -105,10 +114,8 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from "vue";
-
-const { roundPrice } = require("../../../src/utils");
-const { DateTime } = require("luxon");
+import { computed, reactive, ref, watch } from "vue";
+import { DateTime } from "luxon";
 
 const message = ref("");
 const showNegative = ref(false);
@@ -116,7 +123,9 @@ const showNegative = ref(false);
 const show = ref("avg");
 const showSum = computed(() => show.value === "sum");
 
-console.log("This is the setup script");
+function roundPrice(value) {
+  return Math.round(value * 10000) / 10000;
+}
 
 const dataString = ref("");
 watch(dataString, (value) => {
@@ -147,6 +156,8 @@ const totalPerSequence = reactive([]);
 const averagePerSequence = reactive([]);
 
 function calculatePotentialSavings() {
+  console.log("calculatePotentialSavings");
+  console.log({ roundPrice });
   const hours = payload.hours;
 
   // Savings per hour

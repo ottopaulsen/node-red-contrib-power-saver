@@ -1,0 +1,58 @@
+[
+  {
+    "id": "4168826b961c92d8",
+    "type": "ps-elvia-tariff-types",
+    "z": "7b33d8ec8339db62",
+    "name": "Elvia Tariff Types",
+    "elviaConfig": "45c5580013db88b3",
+    "x": 280,
+    "y": 320,
+    "wires": [["9c125f23de65a5b7"]]
+  },
+  {
+    "id": "9c125f23de65a5b7",
+    "type": "debug",
+    "z": "7b33d8ec8339db62",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 470,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "9b1a2d7f9a96214c",
+    "type": "inject",
+    "z": "7b33d8ec8339db62",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 110,
+    "y": 320,
+    "wires": [["4168826b961c92d8"]]
+  },
+  {
+    "id": "45c5580013db88b3",
+    "type": "ps-elvia-config",
+    "name": "Elvia Config"
+  }
+]
