@@ -60,6 +60,7 @@ module.exports = function (RED) {
               node.priceData,
               node.timeHeat1C,
               node.timeCool1C,
+              node.setpoint,
               node.boostTempHeat,
               node.boostTempCool,
               node.maxTempAdjustment,
@@ -94,6 +95,7 @@ module.exports = function (RED) {
               { payload: node.T, topic: "setpoint", time: node.schedule.time, version: version },
               { payload: node.dT, topic: "adjustment", time: node.schedule.time, version: version },
               { payload: node.schedule },
+              { payload: {setpoint_now: node.T, schedule: node.schedule.minimalSchedule }},
             ]);
           }
         }

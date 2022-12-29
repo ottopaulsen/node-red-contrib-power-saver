@@ -121,12 +121,14 @@ function calculateSchedule(
   buySellStackedArray,
   buyPrices,
   sellPrices,
+  setpoint,
   maxTempAdjustment,
   boostTempHeat,
   boostTempCool,
   buyDuration,
   sellDuration
 ) {
+
   const arrayLength = buyPrices.length;
   const schedule = {
     startAt: startDate,
@@ -137,10 +139,21 @@ function calculateSchedule(
     boostTempCool: boostTempCool,
     heatingDuration: buyDuration,
     coolingDuration: sellDuration,
+    minimalSchedule: [] //array of dicts with date as key and temperature as value
   };
+
+  function pushTempChange(startDate, minutes, tempAdj, sp){
+    if ((schedule.minimalSchedule.length>0) && (schedule.minimalSchedule.at(-1).adjustment == tempAdj)) return;
+    schedule.minimalSchedule.push({
+      startAt: startDate.plus({ "minutes": minutes }).toISO(),
+      setpoint: sp + tempAdj,
+      adjustment: tempAdj,
+    });
+  }
 
   if (buySellStackedArray[0].length === 0) {
     //No procurements or sales scheduled
+    schedule.minimalSchedule.push({startDate: -maxTempAdjustment});
     schedule.temperatures.fill(-maxTempAdjustment, 0, arrayLength);
   } else {
     let lastBuyIndex = 0;
@@ -156,26 +169,34 @@ function calculateSchedule(
 
       //Cooling period. Adding boosted cooling temperature for the period of divestment
       if (sellIndex - lastBuyIndex <= sellDuration) {
+        pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
         schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, sellIndex);
       } else {
+        pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
+        pushTempChange(startDate, lastBuyIndex + sellDuration,-maxTempAdjustment, setpoint);
         schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, lastBuyIndex + sellDuration);
         schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, sellIndex);
       }
       //Heating period. Adding boosted heating temperature for the period of procurement
       if (buyIndex - sellIndex <= buyDuration) {
+        pushTempChange(startDate, sellIndex, maxTempAdjustment + boostHeat, setpoint);
         schedule.temperatures.fill(maxTempAdjustment + boostHeat, sellIndex, buyIndex);
       } else {
+        pushTempChange(startDate, sellIndex, maxTempAdjustment + boostHeat, setpoint);
+        pushTempChange(startDate, sellIndex + buyDuration, maxTempAdjustment, setpoint);
         schedule.temperatures.fill(maxTempAdjustment + boostHeat, sellIndex, sellIndex + buyDuration);
         schedule.temperatures.fill(maxTempAdjustment, sellIndex + buyDuration, buyIndex);
       }
-
       lastBuyIndex = buyIndex;
     }
 
     //final fill
     if (arrayLength - lastBuyIndex <= sellDuration) {
+      pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
       schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, arrayLength);
     } else {
+      pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
+      pushTempChange(startDate, lastBuyIndex + sellDuration,-maxTempAdjustment, setpoint);
       schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, lastBuyIndex + sellDuration);
       schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, arrayLength);
     }
@@ -194,6 +215,7 @@ function runBuySellAlgorithm(
   priceData,
   timeHeat1C,
   timeCool1C,
+  setpoint,
   boostTempHeat,
   boostTempCool,
   maxTempAdjustment,
@@ -225,6 +247,7 @@ function runBuySellAlgorithm(
     buySellCleaned,
     buyPrices,
     sellPrices,
+    setpoint,
     maxTempAdjustment,
     boostTempHeat,
     boostTempCool,
