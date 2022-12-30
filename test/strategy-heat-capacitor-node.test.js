@@ -121,6 +121,8 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      const n5 = helper.getNode("n5");
       let bothReceived = false;
       n2.on("input", function (msg) {
         expect(msg).toHaveProperty("payload", 24.5);
@@ -131,6 +133,10 @@ describe("ps-strategy-heat-capacitor node", function () {
         expect(msg).toHaveProperty("payload", 1.5);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
+      });
+      n5.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload.current_setpoint", 24.5);
+        n1.warn.should.not.be.called;
       });
       const time = DateTime.fromISO(multiTrade.priceData[4].start).plus({ minutes: 10 });
       multiTrade.time = time;
@@ -163,11 +169,12 @@ function makeFlow() {
       setpoint: 23,
       maxTempAdjustment: 0.5,
       minSavings: 0.08,
-      wires: [["n2"], ["n3"], ["n4"]],
+      wires: [["n2"], ["n3"], ["n4"], ["n5"]],
     },
     { id: "n2", type: "helper" },
     { id: "n3", type: "helper" },
     { id: "n4", type: "helper" },
+    { id: "n5", type: "helper" },
   ];
 }
 
