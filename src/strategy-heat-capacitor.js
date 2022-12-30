@@ -29,6 +29,37 @@ module.exports = function (RED) {
       if (validateInput(node, msg)) {
         // Using msg.payload.config to change specific properties
         if (msg.hasOwnProperty("payload")) {
+          if(msg.payload.hasOwnProperty("commands")){ //Commands override input
+            if (msg.payload.commands.hasOwnProperty("sendSchedule")){
+              // Send output if schedule exists
+              if (node.hasOwnProperty("schedule")){
+                node.send([
+                  null,
+                  null,
+                  { payload: node.schedule },
+                  { payload: {setpoint_now: node.T, schedule: node.schedule.minimalSchedule }},
+                ]);
+              }
+            }
+            if (msg.payload.commands.hasOwnProperty("sendOutput")){
+              if (msg.payload.hasOwnProperty("time")) {
+                node.dT = findTemp(msg.payload.time, node.schedule);
+              } else {
+                node.dT = findTemp(DateTime.now(), node.schedule);
+              }
+              node.T = node.setpoint + node.dT;
+              // Send output if schedule exists
+              if (node.hasOwnProperty("schedule")){
+                node.send([
+                  { payload: node.T, topic: "setpoint", time: node.schedule.time, version: version },
+                  { payload: node.dT, topic: "adjustment", time: node.schedule.time, version: version },
+                  null,
+                  null,
+                ]);
+              }
+            }
+            return;
+          }
           if (msg.payload.hasOwnProperty("config")) {
             if (msg.payload.config.hasOwnProperty("timeHeat1C"))
               node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
