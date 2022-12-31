@@ -1,6 +1,7 @@
 "use strict";
+const { resolveContainerPluginOptionsForDetails } = require("@vuepress/theme-default");
 const { DateTime } = require("luxon");
-const { roundPrice } = require("./utils");
+const { roundPrice, getDiffToNextOn } = require("./utils");
 
 function calculateOpportunities(prices, pattern, amount) {
   //creating a price vector with minute granularity
@@ -207,8 +208,19 @@ function calculateSchedule(
 }
 
 function findTemp(date, schedule) {
-  let diff = Math.round(date.diff(schedule.startAt).as("minutes"));
-  return schedule.temperatures[diff];
+  var closestDate=null;
+  var temp = null
+  schedule.minimalSchedule.forEach((e) => { 
+    const testDate = DateTime.fromISO(e.startAt);
+    if(date < testDate) return;
+    if(closestDate!==null) {
+      if(closestDate > testDate ) return; //
+    }
+    closestDate=testDate
+    temp = e. adjustment
+  });
+  if (temp == null) temp = 0;
+  return temp;
 }
 
 function runBuySellAlgorithm(

@@ -32,7 +32,7 @@ module.exports = function (RED) {
           if(msg.payload.hasOwnProperty("commands")){ //Commands override input
             if (msg.payload.commands.hasOwnProperty("sendSchedule")){
               // Send output if schedule exists
-              if (node.hasOwnProperty("schedule")){
+              if (node.hasOwnProperty("schedule")&&(msg.payload.commands.sendSchedule==true)){
                 node.send([
                   null,
                   null,
@@ -41,7 +41,7 @@ module.exports = function (RED) {
                 ]);
               }
             }
-            if (msg.payload.commands.hasOwnProperty("sendOutput")){
+            if (msg.payload.commands.hasOwnProperty("sendOutput")&&(msg.payload.commands.sendOutput==true)){
               if (msg.payload.hasOwnProperty("time")) {
                 node.dT = findTemp(msg.payload.time, node.schedule);
               } else {
