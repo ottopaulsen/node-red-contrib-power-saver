@@ -31,31 +31,27 @@ module.exports = function (RED) {
         if (msg.hasOwnProperty("payload")) {
           if (msg.payload.hasOwnProperty("commands")) {
             //Commands override input
-            if (msg.payload.commands.hasOwnProperty("sendSchedule")) {
-              // Send output if schedule exists
-              if (node.hasOwnProperty("schedule") && msg.payload.commands.sendSchedule == true) {
-                if (msg.payload.hasOwnProperty("time")) {
-                  node.dT = findTemp(msg.payload.time, node.schedule);
-                } else {
-                  node.dT = findTemp(DateTime.now(), node.schedule);
-                }
-                node.send([
-                  null,
-                  null,
-                  { payload: node.schedule },
-                  { payload: { setpoint_now: node.T, schedule: node.schedule.minimalSchedule } },
-                ]);
-              }
-            }
-            if (msg.payload.commands.hasOwnProperty("sendOutput") && msg.payload.commands.sendOutput == true) {
+            if (node.hasOwnProperty("schedule")) {
+              //Do not execute if schedule is missing
               if (msg.payload.hasOwnProperty("time")) {
                 node.dT = findTemp(msg.payload.time, node.schedule);
               } else {
                 node.dT = findTemp(DateTime.now(), node.schedule);
               }
               node.T = node.setpoint + node.dT;
-              // Send output if schedule exists
-              if (node.hasOwnProperty("schedule")) {
+              if (msg.payload.commands.hasOwnProperty("sendSchedule")) {
+                // Send output if schedule exists
+                if (node.hasOwnProperty("schedule") && msg.payload.commands.sendSchedule == true) {
+                  node.send([
+                    null,
+                    null,
+                    { payload: node.schedule },
+                    { payload: { setpoint_now: node.T, schedule: node.schedule.minimalSchedule } },
+                  ]);
+                }
+              }
+              if (msg.payload.commands.hasOwnProperty("sendOutput") && msg.payload.commands.sendOutput == true) {
+                // Send output if schedule exists
                 node.send([
                   { payload: node.T, topic: "setpoint", time: node.schedule.time, version: version },
                   { payload: node.dT, topic: "adjustment", time: node.schedule.time, version: version },
