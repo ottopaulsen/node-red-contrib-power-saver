@@ -34,6 +34,11 @@ module.exports = function (RED) {
             if (msg.payload.commands.hasOwnProperty("sendSchedule")) {
               // Send output if schedule exists
               if (node.hasOwnProperty("schedule") && msg.payload.commands.sendSchedule == true) {
+                if (msg.payload.hasOwnProperty("time")) {
+                  node.dT = findTemp(msg.payload.time, node.schedule);
+                } else {
+                  node.dT = findTemp(DateTime.now(), node.schedule);
+                }
                 node.send([
                   null,
                   null,
