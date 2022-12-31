@@ -1,5 +1,4 @@
 "use strict";
-const { resolveContainerPluginOptionsForDetails } = require("@vuepress/theme-default");
 const { DateTime } = require("luxon");
 const { roundPrice, getDiffToNextOn } = require("./utils");
 
@@ -129,7 +128,6 @@ function calculateSchedule(
   buyDuration,
   sellDuration
 ) {
-
   const arrayLength = buyPrices.length;
   const schedule = {
     startAt: startDate,
@@ -140,13 +138,13 @@ function calculateSchedule(
     boostTempCool: boostTempCool,
     heatingDuration: buyDuration,
     coolingDuration: sellDuration,
-    minimalSchedule: [] //array of dicts with date as key and temperature as value
+    minimalSchedule: [], //array of dicts with date as key and temperature as value
   };
 
-  function pushTempChange(startDate, minutes, tempAdj, sp){
-    if ((schedule.minimalSchedule.length>0) && (schedule.minimalSchedule.at(-1).adjustment == tempAdj)) return;
+  function pushTempChange(startDate, minutes, tempAdj, sp) {
+    if (schedule.minimalSchedule.length > 0 && schedule.minimalSchedule.slice(-1)[0].adjustment == tempAdj) return;
     schedule.minimalSchedule.push({
-      startAt: startDate.plus({ "minutes": minutes }).toISO(),
+      startAt: startDate.plus({ minutes: minutes }).toISO(),
       setpoint: sp + tempAdj,
       adjustment: tempAdj,
     });
@@ -154,7 +152,7 @@ function calculateSchedule(
 
   if (buySellStackedArray[0].length === 0) {
     //No procurements or sales scheduled
-    schedule.minimalSchedule.push({startDate: -maxTempAdjustment});
+    schedule.minimalSchedule.push({ startDate: -maxTempAdjustment });
     schedule.temperatures.fill(-maxTempAdjustment, 0, arrayLength);
   } else {
     let lastBuyIndex = 0;
@@ -170,11 +168,11 @@ function calculateSchedule(
 
       //Cooling period. Adding boosted cooling temperature for the period of divestment
       if (sellIndex - lastBuyIndex <= sellDuration) {
-        pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
+        pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
         schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, sellIndex);
       } else {
-        pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
-        pushTempChange(startDate, lastBuyIndex + sellDuration,-maxTempAdjustment, setpoint);
+        pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
+        pushTempChange(startDate, lastBuyIndex + sellDuration, -maxTempAdjustment, setpoint);
         schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, lastBuyIndex + sellDuration);
         schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, sellIndex);
       }
@@ -193,11 +191,11 @@ function calculateSchedule(
 
     //final fill
     if (arrayLength - lastBuyIndex <= sellDuration) {
-      pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
+      pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
       schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, arrayLength);
     } else {
-      pushTempChange(startDate, lastBuyIndex,-maxTempAdjustment - boostCool, setpoint);
-      pushTempChange(startDate, lastBuyIndex + sellDuration,-maxTempAdjustment, setpoint);
+      pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
+      pushTempChange(startDate, lastBuyIndex + sellDuration, -maxTempAdjustment, setpoint);
       schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, lastBuyIndex + sellDuration);
       schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, arrayLength);
     }
@@ -208,16 +206,16 @@ function calculateSchedule(
 }
 
 function findTemp(date, schedule) {
-  var closestDate=null;
-  var temp = null
-  schedule.minimalSchedule.forEach((e) => { 
+  let closestDate = null;
+  let temp = null;
+  schedule.minimalSchedule.forEach((e) => {
     const testDate = DateTime.fromISO(e.startAt);
-    if(date < testDate) return;
-    if(closestDate!==null) {
-      if(closestDate > testDate ) return; //
+    if (date < testDate) return;
+    if (closestDate !== null) {
+      if (closestDate > testDate) return; //
     }
-    closestDate=testDate
-    temp = e. adjustment
+    closestDate = testDate;
+    temp = e.adjustment;
   });
   if (temp == null) temp = 0;
   return temp;

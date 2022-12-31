@@ -145,7 +145,6 @@ describe("ps-strategy-heat-capacitor node", function () {
     });
   });
 
-
   it("should merge and trim priceData", function (done) {
     const flow = makeFlow();
     helper.load(node, flow, function () {
@@ -214,12 +213,12 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       const n5 = helper.getNode("n5");
-      const numInputs = [0,0,0,0];
-      const expectedNumInputs=[2,2,2,2];
-      function testNumInputs(){
-        if (numInputs.every((e, i) => e === expectedNumInputs[i])){
+      const numInputs = [0, 0, 0, 0];
+      const expectedNumInputs = [2, 2, 2, 2];
+      function testNumInputs() {
+        if (numInputs.every((e, i) => e === expectedNumInputs[i])) {
           done();
-        } 
+        }
       }
       n2.on("input", function (msg) {
         numInputs[0]++;
@@ -238,16 +237,15 @@ describe("ps-strategy-heat-capacitor node", function () {
         testNumInputs();
       });
       const time = DateTime.fromISO(multiTrade.priceData[4].start).plus({ minutes: 10 });
-      const outputCommand = {payload: {commands: { sendOutput: true}}};
-      const scheduleCommand = {payload: {commands: { sendSchedule: true}}};
+      const outputCommand = { payload: { commands: { sendOutput: true } } };
+      const scheduleCommand = { payload: { commands: { sendSchedule: true } } };
       multiTrade.time = time;
 
       n1.receive({ payload: multiTrade });
-      n1.receive( outputCommand );
+      n1.receive(outputCommand);
       n1.receive(scheduleCommand);
     });
   });
-
 });
 
 function makeFlow() {

@@ -29,19 +29,20 @@ module.exports = function (RED) {
       if (validateInput(node, msg)) {
         // Using msg.payload.config to change specific properties
         if (msg.hasOwnProperty("payload")) {
-          if(msg.payload.hasOwnProperty("commands")){ //Commands override input
-            if (msg.payload.commands.hasOwnProperty("sendSchedule")){
+          if (msg.payload.hasOwnProperty("commands")) {
+            //Commands override input
+            if (msg.payload.commands.hasOwnProperty("sendSchedule")) {
               // Send output if schedule exists
-              if (node.hasOwnProperty("schedule")&&(msg.payload.commands.sendSchedule==true)){
+              if (node.hasOwnProperty("schedule") && msg.payload.commands.sendSchedule == true) {
                 node.send([
                   null,
                   null,
                   { payload: node.schedule },
-                  { payload: {setpoint_now: node.T, schedule: node.schedule.minimalSchedule }},
+                  { payload: { setpoint_now: node.T, schedule: node.schedule.minimalSchedule } },
                 ]);
               }
             }
-            if (msg.payload.commands.hasOwnProperty("sendOutput")&&(msg.payload.commands.sendOutput==true)){
+            if (msg.payload.commands.hasOwnProperty("sendOutput") && msg.payload.commands.sendOutput == true) {
               if (msg.payload.hasOwnProperty("time")) {
                 node.dT = findTemp(msg.payload.time, node.schedule);
               } else {
@@ -49,7 +50,7 @@ module.exports = function (RED) {
               }
               node.T = node.setpoint + node.dT;
               // Send output if schedule exists
-              if (node.hasOwnProperty("schedule")){
+              if (node.hasOwnProperty("schedule")) {
                 node.send([
                   { payload: node.T, topic: "setpoint", time: node.schedule.time, version: version },
                   { payload: node.dT, topic: "adjustment", time: node.schedule.time, version: version },
@@ -126,7 +127,7 @@ module.exports = function (RED) {
               { payload: node.T, topic: "setpoint", time: node.schedule.time, version: version },
               { payload: node.dT, topic: "adjustment", time: node.schedule.time, version: version },
               { payload: node.schedule },
-              { payload: {setpoint_now: node.T, schedule: node.schedule.minimalSchedule }},
+              { payload: { setpoint_now: node.T, schedule: node.schedule.minimalSchedule } },
             ]);
           }
         }
@@ -146,7 +147,7 @@ function mergePriceData(priceDataA, priceDataB) {
     tempDict[e.start] = e.value;
   });
 
-  var keys = Object.keys(tempDict);
+  let keys = Object.keys(tempDict);
   keys.sort();
 
   const res = Array(keys.length);
