@@ -142,7 +142,11 @@ function calculateSchedule(
   };
 
   function pushTempChange(startDate, minutes, tempAdj, sp) {
-    if (schedule.minimalSchedule.length > 0 && schedule.minimalSchedule.slice(-1)[0].adjustment == tempAdj) return;
+    if (
+      schedule.minimalSchedule.length > 0 &&
+      schedule.minimalSchedule[schedule.minimalSchedule.length - 1].adjustment == tempAdj
+    )
+      return;
     schedule.minimalSchedule.push({
       startAt: startDate.plus({ minutes: minutes }).toISO(),
       setpoint: sp + tempAdj,
@@ -167,21 +171,19 @@ function calculateSchedule(
       lastBuyIndex == 0 ? (boostCool = 0) : (boostCool = boostTempCool);
 
       //Cooling period. Adding boosted cooling temperature for the period of divestment
+      pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
       if (sellIndex - lastBuyIndex <= sellDuration) {
-        pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
         schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, sellIndex);
       } else {
-        pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
         pushTempChange(startDate, lastBuyIndex + sellDuration, -maxTempAdjustment, setpoint);
         schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, lastBuyIndex + sellDuration);
         schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, sellIndex);
       }
       //Heating period. Adding boosted heating temperature for the period of procurement
+      pushTempChange(startDate, sellIndex, maxTempAdjustment + boostHeat, setpoint);
       if (buyIndex - sellIndex <= buyDuration) {
-        pushTempChange(startDate, sellIndex, maxTempAdjustment + boostHeat, setpoint);
         schedule.temperatures.fill(maxTempAdjustment + boostHeat, sellIndex, buyIndex);
       } else {
-        pushTempChange(startDate, sellIndex, maxTempAdjustment + boostHeat, setpoint);
         pushTempChange(startDate, sellIndex + buyDuration, maxTempAdjustment, setpoint);
         schedule.temperatures.fill(maxTempAdjustment + boostHeat, sellIndex, sellIndex + buyDuration);
         schedule.temperatures.fill(maxTempAdjustment, sellIndex + buyDuration, buyIndex);
@@ -190,11 +192,10 @@ function calculateSchedule(
     }
 
     //final fill
+    pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
     if (arrayLength - lastBuyIndex <= sellDuration) {
-      pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
       schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, arrayLength);
     } else {
-      pushTempChange(startDate, lastBuyIndex, -maxTempAdjustment - boostCool, setpoint);
       pushTempChange(startDate, lastBuyIndex + sellDuration, -maxTempAdjustment, setpoint);
       schedule.temperatures.fill(-maxTempAdjustment - boostCool, lastBuyIndex, lastBuyIndex + sellDuration);
       schedule.temperatures.fill(-maxTempAdjustment, lastBuyIndex + sellDuration, arrayLength);
