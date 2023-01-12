@@ -426,6 +426,8 @@ context.set("buffer", []);
 ```js
 // Number of minutes used to calculate assumed consumption:
 const ESTIMATION_TIME_MINUTES = 1;
+// Allows records to deviate from maxAgeMs
+const DELAY_TIME_MS_ALLOWED = 3*1000;
 
 const buffer = context.get("buffer") || [];
 
@@ -441,7 +443,7 @@ currentHour.setMinutes(0);
 currentHour.setSeconds(0);
 
 // Remove too old records from buffer
-const maxAgeMs = ESTIMATION_TIME_MINUTES * 60 * 1000;
+const maxAgeMs = (ESTIMATION_TIME_MINUTES * 60 * 1000)+DELAY_TIME_MS_ALLOWED;
 let oldest = buffer[0];
 while (timeMs - oldest.timeMs > maxAgeMs) {
   buffer.splice(0, 1);
@@ -456,8 +458,11 @@ if (consumptionInPeriod < 0) {
   consumptionInPeriod = 0;
 }
 if (periodMs === 0) {
-  return; // First item in buffer
+  //Should only occur during startup
+  node.status({ fill: "red", shape: "dot", text: "First item in buffer" });
+  return; // Stopping rest of the flow for this message
 }
+node.status({ fill: "green", shape: "dot", text: "Working" });
 
 // Estimate remaining of current hour
 const timeLeftMs = 60 * 60 * 1000 - (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds());
