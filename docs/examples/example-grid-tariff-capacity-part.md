@@ -554,6 +554,7 @@ const MAX_COUNTING = 3; // Number of days to calculate month average of
 const BUFFER = 0.5; // kWh - Closer to limit increases alarm level
 const SAFE_SONE = 2; // kWh - Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
+const MIN_TIMELEFT = 3*60; //Min level for time left
 ```
 
 The `HA_NAME` must be set to the name you have given your Home Assistant. One place to find this is in Node-RED,
@@ -580,9 +581,11 @@ const MAX_COUNTING = 3; // Number of days to calculate month
 const BUFFER = 0.5; // Closer to limit increases level
 const SAFE_ZONE = 2; // Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
+const MIN_TIMELEFT = 3*60; //Min level for time left
 
 const ha = global.get("homeassistant")[HA_NAME];
 if (!ha.isConnected) {
+  node.status({ fill: "red", shape: "dot", text: "Ha not connected" })
   return;
 }
 
@@ -648,6 +651,7 @@ const averageConsumptionNow = msg.payload.averageConsumptionNow;
 const currentHour = msg.payload.currentHour;
 
 if (timeLeftSec === 0) {
+  node.status({ fill: "red", shape: "dot", text: "Time Left 0" });
   return null;
 }
 
@@ -695,17 +699,19 @@ const alarmLevel = calculateLevel(hourEstimate, currentHourRanking, currentMonth
 // Evaluate status
 const status = alarmLevel >= ALARM ? "Alarm" : alarmLevel > 0 ? "Warning" : "Ok";
 
+// Avoid calculations to increase too much when timeLeftSec is approaching zero
+let minTimeLeftSec = Math.max(timeLeftSec, MIN_TIMELEFT);
 // Calculate reduction
 const reductionRequired =
   alarmLevel < ALARM
     ? 0
-    : (Math.max((currentMonthlyEstimate - currentStep) * highestCounting.length, 0) * 3600) / timeLeftSec;
+    : (Math.max((currentMonthlyEstimate - currentStep) * highestCounting.length, 0) * 3600) / minTimeLeftSec;
 const reductionRecommended =
-  alarmLevel < 3 ? 0 : (Math.max(hourEstimate + SAFE_ZONE - currentStep, 0) * 3600) / timeLeftSec;
+  alarmLevel < 3 ? 0 : (Math.max(hourEstimate + SAFE_ZONE - currentStep, 0) * 3600) / minTimeLeftSec;
 
 // Calculate increase possible
 const increasePossible =
-  alarmLevel >= 3 ? 0 : (Math.max(currentStep - hourEstimate - SAFE_ZONE, 0) * 3600) / timeLeftSec;
+  alarmLevel >= 3 ? 0 : (Math.max(currentStep - hourEstimate - SAFE_ZONE, 0) * 3600) / minTimeLeftSec;
 
 // Create output
 const fill = status === "Ok" ? "green" : status === "Alarm" ? "red" : "yellow";
