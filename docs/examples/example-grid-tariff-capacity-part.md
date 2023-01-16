@@ -427,7 +427,7 @@ context.set("buffer", []);
 // Number of minutes used to calculate assumed consumption:
 const ESTIMATION_TIME_MINUTES = 1;
 // Allows records to deviate from maxAgeMs
-const DELAY_TIME_MS_ALLOWED = 3*1000;
+const DELAY_TIME_MS_ALLOWED = 3 * 1000;
 
 const buffer = context.get("buffer") || [];
 
@@ -443,7 +443,7 @@ currentHour.setMinutes(0);
 currentHour.setSeconds(0);
 
 // Remove too old records from buffer
-const maxAgeMs = (ESTIMATION_TIME_MINUTES * 60 * 1000)+DELAY_TIME_MS_ALLOWED;
+const maxAgeMs = (ESTIMATION_TIME_MINUTES * 60 * 1000) + DELAY_TIME_MS_ALLOWED;
 let oldest = buffer[0];
 while (timeMs - oldest.timeMs > maxAgeMs) {
   buffer.splice(0, 1);
@@ -581,11 +581,11 @@ const MAX_COUNTING = 3; // Number of days to calculate month
 const BUFFER = 0.5; // Closer to limit increases level
 const SAFE_ZONE = 2; // Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
-const MIN_TIMELEFT = 3*60; //Min level for time left
+const MIN_TIMELEFT = 3 * 60; //Min level for time left
 
 const ha = global.get("homeassistant")[HA_NAME];
 if (!ha.isConnected) {
-  node.status({ fill: "red", shape: "dot", text: "Ha not connected" })
+  node.status({ fill: "red", shape: "dot", text: "Ha not connected" });
   return;
 }
 
@@ -700,7 +700,7 @@ const alarmLevel = calculateLevel(hourEstimate, currentHourRanking, currentMonth
 const status = alarmLevel >= ALARM ? "Alarm" : alarmLevel > 0 ? "Warning" : "Ok";
 
 // Avoid calculations to increase too much when timeLeftSec is approaching zero
-let minTimeLeftSec = Math.max(timeLeftSec, MIN_TIMELEFT);
+const minTimeLeftSec = Math.max(timeLeftSec, MIN_TIMELEFT);
 // Calculate reduction
 const reductionRequired =
   alarmLevel < ALARM
