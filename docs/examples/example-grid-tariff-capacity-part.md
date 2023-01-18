@@ -554,7 +554,7 @@ const MAX_COUNTING = 3; // Number of days to calculate month average of
 const BUFFER = 0.5; // kWh - Closer to limit increases alarm level
 const SAFE_SONE = 2; // kWh - Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
-const MIN_TIMELEFT = 3*60; //Min level for time left
+const MIN_TIMELEFT = 30; //Min level for time left (30 seconds)
 ```
 
 The `HA_NAME` must be set to the name you have given your Home Assistant. One place to find this is in Node-RED,
