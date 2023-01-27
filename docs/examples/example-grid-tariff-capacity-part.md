@@ -426,6 +426,8 @@ context.set("buffer", []);
 ```js
 // Number of minutes used to calculate assumed consumption:
 const ESTIMATION_TIME_MINUTES = 1;
+// Allows records to deviate from maxAgeMs
+const DELAY_TIME_MS_ALLOWED = 3 * 1000;
 
 const buffer = context.get("buffer") || [];
 
@@ -441,7 +443,7 @@ currentHour.setMinutes(0);
 currentHour.setSeconds(0);
 
 // Remove too old records from buffer
-const maxAgeMs = ESTIMATION_TIME_MINUTES * 60 * 1000;
+const maxAgeMs = (ESTIMATION_TIME_MINUTES * 60 * 1000) + DELAY_TIME_MS_ALLOWED;
 let oldest = buffer[0];
 while (timeMs - oldest.timeMs > maxAgeMs) {
   buffer.splice(0, 1);
@@ -456,8 +458,11 @@ if (consumptionInPeriod < 0) {
   consumptionInPeriod = 0;
 }
 if (periodMs === 0) {
-  return; // First item in buffer
+  //Should only occur during startup
+  node.status({ fill: "red", shape: "dot", text: "First item in buffer" });
+  return; // Stopping rest of the flow for this message
 }
+node.status({ fill: "green", shape: "dot", text: "Working" });
 
 // Estimate remaining of current hour
 const timeLeftMs = 60 * 60 * 1000 - (time.getMinutes() * 60000 + time.getSeconds() * 1000 + time.getMilliseconds());
@@ -549,6 +554,7 @@ const MAX_COUNTING = 3; // Number of days to calculate month average of
 const BUFFER = 0.5; // kWh - Closer to limit increases alarm level
 const SAFE_SONE = 2; // kWh - Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
+const MIN_TIMELEFT = 30; //Min level for time left (30 seconds)
 ```
 
 The `HA_NAME` must be set to the name you have given your Home Assistant. One place to find this is in Node-RED,
@@ -575,9 +581,11 @@ const MAX_COUNTING = 3; // Number of days to calculate month
 const BUFFER = 0.5; // Closer to limit increases level
 const SAFE_ZONE = 2; // Further from limit reduces level
 const ALARM = 8; // Min level that causes status to be alarm
+const MIN_TIMELEFT = 3 * 60; //Min level for time left
 
 const ha = global.get("homeassistant")[HA_NAME];
 if (!ha.isConnected) {
+  node.status({ fill: "red", shape: "dot", text: "Ha not connected" });
   return;
 }
 
@@ -643,6 +651,7 @@ const averageConsumptionNow = msg.payload.averageConsumptionNow;
 const currentHour = msg.payload.currentHour;
 
 if (timeLeftSec === 0) {
+  node.status({ fill: "red", shape: "dot", text: "Time Left 0" });
   return null;
 }
 
@@ -690,17 +699,19 @@ const alarmLevel = calculateLevel(hourEstimate, currentHourRanking, currentMonth
 // Evaluate status
 const status = alarmLevel >= ALARM ? "Alarm" : alarmLevel > 0 ? "Warning" : "Ok";
 
+// Avoid calculations to increase too much when timeLeftSec is approaching zero
+const minTimeLeftSec = Math.max(timeLeftSec, MIN_TIMELEFT);
 // Calculate reduction
 const reductionRequired =
   alarmLevel < ALARM
     ? 0
-    : (Math.max((currentMonthlyEstimate - currentStep) * highestCounting.length, 0) * 3600) / timeLeftSec;
+    : (Math.max((currentMonthlyEstimate - currentStep) * highestCounting.length, 0) * 3600) / minTimeLeftSec;
 const reductionRecommended =
-  alarmLevel < 3 ? 0 : (Math.max(hourEstimate + SAFE_ZONE - currentStep, 0) * 3600) / timeLeftSec;
+  alarmLevel < 3 ? 0 : (Math.max(hourEstimate + SAFE_ZONE - currentStep, 0) * 3600) / minTimeLeftSec;
 
 // Calculate increase possible
 const increasePossible =
-  alarmLevel >= 3 ? 0 : (Math.max(currentStep - hourEstimate - SAFE_ZONE, 0) * 3600) / timeLeftSec;
+  alarmLevel >= 3 ? 0 : (Math.max(currentStep - hourEstimate - SAFE_ZONE, 0) * 3600) / minTimeLeftSec;
 
 // Create output
 const fill = status === "Ok" ? "green" : status === "Alarm" ? "red" : "yellow";
