@@ -17,6 +17,7 @@ describe("ps-strategy-heat-capacitor-functions", () => {
   //User input
   const timeHeat1C = 60;
   const timeCool1C = 40;
+  const setpoint = 23;
   const maxTempAdjustment = 1;
   const boostTempHeat = 1;
   const boostTempCool = 1;
@@ -79,6 +80,7 @@ describe("ps-strategy-heat-capacitor-functions", () => {
       my_buy_sell,
       buy_prices,
       sell_prices,
+      setpoint,
       maxTempAdjustment,
       boostTempHeat,
       boostTempCool,

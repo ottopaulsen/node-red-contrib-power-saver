@@ -6,6 +6,7 @@ const helper = require("node-red-node-test-helper");
 const node = require("../src/strategy-heat-capacitor.js");
 const prices = require("./data/converted-prices.json");
 const multiTrade = require("./data/multiple-trades.json");
+const nanTest = require("./data/heat-capacitor-prices-NaN-test.json");
 
 helper.init(require.resolve("node-red"));
 
@@ -121,6 +122,8 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      const n5 = helper.getNode("n5");
       let bothReceived = false;
       n2.on("input", function (msg) {
         expect(msg).toHaveProperty("payload", 24.5);
@@ -131,6 +134,10 @@ describe("ps-strategy-heat-capacitor node", function () {
         expect(msg).toHaveProperty("payload", 1.5);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
+      });
+      n5.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload.current_setpoint", 24.5);
+        n1.warn.should.not.be.called;
       });
       const time = DateTime.fromISO(multiTrade.priceData[4].start).plus({ minutes: 10 });
       multiTrade.time = time;
@@ -148,6 +155,97 @@ describe("ps-strategy-heat-capacitor node", function () {
       done();
     });
   });
+
+  it("should plan correctly, NaN test", function (done) {
+    const result = 0.5;
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-strategy-heat-capacitor",
+        name: "Temp. Adj.",
+        timeHeat1C: 480,
+        timeCool1C: 360,
+        boostTempHeat: 2,
+        boostTempCool: 2,
+        setpoint: 20,
+        maxTempAdjustment: 1,
+        minSavings: 0.08,
+        wires: [["n2"], ["n3"], ["n4"], ["n5"]],
+      },
+      { id: "n2", type: "helper" },
+      { id: "n3", type: "helper" },
+      { id: "n4", type: "helper" },
+      { id: "n5", type: "helper" },
+    ];
+    helper.load(node, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      const n5 = helper.getNode("n5");
+      let bothReceived = false;
+      n2.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", 17);
+        n1.warn.should.not.be.called;
+        bothReceived ? done() : (bothReceived = true);
+      });
+      n3.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload", -3);
+        n1.warn.should.not.be.called;
+        bothReceived ? done() : (bothReceived = true);
+      });
+      n5.on("input", function (msg) {
+        expect(msg).toHaveProperty("payload.current_setpoint", 17);
+        n1.warn.should.not.be.called;
+      });
+      const time = DateTime.fromISO("2022-12-06T10:51:48.126+01:00");
+      nanTest.time = time;
+      n1.receive({ payload: nanTest });
+    });
+  });
+
+  it("should support dynamic commands", function (done) {
+    const result = 0.5;
+    const flow = makeFlow();
+    helper.load(node, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      const n3 = helper.getNode("n3");
+      const n4 = helper.getNode("n4");
+      const n5 = helper.getNode("n5");
+      const numInputs = [0, 0, 0, 0];
+      const expectedNumInputs = [2, 2, 2, 2];
+      function testNumInputs() {
+        if (numInputs.every((e, i) => e === expectedNumInputs[i])) {
+          done();
+        }
+      }
+      n2.on("input", function (msg) {
+        numInputs[0]++;
+        testNumInputs();
+      });
+      n3.on("input", function (msg) {
+        numInputs[1]++;
+        testNumInputs();
+      });
+      n4.on("input", function (msg) {
+        numInputs[2]++;
+        testNumInputs();
+      });
+      n5.on("input", function (msg) {
+        numInputs[3]++;
+        testNumInputs();
+      });
+      const time = DateTime.fromISO(multiTrade.priceData[4].start).plus({ minutes: 10 });
+      const outputCommand = { payload: { commands: { sendOutput: true } } };
+      const scheduleCommand = { payload: { commands: { sendSchedule: true } } };
+      multiTrade.time = time;
+
+      n1.receive({ payload: multiTrade });
+      n1.receive(outputCommand);
+      n1.receive(scheduleCommand);
+    });
+  });
 });
 
 function makeFlow() {
@@ -163,11 +261,12 @@ function makeFlow() {
       setpoint: 23,
       maxTempAdjustment: 0.5,
       minSavings: 0.08,
-      wires: [["n2"], ["n3"], ["n4"]],
+      wires: [["n2"], ["n3"], ["n4"], ["n5"]],
     },
     { id: "n2", type: "helper" },
     { id: "n3", type: "helper" },
     { id: "n4", type: "helper" },
+    { id: "n5", type: "helper" },
   ];
 }
 
