@@ -36,4 +36,9 @@ footerHtml: true
 
 This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.
 
+Please remember to take a look at our [privacy rules](./privacy.md).
+<br/>
+<br/>
+<br/>
+
 <DonateButtons/>

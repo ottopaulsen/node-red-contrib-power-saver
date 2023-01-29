@@ -1,1 +1,1 @@
-[The changelog has moved here](http://power-saver.smoky.no/changelog/)
+[The changelog has moved here](https://powersaver.no/changelog/#change-log)
