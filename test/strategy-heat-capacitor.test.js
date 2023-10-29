@@ -1,6 +1,6 @@
 "use strict";
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const {
   calculateSchedule,
   calculateOpportunities,
@@ -38,7 +38,7 @@ describe("ps-strategy-heat-capacitor-functions", () => {
     let result = calculateOpportunities(my_prices, my_buy_pattern, 1);
     //Remove float precisions errors by rounding
     result = result.map((x) => Math.round(x * 1000000) / 1000000);
-    expect(result).toEqual(Array(56).fill(my_prices[0]));
+    expect(result).to.eql(Array(56).fill(my_prices[0]));
   });
 
   it("Can find procurement pattern", () => {
@@ -50,7 +50,7 @@ describe("ps-strategy-heat-capacitor-functions", () => {
 
     const my_buy_sell = findBestBuySellPattern(buy_prices, buy_pattern.length, sell_prices, sell_pattern.length);
 
-    expect(my_buy_sell).toEqual([
+    expect(my_buy_sell).to.eql([
       [0, 141],
       [100, 240],
     ]);
@@ -66,7 +66,7 @@ describe("ps-strategy-heat-capacitor-functions", () => {
     const sell_prices = calculateOpportunities(my_prices, sell_pattern, 1);
     const result = calculateValueDictList(my_buy_sell_indexes, buy_prices, sell_prices, start_date);
 
-    expect(result[0].sellDate).toEqual(start_date.plus({ minutes: 131 }));
+    expect(result[0].sellDate).to.eql(start_date.plus({ minutes: 131 }));
   });
 
   it("DictList test at decreasing end", () => {
@@ -87,7 +87,7 @@ describe("ps-strategy-heat-capacitor-functions", () => {
       buy_pattern.length,
       sell_pattern.length
     );
-    expect(my_schedule.temperatures[my_schedule.temperatures.length - 1]).toEqual(-maxTempAdjustment);
+    expect(my_schedule.temperatures[my_schedule.temperatures.length - 1]).to.equal(-maxTempAdjustment);
   });
 
   it("Check removal of low benefit buy-sell pairs", () => {
@@ -100,6 +100,6 @@ describe("ps-strategy-heat-capacitor-functions", () => {
     //Should remove the sell at 1.05 and the re-buy at 1 (only 0.05 difference)
     const compare = [my_buy_sell[0].slice(0, 2), [my_buy_sell[1][0], my_buy_sell[1][2]]];
 
-    expect(result).toEqual(compare);
+    expect(result).to.eql(compare);
   });
 });

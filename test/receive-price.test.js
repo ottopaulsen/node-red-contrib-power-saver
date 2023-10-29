@@ -1,6 +1,6 @@
 const helper = require("node-red-node-test-helper");
 const receivePrices = require("../src/receive-price.js");
-const expect = require("expect");
+const expect = require("chai").expect;
 
 helper.init(require.resolve("node-red"));
 
@@ -19,7 +19,7 @@ describe("receive-price node", function () {
     const flow = [{ id: "n1", type: "ps-receive-price", name: "test name" }];
     helper.load(receivePrices, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.property("name", "test name");
       done();
     });
   });
@@ -41,7 +41,7 @@ describe("receive-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", convertedPrices);
+        expect(msg).to.have.deep.property("payload", convertedPrices);
         done();
       });
       n1.receive(tibberPrices);
@@ -65,7 +65,7 @@ describe("receive-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", convertedPrices);
+        expect(msg).to.have.deep.property("payload", convertedPrices);
         done();
       });
       n1.receive(tibberPrices);
@@ -89,7 +89,7 @@ describe("receive-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", convertedPrices);
+        expect(msg).to.have.deep.property("payload", convertedPrices);
         done();
       });
       n1.receive(nordpoolPrices);
@@ -113,8 +113,8 @@ describe("receive-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload.priceData.length).toEqual(48);
-        expect(msg.payload.source).toEqual("Nordpool");
+        expect(msg.payload.priceData.length).to.equal(48);
+        expect(msg.payload.source).to.equal("Nordpool");
         done();
       });
       n1.receive({ payload: nordpoolPrices.payload, data: nordpoolPrices.data });
@@ -135,8 +135,8 @@ describe("receive-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload.priceData.length).toEqual(48);
-        expect(msg.payload.source).toEqual("Nordpool");
+        expect(msg.payload.priceData.length).to.equal(48);
+        expect(msg.payload.source).to.equal("Nordpool");
         done();
       });
       n1.receive({ payload: nordpoolPrices.payload });
@@ -157,8 +157,8 @@ describe("receive-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload.priceData.length).toEqual(48);
-        expect(msg.payload.source).toEqual("Nordpool");
+        expect(msg.payload.priceData.length).to.equal(48);
+        expect(msg.payload.source).to.equal("Nordpool");
         done();
       });
       n1.receive(nordpoolPrices);

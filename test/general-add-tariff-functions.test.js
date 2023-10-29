@@ -1,4 +1,4 @@
-const expect = require("expect");
+const expect = require("chai").expect;
 const { DateTime } = require("luxon");
 const { addTariffToPrices, buildAllHours } = require("../src/general-add-tariff-functions");
 
@@ -13,7 +13,7 @@ describe("general-add-tariff-functions", () => {
     fillResult(result, 6, 21, 10);
     fillResult(result, 22, 23, 11);
 
-    expect(buildAllHours(console, periods)).toEqual(result);
+    expect(buildAllHours(console, periods)).to.eql(result);
   });
   it("can build all hours 0-22", () => {
     const periods = [
@@ -24,7 +24,7 @@ describe("general-add-tariff-functions", () => {
     fillResult(result, 0, 21, 10);
     fillResult(result, 22, 23, 11);
 
-    expect(buildAllHours(console, periods)).toEqual(result);
+    expect(buildAllHours(console, periods)).to.eql(result);
   });
   it("can build all hours 22-23", () => {
     const periods = [
@@ -35,7 +35,7 @@ describe("general-add-tariff-functions", () => {
     fillResult(result, 0, 22, 10);
     fillResult(result, 23, 23, 11);
 
-    expect(buildAllHours(console, periods)).toEqual(result);
+    expect(buildAllHours(console, periods)).to.eql(result);
   });
   it("can add tariff to prices", () => {
     const config = {
@@ -66,7 +66,7 @@ describe("general-add-tariff-functions", () => {
       };
     });
     addTariffToPrices(console, config, prices);
-    expect(prices).toEqual(result);
+    expect(prices).to.eql(result);
   });
   it("pass through when out of period", () => {
     const config = {
@@ -95,7 +95,7 @@ describe("general-add-tariff-functions", () => {
       };
     });
     addTariffToPrices(console, config, prices);
-    expect(prices).toEqual(result);
+    expect(prices).to.eql(result);
   });
 });
 

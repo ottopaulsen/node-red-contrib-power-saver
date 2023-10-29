@@ -1,12 +1,34 @@
-const { path } = require("@vuepress/utils");
-const navbar = require("./navbar");
+import navbar from "./navbar";
+import { path } from "@vuepress/utils";
+import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
+import { searchPlugin } from "@vuepress/plugin-search";
+import { googleAnalyticsPlugin } from "@vuepress/plugin-google-analytics";
 
-module.exports = {
-  lang: "en-US",
-  title: "Power Saver",
-  description: "A Node-RED node collection to save money on hourly changing power prices",
+import { defaultTheme, defineUserConfig } from "vuepress";
+
+export default defineUserConfig({
   base: "/",
-  themeConfig: {
+  description: "A Node-RED node collection to save money on hourly changing power prices",
+  head: [
+    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
+    [
+      "script",
+      {
+        async: true,
+        crossorigin: "anonymous",
+        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
+      },
+    ],
+  ],
+  lang: "en-US",
+  plugins: [
+    registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
+    searchPlugin({}),
+    googleAnalyticsPlugin({
+      id: "G-Z2QNNCDQZG",
+    }),
+  ],
+  theme: defaultTheme({
     contributors: false,
     logo: "/Ukraine-heart-shape-flag.png",
     navbar,
@@ -55,26 +77,5 @@ module.exports = {
       "/contribute/": [{ text: "Contribute", children: ["/contribute/README.md"] }],
       "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
-  },
-  head: [
-    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
-    [
-      "script",
-      {
-        async: true,
-        crossorigin: "anonymous",
-        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
-      },
-    ],
-  ],
-  plugins: [
-    [
-      "@vuepress/register-components",
-      {
-        componentsDir: path.resolve(__dirname, "./components"),
-      },
-    ],
-    ["@vuepress/plugin-search"],
-    ["@vuepress/google-analytics", { id: "G-Z2QNNCDQZG" }],
-  ],
-};
+  }),
+});

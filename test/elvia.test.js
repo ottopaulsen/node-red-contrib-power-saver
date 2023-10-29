@@ -1,7 +1,7 @@
 const helper = require("node-red-node-test-helper");
 const elviaAddTariff = require("../src/elvia/elvia-add-tariff.js");
 const elviaConfig = require("../src/elvia/elvia-config.js");
-const expect = require("expect");
+const expect = require("chai").expect;
 
 helper.init(require.resolve("node-red"));
 
@@ -33,7 +33,7 @@ describe("ps-elvia-add-tariff node", function () {
     ];
     helper.load([elviaAddTariff, elviaConfig], flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.property("name", "test name");
       done();
     });
   });

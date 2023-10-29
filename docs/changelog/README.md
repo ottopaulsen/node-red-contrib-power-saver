@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 4.1.4
+
+- Update dependencies.
+
 ## 4.1.3
 
 - Fix bug that saved some data in wrong context storage.

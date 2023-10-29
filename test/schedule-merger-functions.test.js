@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const { validateSchedule, saveSchedule, mergeSchedules, runSchedule } = require("../src/schedule-merger-functions");
 const bestSaveResult = require("./data/best-save-result.json");
 const mergeData = require("./data/merge-schedule-data.js");
@@ -12,15 +12,14 @@ describe("schedule-merger-functions", () => {
     msg.payload.strategyNodeId = "1";
     msg.payload.hours[0].onOff = false;
     saveSchedule(node, msg);
-    expect(node.context().get()["1"]).toEqual(msg.payload);
+    expect(node.context().get()["1"]).to.eql(msg.payload);
 
     msg.payload.strategyNodeId = "2";
     msg.payload.hours[0].onOff = true;
     saveSchedule(node, msg);
-    expect(node.context().get()["1"]).toEqual(msg.payload);
-    expect(node.context().get()["2"]).toEqual(msg.payload);
-    expect(node.context().get()["1"].hours.onOff).toBeFalsy;
-    expect(node.context().get()["2"].hours.onOff).toBeTruthy;
+    expect(node.context().get()["2"]).to.eql(msg.payload);
+    expect(node.context().get()["1"].hours[0].onOff).to.equal(false);
+    expect(node.context().get()["2"].hours[0].onOff).to.equal(true);
   });
 
   it("mergeSchedule", () => {
@@ -36,49 +35,40 @@ describe("schedule-merger-functions", () => {
 
     let node = useNodeMock();
     saveSchedule(node, messages.allOff);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([false, false, false, false, false]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([false, false, false, false, false]);
     saveSchedule(node, messages.allOn);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([true, true, true, true, true]);
-    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).toEqual([false, false, false, false, false]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([true, true, true, true, true]);
+    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).to.eql([false, false, false, false, false]);
 
     node = useNodeMock();
     saveSchedule(node, messages.someOn);
     saveSchedule(node, messages.allOn);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([true, true, true, true, true]);
-    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).toEqual([true, false, true, false, true]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([true, true, true, true, true]);
+    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).to.eql([true, false, true, false, true]);
 
     node = useNodeMock();
     saveSchedule(node, messages.someOn);
     saveSchedule(node, messages.allOff);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([true, false, true, false, true]);
-    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).toEqual([false, false, false, false, false]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([true, false, true, false, true]);
+    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).to.eql([false, false, false, false, false]);
     saveSchedule(node, messages.hourLater);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([true, false, false, true, true]);
-    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).toEqual([true, false, false, true, true]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([true, false, false, true, true]);
+    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).to.eql([true, false, false, true, true]);
 
     saveSchedule(node, messages.someOn);
     saveSchedule(node, messages.allOff);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([true, false, true, false, true]);
-    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).toEqual([false, false, false, false, false]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([true, false, true, false, true]);
+    expect(mergeSchedules(node, "AND").map((h) => h.onOff)).to.eql([false, false, false, false, false]);
 
     node = useNodeMock();
     saveSchedule(node, messages.someOn);
     saveSchedule(node, messages.lessHours);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([false, true, false]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([false, true, false]);
 
     node = useNodeMock();
     saveSchedule(node, messages.someOn);
     saveSchedule(node, messages.moreHours);
-    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).toEqual([
-      true,
-      true,
-      false,
-      false,
-      false,
-      true,
-      true,
-      false,
-    ]);
+    expect(mergeSchedules(node, "OR").map((h) => h.onOff)).to.eql([true, true, false, false, false, true, true, false]);
   });
 });
 

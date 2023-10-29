@@ -1,7 +1,7 @@
 <template>
   <div>
     <ins
-      v-if="øverst"
+      v-if="type === 'øverst'"
       class="adsbygoogle"
       style="display: inline-block; width: 740px; height: 90px"
       data-ad-client="ca-pub-9857859182772006"

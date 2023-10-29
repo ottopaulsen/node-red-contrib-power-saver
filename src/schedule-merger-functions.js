@@ -1,5 +1,6 @@
 "use strict";
 
+const cloneDeep = require("lodash.clonedeep");
 const { msgHasConfig } = require("./utils.js");
 
 function msgHasSchedule(msg) {
@@ -28,7 +29,7 @@ function saveSchedule(node, msg) {
   }
 
   const id = msg.payload.strategyNodeId;
-  savedSchedules[id] = msg.payload;
+  savedSchedules[id] = cloneDeep(msg.payload);
   node.context().set("savedSchedules", savedSchedules);
 }
 

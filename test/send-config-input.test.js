@@ -1,4 +1,4 @@
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const { DateTime } = require("luxon");
@@ -32,17 +32,17 @@ describe("send config as input", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalPlan(result, msg.payload)).to.equal(true);
             n1.receive({ payload: { config: { minSaving: 1.0 } } });
             break;
           case 2:
             pass++;
-            expect(msg.payload.schedule.length).toEqual(2);
+            expect(msg.payload.schedule.length).to.equal(2);
             n1.receive({ payload: makePayload(prices, testPlan.time) });
             break;
           case 3:
             pass++;
-            expect(msg.payload.schedule.length).toEqual(2);
+            expect(msg.payload.schedule.length).to.equal(2);
             done();
         }
       });
@@ -60,7 +60,7 @@ describe("send config as input", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalPlan(result, msg.payload)).to.equal(true);
             n1.receive({
               payload: {
                 config: { minHoursOnAfterMaxSequenceSaved: 5 },
@@ -71,14 +71,14 @@ describe("send config as input", () => {
           case 2:
             pass++;
             reconfigResult.config.minHoursOnAfterMaxSequenceSaved = 5;
-            expect(equalPlan(reconfigResult, msg.payload)).toBeTruthy();
+            expect(equalPlan(reconfigResult, msg.payload)).to.equal(true);
             const payload = makePayload(prices, testPlan.time);
             payload.time = changeTime;
             n1.receive({ payload });
             break;
           case 3:
             pass++;
-            expect(equalPlan(reconfigResult, msg.payload)).toBeTruthy();
+            expect(equalPlan(reconfigResult, msg.payload)).to.equal(true);
             done();
         }
       });
@@ -95,7 +95,7 @@ describe("send config as input", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalPlan(result, msg.payload)).to.equal(true);
             n1.receive({ payload: makePayloadWithConfigAndPrices(prices, testPlan.time) });
             break;
           case 2:
@@ -106,7 +106,7 @@ describe("send config as input", () => {
             const planSum = msg.payload.hours.reduce((prev, h) => {
               return prev + h.price;
             }, 0);
-            expect(Math.round(planSum)).toEqual(Math.round(priceSum * 2));
+            expect(Math.round(planSum)).to.equal(Math.round(priceSum * 2));
             done();
         }
       });
@@ -130,8 +130,8 @@ describe("send config as input", () => {
         if (pass === 1) {
           setTimeout(() => {
             console.log("countOn = " + countOn + ", countOff = " + countOff);
-            expect(countOn).toEqual(2);
-            expect(countOff).toEqual(2);
+            expect(countOn).to.equal(2);
+            expect(countOff).to.equal(2);
             n1.status.should.be.calledWithExactly({ fill: "yellow", shape: "dot", text: "Override on" });
             done();
           }, 900);
@@ -139,14 +139,14 @@ describe("send config as input", () => {
       });
       n3.on("input", function (msg) {
         countOn++;
-        expect(msg).toHaveProperty("payload", true);
+        expect(msg).to.have.deep.property("payload", true);
         if (countOn === 2) {
           n1.receive({ payload: { config: { override: "on" }, time } });
         }
       });
       n4.on("input", function (msg) {
         countOff++;
-        expect(msg).toHaveProperty("payload", false);
+        expect(msg).to.have.deep.property("payload", false);
         if (countOff === 1) {
           n1.receive({ payload: { config: { override: "on" }, name: "wrong name" }, time });
         }
