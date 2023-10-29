@@ -1,6 +1,6 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/nordpool-3-days-prices.json");
@@ -24,7 +24,7 @@ describe("ps-strategy-lowest-price with data day before", function () {
     const flow = [{ id: "n1", type: "ps-strategy-lowest-price", name: "test name" }];
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.property("name", "test name");
       done();
     });
   });
@@ -41,7 +41,7 @@ describe("ps-strategy-lowest-price with data day before", function () {
       let count = 0;
       n2.on("input", function (msg) {
         if (count === 1) {
-          expect(msg.payload).toHaveProperty("schedule", result.schedule);
+          expect(msg.payload).to.have.deep.property("schedule", result.schedule);
           done();
         }
         count++;
@@ -72,7 +72,7 @@ describe("ps-strategy-lowest-price with data day before", function () {
       let count = 0;
       n2.on("input", function (msg) {
         if (count === 1) {
-          expect(msg.payload).toHaveProperty("schedule", res.schedule);
+          expect(msg.payload).to.have.deep.property("schedule", res.schedule);
           done();
         }
         count++;

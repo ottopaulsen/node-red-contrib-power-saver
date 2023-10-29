@@ -1,4 +1,4 @@
-const expect = require("expect");
+const expect = require("chai").expect;
 const { convertMsg } = require("../src/receive-price-functions");
 
 describe("receive-price-functions", () => {
@@ -138,34 +138,34 @@ describe("receive-price-functions", () => {
       },
     };
 
-    expect(convertMsg(msgStd)).toEqual({ source: "Other", ...msgStd.payload });
-    expect(convertMsg(msgTibber)).toEqual({
+    expect(convertMsg(msgStd)).to.eql({ source: "Other", ...msgStd.payload });
+    expect(convertMsg(msgTibber)).to.eql({
       source: "Tibber",
       ...msgStd.payload,
     });
-    expect(convertMsg(msgTibberSingle)).toEqual({
+    expect(convertMsg(msgTibberSingle)).to.eql({
       source: "Tibber",
       ...msgStd.payload,
     });
-    expect(convertMsg(msgNordpool)).toEqual({
+    expect(convertMsg(msgNordpool)).to.eql({
       source: "Nordpool",
       ...msgStd.payload,
     });
     msgTibber.payload.viewer.homes[0].currentSubscription.priceInfo.tomorrow = [];
-    expect(convertMsg(msgTibber)).toEqual({
+    expect(convertMsg(msgTibber)).to.eql({
       source: "Tibber",
       ...msgStdTodayOnly.payload,
     });
     msgNordpool.data.new_state.attributes.raw_tomorrow = [];
-    expect(convertMsg(msgNordpool)).toEqual({
+    expect(convertMsg(msgNordpool)).to.eql({
       source: "Nordpool",
       ...msgStdTodayOnly.payload,
     });
-    expect(convertMsg(msgNordpoolTomorrowNull)).toEqual({
+    expect(convertMsg(msgNordpoolTomorrowNull)).to.eql({
       source: "Nordpool",
       ...msgStdTodayOnly.payload,
     });
-    expect(convertMsg(msgStdTodayOnly)).toEqual({
+    expect(convertMsg(msgStdTodayOnly)).to.eql({
       source: "Other",
       ...msgStdTodayOnly.payload,
     });

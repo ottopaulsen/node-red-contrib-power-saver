@@ -1,6 +1,7 @@
 ---
 home: true
 heroImage: /logo.png
+heroHeight: 112
 heroAlt: Power Saver
 heroText: node-red-contrib-power-saver
 tagline: A collection of nodes to Node-RED that automates saving money on variable electricity prices

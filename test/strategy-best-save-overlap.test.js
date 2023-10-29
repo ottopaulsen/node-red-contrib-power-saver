@@ -1,6 +1,6 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const prices = require("./data/best-save-overlap-prices.json");
@@ -34,7 +34,7 @@ describe("ps-strategy-best-save overlapping savings", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        expect(equalPlan(expected, msg.payload)).to.equal(true);
         n1.warn.should.not.be.called;
         setTimeout(() => {
           done();
