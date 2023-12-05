@@ -16,6 +16,8 @@
 
 [Capacity part of grid tariff](./example-grid-tariff-capacity-part)
 
+[Strømstøtte (governmentall support)](./example-stromstotte)
+
 ## User provided examples
 
 [Output schedule to a sensor entity](./example-next-schedule-entity.md) (by Stefan)
