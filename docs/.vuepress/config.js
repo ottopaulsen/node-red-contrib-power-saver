@@ -70,6 +70,7 @@ export default defineUserConfig({
             "/examples/example-cascade-temperature-control.md",
             "/examples/example-visualize-on-off/example-visualize-on-off.md",
             "/examples/example-grid-tariff-capacity-part.md",
+            "/examples/example-stromstotte.md",
           ],
         },
       ],
