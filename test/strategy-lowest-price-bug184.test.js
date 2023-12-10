@@ -7,7 +7,7 @@ const { makePayload } = require("./strategy-lowest-price-test-utils.js");
 
 helper.init(require.resolve("node-red"));
 
-describe("ps-strategy-lowest-price-bug", function () {
+describe("ps-strategy-lowest-price-bugs", function () {
   beforeEach(function (done) {
     helper.startServer(done);
   });

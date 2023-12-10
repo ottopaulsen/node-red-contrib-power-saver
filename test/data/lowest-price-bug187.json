@@ -1,0 +1,331 @@
+{
+  "schedule": [
+    {
+      "time": "2023-11-30T00:00:00.000+01:00",
+      "value": false,
+      "countHours": 2
+    },
+    {
+      "time": "2023-11-30T02:00:00.000+01:00",
+      "value": true,
+      "countHours": 3
+    },
+    {
+      "time": "2023-11-30T05:00:00.000+01:00",
+      "value": false,
+      "countHours": 43
+    }
+  ],
+  "hours": [
+    {
+      "start": "2023-11-30T00:00:00.000+01:00",
+      "price": 0.3417,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T01:00:00.000+01:00",
+      "price": 0.3414,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T02:00:00.000+01:00",
+      "price": 0.3387,
+      "onOff": true,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T03:00:00.000+01:00",
+      "price": 0.336,
+      "onOff": true,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T04:00:00.000+01:00",
+      "price": 0.338,
+      "onOff": true,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T05:00:00.000+01:00",
+      "price": 0.3435,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T06:00:00.000+01:00",
+      "price": 0.371,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T07:00:00.000+01:00",
+      "price": 0.4171,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T08:00:00.000+01:00",
+      "price": 0.478,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T09:00:00.000+01:00",
+      "price": 0.4992,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T10:00:00.000+01:00",
+      "price": 0.4818,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T11:00:00.000+01:00",
+      "price": 0.4828,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T12:00:00.000+01:00",
+      "price": 0.4493,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T13:00:00.000+01:00",
+      "price": 0.4429,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T14:00:00.000+01:00",
+      "price": 0.4491,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T15:00:00.000+01:00",
+      "price": 0.4491,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T16:00:00.000+01:00",
+      "price": 0.486,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T17:00:00.000+01:00",
+      "price": 0.5276,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T18:00:00.000+01:00",
+      "price": 0.5137,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T19:00:00.000+01:00",
+      "price": 0.4485,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T20:00:00.000+01:00",
+      "price": 0.4002,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T21:00:00.000+01:00",
+      "price": 0.375,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T22:00:00.000+01:00",
+      "price": 0.3654,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-11-30T23:00:00.000+01:00",
+      "price": 0.3524,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T00:00:00.000+01:00",
+      "price": 0.3443,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T01:00:00.000+01:00",
+      "price": 0.3392,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T02:00:00.000+01:00",
+      "price": 0.335,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T03:00:00.000+01:00",
+      "price": 0.3311,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T04:00:00.000+01:00",
+      "price": 0.3314,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T05:00:00.000+01:00",
+      "price": 0.3388,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T06:00:00.000+01:00",
+      "price": 0.3599,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T07:00:00.000+01:00",
+      "price": 0.398,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T08:00:00.000+01:00",
+      "price": 0.4591,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T09:00:00.000+01:00",
+      "price": 0.482,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T10:00:00.000+01:00",
+      "price": 0.4733,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T11:00:00.000+01:00",
+      "price": 0.4711,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T12:00:00.000+01:00",
+      "price": 0.4516,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T13:00:00.000+01:00",
+      "price": 0.4255,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T14:00:00.000+01:00",
+      "price": 0.4245,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T15:00:00.000+01:00",
+      "price": 0.4365,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T16:00:00.000+01:00",
+      "price": 0.4551,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T17:00:00.000+01:00",
+      "price": 0.4916,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T18:00:00.000+01:00",
+      "price": 0.454,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T19:00:00.000+01:00",
+      "price": 0.4176,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T20:00:00.000+01:00",
+      "price": 0.3865,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T21:00:00.000+01:00",
+      "price": 0.3659,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T22:00:00.000+01:00",
+      "price": 0.3579,
+      "onOff": false,
+      "saving": null
+    },
+    {
+      "start": "2023-12-01T23:00:00.000+01:00",
+      "price": 0.3457,
+      "onOff": false,
+      "saving": null
+    }
+  ],
+  "source": "Tibber",
+  "config": {
+    "fromTime": "00",
+    "toTime": "00",
+    "hoursOn": 3,
+    "maxPrice": 0.35,
+    "doNotSplit": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": false,
+    "outputOutsidePeriod": false,
+    "outputValueForOn": true,
+    "outputValueForOff": false,
+    "outputValueForOntype": "bool",
+    "outputValueForOfftype": "bool",
+    "override": "auto",
+    "contextStorage": "memory",
+    "hasChanged": false
+  },
+  "time": "2023-11-30T17:29:23.336+00:00",
+  "version": "4.1.5",
+  "strategyNodeId": "n1",
+  "current": false
+}
