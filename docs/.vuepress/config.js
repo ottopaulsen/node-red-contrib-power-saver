@@ -30,7 +30,7 @@ export default defineUserConfig({
   ],
   theme: defaultTheme({
     contributors: false,
-    logo: "/Ukraine-heart-shape-flag.png",
+    logo: "/ps-logo.png",
     navbar,
     sidebar: {
       "/guide/": [{ text: "Guide", children: ["/guide/README.md"] }],
