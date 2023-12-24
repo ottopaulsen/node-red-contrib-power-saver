@@ -1,6 +1,6 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const fixedSchedule = require("../src/strategy-fixed-schedule.js");
 const prices = require("./data/converted-prices.json");
@@ -24,7 +24,7 @@ describe("ps-strategy-fixed-schedule node", function () {
     const flow = [{ id: "n1", type: "ps-strategy-fixed-schedule", name: "test name" }];
     helper.load(fixedSchedule, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.property("name", "test name");
       done();
     });
   });
@@ -36,7 +36,7 @@ describe("ps-strategy-fixed-schedule node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        expect(equalPlan(expected, msg.payload)).to.equal(true);
         n1.warn.should.not.be.called;
         done();
       });
@@ -57,7 +57,7 @@ describe("ps-strategy-fixed-schedule node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        expect(equalPlan(expected, msg.payload)).to.equal(true);
         n1.warn.should.not.be.called;
         done();
       });
@@ -85,7 +85,7 @@ describe("ps-strategy-fixed-schedule node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalSchedule(expected, msg.payload.schedule)).toBeTruthy();
+        expect(equalSchedule(expected, msg.payload.schedule)).to.equal(true);
         done();
       });
       n1.receive({ payload: prices, time: prices.priceData[0].start });

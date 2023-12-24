@@ -7,6 +7,14 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 4.1.5
+
+ - Fixed bug based on [this issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues/184). Now correctly uses the value for `outputOutsidePeriod` when the planning period spans midnight, and there is no data available before midnight. In this case, the period from midnight to end time cannot be planned, so `outputIfNoSchedule` will be used until end time, and `outputOutsidePeriod` will be used from then. See the issue for more details.
+
+## 4.1.4
+
+- Update dependencies.
+
 ## 4.1.3
 
 - Fix bug that saved some data in wrong context storage.

@@ -1,4 +1,4 @@
-const expect = require("expect");
+const expect = require("chai").expect;
 const cloneDeep = require("lodash.clonedeep");
 const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
@@ -31,11 +31,11 @@ describe("send command as input to lowest price", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalSchedule(result.schedule, msg.payload.schedule)).toBeTruthy();
+            expect(equalSchedule(result.schedule, msg.payload.schedule)).to.equal(true);
             n1.receive({ payload: { commands: { sendSchedule: true } } });
             break;
           case 2:
-            expect(equalSchedule(result.schedule, msg.payload.schedule)).toBeTruthy();
+            expect(equalSchedule(result.schedule, msg.payload.schedule)).to.equal(true);
             done();
             break;
         }
@@ -61,12 +61,12 @@ describe("send command as input to lowest price", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalPlan(result, msg.payload)).to.equal(true);
             n1.receive({ payload: { commands: { sendOutput: true }, time: "2021-10-11T11:00:05.000+02:00" } });
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
-              expect(countOn).toEqual(1);
-              expect(countOff).toEqual(1);
+              expect(countOn).to.equal(1);
+              expect(countOff).to.equal(1);
               done();
             }, 50);
             break;
@@ -74,11 +74,11 @@ describe("send command as input to lowest price", () => {
       });
       n3.on("input", function (msg) {
         countOn++;
-        expect(msg).toHaveProperty("payload", true);
+        expect(msg).to.have.deep.property("payload", true);
       });
       n4.on("input", function (msg) {
         countOff++;
-        expect(msg).toHaveProperty("payload", false);
+        expect(msg).to.have.deep.property("payload", false);
       });
 
       const payload = cloneDeep(prices);
@@ -94,7 +94,7 @@ describe("send command as input to lowest price", () => {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalPlan(result, msg.payload)).toBeTruthy();
+        expect(equalPlan(result, msg.payload)).to.equal(true);
         n1.receive({ payload: { commands: { reset: true } } });
         n1.warn.should.be.calledWithExactly("No price data");
         done();
@@ -119,27 +119,27 @@ describe("send command as input to lowest price", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalPlan(result, msg.payload)).to.equal(true);
             n1.receive({ payload: { commands: { replan: true }, time: "2021-10-11T00:00:05.000+02:00" } });
             break;
           case 2:
             pass++;
-            expect(equalPlan(result, msg.payload)).toBeTruthy();
+            expect(equalPlan(result, msg.payload)).to.equal(true);
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
-              expect(countOn).toEqual(0);
-              expect(countOff).toEqual(2);
+              expect(countOn).to.equal(0);
+              expect(countOff).to.equal(2);
               done();
             }, 50);
         }
       });
       n3.on("input", function (msg) {
         countOn++;
-        expect(msg).toHaveProperty("payload", true);
+        expect(msg).to.have.deep.property("payload", true);
       });
       n4.on("input", function (msg) {
         countOff++;
-        expect(msg).toHaveProperty("payload", false);
+        expect(msg).to.have.deep.property("payload", false);
       });
       const payload = cloneDeep(prices);
       payload.time = "2021-10-11T00:00:05.000+02:00";

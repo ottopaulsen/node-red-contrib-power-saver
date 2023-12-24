@@ -1,6 +1,7 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
+
 const {
   booleanConfig,
   sortedIndex,
@@ -18,49 +19,49 @@ const testResult = require("./data/best-save-result.json");
 
 describe("utils", () => {
   it("can test boolean config", () => {
-    expect(booleanConfig(true)).toBeTruthy();
-    expect(booleanConfig(false)).toBeFalsy();
-    expect(booleanConfig("true")).toBeTruthy();
-    expect(booleanConfig("false")).toBeFalsy();
-    expect(booleanConfig(undefined)).toBeFalsy();
+    expect(booleanConfig(true)).to.equal(true);
+    expect(booleanConfig(false)).to.equal(false);
+    expect(booleanConfig("true")).to.equal(true);
+    expect(booleanConfig("false")).to.equal(false);
+    expect(booleanConfig(undefined)).to.equal(false);
   });
   it("can sortedIndex", () => {
-    expect(sortedIndex([3, 1, 2, 4])).toEqual([3, 0, 2, 1]);
+    expect(sortedIndex([3, 1, 2, 4])).to.eql([3, 0, 2, 1]);
   });
   it("returns the first on", () => {
-    expect(firstOn([1, 2, 3], [false, false, false], 0)).toEqual(0);
-    expect(firstOn([1, 2, 3], [true, false, false], 0)).toEqual(1);
-    expect(firstOn([1, 2, 3], [false, true, false], 0)).toEqual(2);
-    expect(firstOn([1, 2, 3], [false, false, true], 0)).toEqual(3);
-    expect(firstOn([1, 2, 3], [true, true, true], 0)).toEqual(1);
-    expect(firstOn([], [], 0)).toEqual(0);
+    expect(firstOn([1, 2, 3], [false, false, false], 0)).to.equal(0);
+    expect(firstOn([1, 2, 3], [true, false, false], 0)).to.equal(1);
+    expect(firstOn([1, 2, 3], [false, true, false], 0)).to.equal(2);
+    expect(firstOn([1, 2, 3], [false, false, true], 0)).to.equal(3);
+    expect(firstOn([1, 2, 3], [true, true, true], 0)).to.equal(1);
+    expect(firstOn([], [], 0)).to.equal(0);
   });
   it("can getDiffToNextOn", () => {
     const values = [100, 200, 30];
-    expect(getDiffToNextOn(values, [false, false, false], 50)).toEqual([50, 150, -20]);
-    expect(getDiffToNextOn(values, [false, false, true], 50)).toEqual([70, 170, -20]);
-    expect(getDiffToNextOn(values, [false, true, false], 50)).toEqual([-100, 150, -20]);
-    expect(getDiffToNextOn(values, [true, false, true], 50)).toEqual([70, 170, -20]);
-    expect(getDiffToNextOn(values, [true, true, false], 50)).toEqual([-100, 150, -20]);
-    expect(getDiffToNextOn(values, [true, true, false])).toEqual([-100, 170, 0]);
+    expect(getDiffToNextOn(values, [false, false, false], 50)).to.eql([50, 150, -20]);
+    expect(getDiffToNextOn(values, [false, false, true], 50)).to.eql([70, 170, -20]);
+    expect(getDiffToNextOn(values, [false, true, false], 50)).to.eql([-100, 150, -20]);
+    expect(getDiffToNextOn(values, [true, false, true], 50)).to.eql([70, 170, -20]);
+    expect(getDiffToNextOn(values, [true, true, false], 50)).to.eql([-100, 150, -20]);
+    expect(getDiffToNextOn(values, [true, true, false])).to.eql([-100, 170, 0]);
   });
   it("calculates savings for hours off", () => {
     const values = [1, 10, 8, 5];
-    expect(getSavings(values, [true, true, true, true], 99)).toEqual([null, null, null, null]);
-    expect(getSavings(values, [false, false, false, false], 99)).toEqual([-98, -89, -91, -94]);
-    expect(getSavings(values, [false, true, false, true], 99)).toEqual([-9, null, 3, null]);
+    expect(getSavings(values, [true, true, true, true], 99)).to.eql([null, null, null, null]);
+    expect(getSavings(values, [false, false, false, false], 99)).to.eql([-98, -89, -91, -94]);
+    expect(getSavings(values, [false, true, false, true], 99)).to.eql([-9, null, 3, null]);
   });
 
   it("can count at end of array", () => {
-    expect(countAtEnd([], true)).toEqual(0);
-    expect(countAtEnd([true], true)).toEqual(1);
-    expect(countAtEnd([false], true)).toEqual(0);
-    expect(countAtEnd([true], false)).toEqual(0);
-    expect(countAtEnd([true, true], false)).toEqual(0);
-    expect(countAtEnd([true, false], false)).toEqual(1);
-    expect(countAtEnd([false, true], false)).toEqual(0);
-    expect(countAtEnd([false, true], undefined)).toEqual(0);
-    expect(countAtEnd([true, false], undefined)).toEqual(0);
+    expect(countAtEnd([], true)).to.equal(0);
+    expect(countAtEnd([true], true)).to.equal(1);
+    expect(countAtEnd([false], true)).to.equal(0);
+    expect(countAtEnd([true], false)).to.equal(0);
+    expect(countAtEnd([true, true], false)).to.equal(0);
+    expect(countAtEnd([true, false], false)).to.equal(1);
+    expect(countAtEnd([false, true], false)).to.equal(0);
+    expect(countAtEnd([false, true], undefined)).to.equal(0);
+    expect(countAtEnd([true, false], undefined)).to.equal(0);
   });
 
   it("can make schedule", () => {
@@ -72,17 +73,17 @@ describe("utils", () => {
       "2021-06-20T08:00:00+02:00",
       "2021-06-20T09:00:00+02:00",
     ];
-    expect(makeSchedule(onOff, startTimes)).toEqual([
+    expect(makeSchedule(onOff, startTimes)).to.eql([
       { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
       { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
       { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
-    expect(makeSchedule(onOff, startTimes, true)).toEqual([
+    expect(makeSchedule(onOff, startTimes, true)).to.eql([
       { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
       { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
       { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
     ]);
-    expect(makeSchedule(onOff, startTimes, false)).toEqual([
+    expect(makeSchedule(onOff, startTimes, false)).to.eql([
       { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 }, // Right???
       { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
       { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
@@ -90,19 +91,19 @@ describe("utils", () => {
   });
 
   it("can fill an array", () => {
-    expect(fillArray(false, 0)).toEqual([]);
-    expect(fillArray(false, 2)).toEqual([false, false]);
-    expect(fillArray(true, 2)).toEqual([true, true]);
-    expect(fillArray(undefined, 2)).toEqual([]);
-    expect(fillArray(true, 0)).toEqual([]);
+    expect(fillArray(false, 0)).to.eql([]);
+    expect(fillArray(false, 2)).to.eql([false, false]);
+    expect(fillArray(true, 2)).to.eql([true, true]);
+    expect(fillArray(undefined, 2)).to.eql([]);
+    expect(fillArray(true, 0)).to.eql([]);
   });
 
   it("can compare dates", () => {
     const date1 = "2021-06-20T01:50:00.000+02:00";
-    expect(isSameDate(date1, "2021-06-20T01:50:00.000+02:00")).toBeTruthy();
-    expect(isSameDate(date1, "2021-06-21T01:50:00.000+02:00")).toBeFalsy();
-    expect(isSameDate(date1, "2021-06-20")).toBeTruthy();
-    expect(isSameDate(date1, "2021-06-21")).toBeFalsy();
+    expect(isSameDate(date1, "2021-06-20T01:50:00.000+02:00")).to.equal(true);
+    expect(isSameDate(date1, "2021-06-21T01:50:00.000+02:00")).to.equal(false);
+    expect(isSameDate(date1, "2021-06-20")).to.equal(true);
+    expect(isSameDate(date1, "2021-06-21")).to.equal(false);
   });
 
   it("can extract plan for a date", () => {
@@ -196,7 +197,7 @@ describe("utils", () => {
         },
       ],
     };
-    expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).toEqual(part1);
+    expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).to.eql(part1);
   });
   it("Can make schedule from hours", () => {
     const hours = cloneDeep(testResult.hours);
@@ -206,6 +207,6 @@ describe("utils", () => {
       time: "2021-06-20T02:50:00.470+02:00",
       value: false,
     });
-    expect(resultToValidate).toEqual(testResult.schedule);
+    expect(resultToValidate).to.eql(testResult.schedule);
   });
 });

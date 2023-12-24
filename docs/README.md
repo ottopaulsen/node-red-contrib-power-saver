@@ -1,6 +1,7 @@
 ---
 home: true
 heroImage: /logo.png
+heroHeight: 112
 heroAlt: Power Saver
 heroText: node-red-contrib-power-saver
 tagline: A collection of nodes to Node-RED that automates saving money on variable electricity prices
@@ -35,5 +36,10 @@ footerHtml: true
 <AdsenseAdd type="artikkel"/>
 
 This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.
+
+Please remember to take a look at our [privacy rules](./privacy.md).
+<br/>
+<br/>
+<br/>
 
 <DonateButtons/>

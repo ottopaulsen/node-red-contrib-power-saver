@@ -16,15 +16,6 @@
         />
       </form>
     </div>
-    <div v-if="patreon" class="center">
-      <a
-        class="patreonButton"
-        href="https://www.patreon.com/bePatron?u=65948417"
-        data-patreon-widget-type="become-patron-button"
-        target="_blank"
-        >Become a Patron!
-      </a>
-    </div>
     <div v-if="vipps" class="right vipps-box">
       <span>
         <img src="../../images/vipps-smiling-rgb-orange-pos.png" height="30" />

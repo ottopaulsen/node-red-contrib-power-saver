@@ -1,6 +1,6 @@
 const helper = require("node-red-node-test-helper");
 const addTariff = require("../src/general-add-tariff.js");
-const expect = require("expect");
+const expect = require("chai").expect;
 const cloneDeep = require("lodash.clonedeep");
 
 const prices = {
@@ -50,7 +50,7 @@ describe("general-add-tariff node", function () {
     const flow = [{ id: "n1", type: "ps-general-add-tariff", name: "test name" }];
     helper.load(addTariff, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.property("name", "test name");
       done();
     });
   });
@@ -82,7 +82,7 @@ describe("general-add-tariff node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(msg).to.have.deep.property("payload", result);
         done();
       });
       const payload = cloneDeep(prices);
@@ -117,7 +117,7 @@ describe("general-add-tariff node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(msg).to.have.deep.property("payload", result);
         done();
       });
       const payload = cloneDeep(prices);
@@ -154,7 +154,7 @@ describe("general-add-tariff node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(msg).to.have.deep.property("payload", result);
         done();
       });
       n1.receive({ payload: prices });
@@ -187,7 +187,7 @@ describe("general-add-tariff node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(msg).to.have.deep.property("payload", result);
         done();
       });
       n1.receive({ payload: prices });
@@ -216,7 +216,7 @@ describe("general-add-tariff node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(msg).to.have.deep.property("payload", result);
         done();
       });
       n1.receive({ payload: prices });

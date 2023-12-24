@@ -56,9 +56,11 @@ function doPlanning(node, priceData) {
     if (hour === to && to === from && currentStatus === "Inside") {
       endIndexes.push(i - 1);
     }
-    if (hour === to && to !== from && i > 0 && currentStatus !== "StartMissing") {
+    if (hour === to && to !== from && i > 0 ) {
+      if(currentStatus !== "StartMissing") {
+        endIndexes.push(i - 1);
+      }
       currentStatus = "Outside";
-      endIndexes.push(i - 1);
     }
     if (hour === from) {
       currentStatus = "Inside";

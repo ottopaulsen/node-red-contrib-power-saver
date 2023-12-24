@@ -1,4 +1,4 @@
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const scheduleMerger = require("../src/schedule-merger.js");
 const { equalHours } = require("./test-utils");
@@ -22,7 +22,7 @@ describe("schedule-merger node", function () {
     const flow = [{ id: "n1", type: "ps-schedule-merger", name: "test name" }];
     helper.load(scheduleMerger, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.property("name", "test name");
       done();
     });
   });
@@ -33,7 +33,7 @@ describe("schedule-merger node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
+        expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
         n1.warn.should.not.be.called;
         done();
       });
@@ -48,10 +48,10 @@ describe("schedule-merger node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
-        expect(msg.payload.schedule.length).toBe(6);
-        expect(msg.payload.schedule[5].value).toBeFalsy();
-        expect(msg.payload.schedule[5].countHours).toBeNull();
+        expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+        expect(msg.payload.schedule.length).to.equal(6);
+        expect(msg.payload.schedule[5].value).to.equal(false);
+        expect(msg.payload.schedule[5].countHours).to.equal(null);
         n1.warn.should.not.be.called;
         done();
       });
@@ -66,8 +66,8 @@ describe("schedule-merger node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
-        expect(msg.payload.schedule.length).toBe(1);
+        expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+        expect(msg.payload.schedule.length).to.equal(1);
         n1.warn.should.not.be.called;
         done();
       });
@@ -82,10 +82,10 @@ describe("schedule-merger node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
-        expect(msg.payload.schedule.length).toBe(2);
-        expect(msg.payload.schedule[1].value).toBeTruthy();
-        expect(msg.payload.schedule[1].countHours).toBeNull();
+        expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+        expect(msg.payload.schedule.length).to.equal(2);
+        expect(msg.payload.schedule[1].value).to.equal(true);
+        expect(msg.payload.schedule[1].countHours).to.equal(null);
         n1.warn.should.not.be.called;
         done();
       });
@@ -100,8 +100,8 @@ describe("schedule-merger node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
-        expect(msg.payload.schedule.length).toBe(1);
+        expect(equalHours(allOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+        expect(msg.payload.schedule.length).to.equal(1);
         n1.warn.should.not.be.called;
         done();
       });
@@ -117,8 +117,8 @@ describe("schedule-merger node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).toBeTruthy();
-        expect(msg.payload.schedule.length).toBe(1);
+        expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+        expect(msg.payload.schedule.length).to.equal(1);
         n1.warn.should.not.be.called;
         done();
       });

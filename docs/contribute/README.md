@@ -6,11 +6,9 @@ sidebar: "auto"
 
 ## Donate
 
-Developing software is time consuming. This solution has taken the better part of all my free time for a couple of years now. Getting something back would make it easier to also spend future time on this.
+Developing software is time consuming. This solution took the better part of my free time for a couple of years, and still takes a lot of time. Getting something back would make it easier to also spend future time on this.
 
-<VippsPlakat/>
-
-The software is open source, and you can use it for free, but if you feel it has value, you can support the development by donating or becoming a patron, paying a fee of your choice.
+The software is open source, and you can use it for free, but if you feel it has value, you can support the development by donating, paying a fee of your choice.
 
 <br/>
 <br/>
@@ -37,7 +35,15 @@ It would be very nice to get more examples into the documentation. If you have m
 
 ## Bug reports
 
-If you find a bug, please describe it thoroughly and make a [GitHub issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues). If the bug is related to the scheduling, **please provide the full output from output 3** on the strategy node.
+If you find a bug, please describe it thoroughly and make a [GitHub issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues). 
+
+::: tip Bug reports for strategy nodes
+If the bug is related to a strategy node, please provide:
+* The full input
+* The full output from output 3
+:::
+
+If you have problems with the Best Save node, you can try the [Best Save Viewer](../faq/best-save-viewer.md) to see if it makes more sense.
 
 ## Ideas
 

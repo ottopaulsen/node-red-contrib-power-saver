@@ -1,6 +1,6 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/converted-prices.json");
@@ -25,7 +25,7 @@ describe("ps-strategy-lowest-price node", function () {
     const flow = [{ id: "n1", type: "ps-strategy-lowest-price", name: "test name" }];
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.deep.property("name", "test name");
       done();
     });
   });
@@ -66,8 +66,8 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultContinuous.schedule);
-        expect(msg.payload).toHaveProperty("config", resultContinuous.config);
+        expect(msg.payload).to.have.deep.property("schedule", resultContinuous.schedule);
+        expect(msg.payload).to.have.deep.property("config", resultContinuous.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -83,7 +83,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultSplitted.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultSplitted.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -98,8 +98,8 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultContinuous.schedule);
-        expect(msg.payload).toHaveProperty("config", resultContinuous.config);
+        expect(msg.payload).to.have.deep.property("schedule", resultContinuous.schedule);
+        expect(msg.payload).to.have.deep.property("config", resultContinuous.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -115,7 +115,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultSplitted.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultSplitted.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -130,7 +130,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultContinuousMax.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultContinuousMax.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -145,7 +145,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultContinuousMax.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultContinuousMax.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -161,7 +161,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultSplittedMax.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultSplittedMax.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -179,7 +179,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", resultAllDay.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultAllDay.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -198,7 +198,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         const config = cloneDeep(resultAllDay10.config);
-        expect(msg.payload).toHaveProperty("schedule", resultAllDay10.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultAllDay10.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -219,7 +219,7 @@ describe("ps-strategy-lowest-price node", function () {
       n2.on("input", function (msg) {
         const config = cloneDeep(resultAllDay10.config);
         config.outputOutsidePeriod = true;
-        expect(msg.payload).toHaveProperty("schedule", resultAllDay10.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultAllDay10.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -240,7 +240,7 @@ describe("ps-strategy-lowest-price node", function () {
       n2.on("input", function (msg) {
         const config = cloneDeep(resultAllDay10.config);
         config.outputIfNoSchedule = true;
-        expect(msg.payload).toHaveProperty("schedule", resultAllDay10.schedule);
+        expect(msg.payload).to.have.deep.property("schedule", resultAllDay10.schedule);
         n1.warn.should.not.be.called;
         done();
       });
@@ -268,7 +268,7 @@ describe("ps-strategy-lowest-price node", function () {
         const res = msg.payload.schedule.map((s) => ({ time: s.time, value: s.value }));
         const exp = schedule.map((s) => ({ time: s.time, value: s.value }));
         exp.pop();
-        expect(res).toEqual(exp);
+        expect(res).to.eql(exp);
         n1.warn.should.not.be.called;
         done();
       });
@@ -296,8 +296,8 @@ describe("ps-strategy-lowest-price node", function () {
         const res = msg.payload.schedule.map((s) => ({ time: s.time, value: s.value }));
         const exp = schedule.map((s) => ({ time: s.time, value: s.value }));
         exp.splice(8, 1);
-        expect(res).toEqual(exp);
-        expect(msg.payload).toHaveProperty("config", config);
+        expect(res).to.eql(exp);
+        expect(msg.payload).to.have.deep.property("config", config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -315,7 +315,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", result);
+        expect(msg.payload).to.have.deep.property("schedule", result);
         n1.warn.should.not.be.called;
         done();
       });
@@ -337,7 +337,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", result);
+        expect(msg.payload).to.have.deep.property("schedule", result);
         n1.warn.should.not.be.called;
         done();
       });
@@ -359,7 +359,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", result);
+        expect(msg.payload).to.have.deep.property("schedule", result);
         n1.warn.should.not.be.called;
         done();
       });
@@ -381,7 +381,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", result);
+        expect(msg.payload).to.have.deep.property("schedule", result);
         n1.warn.should.not.be.called;
         done();
       });
@@ -406,17 +406,17 @@ describe("ps-strategy-lowest-price node", function () {
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", result);
+        expect(msg.payload).to.have.deep.property("schedule", result);
         n1.warn.should.not.be.called;
         done();
       });
       n3.on("input", function (msg) {
         console.log("n3 inout: " + msg);
-        expect(msg.payload).toEqual(true);
+        expect(msg.payload).to.equal(true);
       });
       n4.on("input", function (msg) {
         console.log("n4 inout: " + msg);
-        expect(msg.payload).toEqual(false);
+        expect(msg.payload).to.equal(false);
       });
       const time = DateTime.fromISO(prices.priceData[10].start);
       n1.receive({ payload: makePayload(oneDayPrices, time) });
@@ -454,11 +454,11 @@ describe("ps-strategy-lowest-price node", function () {
       let countOn = 0;
       let countOff = 0;
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", result);
+        expect(msg.payload).to.have.deep.property("schedule", result);
         n1.warn.should.not.be.called;
         setTimeout(() => {
-          expect(countOn).toEqual(1);
-          expect(countOff).toEqual(0);
+          expect(countOn).to.equal(1);
+          expect(countOff).to.equal(0);
           done();
         }, 100);
       });
@@ -508,11 +508,11 @@ describe("ps-strategy-lowest-price node", function () {
       let countOn = 0;
       let countOff = 0;
       n2.on("input", function (msg) {
-        expect(msg.payload).toHaveProperty("schedule", result);
+        expect(msg.payload).to.have.deep.property("schedule", result);
         n1.warn.should.not.be.called;
         setTimeout(() => {
-          expect(countOn).toEqual(0);
-          expect(countOff).toEqual(1);
+          expect(countOn).to.equal(0);
+          expect(countOff).to.equal(1);
           done();
         }, 100);
       });
@@ -557,7 +557,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(msg).to.have.deep.property("payload", result);
         n1.warn.should.not.be.called;
         done();
       });
@@ -594,7 +594,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result);
+        expect(msg).to.have.deep.property("payload", result);
         n1.warn.should.not.be.called;
         done();
       });
@@ -631,7 +631,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", result.payload);
+        expect(msg).to.have.deep.property("payload", result.payload);
         n1.warn.should.not.be.called;
         done();
       });

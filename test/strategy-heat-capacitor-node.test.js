@@ -1,7 +1,7 @@
 "use strict";
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const node = require("../src/strategy-heat-capacitor.js");
 const prices = require("./data/converted-prices.json");
@@ -25,7 +25,7 @@ describe("ps-strategy-heat-capacitor node", function () {
     const flow = [{ id: "n1", type: "ps-strategy-heat-capacitor", name: "Temp. Adj." }];
     helper.load(node, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "Temp. Adj.");
+      expect(n1).to.have.property("name", "Temp. Adj.");
       done();
     });
   });
@@ -77,15 +77,15 @@ describe("ps-strategy-heat-capacitor node", function () {
           },
         },
       });
-      expect(n1).toHaveProperty("timeHeat1C", 1);
-      expect(n1).toHaveProperty("timeCool1C", 2);
-      expect(n1).toHaveProperty("boostTempHeat", 6);
-      expect(n1).toHaveProperty("boostTempCool", 7);
-      expect(n1).toHaveProperty("setpoint", 3);
-      expect(n1).toHaveProperty("maxTempAdjustment", 4);
-      expect(n1).toHaveProperty("minSavings", 5);
+      expect(n1).to.have.property("timeHeat1C", 1);
+      expect(n1).to.have.property("timeCool1C", 2);
+      expect(n1).to.have.property("boostTempHeat", 6);
+      expect(n1).to.have.property("boostTempCool", 7);
+      expect(n1).to.have.property("setpoint", 3);
+      expect(n1).to.have.property("maxTempAdjustment", 4);
+      expect(n1).to.have.property("minSavings", 5);
       n1.receive({ payload: { config: { setpoint: 24 } } });
-      expect(n1).toHaveProperty("setpoint", 24);
+      expect(n1).to.have.property("setpoint", 24);
       done();
     });
   });
@@ -99,12 +99,12 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n3 = helper.getNode("n3");
       let bothReceived = false;
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 22.5);
+        expect(msg).to.have.deep.property("payload", 22.5);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
       });
       n3.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", -0.5);
+        expect(msg).to.have.deep.property("payload", -0.5);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
       });
@@ -126,17 +126,17 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n5 = helper.getNode("n5");
       let bothReceived = false;
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 24.5);
+        expect(msg).to.have.deep.property("payload", 24.5);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
       });
       n3.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 1.5);
+        expect(msg).to.have.deep.property("payload", 1.5);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
       });
       n5.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload.current_setpoint", 24.5);
+        expect(msg).to.have.deep.property("payload.current_setpoint", 24.5);
         n1.warn.should.not.be.called;
       });
       const time = DateTime.fromISO(multiTrade.priceData[4].start).plus({ minutes: 10 });
@@ -151,7 +151,7 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n1 = helper.getNode("n1");
       n1.receive({ payload: multiTrade });
       n1.receive({ payload: prices });
-      expect(n1.priceData.length).toEqual(72);
+      expect(n1.priceData.length).to.equal(72);
       done();
     });
   });
@@ -185,17 +185,17 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n5 = helper.getNode("n5");
       let bothReceived = false;
       n2.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 17);
+        expect(msg).to.have.deep.property("payload", 17);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
       });
       n3.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", -3);
+        expect(msg).to.have.deep.property("payload", -3);
         n1.warn.should.not.be.called;
         bothReceived ? done() : (bothReceived = true);
       });
       n5.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload.current_setpoint", 17);
+        expect(msg).to.have.deep.property("payload.current_setpoint", 17);
         n1.warn.should.not.be.called;
       });
       const time = DateTime.fromISO("2022-12-06T10:51:48.126+01:00");

@@ -1,6 +1,6 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
-const expect = require("expect");
+const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const prices = require("./data/converted-prices.json");
@@ -27,7 +27,7 @@ describe("ps-strategy-best-save node", function () {
     const flow = [{ id: "n1", type: "ps-strategy-best-save", name: "test name" }];
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
-      expect(n1).toHaveProperty("name", "test name");
+      expect(n1).to.have.property("name", "test name");
       done();
     });
   });
@@ -76,22 +76,22 @@ describe("ps-strategy-best-save node", function () {
       let countOn = 0;
       let countOff = 0;
       n2.on("input", function (msg) {
-        expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        expect(equalPlan(expected, msg.payload)).to.equal(true);
         n1.warn.should.not.be.called;
         setTimeout(() => {
           console.log("countOn = " + countOn + ", countOff = " + countOff);
-          expect(countOn).toEqual(7);
-          expect(countOff).toEqual(7);
+          expect(countOn).to.equal(7);
+          expect(countOff).to.equal(7);
           done();
         }, 900);
       });
       n3.on("input", function (msg) {
         countOn++;
-        expect(msg).toHaveProperty("payload", true);
+        expect(msg).to.have.deep.property("payload", true);
       });
       n4.on("input", function (msg) {
         countOff++;
-        expect(msg).toHaveProperty("payload", false);
+        expect(msg).to.have.deep.property("payload", false);
       });
       n1.receive({ payload: makePayload(prices, plan.time) });
     });
@@ -120,19 +120,19 @@ describe("ps-strategy-best-save node", function () {
           case 2:
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
-              expect(countOn).toEqual(0);
-              expect(countOff).toEqual(1);
+              expect(countOn).to.equal(0);
+              expect(countOff).to.equal(1);
               done();
             }, 100);
         }
       });
       n3.on("input", function (msg) {
         countOn++;
-        expect(msg).toHaveProperty("payload", true);
+        expect(msg).to.have.deep.property("payload", true);
       });
       n4.on("input", function (msg) {
         countOff++;
-        expect(msg).toHaveProperty("payload", false);
+        expect(msg).to.have.deep.property("payload", false);
       });
       const payload = {
         ...convertedPrices,
@@ -158,25 +158,25 @@ describe("ps-strategy-best-save node", function () {
       let countOn = 0;
       let countOff = 0;
       n2.on("input", function (msg) {
-        expect(equalPlan(expected, msg.payload)).toBeTruthy();
+        expect(equalPlan(expected, msg.payload)).to.equal(true);
         n1.warn.should.not.be.called;
         if (!timeoutSet) {
           timeoutSet = true;
           setTimeout(() => {
             console.log("countOn = " + countOn + ", countOff = " + countOff);
-            expect(countOn).toEqual(2);
-            expect(countOff).toEqual(2);
+            expect(countOn).to.equal(2);
+            expect(countOff).to.equal(2);
             done();
           }, 900);
         }
       });
       n3.on("input", function (msg) {
         countOn++;
-        expect(msg).toHaveProperty("payload", true);
+        expect(msg).to.have.deep.property("payload", true);
       });
       n4.on("input", function (msg) {
         countOff++;
-        expect(msg).toHaveProperty("payload", false);
+        expect(msg).to.have.deep.property("payload", false);
         if (countOff === 2) {
           n1.receive({ payload: { config: { override: "on" }, time: plan.time } });
         }
@@ -196,20 +196,20 @@ describe("ps-strategy-best-save node", function () {
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        expect(msg.payload.config.outputValueForOn).toEqual(1);
-        expect(msg.payload.config.outputValueForOff).toEqual(0);
-        expect(msg.payload.config.outputValueForOntype).toEqual("num");
-        expect(msg.payload.config.outputValueForOfftype).toEqual("num");
+        expect(msg.payload.config.outputValueForOn).to.equal(1);
+        expect(msg.payload.config.outputValueForOff).to.equal(0);
+        expect(msg.payload.config.outputValueForOntype).to.equal("num");
+        expect(msg.payload.config.outputValueForOfftype).to.equal("num");
         n1.warn.should.not.be.called;
         setTimeout(() => {
           done();
         }, 100);
       });
       n3.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 1);
+        expect(msg).to.have.deep.property("payload", 1);
       });
       n4.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", 0);
+        expect(msg).to.have.deep.property("payload", 0);
       });
       n1.receive({ payload: makePayload(prices, plan.time) });
     });
@@ -226,20 +226,20 @@ describe("ps-strategy-best-save node", function () {
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
-        expect(msg.payload.config.outputValueForOn).toEqual("on");
-        expect(msg.payload.config.outputValueForOff).toEqual("off");
-        expect(msg.payload.config.outputValueForOntype).toEqual("str");
-        expect(msg.payload.config.outputValueForOfftype).toEqual("str");
+        expect(msg.payload.config.outputValueForOn).to.equal("on");
+        expect(msg.payload.config.outputValueForOff).to.equal("off");
+        expect(msg.payload.config.outputValueForOntype).to.equal("str");
+        expect(msg.payload.config.outputValueForOfftype).to.equal("str");
         n1.warn.should.not.be.called;
         setTimeout(() => {
           done();
         }, 100);
       });
       n3.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", "on");
+        expect(msg).to.have.deep.property("payload", "on");
       });
       n4.on("input", function (msg) {
-        expect(msg).toHaveProperty("payload", "off");
+        expect(msg).to.have.deep.property("payload", "off");
       });
       n1.receive({ payload: makePayload(prices, plan.time) });
     });
