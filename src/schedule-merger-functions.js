@@ -39,7 +39,7 @@ function mergeSchedules(node, logicFunction) {
   const savedSchedules = node.context().get("savedSchedules", node.contextStorage);
   if (!savedSchedules) {
     const msg = "No schedules";
-    node.warn(msg);
+    // node.warn(msg);
     node.status({ fill: "red", shape: "dot", text: msg });
     return [];
   }

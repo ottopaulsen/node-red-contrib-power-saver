@@ -77,7 +77,7 @@ function runSchedule(node, schedule, time, currentSent = false) {
     node.log("Switching " + onOff + " in " + wait + " milliseconds");
     const statusMessage = `${remainingSchedule.length} changes - ${
       remainingSchedule[0].value ? "on" : "off"
-    } at ${nextTime.toLocaleString(DateTime.TIME_SIMPLE)}`;
+    } at ${nextTime.toFormat("HH:mm")}`;
     node.status({ fill: "green", shape: "dot", text: statusMessage });
     return setTimeout(() => {
       sendSwitch(node, entry.value);
