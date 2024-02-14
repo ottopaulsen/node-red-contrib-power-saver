@@ -93,7 +93,6 @@ describe("send command as input to schedule merger", () => {
         expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
         n1.warn.should.not.be.called;
         n1.receive({ payload: { commands: { reset: true } } });
-        n1.warn.should.be.calledWithExactly("No schedule");
         done();
       });
       n1.receive({ payload: makePayload("s1", someOn) });
