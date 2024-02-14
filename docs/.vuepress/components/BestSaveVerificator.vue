@@ -86,7 +86,7 @@
       <tr v-for="(hour, i) in payload.hours" :key="hour.start">
         <td>{{ DateTime.fromISO(hour.start).day }}</td>
         <td>
-          {{ DateTime.fromISO(hour.start).toLocaleString(DateTime.TIME_SIMPLE) }}
+          {{ DateTime.fromISO(hour.start).toFormat("HH:mm") }}
         </td>
         <td :class="priceClasses(i)">{{ hour.price }}</td>
         <td>{{ hour.onOff ? "On" : "Off" }}</td>

@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 4.2.1
+
+ - Bugfix version 4.2.0. Change was not effective.
+
 ## 4.2.0
 
  - Format time on node status with HH:MM format. No AM/PM any more.

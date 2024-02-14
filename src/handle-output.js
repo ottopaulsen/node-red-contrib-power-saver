@@ -85,7 +85,7 @@ function runSchedule(node, schedule, time, currentSent = false) {
     }, wait);
   } else {
     const message = "No schedule";
-    node.warn(message);
+    // node.warn(message);
     node.status({ fill: "yellow", shape: "dot", text: message });
     if (!currentSent) {
       sendSwitch(node, node.outputIfNoSchedule);
