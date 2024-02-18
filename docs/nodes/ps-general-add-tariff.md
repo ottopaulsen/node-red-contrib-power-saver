@@ -26,6 +26,8 @@ When using two nodes in series to support for example different rates for weeken
 make sure each day is handled by only one node, else both nodes will add to the price.
 :::
 
+<AdsenseAdd type="artikkel"/>
+
 Here is how this node is normally used:
 
 ![general flow](../images/add-tariff-flow.png)
@@ -35,6 +37,8 @@ If there is one price now, and another price from a specific date, you can use t
 :::
 
 ## Configuration
+
+<AdsenseAdd type="artikkel"/>
 
 ### Add and delete periods
 
@@ -48,6 +52,8 @@ For each period, select the time of the day the value is valid from, and enter t
 Be careful to use the correct unit when entering the price here. If the price is `28 øre` enter `0.28`.
 If the price is `36 cents` enter `0.36`.
 :::
+
+<AdsenseAdd type="artikkel"/>
 
 ### Days
 

@@ -1,5 +1,7 @@
 # node-red-contrib-power-saver v2 (deprecated)
 
+<AdsenseAdd type="artikkel"/>
+
 A Node-RED node to save money when power prices are changing. Saving is done by postponing power consumption until the price is lower.
 
 You can configure maximum number of hours to save in a sequence, and minimum time to recover after a maximum saving period.
@@ -20,6 +22,8 @@ This node is currently rather new, and has been tried for a few weeks, enough to
 
 Feel free to try it, and report back problems or ideas as [Github issues](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues).
 
+<AdsenseAdd type="artikkel"/>
+
 ## Installation
 
 Install in Node-RED via the Manage Palette menu.
@@ -29,6 +33,8 @@ May also be installed via npm:
 `npm install node-red-contrib-power-saver`
 
 Make sure that you upgrade now and then to get the latest version. See [changelog](CHANGELOG) for changes.
+
+<AdsenseAdd type="artikkel"/>
 
 ## Input
 
@@ -41,6 +47,8 @@ Make sure that you upgrade now and then to get the latest version. See [changelo
 Choose the one that fits you best. Of course, all inputs are JSON, but the Tibber and Nord Pool alternatives are designed to connect directly to those sources with a minimum effort.
 
 From version 2.1.0, you can also send a config object as input for dynamically changing the node config.
+
+<AdsenseAdd type="artikkel"/>
 
 ### Tibber input
 
@@ -71,6 +79,8 @@ Send the result from the `tibber-query` node with the query above directly to th
 
 [See example with Tibber, a switch and MQTT](doc/example-tibber-mqtt.md)
 
+<AdsenseAdd type="artikkel"/>
+
 ### Nordpool input
 
 This is especially designed to work for Home Assistant (HA), and the [Nord Pool custom component](https://github.com/custom-components/nordpool). The Nord Pool component provides a _sensor_ that gives price per hour for today and tomorrow (after 13:00). Send the output from this sensor directly to the `power-saver` node. Make sure this is done whenever the node is updated, as well as when the system starts up.
@@ -80,6 +90,8 @@ Data can be sent from both the `current state` node or the `events: state` node.
 [See example with Nord Pool and `current state` node](doc/example-nordpool-current-state.md)
 
 [See example with Nord Pool and `events: state` node](doc/example-nordpool-events-state.md)
+
+<AdsenseAdd type="artikkel"/>
 
 ### Other input
 
@@ -100,6 +112,8 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
 }
 ```
 
+<AdsenseAdd type="artikkel"/>
+
 ## Output
 
 ### Output 1
@@ -113,6 +127,8 @@ A payload with the word `false` is sent to output 2 whenever the power / switch 
 ### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
+
+<AdsenseAdd type="artikkel"/>
 
 Example of output:
 
@@ -163,6 +179,8 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
 
+<AdsenseAdd type="artikkel"/>
+
 ## Configuration
 
 Currently there is only one strategy for saving. This is the _mostSaved_ strategy. This strategy turns off the hours where the price difference is largest compared to the next hour that is on. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on. This would fit well for turning of a water heater or another thermostat controlled heater.
@@ -174,6 +192,8 @@ You can configure the following:
 - Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it?
 - Wether to send on/off just after a reschedule is done without waiting until the next scheduled switch.
 - What to do if there is no valid schedule any more (turn on or off).
+
+<AdsenseAdd type="artikkel"/>
 
 ### Dynamic config
 
@@ -198,6 +218,8 @@ The config sent like this will be valid until a new config is sent the same way,
 
 When a config is sent like this, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
 
+<AdsenseAdd type="artikkel"/>
+
 ## Algorithm
 
 The calculation that decides what hours to turn off works as follows:
@@ -212,6 +234,8 @@ The calculation that decides what hours to turn off works as follows:
 
 I say "in most cases", because there is a chance that a group of two or more sequences combined can give a better plan than a single sequence preceeding those two, but where the selection of the one sequence causes the group to be discarded. If anyone encounters this situation, I would be happy to receive the price data set, and try to improve the algorithm even further.
 
+<AdsenseAdd type="artikkel"/>
+
 ## Integration with MagicMirror
 
 Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [Tibber](https://tibber.com/)? If so, there is a module for MM called [MMM-Tibber](https://github.com/ottopaulsen/MMM-Tibber), that easily can be used to show savings from this node.
@@ -221,6 +245,8 @@ Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [
 The purple lines show savings per kWh.
 
 Read more about this in the [MMM-Tibber documentation](https://github.com/ottopaulsen/MMM-Tibber#show-savings).
+
+<AdsenseAdd type="artikkel"/>
 
 ## Change Log
 

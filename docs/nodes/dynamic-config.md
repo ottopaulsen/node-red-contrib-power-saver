@@ -8,6 +8,8 @@ This applies to the following nodes:
 - Heat Capacitor
 - Schedule Merger
 
+<AdsenseAdd type="artikkel"/>
+
 Dynamic config is sent on the input as a message with a payload containing a `config` object and optionally a `name`.
 Example:
 
@@ -47,6 +49,8 @@ When a config is sent like this, and without price data, the schedule will be re
 
 However, you can send config and price data in the same message. Then both will be used.
 
+<AdsenseAdd type="artikkel"/>
+
 ## Override
 
 It is possible to send an override message to a strategy node (Best Save or Lowest Price) and to the Schedule Merger node.
@@ -71,6 +75,8 @@ Legal values for override are:
 | `"on"`   | The node will only send output `on`                                                      |
 | `"off"`  | The node will only send output `off`                                                     |
 | `"auto"` | The node will work according to the schedule. This is the standard and the default mode. |
+
+<AdsenseAdd type="artikkel"/>
 
 ## Config saved in context
 

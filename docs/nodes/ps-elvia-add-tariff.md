@@ -22,6 +22,8 @@ When grid tariff changes from hour to hour, this should normally also be conside
 
 ![Elvia flow](../images/elvia-flow.png)
 
+<AdsenseAdd type="artikkel"/>
+
 ## Configuration
 
 ::: warning Elvia API subscription key
@@ -35,6 +37,8 @@ When your subscription is approved, you will find your subscription key in the
 The first time you use this node, you must create a `ps-elvia-config` entry. Click on the edit button to the right of Elvia Config:
 
 ![Elvia configuration](../images/elvia-config-no-config.png)
+
+<AdsenseAdd type="artikkel"/>
 
 Then enter the Elvia API subscription key:
 

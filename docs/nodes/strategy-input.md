@@ -2,6 +2,8 @@
 
 The common input for strategy nodes is a payload with a `priceData` array containing an object for each hour. Each object has a `value` which is the price, and a `start` which is the start time for the hour.
 
+<AdsenseAdd type="artikkel"/>
+
 Example:
 
 ```json

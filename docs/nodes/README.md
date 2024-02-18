@@ -54,6 +54,8 @@ Node to convert different types of input data to the format used by the strategy
 
 Node to combine multiple schedules into one schedule.
 
+<AdsenseAdd type="artikkel"/>
+
 ## Grid tariff nodes
 
 ### [ps-general-add-tariff](./ps-general-add-tariff)
@@ -67,6 +69,8 @@ Node to add a variable grid tariff (or any value) to the prices before sending t
 ![ps-elvia-add-tariff](../images/node-ps-elvia-add-tariff.png)
 
 Node to add Elvia grid tariff to the prices before sending them to the strategy nodes.
+
+<AdsenseAdd type="artikkel"/>
 
 ## Other nodes
 

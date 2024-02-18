@@ -8,6 +8,8 @@ sidebar: "auto"
 
 This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.
 
+<AdsenseAdd type="artikkel"/>
+
 The solution can be used to control switches or other entities in a smart home system, and for example turn on when the price is low, and turn off when the price is high.
 There are different ways to calculate what hours to turn on and off, and these are implemented as **strategy nodes**. Each strategy node can be configured to fit different purposes.
 
@@ -18,6 +20,8 @@ Tibber and Nord Pool are only available in the nordics, so if you live outside t
 :::
 
 Grid tariff is normally not part of the electricity price, so if this varies by the hour, it must be added before sent to the strategy nodes for calculation. This can be done by putting a `ps-xxx-add-tariff` node between the price receiver and the strategy.
+
+<AdsenseAdd type="artikkel"/>
 
 The strategy nodes have 3 outputs. Output 1 is used to "turn on", output 2 is used to "turn off", and on output 3, the calculated schedule and some other information is sent. You can use this to make graphs, or just send it to a debug node to view it.
 
@@ -46,6 +50,8 @@ May also be installed via npm:
 `npm install node-red-contrib-power-saver`
 
 Make sure that you upgrade now and then to get the latest version. See [changelog](../changelog/README.md) for changes.
+
+<AdsenseAdd type="artikkel"/>
 
 ### Get price data
 
@@ -116,6 +122,8 @@ If you are a Tibber customer, use the `tibber-query` node from the [Tibber API](
 
 See more details in the [documentation](../nodes/ps-receive-price#tibber-input) for the `ps-receive-price` node.
 
+<AdsenseAdd type="artikkel"/>
+
 Se documentation for [node-red-contrib-tibber-api](https://flows.nodered.org/node/node-red-contrib-tibber-api) for details about the Tibber query.
 
 ::: tip Tibber query
@@ -154,6 +162,8 @@ If your grid is not supported, you may code this yourself.
 If the grid tariff is the same the whole day, you can skip this step i the flow.
 :::
 
+<AdsenseAdd type="artikkel"/>
+
 ### Calculate and run schedule
 
 This is the step where the value is produced. Based on the prices received, the optimal schedule for you is calculated automatically, based on your configuration. You can choose between the following strategies:
@@ -176,6 +186,8 @@ Choose the lowest price strategy if you need the power to be on for x hours, but
 
 Choose the heat capacitor strategy for controlling for example room heating, where you can turn the heat a little down when electricity is expensive, and a little up when it is cheap, using trading principles (only that you know up front when the prices will change).
 :::
+
+<AdsenseAdd type="artikkel"/>
 
 ### Use schedule signals
 
@@ -238,6 +250,8 @@ You may directly replace the `Power Saver` node by two of the new nodes (`ps-rec
 ![Migrate Power Saver](../images/migrate-best-save.png)
 
 See more details in the [documentation for the `ps-strategy-best-save`](../nodes/ps-strategy-best-save.md) node.
+
+<AdsenseAdd type="artikkel"/>
 
 ## Disclaimer
 

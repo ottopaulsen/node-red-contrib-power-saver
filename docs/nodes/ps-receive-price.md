@@ -7,6 +7,8 @@ next: ./ps-schedule-merger.md
 
 ![ps-receive-price](../images/node-ps-receive-price.png)
 
+<AdsenseAdd type="artikkel"/>
+
 ## Description
 
 The `ps-receive-price` node is used to convert prices from Tibber or Nord Pool to the format used by the strategy nodes. It takes its input directly from the output of the following nodes (see details below):
@@ -58,6 +60,8 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
 }
 ```
 
+<AdsenseAdd type="artikkel"/>
+
 Send the result from the `tibber-query` node with the query above directly to the `ps-receive-price` node. Make sure it is refreshed when new prices are ready. Prices for the next day are normally ready at 13:00, but refreshing every hour can be a good idea.
 
 [See example with Tibber, a switch and MQTT](../examples/example-tibber-mqtt.md)
@@ -91,6 +95,8 @@ Go to the [Tibber Developer pages](https://developer.tibber.com/), sign in, and 
   }
 }
 ```
+
+<AdsenseAdd type="artikkel"/>
 
 Then copy the `id` of the house you want to use prices for. It may look like this:
 
@@ -142,6 +148,8 @@ When using the `current state` node, configure the output properties to set `msg
 
 [See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
 
+<AdsenseAdd type="artikkel"/>
+
 ### Other input
 
 If you cannot use any of the two above (Tibber or Nord Pool), create the input to the node with the payload containing JSON like this:
@@ -160,6 +168,8 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
   ]
 }
 ```
+
+<AdsenseAdd type="artikkel"/>
 
 ## Output
 
