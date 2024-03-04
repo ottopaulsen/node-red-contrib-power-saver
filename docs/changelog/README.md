@@ -8,6 +8,10 @@ sidebarDepth: 1
 List the most significant changes.
 
 
+## 4.2.2
+
+ - Remove ads from doc.
+ - Remove console.log msg from node.
 
 ## 4.2.1
 
