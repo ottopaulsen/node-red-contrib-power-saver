@@ -1,6 +1,6 @@
 # node-red-contrib-power-saver v2 (deprecated)
 
-<AdsenseAdd type="artikkel"/>
+
 
 A Node-RED node to save money when power prices are changing. Saving is done by postponing power consumption until the price is lower.
 
@@ -22,7 +22,7 @@ This node is currently rather new, and has been tried for a few weeks, enough to
 
 Feel free to try it, and report back problems or ideas as [Github issues](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues).
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Installation
 
@@ -34,7 +34,7 @@ May also be installed via npm:
 
 Make sure that you upgrade now and then to get the latest version. See [changelog](CHANGELOG) for changes.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Input
 
@@ -48,7 +48,7 @@ Choose the one that fits you best. Of course, all inputs are JSON, but the Tibbe
 
 From version 2.1.0, you can also send a config object as input for dynamically changing the node config.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Tibber input
 
@@ -79,7 +79,7 @@ Send the result from the `tibber-query` node with the query above directly to th
 
 [See example with Tibber, a switch and MQTT](doc/example-tibber-mqtt.md)
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Nordpool input
 
@@ -91,7 +91,7 @@ Data can be sent from both the `current state` node or the `events: state` node.
 
 [See example with Nord Pool and `events: state` node](doc/example-nordpool-events-state.md)
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Other input
 
@@ -112,7 +112,7 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
 }
 ```
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Output
 
@@ -128,7 +128,7 @@ A payload with the word `false` is sent to output 2 whenever the power / switch 
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
-<AdsenseAdd type="artikkel"/>
+
 
 Example of output:
 
@@ -179,7 +179,7 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Configuration
 
@@ -193,7 +193,7 @@ You can configure the following:
 - Wether to send on/off just after a reschedule is done without waiting until the next scheduled switch.
 - What to do if there is no valid schedule any more (turn on or off).
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic config
 
@@ -218,7 +218,7 @@ The config sent like this will be valid until a new config is sent the same way,
 
 When a config is sent like this, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Algorithm
 
@@ -234,7 +234,7 @@ The calculation that decides what hours to turn off works as follows:
 
 I say "in most cases", because there is a chance that a group of two or more sequences combined can give a better plan than a single sequence preceeding those two, but where the selection of the one sequence causes the group to be discarded. If anyone encounters this situation, I would be happy to receive the price data set, and try to improve the algorithm even further.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Integration with MagicMirror
 
@@ -246,7 +246,7 @@ The purple lines show savings per kWh.
 
 Read more about this in the [MMM-Tibber documentation](https://github.com/ottopaulsen/MMM-Tibber#show-savings).
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Change Log
 
@@ -258,4 +258,4 @@ Contributions are welcome. Please start by creating a Github Issue with suggeste
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

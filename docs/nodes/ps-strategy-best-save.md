@@ -8,7 +8,7 @@ next: ./ps-strategy-lowest-price.md
 
 Strategy node to postpone power consumption until the price is lower.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Description
 
@@ -20,7 +20,7 @@ Be aware that the norwegian [FHI](https://www.fhi.no/nettpub/legionellaveiledere
 
 The picture at the bottom of the page, under [Integration with MagicMirror](#integration-with-magicmirror), illustrates this by the purple strokes, taking the price from the top of the price curve to the level of the first hour after the save-period.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Configuration
 
@@ -43,7 +43,7 @@ NB! The `Min recover` only has effect if the previous save-period is of length `
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic config
 
@@ -65,7 +65,7 @@ The following config values can be changed dynamically:
 
 See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic commands
 
@@ -85,7 +85,7 @@ When a payload with `priceData` is received, this is saved to the nodes context 
 The source is saved as `lastSource`. If config- or command-messages are received without price data,
 the data saved in context is used for replanning.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Output
 
@@ -99,7 +99,7 @@ A payload with the value set in config, default `true`, is sent to output 1 when
 
 A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Output 3
 
@@ -107,7 +107,7 @@ When a valid input is received, and the schedule is recalculated, the resulting 
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 Example of output:
 
@@ -167,7 +167,7 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Output saved in context
 
@@ -177,7 +177,7 @@ You can see the saved data if you select the node in Node-RED, and view "Context
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Algorithm
 
@@ -193,7 +193,7 @@ The calculation that decides what hours to turn off works as follows:
 
 I say "in most cases", because there is a chance that a group of two or more sequences combined can give a better plan than a single sequence preceeding those two, but where the selection of the one sequence causes the group to be discarded. If anyone encounters this situation, I would be happy to receive the price data set, and try to improve the algorithm even further.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Data used for calculation
 
@@ -209,7 +209,7 @@ It is common to have two different context storages defined, `memory` and `file`
 It is also common to have a `default` context storage defined, and often this points to either `memory` or `file`.
 However, the configuration can be different from this.
 
-<AdsenseAdd type="artikkel"/>
+
 
 You can find this configuration in the `settings.js` file for Node-RED, usually in the node-red config folder.
 In Home Assistant, this is normally `/config/node-red/settings.js`.
@@ -229,7 +229,7 @@ Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/con
 
 The data that is saved is the config, the last used prices and the last calculated schedule.
 
-<AdsenseAdd type="artikkel"/>
+
 
 When Node-RED restarts, the config is reset to what is defined in the node config, so by default,
 nothing is read from the context storage after a restart. However, if you send a `replan` command to the
@@ -248,7 +248,7 @@ This is an alternative to fetching new prices and send as input.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Integration with MagicMirror
 
@@ -266,4 +266,4 @@ If you like to analyze the data output by the node, take a look at the [Best Sav
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

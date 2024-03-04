@@ -8,7 +8,7 @@ This applies to the following nodes:
 - Heat Capacitor
 - Schedule Merger
 
-<AdsenseAdd type="artikkel"/>
+
 
 Dynamic config is sent on the input as a message with a payload containing a `config` object and optionally a `name`.
 Example:
@@ -35,7 +35,7 @@ The `name` is the exact same value as you set as name in the nodes config.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Output values
 
@@ -49,7 +49,7 @@ When a config is sent like this, and without price data, the schedule will be re
 
 However, you can send config and price data in the same message. Then both will be used.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Override
 
@@ -76,7 +76,7 @@ Legal values for override are:
 | `"off"`  | The node will only send output `off`                                                     |
 | `"auto"` | The node will work according to the schedule. This is the standard and the default mode. |
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Config saved in context
 
@@ -87,4 +87,4 @@ When Node-RED starts or the flow is redeployed, the config defined in the node r
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

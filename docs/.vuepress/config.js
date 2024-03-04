@@ -11,14 +11,14 @@ export default defineUserConfig({
   description: "A Node-RED node collection to save money on hourly changing power prices",
   head: [
     ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
-    [
-      "script",
-      {
-        async: true,
-        crossorigin: "anonymous",
-        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
-      },
-    ],
+    // [
+    //   "script",
+    //   {
+    //     async: true,
+    //     crossorigin: "anonymous",
+    //     src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
+    //   },
+    // ],
   ],
   lang: "en-US",
   plugins: [

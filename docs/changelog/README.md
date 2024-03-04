@@ -7,7 +7,7 @@ sidebarDepth: 1
 
 List the most significant changes.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 4.2.1
 
@@ -18,7 +18,7 @@ List the most significant changes.
  - Format time on node status with HH:MM format. No AM/PM any more.
  - Remove warning for `No schedule` in debug output.
 
- <AdsenseAdd type="artikkel"/>
+ 
 
 ## 4.1.5
 
@@ -28,7 +28,7 @@ List the most significant changes.
 
 - Update dependencies.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 4.1.3
 
@@ -43,7 +43,7 @@ List the most significant changes.
 
 - Update dependencies
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 4.1.0
 
@@ -58,7 +58,7 @@ There are a couple of new nodes that open for many interesting use cases.
 A rewrite like this may lead to changes in behavior, intended or not.
 There are some breaking changes, but most users should not be affected by them.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### New features
 
@@ -81,7 +81,7 @@ There are some breaking changes, but most users should not be affected by them.
 - Some bug-fixes may be regarded as breaking.
 - There may be some changes to what data that is stored in the context.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Bug fixes
 
@@ -152,7 +152,7 @@ There are some breaking changes, but most users should not be affected by them.
 
 - Update github actions to deploy automatically to the npm library.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 3.5.0
 
@@ -200,7 +200,7 @@ There are some breaking changes, but most users should not be affected by them.
 - Fix node status so it says "No price data" when there is no price data available.
 - Added an FAQ section to the doc.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 3.2.3
 
@@ -247,7 +247,7 @@ There are some breaking changes, but most users should not be affected by them.
 - Fix bug in Lowest Price node when period goes over midnight.
 - Fix documentation - lots of pages were failing.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 3.0.7
 
@@ -291,7 +291,7 @@ There are some breaking changes, but most users should not be affected by them.
 - New documentation.
 - Change node category to Power Saver.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 2.1.0
 
@@ -311,7 +311,7 @@ There are some breaking changes, but most users should not be affected by them.
 
 - Bugfix
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## 2.0.2
 
@@ -333,4 +333,3 @@ There are some breaking changes, but most users should not be affected by them.
 
 - Fix bug in saving last hour of the day.
 
-<AdsenseAdd type="nederst"/>

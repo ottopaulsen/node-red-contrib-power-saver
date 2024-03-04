@@ -7,7 +7,7 @@ next: ./ps-general-add-tariff.md
 
 ![ps-schedule-merger](../images/node-ps-schedule-merger.png)
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Description
 
@@ -23,7 +23,7 @@ The schedules that are merged must be for the exact same period and have the exa
 If a schedule with prices for a different period is received, all saved schedules are deleted, and not used any more.
 :::
 
-<AdsenseAdd type="artikkel"/>
+
 
 The merge can be done using one of two functions:
 
@@ -46,7 +46,7 @@ sure the switch is turned on or off, and then merge the schedule from the Fixed 
 the schedule from for example the Lowest Price node, using the Schedule Merger node.
 :::
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Configuration
 
@@ -63,7 +63,7 @@ the schedule from for example the Lowest Price node, using the Schedule Merger n
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic config
 
@@ -83,7 +83,7 @@ The following config values can be changed dynamically:
 
 See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic commands
 
@@ -121,7 +121,7 @@ You can make your own input by supplying a payload containing an hours array. Ex
 }
 ```
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Output
 
@@ -139,7 +139,7 @@ A payload with the value set in config, default `false`, is sent to output 2 whe
 
 When valid input is received, and the schedule is recalculated (after the timeout), the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
-<AdsenseAdd type="artikkel"/>
+
 
 Example of output:
 
@@ -227,7 +227,7 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off and the start time of the hour. The `saving` value is always `null`.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Usage ideas
 
@@ -235,7 +235,7 @@ The `schedule` array shows every time the switch is turned on or off. The `hours
 
 If you want a switch to be on for example two of the cheapest hours between 00:00 and 08:00, and then the two cheapest hours between 12:00 and 20:00, you can do this by combining the schedule from two Lowest Price nodes, one for each of the mentioned periods. Merge the two using a Schedule Merger node with the `OR` function. Make sure to send `off` if no schedule for all nodes.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Day-filter for strategy nodes
 

@@ -14,7 +14,7 @@ You need an Elvia API subscription key to use this node. See [configuration](#el
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Description
 
@@ -22,7 +22,7 @@ When grid tariff changes from hour to hour, this should normally also be conside
 
 ![Elvia flow](../images/elvia-flow.png)
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Configuration
 
@@ -38,7 +38,7 @@ The first time you use this node, you must create a `ps-elvia-config` entry. Cli
 
 ![Elvia configuration](../images/elvia-config-no-config.png)
 
-<AdsenseAdd type="artikkel"/>
+
 
 Then enter the Elvia API subscription key:
 
@@ -57,7 +57,7 @@ The next time you use this node, you can select the same config as you created t
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Input
 
@@ -69,4 +69,4 @@ The output is the [common strategy input format](./strategy-input.md)
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

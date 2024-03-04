@@ -59,4 +59,4 @@ Example contributors: [Stefan](https://github.com/oakhill87/node-red-contrib-pow
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

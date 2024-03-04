@@ -7,7 +7,7 @@ next: ./ps-schedule-merger.md
 
 ![ps-receive-price](../images/node-ps-receive-price.png)
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Description
 
@@ -31,7 +31,7 @@ There is no configuration except from node name.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Input
 
@@ -60,7 +60,7 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
 }
 ```
 
-<AdsenseAdd type="artikkel"/>
+
 
 Send the result from the `tibber-query` node with the query above directly to the `ps-receive-price` node. Make sure it is refreshed when new prices are ready. Prices for the next day are normally ready at 13:00, but refreshing every hour can be a good idea.
 
@@ -96,7 +96,7 @@ Go to the [Tibber Developer pages](https://developer.tibber.com/), sign in, and 
 }
 ```
 
-<AdsenseAdd type="artikkel"/>
+
 
 Then copy the `id` of the house you want to use prices for. It may look like this:
 
@@ -132,7 +132,7 @@ This is the query you shall put in the `tibber-query` node.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Nord Pool input
 
@@ -148,7 +148,7 @@ When using the `current state` node, configure the output properties to set `msg
 
 [See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Other input
 
@@ -169,7 +169,7 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
 }
 ```
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Output
 
@@ -177,4 +177,4 @@ The output is the [common strategy input format](./strategy-input.md), so it can
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

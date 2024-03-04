@@ -1,4 +1,3 @@
-<AdsenseAdd type="øverst"/>
 
 # Nodes
 
@@ -6,7 +5,7 @@ Here is an overview of the nodes, and links to detailed descriptions for eah of 
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Strategy nodes
 
@@ -38,7 +37,7 @@ A strategy for setting a fixed daily or weekly schedule.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Utility nodes
 
@@ -54,7 +53,7 @@ Node to convert different types of input data to the format used by the strategy
 
 Node to combine multiple schedules into one schedule.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Grid tariff nodes
 
@@ -70,7 +69,7 @@ Node to add a variable grid tariff (or any value) to the prices before sending t
 
 Node to add Elvia grid tariff to the prices before sending them to the strategy nodes.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Other nodes
 
@@ -86,4 +85,4 @@ Use this to get the Elvia grid tariff for a selected tariff type.
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

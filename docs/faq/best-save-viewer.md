@@ -17,7 +17,7 @@ Then paste it here and see the result below:
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Explanation
 
@@ -34,7 +34,7 @@ Other information about the calculation etc.
 Here you can see some summary and average for each date in the data set. Hover over the column title for explanation.
 
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Hours
 
@@ -50,7 +50,7 @@ There are the same number of columns as you have configured as `Max in sequence`
 The cells show how much you will save per hWh by turning that hour off for `x` hours,
 starting at that hour. It is the difference between the price at that hour and the price x hours later. Click on a cell to see the cells used in the calculation.
 
-<AdsenseAdd type="artikkel"/>
+
 
 #### Saving for sequence of x hours
 
@@ -64,7 +64,7 @@ If the number is black, it could be used, but only if all other criteria are sat
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Something seems wrong
 

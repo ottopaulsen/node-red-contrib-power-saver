@@ -1,6 +1,3 @@
-###
-
-<AdsenseAdd type="øverst"/>
 
 # Dynamic commands
 
@@ -13,7 +10,7 @@ This applies to the following nodes:
 
 Commands can be sent together with config or price data. You can command multiple commands in one message, but then put them all in the same commands-object.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Commands
 
@@ -47,7 +44,7 @@ When you do this, the current schedule is actually recalculated based on the las
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### reset
 
@@ -72,7 +69,7 @@ This operation cannot be undone.
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
 :::
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### replan
 
@@ -92,4 +89,4 @@ instead of fetching prices again.
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

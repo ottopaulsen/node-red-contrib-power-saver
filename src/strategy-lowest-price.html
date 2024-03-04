@@ -47,7 +47,6 @@
         value: null,
         required: false,
         validate: function (v) {
-          console.log("validating " + v);
           return v == null || v == "" || (!isNaN(parseFloat(v)) && isFinite(v));
         },
       },

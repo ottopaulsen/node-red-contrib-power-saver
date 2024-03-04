@@ -9,13 +9,13 @@ next: ./ps-strategy-heat-capacitor.md
 
 Strategy node to turn on power the hours when the price is lowest during a given period, and turn off the other hours.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Description
 
 The node can work on a specific period from 1 to 24 hours during a 24 hour period. Inside this period, you can decide how many hours that shall be on. The rest of the period will be off. Outside the period, you can select that the output shall be either on or off. You can also decide that the hours on shall be consecutive (one continuous period) or spread around in multiple on-periods.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Configuration
 
@@ -39,7 +39,7 @@ If you want to use a period of 24 hours, set the From Time and To Time to the sa
 ::: tip Example with Consecutive On-Period
 One example to need a consecutive on-period can be if you want to control the washing machine. Let's say it needs 3 hours, and you want it to run between 22:00 and 06:00. Set `From Time = 22:00`, `To Time = 06:00` and check the `Consecutive On-Period` flag. This will turn on the cheapest 3-hour period from 22:00 to 06:00.
 
-<AdsenseAdd type="artikkel"/>
+
 
 NB! It is not recommended to run the washing machine when you are sleeping or away.
 :::
@@ -72,7 +72,7 @@ If you leave `Max price` blank, it has no effect.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic config
 
@@ -98,7 +98,7 @@ The following config values can be changed dynamically:
 
 See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic commands
 
@@ -121,7 +121,7 @@ A payload with the value set in config, default `true`, is sent to output 1 when
 
 A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Output 3
 
@@ -129,7 +129,7 @@ When a valid input is received, and the schedule is recalculated, the resulting 
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 Example of output:
 
@@ -205,7 +205,7 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Restarts and saved context
 
@@ -229,7 +229,7 @@ contextStorage: {
 }
 ```
 
-<AdsenseAdd type="artikkel"/>
+
 
 By default, this node saves context to the `default` context storage. In the example above, this is memory.
 Then it is not preserved over a restart.
@@ -252,7 +252,7 @@ and set `msg.payload` to the following JSON value:
 
 This is an alternative to fetching new prices and send as input.
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Tips & tricks
 
@@ -263,7 +263,7 @@ combine the output from them into one schedule using the Schedule Merger node:
 
 ![Combine two lowest price nodes](../images/combine-two-lowest-price.png)
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Highest price
 
@@ -275,4 +275,4 @@ If you want to find the `x` hours with the highest prices, do as follows:
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

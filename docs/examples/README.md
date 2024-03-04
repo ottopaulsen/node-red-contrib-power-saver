@@ -1,4 +1,3 @@
-<AdsenseAdd type="øverst"/>
 
 # Examples
 
@@ -24,4 +23,4 @@
 
 ###
 
-<AdsenseAdd type="nederst"/>
+
