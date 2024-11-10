@@ -7,7 +7,7 @@ heroText: node-red-contrib-power-saver
 tagline: A collection of nodes to Node-RED that automates saving money on variable electricity prices
 actions:
   - text: Guide
-    link: /guide
+    link: /guide/
     type: primary
   - text: Nodes
     link: /nodes/
