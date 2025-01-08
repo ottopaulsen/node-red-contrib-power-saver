@@ -7,9 +7,13 @@ sidebarDepth: 1
 
 List the most significant changes.
 
-## 4.2.3
+## 4.2.4
 
  - Update dependencies
+
+## 4.2.3
+
+ -  Update dependencies
 
 ## 4.2.2
 
