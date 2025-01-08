@@ -2,14 +2,24 @@ import navbar from "./navbar";
 import { path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { searchPlugin } from "@vuepress/plugin-search";
-
+import { googleAnalyticsPlugin } from "@vuepress/plugin-google-analytics";
+import { viteBundler } from "@vuepress/bundler-vite"
 import { defaultTheme } from "@vuepress/theme-default";
 import { defineUserConfig } from "vuepress";
-import {viteBundler} from "@vuepress/bundler-vite"
 
 export default defineUserConfig({
   base: "/",
-  bundler: viteBundler({}),
+  bundler: viteBundler({
+    viteOptions: {
+      css: {
+        preprocessorOptions: {
+          scss: {
+            api: "modern-compiler"
+          }
+        }
+      }
+    }
+  }),
   description: "A Node-RED node collection to save money on hourly changing power prices",
   head: [
     ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
