@@ -22,7 +22,7 @@ export default defineUserConfig({
   }),
   description: "A Node-RED node collection to save money on hourly changing power prices",
   head: [
-    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
+    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "/euro.png" }],
     // [
     //   "script",
     //   {
@@ -36,9 +36,9 @@ export default defineUserConfig({
   plugins: [
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
     searchPlugin({}),
-    // googleAnalyticsPlugin({
-    //   id: "G-Z2QNNCDQZG",
-    // }),
+    googleAnalyticsPlugin({
+      id: "G-Z2QNNCDQZG",
+    }),
   ],
   theme: defaultTheme({
     contributors: false,

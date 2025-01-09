@@ -7,6 +7,13 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 4.2.5
+
+ - Changes to Capacity part of grid tariff example, Update sensors node: Adding filter so onoy sensors that has a value are set, to avoid error message.
+ - Changes to Capacity part of grid tariff example, Reduction Actions node: Use `action` in stead of the deprecated `domain` and `service` to perform actions.
+ - Fix favicon in doc.
+ - Remove v2 doc.
+
 
 ## 4.2.4
 
