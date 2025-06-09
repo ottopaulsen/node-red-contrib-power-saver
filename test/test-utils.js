@@ -35,14 +35,14 @@ function makePayload(prices, time) {
   return payload;
 }
 
-function equalPlan(expected, actual) {
+function equalPlan(expected, actual, compareHours = true) {
   let res = true;
 
   if (!equalSchedule(expected.schedule, actual.schedule)) {
     res = false;
   }
 
-  if (!equalHours(expected.hours, actual.hours)) {
+  if (compareHours && !equalHours(expected.hours, actual.hours)) {
     res = false;
   }
 

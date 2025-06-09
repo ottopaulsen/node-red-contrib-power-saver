@@ -11,7 +11,7 @@ const {
   fixOutputValues,
   getEffectiveConfig,
   getOutputForTime,
-  makeScheduleFromHours,
+  makeScheduleFromMinutes,
   saveOriginalConfig,
 } = require("./utils.js");
 const { DateTime } = require("luxon");
@@ -49,7 +49,7 @@ module.exports = function (RED) {
         // If payload.name is set, and does not match this nodes name, discard message
         return;
       }
-      if (msg.payload.hours) {
+      if (msg.payload.minutes) {
         // Delete config from strategy nodes so it does not merge
         // with config for this node.
         delete msg.payload.config;
@@ -76,12 +76,12 @@ module.exports = function (RED) {
             return;
           }
 
-          const hours = mergeSchedules(node, node.logicFunction);
-          const schedule = makeScheduleFromHours(hours);
-          addLastSwitchIfNoSchedule(schedule, hours, node);
+          const minutes = mergeSchedules(node, node.logicFunction);
+          const schedule = makeScheduleFromMinutes(minutes);
+          addLastSwitchIfNoSchedule(schedule, minutes, node);
 
           const plan = {
-            hours,
+            minutes,
             schedule,
             source: node.name,
           };

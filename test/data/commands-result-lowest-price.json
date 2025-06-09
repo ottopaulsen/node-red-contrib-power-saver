@@ -3,32 +3,32 @@
     {
       "time": "2021-10-11T00:00:00.000+02:00",
       "value": false,
-      "countHours": 12
+      "countMinutes": 720
     },
     {
       "time": "2021-10-11T12:00:00.000+02:00",
       "value": true,
-      "countHours": 3
+      "countMinutes": 180
     },
     {
       "time": "2021-10-11T15:00:00.000+02:00",
       "value": false,
-      "countHours": 22
+      "countMinutes": 1320
     },
     {
       "time": "2021-10-12T13:00:00.000+02:00",
       "value": true,
-      "countHours": 3
+      "countMinutes": 180
     },
     {
       "time": "2021-10-12T16:00:00.000+02:00",
       "value": false,
-      "countHours": 8
+      "countMinutes": 480
     },
     {
       "time": "2021-10-13T00:00:00.000+02:00",
       "value": true,
-      "countHours": null
+      "countMinutes": null
     }
   ],
   "hours": [

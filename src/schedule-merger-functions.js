@@ -4,7 +4,7 @@ const cloneDeep = require("lodash.clonedeep");
 const { msgHasConfig } = require("./utils.js");
 
 function msgHasSchedule(msg) {
-  return msg.payload.hours?.length > 0;
+  return msg.payload.minutes?.length > 0;
 }
 
 function validateSchedule(msg) {
@@ -17,11 +17,11 @@ function saveSchedule(node, msg) {
   // If the saved schedule has a different start period, delete them
   const ids = Object.keys(savedSchedules);
   if (ids.length) {
-    const lastSaved = savedSchedules[ids[0]].hours.length - 1;
-    const lastNew = msg.payload.hours.length - 1;
+    const lastSaved = savedSchedules[ids[0]].minutes.length - 1;
+    const lastNew = msg.payload.minutes.length - 1;
     if (
-      savedSchedules[ids[0]].hours[0].start !== msg.payload.hours[0].start ||
-      savedSchedules[ids[0]].hours[lastSaved].start !== msg.payload.hours[lastNew].start
+      savedSchedules[ids[0]].minutes[0].start !== msg.payload.minutes[0].start ||
+      savedSchedules[ids[0]].minutes[lastSaved].start !== msg.payload.minutes[lastNew].start
     ) {
       node.warn("Got schedule with different time. Deleting existing schedules.");
       savedSchedules = {};
@@ -45,8 +45,8 @@ function mergeSchedules(node, logicFunction) {
   }
   const sourceNodes = Object.keys(savedSchedules);
   sourceNodes.forEach((strategyNodeId) => {
-    const hours = savedSchedules[strategyNodeId].hours;
-    hours.forEach((hour) => {
+    const minutes = savedSchedules[strategyNodeId].minutes;
+    minutes.forEach((hour) => {
       if (!Object.hasOwn(transposed, hour.start)) {
         transposed[hour.start] = {};
       }

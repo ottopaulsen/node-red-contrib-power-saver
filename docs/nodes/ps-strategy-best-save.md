@@ -117,17 +117,17 @@ Example of output:
     {
       "time": "2021-09-30T00:00:00.000+02:00",
       "value": false,
-      "countHours": 1
+      "countMinutes": 60
     },
     {
       "time": "2021-09-30T01:00:00.000+02:00",
       "value": true,
-      "countHours": 23
+      "countMinutes": 1380
     },
     {
       "time": "2021-09-31T00:00:00.000+02:00",
       "value": false,
-      "countHours": null
+      "countMinutes": null
     }
   ],
   "hours": [

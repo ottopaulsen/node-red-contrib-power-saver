@@ -3,77 +3,77 @@
     {
       "time": "2021-10-11T00:00:00.000+02:00",
       "value": false,
-      "countHours": 2
+      "countMinutes": 6020
     },
     {
       "time": "2021-10-11T02:00:00.000+02:00",
       "value": true,
-      "countHours": 6
+      "countMinutes": 608060
     },
     {
       "time": "2021-10-11T08:00:00.000+02:00",
       "value": false,
-      "countHours": 3
+      "countMinutes": 6080
     },
     {
       "time": "2021-10-11T11:00:00.000+02:00",
       "value": true,
-      "countHours": 7
+      "countMinutes": 24020
     },
     {
       "time": "2021-10-11T18:00:00.000+02:00",
       "value": false,
-      "countHours": 2
+      "countMinutes": 6020
     },
     {
       "time": "2021-10-11T20:00:00.000+02:00",
       "value": true,
-      "countHours": 2
+      "countMinutes": 6020
     },
     {
       "time": "2021-10-11T22:00:00.000+02:00",
       "value": false,
-      "countHours": 3
+      "countMinutes": 6080
     },
     {
       "time": "2021-10-12T01:00:00.000+02:00",
       "value": true,
-      "countHours": 8
+      "countMinutes": 24080
     },
     {
       "time": "2021-10-12T09:00:00.000+02:00",
       "value": false,
-      "countHours": 3
+      "countMinutes": 6080
     },
     {
       "time": "2021-10-12T12:00:00.000+02:00",
       "value": true,
-      "countHours": 4
+      "countMinutes": 240
     },
     {
       "time": "2021-10-12T16:00:00.000+02:00",
       "value": false,
-      "countHours": 3
+      "countMinutes": 6080
     },
     {
       "time": "2021-10-12T19:00:00.000+02:00",
       "value": true,
-      "countHours": 3
+      "countMinutes": 6080
     },
     {
       "time": "2021-10-12T22:00:00.000+02:00",
       "value": false,
-      "countHours": 1
+      "countMinutes": 60
     },
     {
       "time": "2021-10-12T23:00:00.000+02:00",
       "value": true,
-      "countHours": 1
+      "countMinutes": 60
     },
     {
       "time": "2021-10-13T00:00:00.000+02:00",
       "value": false,
-      "countHours": null
+      "countMinutes": null
     }
   ],
   "hours": [

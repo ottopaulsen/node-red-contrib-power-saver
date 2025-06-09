@@ -51,7 +51,7 @@ describe("schedule-merger node", function () {
         expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
         expect(msg.payload.schedule.length).to.equal(6);
         expect(msg.payload.schedule[5].value).to.equal(false);
-        expect(msg.payload.schedule[5].countHours).to.equal(null);
+        expect(msg.payload.schedule[5].countMinutes).to.equal(null);
         n1.warn.should.not.be.called;
         done();
       });
@@ -85,7 +85,7 @@ describe("schedule-merger node", function () {
         expect(equalHours(allOff, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
         expect(msg.payload.schedule.length).to.equal(2);
         expect(msg.payload.schedule[1].value).to.equal(true);
-        expect(msg.payload.schedule[1].countHours).to.equal(null);
+        expect(msg.payload.schedule[1].countMinutes).to.equal(null);
         n1.warn.should.not.be.called;
         done();
       });

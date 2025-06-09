@@ -49,7 +49,7 @@ describe("ps-strategy-fixed-schedule node", function () {
     expected.schedule.push({
       time: "2021-10-13T00:00:00.000+02:00",
       value: true,
-      countHours: null,
+      countMinutes: null,
     });
     expected.config.outputIfNoSchedule = true;
 
@@ -72,12 +72,12 @@ describe("ps-strategy-fixed-schedule node", function () {
       {
         time: "2021-10-11T00:00:00.000+02:00",
         value: true,
-        countHours: 24,
+        countMinutes: 24 * 60,
       },
       {
         time: "2021-10-12T00:00:00.000+02:00",
         value: false,
-        countHours: 24,
+        countMinutes: 24 * 60,
       },
     ];
 

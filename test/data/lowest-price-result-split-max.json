@@ -1,13 +1,13 @@
 {
   "schedule": [
-    { "time": "2021-10-11T00:00:00.000+02:00", "value": false, "countHours": 12 },
-    { "time": "2021-10-11T12:00:00.000+02:00", "value": true, "countHours": 3 },
-    { "time": "2021-10-11T15:00:00.000+02:00", "value": false, "countHours": 21 },
-    { "time": "2021-10-12T12:00:00.000+02:00", "value": true, "countHours": 4 },
-    { "time": "2021-10-12T16:00:00.000+02:00", "value": false, "countHours": 3 },
-    { "time": "2021-10-12T19:00:00.000+02:00", "value": true, "countHours": 1 },
-    { "time": "2021-10-12T20:00:00.000+02:00", "value": false, "countHours": 4 },
-    { "time": "2021-10-13T00:00:00.000+02:00", "value": true, "countHours": null }
+    { "time": "2021-10-11T00:00:00.000+02:00", "value": false, "countMinutes": 720 },
+    { "time": "2021-10-11T12:00:00.000+02:00", "value": true, "countMinutes": 180 },
+    { "time": "2021-10-11T15:00:00.000+02:00", "value": false, "countMinutes": 1260 },
+    { "time": "2021-10-12T12:00:00.000+02:00", "value": true, "countMinutes": 240 },
+    { "time": "2021-10-12T16:00:00.000+02:00", "value": false, "countMinutes": 180 },
+    { "time": "2021-10-12T19:00:00.000+02:00", "value": true, "countMinutes": 60 },
+    { "time": "2021-10-12T20:00:00.000+02:00", "value": false, "countMinutes": 240 },
+    { "time": "2021-10-13T00:00:00.000+02:00", "value": true, "countMinutes": null }
   ],
   "config": {
     "hasChanged": false,

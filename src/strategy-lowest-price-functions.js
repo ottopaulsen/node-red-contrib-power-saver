@@ -1,6 +1,8 @@
 const cloneDeep = require("lodash.clonedeep");
 const { sortedIndex } = require("./utils");
 
+// TODO (otto): This must be fixed to support minutes
+
 function getBestContinuous(values, count) {
   let min = values.reduce((p, v) => p + v, 0);
   let minIndex = 0;

@@ -36,7 +36,7 @@
       </tr>
       <tr v-for="day in dayData" :key="day.date">
         <td>{{ day.date }}</td>
-        <td>{{ day.countHours }}</td>
+        <td>{{ day.countMinutes }}</td>
         <td>{{ day.countOn }}</td>
         <td>{{ day.countOff }}</td>
         <td>{{ day.avgPrice }}</td>
@@ -198,14 +198,14 @@ const dayData = computed(() => {
   });
   days.forEach((d) => {
     const dayHours = hours.filter((h) => DateTime.fromISO(h.start).toISODate() === d.date);
-    d.countHours = dayHours.length;
+    d.countMinutes = dayHours.length;
     d.countOn = dayHours.filter((h) => h.onOff).length;
     d.countOff = dayHours.filter((h) => !h.onOff).length;
     d.countSaved = dayHours.filter((h) => h.saving !== null).length;
     d.avgPrice = roundPrice(
       dayHours.reduce((prev, h) => {
         return prev + h.price;
-      }, 0.0) / d.countHours
+      }, 0.0) / d.countMinutes
     );
     d.sumSaved =
       d.countSaved > 0
@@ -216,7 +216,7 @@ const dayData = computed(() => {
           )
         : null;
     d.avgSaved1 = d.countSaved > 0 ? roundPrice(d.sumSaved / d.countSaved) : null;
-    d.avgSaved2 = d.countSaved > 0 ? roundPrice(d.sumSaved / d.countHours) : null;
+    d.avgSaved2 = d.countSaved > 0 ? roundPrice(d.sumSaved / d.countMinutes) : null;
   });
   return days;
 });

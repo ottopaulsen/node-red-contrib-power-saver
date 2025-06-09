@@ -146,16 +146,16 @@ Example of output:
 ```json
 {
   "schedule": [
-    { "time": "2022-10-31T00:00:00.000+01:00", "value": true, "countHours": 5 },
-    { "time": "2022-10-31T05:00:00.000+01:00", "value": false, "countHours": 1 },
-    { "time": "2022-10-31T06:00:00.000+01:00", "value": true, "countHours": 3 },
-    { "time": "2022-10-31T09:00:00.000+01:00", "value": false, "countHours": 2 },
-    { "time": "2022-10-31T11:00:00.000+01:00", "value": true, "countHours": 21 },
-    { "time": "2022-11-01T08:00:00.000+01:00", "value": false, "countHours": 3 },
-    { "time": "2022-11-01T11:00:00.000+01:00", "value": true, "countHours": 3 },
-    { "time": "2022-11-01T14:00:00.000+01:00", "value": false, "countHours": 3 },
-    { "time": "2022-11-01T17:00:00.000+01:00", "value": true, "countHours": 7 },
-    { "time": "2022-11-02T00:00:00.000+01:00", "value": false, "countHours": null }
+    { "time": "2022-10-31T00:00:00.000+01:00", "value": true, "countMinutes": 300 },
+    { "time": "2022-10-31T05:00:00.000+01:00", "value": false, "countMinutes": 60 },
+    { "time": "2022-10-31T06:00:00.000+01:00", "value": true, "countMinutes": 180 },
+    { "time": "2022-10-31T09:00:00.000+01:00", "value": false, "countMinutes": 120 },
+    { "time": "2022-10-31T11:00:00.000+01:00", "value": true, "countMinutes": 1260 },
+    { "time": "2022-11-01T08:00:00.000+01:00", "value": false, "countMinutes": 180 },
+    { "time": "2022-11-01T11:00:00.000+01:00", "value": true, "countMinutes": 180 },
+    { "time": "2022-11-01T14:00:00.000+01:00", "value": false, "countMinutes": 180 },
+    { "time": "2022-11-01T17:00:00.000+01:00", "value": true, "countMinutes": 420 },
+    { "time": "2022-11-02T00:00:00.000+01:00", "value": false, "countMinutes": null }
   ],
   "hours": [
     {

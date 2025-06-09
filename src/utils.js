@@ -103,7 +103,7 @@ function loadDayData(node, date) {
   const saved = node.context().get(key);
   const res = saved ?? {
     schedule: [],
-    hours: [],
+    minutes: [],
   };
   return res;
 }
@@ -166,19 +166,19 @@ function makeSchedule(onOff, startTimes, initial = null) {
     const value = onOff[i];
     if (value !== prev || i === 0) {
       const time = startTimes[i];
-      prevRecord = { time, value, countHours: 0 };
+      prevRecord = { time, value, countMinutes: 0 };
       res.push(prevRecord);
       prev = value;
     }
-    prevRecord.countHours++;
+    prevRecord.countMinutes++;
   }
   return res;
 }
 
-function makeScheduleFromHours(hours, initial = null) {
+function makeScheduleFromMinutes(minutes, initial = null) {
   return makeSchedule(
-    hours.map((h) => h.onOff),
-    hours.map((h) => h.start),
+    minutes.map((h) => h.onOff),
+    minutes.map((h) => h.start),
     initial
   );
 }
@@ -196,7 +196,7 @@ function fillArray(value, count) {
 
 function extractPlanForDate(plan, day) {
   const part = {};
-  part.hours = plan.hours.filter((h) => isSameDate(day, h.start));
+  part.minutes = plan.minutes.filter((h) => isSameDate(day, h.start));
   part.schedule = plan.schedule.filter((s) => isSameDate(day, s.time));
   return part;
 }
@@ -270,7 +270,7 @@ module.exports = {
   isSameDate,
   loadDayData,
   makeSchedule,
-  makeScheduleFromHours,
+  makeScheduleFromMinutes,
   msgHasConfig,
   msgHasPriceData,
   roundPrice,

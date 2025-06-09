@@ -3,57 +3,57 @@
     {
       "time": "2022-08-16T00:00:00.000+02:00",
       "value": false,
-      "countHours": 3
+      "countMinutes": 180
     },
     {
       "time": "2022-08-16T03:00:00.000+02:00",
       "value": true,
-      "countHours": 2
+      "countMinutes": 120
     },
     {
       "time": "2022-08-16T05:00:00.000+02:00",
       "value": false,
-      "countHours": 8
+      "countMinutes": 480
     },
     {
       "time": "2022-08-16T13:00:00.000+02:00",
       "value": true,
-      "countHours": 4
+      "countMinutes": 240
     },
     {
       "time": "2022-08-16T17:00:00.000+02:00",
       "value": false,
-      "countHours": 10
+      "countMinutes": 600
     },
     {
       "time": "2022-08-17T03:00:00.000+02:00",
       "value": true,
-      "countHours": 4
+      "countMinutes": 240
     },
     {
       "time": "2022-08-17T07:00:00.000+02:00",
       "value": false,
-      "countHours": 7
+      "countMinutes": 420
     },
     {
       "time": "2022-08-17T14:00:00.000+02:00",
       "value": true,
-      "countHours": 2
+      "countMinutes": 120
     },
     {
       "time": "2022-08-17T16:00:00.000+02:00",
       "value": false,
-      "countHours": 7
+      "countMinutes": 420
     },
     {
       "time": "2022-08-17T23:00:00.000+02:00",
       "value": true,
-      "countHours": 1
+      "countMinutes": 60
     },
     {
       "time": "2022-08-18T00:00:00.000+02:00",
       "value": false,
-      "countHours": null
+      "countMinutes": null
     }
   ],
   "hours": [

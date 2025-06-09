@@ -10,7 +10,7 @@ const {
   getSavings,
   countAtEnd,
   makeSchedule,
-  makeScheduleFromHours,
+  makeScheduleFromMinutes,
   fillArray,
   extractPlanForDate,
   isSameDate,
@@ -74,19 +74,19 @@ describe("utils", () => {
       "2021-06-20T09:00:00+02:00",
     ];
     expect(makeSchedule(onOff, startTimes)).to.eql([
-      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
-      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
-      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countMinutes: 2 * 60 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countMinutes: 2 * 60 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countMinutes: 1 * 60 },
     ]);
     expect(makeSchedule(onOff, startTimes, true)).to.eql([
-      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
-      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
-      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countMinutes: 2 * 60 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countMinutes: 2 * 60 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countMinutes: 1 * 60 },
     ]);
     expect(makeSchedule(onOff, startTimes, false)).to.eql([
-      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 }, // Right???
-      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
-      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
+      { time: "2021-06-20T05:00:00+02:00", value: false, countMinutes: 2 * 60 }, // Right???
+      { time: "2021-06-20T07:00:00+02:00", value: true, countMinutes: 2 * 60 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countMinutes: 1 * 60 },
     ]);
   });
 
@@ -201,7 +201,7 @@ describe("utils", () => {
   });
   it("Can make schedule from hours", () => {
     const hours = cloneDeep(testResult.hours);
-    const schedule = makeScheduleFromHours(hours, null);
+    const schedule = makeScheduleFromMinutes(hours, null);
     const resultToValidate = schedule.map((s) => ({ time: s.time, value: s.value }));
     resultToValidate.push({
       time: "2021-06-20T02:50:00.470+02:00",

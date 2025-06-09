@@ -1,29 +1,29 @@
 {
   "schedule": [
     {
-      "time": "2022-01-03T00:00:00+01:00",
+      "time": "2022-01-03T00:00:00.000+01:00",
       "value": false,
-      "countHours": 28
+      "countMinutes": 1680
     },
     {
-      "time": "2022-01-04T04:00:00+01:00",
+      "time": "2022-01-04T04:00:00.000+01:00",
       "value": true,
-      "countHours": 1
+      "countMinutes": 60
     },
     {
-      "time": "2022-01-04T05:00:00+01:00",
+      "time": "2022-01-04T05:00:00.000+01:00",
       "value": false,
-      "countHours": 22
+      "countMinutes": 1320
     },
     {
-      "time": "2022-01-05T03:00:00+01:00",
+      "time": "2022-01-05T03:00:00.000+01:00",
       "value": true,
-      "countHours": 1
+      "countMinutes": 60
     },
     {
-      "time": "2022-01-05T04:00:00+01:00",
+      "time": "2022-01-05T04:00:00.000+01:00",
       "value": false,
-      "countHours": 20
+      "countMinutes": 1200
     }
   ],
   "hours": [
@@ -438,9 +438,11 @@
   ],
   "source": "Nordpool",
   "config": {
-    "fromTime": 19,
-    "toTime": 7,
-    "hoursOn": 1,
+    "fromHour": "19",
+    "fromMinute": 0,
+    "toHour": "7",
+    "toMinute": 0,
+    "minutesOn": 60,
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,
     "outputIfNoSchedule": false,

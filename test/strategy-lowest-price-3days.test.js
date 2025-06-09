@@ -30,7 +30,7 @@ describe("ps-strategy-lowest-price with data day before", function () {
   });
 
   it("should handle data from day before", function (done) {
-    const flow = makeFlow(1);
+    const flow = makeFlow(60);
     const pricesDay1 = cloneDeep(prices);
     const pricesDay2 = cloneDeep(prices);
     pricesDay1.priceData.splice(48, 24);
@@ -51,18 +51,18 @@ describe("ps-strategy-lowest-price with data day before", function () {
       setTimeout(() => {
         time = DateTime.fromISO(pricesDay2.priceData[10].start);
         n1.receive({ payload: makePayload(pricesDay2, time) });
-      }, 100);
+      }, 500);
     });
   });
 
   it("should handle new price data after midnight", function (done) {
-    const flow = makeFlow(1);
+    const flow = makeFlow(60);
     const pricesDay1 = cloneDeep(prices);
     const pricesDay2 = cloneDeep(prices);
     const res = cloneDeep(result);
     res.schedule.splice(3, 2);
     res.hours.splice(48, 24);
-    res.schedule[2].countHours = 19;
+    res.schedule[2].countMinutes = 19 * 60;
     pricesDay1.priceData.splice(48, 24);
     pricesDay2.priceData.splice(48, 24);
     pricesDay2.priceData.splice(0, 24);
@@ -87,15 +87,17 @@ describe("ps-strategy-lowest-price with data day before", function () {
   });
 });
 
-function makeFlow(hoursOn) {
+function makeFlow(minutesOn) {
   return [
     {
       id: "n1",
       type: "ps-strategy-lowest-price",
       name: "test name",
-      fromTime: 19,
-      toTime: 7,
-      hoursOn: hoursOn,
+      fromHour: 19,
+      fromMinute: 0,
+      toHour: 7,
+      toMinute: 0,
+      minutesOn,
       doNotSplit: false,
       sendCurrentValueWhenRescheduling: true,
       outputIfNoSchedule: false,
