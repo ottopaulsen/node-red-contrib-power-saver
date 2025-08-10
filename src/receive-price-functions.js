@@ -1,4 +1,5 @@
-const { validationFailure } = require("./utils");
+const { addEndToLast, validationFailure } = require("./utils");
+const { DateTime } = require("luxon");
 
 function getPriceData(node, msg) {
   const isConfigMsg = !!msg?.payload?.config;
@@ -12,6 +13,9 @@ function getPriceData(node, msg) {
   }
 
   priceData = [...input.today, ...input.tomorrow];
+
+  addEndToLast(priceData);
+
   const source = input.source;
   node.context().set("lastPriceData", priceData);
   const statusMsg = priceData.length + " minutes from " + source;

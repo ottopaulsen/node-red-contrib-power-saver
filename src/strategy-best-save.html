@@ -4,14 +4,24 @@
     color: "#a6bbcf",
     defaults: {
       name: { value: "Best Save" },
-      maxHoursToSaveInSequence: {
-        value: 3,
+      maxMinutesOff: {
+        value: 180,
         required: true,
         validate: RED.validators.number(),
       },
-      minHoursOnAfterMaxSequenceSaved: {
-        value: 2,
+      minMinutesOff: {
+        value: 60,
+        required: false,
+        validate: RED.validators.number(),
+      },
+      recoveryPercentage: {
+        value: 50,
         required: true,
+        validate: RED.validators.number(),
+      },
+      recoveryMaxMinutes: {
+        value: 120,
+        required: false,
         validate: RED.validators.number(),
       },
       minSaving: {
@@ -89,38 +99,46 @@
 
 <script type="text/html" data-template-name="ps-strategy-best-save">
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <label for="node-input-name" style="width: 200px"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
     </div>
     <h3>Rules</h3>
     <div class="form-row">
-        <label for="node-input-maxHoursToSaveInSequence"><i class="fa fa-arrows-h"></i> Max per sequence</label>
-        <input type="text" id="node-input-maxHoursToSaveInSequence" style="width: 80px" placeholder="Max hours to save in sequence">
+        <label for="node-input-maxMinutesOff" style="width: 200px"><i class="fa fa-arrows-h"></i> Max minutes off</label>
+        <input type="text" id="node-input-maxMinutesOff" style="width: 80px" placeholder="Minutes">
     </div>
     <div class="form-row">
-        <label for="node-input-minHoursOnAfterMaxSequenceSaved"><i class="fa fa-ellipsis-h"></i> Min recover</label>
+        <label for="node-input-minMinutesOff" style="width: 200px"><i class="fa fa-arrows-h"></i> Min minutes off</label>
+        <input type="text" id="node-input-minMinutesOff" style="width: 80px" placeholder="Minutes">
+    </div>
+    <div class="form-row">
+        <label for="node-input-recoveryPercentage" style="width: 200px"><i class="fa fa-ellipsis-h"></i> Recovery time %</label>
         <input type="text"
-               id="node-input-minHoursOnAfterMaxSequenceSaved"
+               id="node-input-recoveryPercentage"
                style="width: 80px"
-               placeholder="Min hours on after a max sequence">
+               placeholder="%">
     </div>
     <div class="form-row">
-        <label for="node-input-minSaving"><i class="fa fa-eur"></i> Min saving</label>
-        <input type="text" id="node-input-minSaving" placeholder="Minimum to save for turning off" style="width: 80px">
+      <label for="node-input-recoveryMaxMinutes" style="width: 200px"><i class="fa fa-arrows-h"></i> Max recovery time</label>
+      <input type="text" id="node-input-recoveryMaxMinutes" style="width: 80px" placeholder="Minutes">
+    </div>
+  <div class="form-row">
+        <label for="node-input-minSaving" style="width: 200px"><i class="fa fa-eur"></i> Min saving</label>
+        <input type="text" id="node-input-minSaving" placeholder="Minimum to save per kWh for turning off" style="width: 80px">
     </div>
   <h3>Output</h3>
     <div class="form-row">
       <div class="form-row">
-        <label for="node-input-outputValueForOn">Output value for on</label>
+        <label for="node-input-outputValueForOn" style="width: 200px">Output value for on</label>
         <input type="text" id="node-input-outputValueForOn" style="text-align: left; width: 120px">
         <input type="hidden" id="node-input-outputValueForOntype">
     </div>
     <div class="form-row">
-        <label for="node-input-outputValueForOff">Output value for off</label>
+        <label for="node-input-outputValueForOff" style="width: 200px">Output value for off</label>
         <input type="text" id="node-input-outputValueForOff" style="text-align: left; width: 120px">
         <input type="hidden" id="node-input-outputValueForOfftype">
     </div>
-        <label for="node-input-sendCurrentValueWhenRescheduling" style="width:240px">
+        <label for="node-input-sendCurrentValueWhenRescheduling" style="width:300px">
         <input type="checkbox"
                id="node-input-sendCurrentValueWhenRescheduling"
                style="display:inline-block; width:22px; vertical-align:top;"
@@ -128,13 +146,13 @@
         </label>
     </div>
     <div class="form-row">
-        <label for="node-input-outputIfNoSchedule">If no schedule, send</label>
+        <label for="node-input-outputIfNoSchedule"  style="width: 200px">If no schedule, send</label>
         <input type="text" id="node-input-outputIfNoSchedule" style="width: 80px">
         </label>
     </div>
     <h3>Context storage</h3>
     <div class="form-row">
-      <label for="node-input-contextStorage"><i class="fa fa-archive"></i> Context storage</label>
+      <label for="node-input-contextStorage"  style="width: 200px"><i class="fa fa-archive"></i> Context storage</label>
       <input type="text" id="node-input-contextStorage" style="width: 160px">
   </div>
 </script>

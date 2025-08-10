@@ -401,6 +401,7 @@ describe("ps-strategy-lowest-price node", function () {
   it("should work with data for only current day", function (done) {
     const oneDayPrices = {};
     oneDayPrices.priceData = prices.priceData.filter((d) => d.start.startsWith("2021-10-11"));
+    oneDayPrices.priceData[oneDayPrices.priceData.length - 1].end = "2021-10-12T00:00:00.000+02:00";
     const result = [
       { time: "2021-10-11T00:00:00.000+02:00", value: false, countMinutes: 12 * 60 },
       { time: "2021-10-11T12:00:00.000+02:00", value: true, countMinutes: 1 * 60 },

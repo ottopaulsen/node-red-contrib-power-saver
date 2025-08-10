@@ -158,7 +158,7 @@ function countAtEnd(arr, value) {
  * @param {*} initial Optional. The initial value, to avoid the initial switch.
  * @returns Array with tuples: time and value
  */
-function makeSchedule(onOff, startTimes, initial = null) {
+function makeSchedule(onOff, startTimes, endTime, initial = null) {
   const res = [];
   let prev = initial;
   let prevRecord;
@@ -170,15 +170,34 @@ function makeSchedule(onOff, startTimes, initial = null) {
       res.push(prevRecord);
       prev = value;
     }
-    prevRecord.countMinutes++;
+    prevRecord.countMinutes = DateTime.fromISO(i + 1 < startTimes.length ? startTimes[i+1] : endTime).diff(DateTime.fromISO(prevRecord.time), "minutes").minutes;
   }
   return res;
 }
 
+function addEndToLast(priceData) {
+
+  // Add end property to the last record, that is the same as start + the difference between the last two starts, converted to ISO time
+
+  if (priceData.length > 0) {
+    const lastStart = DateTime.fromISO(priceData[priceData.length - 1].start);
+    const secondLastStart = DateTime.fromISO(priceData[priceData.length - 2].start);
+    priceData[priceData.length - 1].end = lastStart
+      .plus({ milliseconds: lastStart.diff(secondLastStart, "milliseconds").milliseconds })
+      .toISO();
+  }
+}
+
 function makeScheduleFromMinutes(minutes, initial = null) {
+
+  addEndToLast(minutes)
+
+
+
   return makeSchedule(
     minutes.map((h) => h.onOff),
     minutes.map((h) => h.start),
+    minutes[minutes.length - 1].end,
     initial
   );
 }
@@ -253,6 +272,7 @@ function getOutputForTime(schedule, time, defaultValue) {
 }
 
 module.exports = {
+  addEndToLast,
   booleanConfig,
   calcNullSavings,
   countAtEnd,

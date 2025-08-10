@@ -16,10 +16,10 @@ function makeFlow(logicFunction, outputIfNoSchedule = true) {
   ];
 }
 
-function makePayload(strategyNodeId, hours) {
+function makePayload(strategyNodeId, minutes) {
   const payload = {
     strategyNodeId,
-    hours,
+    minutes,
   };
   return payload;
 }

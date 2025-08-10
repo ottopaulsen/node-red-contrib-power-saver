@@ -1,0 +1,365 @@
+{
+  
+"schedule": [
+  {
+    "time": "2021-06-20T01:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 2
+  },
+  {
+    "time": "2021-06-20T01:02:00.000+02:00",
+    "value": true,
+    "countMinutes": 6
+  },
+  {
+    "time": "2021-06-20T01:08:00.000+02:00",
+    "value": false,
+    "countMinutes": 3
+  },
+  {
+    "time": "2021-06-20T01:11:00.000+02:00",
+    "value": true,
+    "countMinutes": 7
+  },
+  {
+    "time": "2021-06-20T01:18:00.000+02:00",
+    "value": false,
+    "countMinutes": 2
+  },
+  {
+    "time": "2021-06-20T01:20:00.000+02:00",
+    "value": true,
+    "countMinutes": 2
+  },
+  {
+    "time": "2021-06-20T01:22:00.000+02:00",
+    "value": false,
+    "countMinutes": 3
+  },
+  {
+    "time": "2021-06-20T01:25:00.000+02:00",
+    "value": true,
+    "countMinutes": 8
+  },
+  {
+    "time": "2021-06-20T01:33:00.000+02:00",
+    "value": false,
+    "countMinutes": 3
+  },
+  {
+    "time": "2021-06-20T01:36:00.000+02:00",
+    "value": true,
+    "countMinutes": 4
+  },
+  {
+    "time": "2021-06-20T01:40:00.000+02:00",
+    "value": false,
+    "countMinutes": 3
+  },
+  {
+    "time": "2021-06-20T01:43:00.000+02:00",
+    "value": true,
+    "countMinutes": 3
+  },
+  {
+    "time": "2021-06-20T01:46:00.000+02:00",
+    "value": false,
+    "countMinutes": 1
+  },
+  {
+    "time": "2021-06-20T01:47:00.000+02:00",
+    "value": true,
+    "countMinutes": 1
+  }
+],
+  "minutes": [
+    {
+      "price": 0.2494,
+      "onOff": false,
+      "start": "2021-06-20T01:00:00.000+02:00",
+      "saving": 0.0395
+    },
+    {
+      "price": 0.2209,
+      "onOff": false,
+      "start": "2021-06-20T01:01:00.000+02:00",
+      "saving": 0.011
+    },
+    {
+      "price": 0.2099,
+      "onOff": true,
+      "start": "2021-06-20T01:02:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.219,
+      "onOff": true,
+      "start": "2021-06-20T01:03:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.2614,
+      "onOff": true,
+      "start": "2021-06-20T01:04:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.4426,
+      "onOff": true,
+      "start": "2021-06-20T01:05:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5433,
+      "onOff": true,
+      "start": "2021-06-20T01:06:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5667,
+      "onOff": true,
+      "start": "2021-06-20T01:07:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5847,
+      "onOff": false,
+      "start": "2021-06-20T01:08:00.000+02:00",
+      "saving": 0.0723
+    },
+    {
+      "price": 0.5762,
+      "onOff": false,
+      "start": "2021-06-20T01:09:00.000+02:00",
+      "saving": 0.0638
+    },
+    {
+      "price": 0.5391,
+      "onOff": false,
+      "start": "2021-06-20T01:10:00.000+02:00",
+      "saving": 0.0267
+    },
+    {
+      "price": 0.5124,
+      "onOff": true,
+      "start": "2021-06-20T01:11:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.504,
+      "onOff": true,
+      "start": "2021-06-20T01:12:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5057,
+      "onOff": true,
+      "start": "2021-06-20T01:13:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5066,
+      "onOff": true,
+      "start": "2021-06-20T01:14:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5136,
+      "onOff": true,
+      "start": "2021-06-20T01:15:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5143,
+      "onOff": true,
+      "start": "2021-06-20T01:16:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5306,
+      "onOff": true,
+      "start": "2021-06-20T01:17:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5534,
+      "onOff": false,
+      "start": "2021-06-20T01:18:00.000+02:00",
+      "saving": 0.0043
+    },
+    {
+      "price": 0.5511,
+      "onOff": false,
+      "start": "2021-06-20T01:19:00.000+02:00",
+      "saving": 0.002
+    },
+    {
+      "price": 0.5491,
+      "onOff": true,
+      "start": "2021-06-20T01:20:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5485,
+      "onOff": true,
+      "start": "2021-06-20T01:21:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5481,
+      "onOff": false,
+      "start": "2021-06-20T01:22:00.000+02:00",
+      "saving": 0.1285
+    },
+    {
+      "price": 0.5218,
+      "onOff": false,
+      "start": "2021-06-20T01:23:00.000+02:00",
+      "saving": 0.1022
+    },
+    {
+      "price": 0.4533,
+      "onOff": false,
+      "start": "2021-06-20T01:24:00.000+02:00",
+      "saving": 0.0337
+    },
+    {
+      "price": 0.4196,
+      "onOff": true,
+      "start": "2021-06-20T01:25:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.4037,
+      "onOff": true,
+      "start": "2021-06-20T01:26:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.3829,
+      "onOff": true,
+      "start": "2021-06-20T01:27:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.4555,
+      "onOff": true,
+      "start": "2021-06-20T01:28:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.4721,
+      "onOff": true,
+      "start": "2021-06-20T01:29:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.4903,
+      "onOff": true,
+      "start": "2021-06-20T01:30:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5028,
+      "onOff": true,
+      "start": "2021-06-20T01:31:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5163,
+      "onOff": true,
+      "start": "2021-06-20T01:32:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5264,
+      "onOff": false,
+      "start": "2021-06-20T01:33:00.000+02:00",
+      "saving": 0.0193
+    },
+    {
+      "price": 0.5346,
+      "onOff": false,
+      "start": "2021-06-20T01:34:00.000+02:00",
+      "saving": 0.0275
+    },
+    {
+      "price": 0.5224,
+      "onOff": false,
+      "start": "2021-06-20T01:35:00.000+02:00",
+      "saving": 0.0153
+    },
+    {
+      "price": 0.5071,
+      "onOff": true,
+      "start": "2021-06-20T01:36:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5045,
+      "onOff": true,
+      "start": "2021-06-20T01:37:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5024,
+      "onOff": true,
+      "start": "2021-06-20T01:38:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5038,
+      "onOff": true,
+      "start": "2021-06-20T01:39:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5118,
+      "onOff": false,
+      "start": "2021-06-20T01:40:00.000+02:00",
+      "saving": 0.0063
+    },
+    {
+      "price": 0.5111,
+      "onOff": false,
+      "start": "2021-06-20T01:41:00.000+02:00",
+      "saving": 0.0056
+    },
+    {
+      "price": 0.5108,
+      "onOff": false,
+      "start": "2021-06-20T01:42:00.000+02:00",
+      "saving": 0.0053
+    },
+    {
+      "price": 0.5055,
+      "onOff": true,
+      "start": "2021-06-20T01:43:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5042,
+      "onOff": true,
+      "start": "2021-06-20T01:44:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5259,
+      "onOff": true,
+      "start": "2021-06-20T01:45:00.000+02:00",
+      "saving": null
+    },
+    {
+      "price": 0.5282,
+      "onOff": false,
+      "start": "2021-06-20T01:46:00.000+02:00",
+      "saving": 0.003
+    },
+    {
+      "price": 0.5252,
+      "onOff": true,
+      "start": "2021-06-20T01:47:00.000+02:00",
+      "saving": null
+    }
+  ]
+}

@@ -46,11 +46,11 @@ function mergeSchedules(node, logicFunction) {
   const sourceNodes = Object.keys(savedSchedules);
   sourceNodes.forEach((strategyNodeId) => {
     const minutes = savedSchedules[strategyNodeId].minutes;
-    minutes.forEach((hour) => {
-      if (!Object.hasOwn(transposed, hour.start)) {
-        transposed[hour.start] = {};
+    minutes.forEach((minute) => {
+      if (!Object.hasOwn(transposed, minute.start)) {
+        transposed[minute.start] = {};
       }
-      transposed[hour.start][strategyNodeId] = { hour };
+      transposed[minute.start][strategyNodeId] = { minute };
     });
   });
 
@@ -62,9 +62,9 @@ function mergeSchedules(node, logicFunction) {
     const sources = transposed[start];
     const onOff =
       logicFunction === "OR"
-        ? Object.keys(sources).some((s) => sources[s].hour.onOff)
-        : Object.keys(sources).every((s) => sources[s].hour.onOff);
-    const price = sources[Object.keys(sources)[0]].hour.price;
+        ? Object.keys(sources).some((s) => sources[s].minute.onOff)
+        : Object.keys(sources).every((s) => sources[s].minute.onOff);
+    const price = sources[Object.keys(sources)[0]].minute.price;
     const saving = null;
     const res = { start, onOff, sources, price, saving };
     return res;

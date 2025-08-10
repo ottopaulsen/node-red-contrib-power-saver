@@ -44,6 +44,7 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   }
 
   const dates = [...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate()))];
+  const endTime = priceData[priceData.length - 1].end;
 
   // Load data from day before
   const dateDayBefore = DateTime.fromISO(dates[0]).plus({ days: -1 });
@@ -81,7 +82,7 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
     onOff: onOff[i],
     saving: savings[i],
   }));
-  const schedule = makeSchedule(onOff, startTimes);
+  const schedule = makeSchedule(onOff, startTimes, endTime);
   addLastSwitchIfNoSchedule(schedule, minutes, config);
 
   plan = {
