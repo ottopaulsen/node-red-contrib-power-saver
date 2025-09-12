@@ -92,10 +92,12 @@ function convertMsg(msg) {
         }));
     } else if (msg.payload?.attributes && msg.payload.attributes[day]) {
       result.source = "Energi Data Service";
-      result[day] = msg.payload.attributes[day].map((v, index) => ({
-        value: v,
-        start: new Date(new Date().toDateString() + (day === "today" ? "" : " +1 day")).getTime() + (index * 15 * 60 * 1000),
-      }));
+      result[day] = msg.payload.attributes["raw_" + day]
+        .filter((v) => v.price !== undefined && v.price !== null)
+        .map((v) => ({
+          value: v.price,
+          start: v.hour,
+        }));
     } else {
       result.source = "Other";
       result[day] = msg.payload[day] || [];

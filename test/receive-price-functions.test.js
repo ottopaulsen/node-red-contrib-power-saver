@@ -1,6 +1,7 @@
 const expect = require("chai").expect;
 const { convertMsg } = require("../src/receive-price-functions");
 const energidataserviceMsg = require("./data/energidataservice-event-state.json");
+const energidataserviceExpected = require("./data/energidataservice-converted.json");
 
 describe("receive-price-functions", () => {
   it("can convert input msg", () => {
@@ -174,28 +175,7 @@ describe("receive-price-functions", () => {
 
   it("can convert energidataservice format", () => {
     const result = convertMsg(energidataserviceMsg);
-    
-    expect(result.source).to.equal("Energi Data Service");
-    expect(result.today).to.be.an("array");
-    expect(result.tomorrow).to.be.an("array");
-    expect(result.today.length).to.be.greaterThan(0);
-    expect(result.tomorrow.length).to.be.greaterThan(0);
-    
-    // Check that today data has proper structure
-    result.today.forEach(entry => {
-      expect(entry).to.have.property("value");
-      expect(entry).to.have.property("start");
-      expect(typeof entry.value).to.equal("number");
-      expect(typeof entry.start).to.equal("string");
-    });
-    
-    // Check that tomorrow data has proper structure
-    result.tomorrow.forEach(entry => {
-      expect(entry).to.have.property("value");
-      expect(entry).to.have.property("start");
-      expect(typeof entry.value).to.equal("number");
-      expect(typeof entry.start).to.equal("string");
-    });
+    expect(result).to.eql(energidataserviceExpected);
   });
 
   it("can convert energidataservice format with different entity_id", () => {
