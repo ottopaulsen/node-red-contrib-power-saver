@@ -58,6 +58,14 @@ function convertMsg(msg) {
         value: v.total,
         start: v.startsAt,
       }));
+    } else if (msg.payload?.attributes && msg.payload.attributes["raw_" + day] && msg.payload.attributes["raw_" + day][0]?.hour && msg.payload.attributes["raw_" + day][0]?.price !== undefined) {
+      result.source = "Energi Data Service";
+      result[day] = msg.payload.attributes["raw_" + day]
+        .filter((v) => v.price !== undefined && v.price !== null)
+        .map((v) => ({
+          value: v.price,
+          start: v.hour,
+        }));
     } else if (msg.data?.new_state?.attributes["raw_" + day]) {
       result.source = "Nordpool";
       result[day] = msg.data.new_state.attributes["raw_" + day]
@@ -82,6 +90,12 @@ function convertMsg(msg) {
           value: v.value,
           start: v.start,
         }));
+    } else if (msg.payload?.attributes && msg.payload.attributes[day]) {
+      result.source = "Energi Data Service";
+      result[day] = msg.payload.attributes[day].map((v, index) => ({
+        value: v,
+        start: new Date(new Date().toDateString() + (day === "today" ? "" : " +1 day")).getTime() + (index * 15 * 60 * 1000),
+      }));
     } else {
       result.source = "Other";
       result[day] = msg.payload[day] || [];
