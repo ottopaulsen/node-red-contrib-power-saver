@@ -11,7 +11,7 @@ This is a collection of nodes for the popular [Node-RED](https://nodered.org/) t
 
 
 The solution can be used to control switches or other entities in a smart home system, and for example turn on when the price is low, and turn off when the price is high.
-There are different ways to calculate what hours to turn on and off, and these are implemented as **strategy nodes**. Each strategy node can be configured to fit different purposes.
+There are different ways to calculate what minutes to turn on and off, and these are implemented as **strategy nodes**. Each strategy node can be configured to fit different purposes.
 
 The strategies need price data to work. These can be received from different sources, for example Tibber, Nord Pool or custom sources.
 
@@ -19,7 +19,7 @@ The strategies need price data to work. These can be received from different sou
 Tibber and Nord Pool are only available in the nordics, so if you live outside the nordics, you must find another source of price data, and make your own input.
 :::
 
-Grid tariff is normally not part of the electricity price, so if this varies by the hour, it must be added before sent to the strategy nodes for calculation. This can be done by putting a `ps-xxx-add-tariff` node between the price receiver and the strategy.
+Grid tariff is normally not part of the electricity price, so if this varies by time, it must be added before sent to the strategy nodes for calculation. This can be done by putting a `ps-xxx-add-tariff` node between the price receiver and the strategy.
 
 
 
@@ -72,7 +72,7 @@ If you are a Tibber customer, use the `tibber-query` node from the [Tibber API](
   viewer {
     homes {
       currentSubscription {
-        priceInfo {
+        priceInfo(resolution: QUARTER_HOURLY) {
           today {
             total
             startsAt
@@ -97,7 +97,7 @@ If you are a Tibber customer, use the `tibber-query` node from the [Tibber API](
   viewer {
     home(id: "142c1670-ab43-2ab3-ba6d-723703a551e2") {
       currentSubscription{
-        priceInfo{
+        priceInfo(resolution: QUARTER_HOURLY) {
           today {
             total
             energy
@@ -120,6 +120,10 @@ If you are a Tibber customer, use the `tibber-query` node from the [Tibber API](
   </CodeGroupItem>
 </CodeGroup>
 
+::: warning Quarter hourly prices
+Please note that the parameter to `priceInfo` in the queries, `(resolution: QUARTER_HOURLY)` is new in version 5. It is used to get quarter hourly prices. It will work fine even without this, but then you get hourly prices.
+:::
+
 See more details in the [documentation](../nodes/ps-receive-price#tibber-input) for the `ps-receive-price` node.
 
 
@@ -137,6 +141,10 @@ If you use Home Assistant (HA), you can install the
 that provides a _sensor_ that gives price per hour for today and tomorrow.
 Data can be sent from both the `current state` node or the `events: state` node.
 
+::: warning Quarter hourly prices from Nord Pool
+I have not yet examined the Nord Pool API for quarterly hour prices, so this may be outdated.
+:::
+
 [See example with Nord Pool and `current state` node](../examples/example-nordpool-current-state.md)
 
 [See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
@@ -147,7 +155,7 @@ Data can be sent from both the `current state` node or the `events: state` node.
 
 ### Add grid tariff
 
-When also the grid tariff changes per hour, it must be added to the electricity price in order to get the calculations right.
+When also the grid tariff changes by time, it must be added to the electricity price in order to get the calculations right.
 
 After the the `ps-receive-price` node, add a `ps-xxx-add-tariff` node to add grid tariff. What node to choose depends on what grid you get electricity through. The following grids are supported:
 
@@ -160,6 +168,11 @@ If your grid is not supported, you may code this yourself.
 
 ::: tip Skip this step
 If the grid tariff is the same the whole day, you can skip this step i the flow.
+:::
+
+::: error Not tested for quarter hourly prices
+Adding grid tariff has not yet been tested or developed for quarter hourly prices.
+This may not work.
 :::
 
 
@@ -180,9 +193,9 @@ Send the result from the `ps-xxx-add-tariff` node (or the `ps-receive-price` nod
 strategy node you choose.
 
 ::: tip Choose strategy
-Choose the best save strategy if you can postpone power consumption, and expect the consumption to occur during the first hour after power is turned on again.
+Choose the best save strategy if you can postpone power consumption, and expect the consumption to occur in the immediate period after power is turned on again.
 
-Choose the lowest price strategy if you need the power to be on for x hours, but it is not important when that is. Note that you can select to have all hours on in one consecutive period, or spread around on the cheapest hours.
+Choose the lowest price strategy if you need the power to be on for a certain time, but it is not important when that is. Note that you can select to have all time on in one consecutive period, or spread around on the cheapest periods.
 
 Choose the heat capacitor strategy for controlling for example room heating, where you can turn the heat a little down when electricity is expensive, and a little up when it is cheap, using trading principles (only that you know up front when the prices will change).
 :::
@@ -242,15 +255,43 @@ There are more details and more information in the documentation for each [node]
 
 
 
-## Migration from v2
+## Migration from v4 to v5
 
-The `Power Saver` node from v2 has been removed and must be replaced.
-You may directly replace the `Power Saver` node by two of the new nodes (`ps-receive-price` and `ps-strategy-best-save`):
+Version 5 has been developed to support quarter hourly prices. Actually it will just as well suport price per minute, but that is not relevant. However, the schedules can now be set with minute resolution instead of hourly resolution as before.
 
-![Migrate Power Saver](../images/migrate-best-save.png)
+::: danger Breaking change
+Upgrading to version 5 is a breaking change.
+The configuration of the Best Save and Lowest Price nodes are changed, so you must set them up more or less from scratch.
 
-See more details in the [documentation for the `ps-strategy-best-save`](../nodes/ps-strategy-best-save.md) node.
+Many features have not been properly tested, so be prepared that things may not work as expected. Please report any such findings.
+:::
 
+::: tip Note down values before you upgrade
+You should open all your Best Save and Lowest Price nodes and note the settings
+so you can convert them to corresponding settings in v5.
+:::
+
+
+### Upgrade Best Save
+
+`Max per sequence` has been replaced with `Max minutes off`. You can multiply the old value with 60 to get the corresponding new value.
+
+In v5 there is also a `Min minutes off` that you can use to make sure it turns off a minimum period.
+
+`Min recover` has been replaced with `Recovery time %` and `Max recovery time`.
+There is no way to directly translate from the old value to the new. Primarily use the % to say that after a period of x minutes off, it must be on this many % of x after turned on again. You can set a maximum revovery time to limit the required time on after being off. You can set this value to the old `Min recover` value multiplied by 60, and set the Recovery time % to 100 to get the closest you can to the old setting. However, the new setting is more powerful, so it is better to use it as it is supposed to be used.
+
+The other settings are as before.
+
+### Upgrading Lowest Price
+
+`From time` has been replaced with `From hour` and `From minute`. This gives you the flexibility to control the period more detailed than before. If you set `From hour` to the same value as `From time` was, and keep `From minute` to 0, the result will be as before.
+
+The same way, `To time` has been replaced with `To hour` and `To minute`.
+
+`Hours on` has been replaced with `Minutes on`. Multiply the old value with 60 to get the same setting.
+
+The other settings are as before.
 
 
 ## Disclaimer

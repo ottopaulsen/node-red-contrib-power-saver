@@ -22,8 +22,8 @@ features:
     details: Different strategies for different purposes. See Best Save, Lowest Price and Heat Capacitor.
   - title: Grid Capacity Optimization
     details: Automatically turn off consumption to avoid breaking capacity limits.
-  - title: Add variable grid tariff
-    details: Automatically add values that varies on fixed hours, or use API to get grid tariff from Elvia.
+  - title: 15 minute price intervals
+    details: Supports 15 minutes price intervals and schedules can be defined with minute resolution.
   - title: Perfect with Home Assistant
     details: Use Home Assistant with Node-RED and control switches via service calls.
   - title: Tibber and Nord Pool

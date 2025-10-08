@@ -19,11 +19,6 @@ The `ps-receive-price` node is used to convert prices from Tibber or Nord Pool t
 
 Output can be sent directly to the strategy nodes (for example `strategy-best-save` or `strategy-lowest-price`), or it can be sent via another node to add grid tariff or other additional costs before the calculation is done.
 
-::: warning Note
-In version 2 of `node-red-contrib-power-saver`, prices were received directly by the Power Saver node.
-This made it hard to add grid tariff before the calculation was done.
-That is why this is now a separate node.
-:::
 
 ## Configuration
 
@@ -44,7 +39,7 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
   viewer {
     homes {
       currentSubscription {
-        priceInfo {
+        priceInfo(resolution: QUARTER_HOURLY) {
           today {
             total
             startsAt
@@ -112,7 +107,7 @@ Then use the id in the following query, replacing the id with the one you found 
   viewer {
     home(id: "142c1670-ab43-2ab3-ba6d-723703a551e2") {
       currentSubscription{
-        priceInfo{
+        priceInfo(resolution: QUARTER_HOURLY) {
           today {
             total
             startsAt

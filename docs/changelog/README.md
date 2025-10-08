@@ -7,6 +7,22 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.0
+
+::: danger BREAKING CHANGE
+This is a breaking change.
+The Best Save and Lowest Price nodes will require reconfiguration to work properly.
+See the documentation for details.
+
+**Bugs to be expected**
+This is a very early release with support for 15 minutes intervals.
+You should expect to find bugs. Please report using github issues. Please also report bugs in the documentation.
+Not all features are adapted to the 15 minutes price intervals and to the changes done in this version.
+:::
+
+ - Supports 15 minutes price intervals.
+ - Can schedule periods down to minute resolution.
+
 ## 4.2.5
 
  - Changes to Capacity part of grid tariff example, Update sensors node: Adding filter so onoy sensors that has a value are set, to avoid error message.
