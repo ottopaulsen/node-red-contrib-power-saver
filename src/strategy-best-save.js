@@ -10,8 +10,10 @@ module.exports = function (RED) {
 
     const validConfig = {
       contextStorage: config.contextStorage || "default",
-      maxHoursToSaveInSequence: config.maxHoursToSaveInSequence,
-      minHoursOnAfterMaxSequenceSaved: config.minHoursOnAfterMaxSequenceSaved,
+      maxMinutesOff: config.maxMinutesOff,
+      minMinutesOff: config.minMinutesOff,
+      recoveryPercentage: config.recoveryPercentage,
+      recoveryMaxMinutes: config.recoveryMaxMinutes,
       minSaving: parseFloat(config.minSaving),
       outputIfNoSchedule: booleanConfig(config.outputIfNoSchedule),
       outputValueForOn: config.outputValueForOn || true,
@@ -40,8 +42,10 @@ function doPlanning(node, priceData) {
   const values = priceData.map((d) => d.value);
   const onOff = mostSavedStrategy.calculate(
     values,
-    node.maxHoursToSaveInSequence,
-    node.minHoursOnAfterMaxSequenceSaved,
+    node.maxMinutesOff,
+    node.minMinutesOff,
+    node.recoveryPercentage,
+    node.recoveryMaxMinutes,
     node.minSaving
   );
   return onOff;

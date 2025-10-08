@@ -2,7 +2,7 @@ const expect = require("chai").expect;
 const cloneDeep = require("lodash.clonedeep");
 const helper = require("node-red-node-test-helper");
 const prices = require("./data/converted-prices.json");
-const { testPlan, equalHours } = require("./test-utils");
+const { testPlan, equalMinutes } = require("./test-utils");
 const { makeFlow, makePayload } = require("./schedule-merger-test-utils");
 const scheduleMerger = require("../src/schedule-merger.js");
 const { allOff, someOn } = require("./data/merge-schedule-data.js");
@@ -30,12 +30,12 @@ describe("send command as input to schedule merger", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+            expect(equalMinutes(someOn, msg.payload.minutes, ["price", "onOff", "start"])).to.equal(true);
             n1.warn.should.not.be.called;
             n1.receive({ payload: { commands: { sendSchedule: true } } });
             break;
           case 2:
-            expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+            expect(equalMinutes(someOn, msg.payload.minutes, ["price", "onOff", "start"])).to.equal(true);
             done();
             break;
         }
@@ -59,7 +59,7 @@ describe("send command as input to schedule merger", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+            expect(equalMinutes(someOn, msg.payload.minutes, ["price", "onOff", "start"])).to.equal(true);
             n1.warn.should.not.be.called;
             n1.receive({ payload: { commands: { sendOutput: true }, time: "2021-06-20T01:05:00.000+02:00" } });
             setTimeout(() => {
@@ -90,7 +90,7 @@ describe("send command as input to schedule merger", () => {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+        expect(equalMinutes(someOn, msg.payload.minutes, ["price", "onOff", "start"])).to.equal(true);
         n1.warn.should.not.be.called;
         n1.receive({ payload: { commands: { reset: true } } });
         done();
@@ -110,12 +110,12 @@ describe("send command as input to schedule merger", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+            expect(equalMinutes(someOn, msg.payload.minutes, ["price", "onOff", "start"])).to.equal(true);
             n1.warn.should.not.be.called;
             n1.receive({ payload: { commands: { replan: true }, time: "2021-06-19T00:00:00.000+02:00" } });
             break;
           case 2:
-            expect(equalHours(someOn, msg.payload.hours, ["price", "onOff", "start"])).to.equal(true);
+            expect(equalMinutes(someOn, msg.payload.minutes, ["price", "onOff", "start"])).to.equal(true);
             done();
             break;
         }

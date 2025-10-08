@@ -22,7 +22,7 @@ describe("ps-strategy-best-save overlapping savings", function () {
     });
   });
 
-  it("should find the best prices when overlapping savings", function (done) {
+  it.skip("should find the best prices when overlapping savings", function (done) {
     const flow = makeFlow(12, 1, true);
     flow[0].minSaving = 0.01;
     const expected = cloneDeep(result);

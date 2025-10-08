@@ -3,47 +3,47 @@ module.exports = {
     {
       time: "2021-06-20T01:50:00.000+02:00",
       value: true,
-      countHours: 3,
+      countMinutes: 3 * 60,
     },
     {
       time: "2021-06-20T01:50:00.030+02:00",
       value: false,
-      countHours: 2,
+      countMinutes: 2 * 60,
     },
     {
       time: "2021-06-20T01:50:00.050+02:00",
       value: true,
-      countHours: 1,
+      countMinutes: 1 * 60,
     },
     {
       time: "2021-06-20T01:50:00.060+02:00",
       value: false,
-      countHours: 2,
+      countMinutes: 2 * 60,
     },
     {
       time: "2021-06-20T01:50:00.080+02:00",
       value: true,
-      countHours: 1,
+      countMinutes: 1 * 60,
     },
     {
       time: "2021-06-20T01:50:00.090+02:00",
       value: false,
-      countHours: 3,
+      countMinutes: 3 * 60,
     },
     {
       time: "2021-06-20T01:50:00.120+02:00",
       value: true,
-      countHours: 3,
+      countMinutes: 3 * 60,
     },
     {
       time: "2021-06-20T01:50:00.150+02:00",
       value: false,
-      countHours: 3,
+      countMinutes: 3 * 60,
     },
     {
       time: "2021-06-20T01:50:00.180+02:00",
       value: true,
-      countHours: 2,
+      countMinutes: 2 * 60,
     },
   ],
   hours: [

@@ -1,16 +1,19 @@
 const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
+const { addEndToLast } = require("../src/utils");
 
-function makeFlow(maxHoursToSaveInSequence, minHoursOnAfterMaxSequenceSaved, sendCurrentValueWhenRescheduling = true) {
+function makeFlow(maxMinutesOff = 45, minMinutesOff = 15, recoveryPercentage = 50, recoveryMaxMinutes = 30) {
   return [
     {
       id: "n1",
       type: "ps-strategy-best-save",
       name: "test name",
-      maxHoursToSaveInSequence,
-      minHoursOnAfterMaxSequenceSaved,
-      sendCurrentValueWhenRescheduling,
+      maxMinutesOff,
+      minMinutesOff,
+      recoveryPercentage,
+      recoveryMaxMinutes,
       minSaving: 0.001,
+
       wires: [["n3"], ["n4"], ["n2"]],
     },
     { id: "n2", type: "helper" },
@@ -25,8 +28,10 @@ function makePayload(prices, time) {
   let entryTime = DateTime.fromISO(payload.time);
   payload.priceData.forEach((e) => {
     e.start = entryTime.toISO();
-    entryTime = entryTime.plus({ milliseconds: 10 });
+    // entryTime = entryTime.plus({ milliseconds: 10 });
+    entryTime = entryTime.plus({ seconds: 60 });
   });
+  addEndToLast(payload.priceData);
   return payload;
 }
 

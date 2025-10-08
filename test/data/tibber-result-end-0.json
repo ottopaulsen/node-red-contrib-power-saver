@@ -3,17 +3,17 @@
     {
       "time": "2021-12-14T00:00:00.000+01:00",
       "value": false,
-      "countHours": 21
+      "countMinutes": 1260
     },
     {
       "time": "2021-12-14T21:00:00.000+01:00",
       "value": true,
-      "countHours": 3
+      "countMinutes": 180
     },
     {
       "time": "2021-12-15T00:00:00.000+01:00",
       "value": false,
-      "countHours": null
+      "countMinutes": null
     }
   ],
   "hours": [
@@ -166,9 +166,11 @@
   "config": {
     "hasChanged": false,
     "contextStorage": "default",
-    "fromTime": "16",
-    "toTime": "00",
-    "hoursOn": 3,
+    "fromHour": "16",
+    "fromMinute": 0,
+    "toHour": "00",
+    "toMinute": 0,
+    "minutesOn": 180,
     "maxPrice": null,
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,

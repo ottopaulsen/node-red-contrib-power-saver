@@ -1,46 +1,31 @@
 <script type="text/javascript">
-  const hours = [
-    "00",
-    "01",
-    "02",
-    "03",
-    "04",
-    "05",
-    "06",
-    "07",
-    "08",
-    "09",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "16",
-    "17",
-    "18",
-    "19",
-    "20",
-    "21",
-    "22",
-    "23",
-  ];
+
+  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
+  const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
 
   RED.nodes.registerType("ps-strategy-lowest-price", {
     category: "Power Saver",
     color: "#a6bbcf",
     defaults: {
       name: { value: "Lowest Price" },
-      fromTime: {
+      fromHour: {
         value: "00",
         required: true,
       },
-      toTime: {
+      fromMinute: {
         value: "00",
         required: true,
       },
-      hoursOn: {
-        value: "12",
+      toHour: {
+        value: "00",
+        required: true,
+      },
+      toMinute: {
+        value: "00",
+        required: true,
+      },
+      minutesOn: {
+        value: "720",
         required: true,
       },
       maxPrice: {
@@ -113,33 +98,40 @@
           },
         ],
       });
-      $("#node-input-fromTime").typedInput({
+      $("#node-input-fromHour").typedInput({
         types: [
           {
-            value: "fromtime",
-            options: hours.map((h) => ({ value: h, label: h + ":00" })),
+            value: "fromhour",
+            options: hours.map((h) => ({ value: h, label: h })),
           },
         ],
       });
-      $("#node-input-toTime").typedInput({
+      $("#node-input-toHour").typedInput({
         types: [
           {
-            value: "totime",
-            options: hours.map((h) => ({ value: h, label: h + ":00" })),
+            value: "tohour",
+            options: hours.map((h) => ({ value: h, label: h })),
           },
         ],
       });
-      $("#node-input-hoursOn").typedInput({
+      $("#node-input-fromMinute").typedInput({
         types: [
           {
-            value: "hourson",
-            options: (() => {
-              const res = hours.map((h) => ({ value: "" + parseInt(h), label: "" + parseInt(h) }));
-              res.push({ value: "24", label: "24" });
-              return res;
-            })(),
+            value: "fromminute",
+            options: minutes.map((h) => ({ value: h, label: h })),
           },
         ],
+      });
+      $("#node-input-toMinute").typedInput({
+        types: [
+          {
+            value: "tominute",
+            options: minutes.map((h) => ({ value: h, label: h })),
+          },
+        ],
+      });
+      $("#node-input-minutesOn").typedInput({
+        type: "num",
       });
       $("#node-input-contextStorage").typedInput({
         types: [
@@ -169,16 +161,24 @@
         <input type="text" id="node-input-name" placeholder="Name" style="width: 240px">
     </div>
     <div class="form-row">
-        <label for="node-input-fromTime"><i class="fa fa-clock-o"></i> From time</label>
-        <input type="text" id="node-input-fromTime" style="width: 80px">
-      </div>
-    <div class="form-row">
-        <label for="node-input-toTime"><i class="fa fa-clock-o"></i> To time</label>
-        <input type="text" id="node-input-toTime" style="width: 80px">
+        <label for="node-input-fromHour"><i class="fa fa-clock-o"></i> From hour</label>
+        <input type="text" id="node-input-fromHour" style="width: 80px">
     </div>
     <div class="form-row">
-        <label for="node-input-hoursOn"><i class="fa fa-arrows-h"></i> Hours on</label>
-        <input type="text" id="node-input-hoursOn" style="width: 80px">
+        <label for="node-input-fromMinute"><i class="fa fa-clock-o"></i> From minute</label>
+        <input type="text" id="node-input-fromMinute" style="width: 80px">
+    </div>
+    <div class="form-row">
+        <label for="node-input-toHour"><i class="fa fa-clock-o"></i> To hour</label>
+        <input type="text" id="node-input-toHour" style="width: 80px">
+    </div>
+    <div class="form-row">
+        <label for="node-input-toMinute"><i class="fa fa-clock-o"></i> To minute</label>
+        <input type="text" id="node-input-toMinute" style="width: 80px">
+    </div>
+    <div class="form-row">
+        <label for="node-input-minutesOn"><i class="fa fa-arrows-h"></i> Minutes on</label>
+        <input type="text" id="node-input-minutesOn" style="width: 80px">
     </div>
     <div class="form-row">
       <label for="node-input-maxPrice"><i class="fa fa-minus"></i> Max price</label>

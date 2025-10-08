@@ -7,53 +7,68 @@ const { fillArray } = require("./utils");
  * Evaluates of the on/off sequences are valid according to other arguments.
  *
  * @param {*} onOff Array of on/off values
- * @param {*} maxOff Max number of values that can be off in a sequence
- * @param {*} minOnAfterOff Min number of values that must be on after maxOff is reached
+ * @param {*} maxMinutesOff Max number of minutes that can be off in a sequence
+ * @param {*} minMinutesOff Min number of minutes that must be on after maxOff is reached
  * @returns
  */
-function isOnOffSequencesOk(onOff, maxOff, minOnAfterOff) {
+function isOnOffSequencesOk(
+  onOff, 
+  maxMinutesOff,
+  minMinutesOff,
+  recoveryPercentage,
+  recoveryMaxMinutes = null,
+  minSaving) {
   let offCount = 0;
   let onCount = 0;
   let reachedMaxOff = false;
+  let reachedMinOn = minMinutesOff === 0;
+  let minOnAfterOff = null;
   for (let i = 0; i < onOff.length; i++) {
     if (!onOff[i]) {
-      if (maxOff === 0 || reachedMaxOff) {
+      if (maxMinutesOff === 0 || reachedMaxOff) {
         return false;
       }
       offCount++;
       onCount = 0;
-      if (offCount >= maxOff) {
+      if (offCount >= maxMinutesOff) {
         reachedMaxOff = true;
       }
+      if (offCount >= minMinutesOff) {
+        reachedMinOn = true;
+      }
+      const minRounded = Math.max(Math.round(offCount * recoveryPercentage / 100), 1)
+      minOnAfterOff = Math.min(minRounded, recoveryMaxMinutes ?? minRounded)
     } else {
-      if (reachedMaxOff) {
-        onCount++;
-        if (onCount >= minOnAfterOff) {
-          reachedMaxOff = false;
-        }
+      onCount++;
+      if (onCount >= minOnAfterOff) {
+        reachedMaxOff = false;
       }
       offCount = 0;
     }
   }
-  return true;
+  return reachedMinOn;
 }
 
 /**
- * Turn off the hours where you save most compared to the next hour on.
+ * Turn off the minutes where you save most compared to the next minute on.
  *
  * @param {*} values Array of prices
- * @param {*} maxOffInARow Max number of hours that can be saved in a row
- * @param {*} minOnAfterMaxOffInARow Min number of hours that must be on after maxOffInARow is saved
+ * @param {*} maxMinutesOff Max number of minutes that can be saved in a row
+ * @param {*} minMinutesOff Min number of minutes to turn off in a row
+ * @param {*} recoveryPercentage Min percent of time off that must be on after being off
+ * @param {*} recoveryMaxMinutes Maximum recovery time in minutes
  * @param {*} minSaving Minimum amount that must be saved in order to turn off
- * @param {*} lastValueDayBefore Value of the last hour the day before
+ * @param {*} lastValueDayBefore Value of the last minute the day before
  * @param {*} lastCountDayBefore Number of lastValueDayBefore in a row
  * @returns Array with same number of values as in values array, where true is on, false is off
  */
 
 function calculate(
   values,
-  maxOffInARow,
-  minOnAfterMaxOffInARow,
+  maxMinutesOff,
+  minMinutesOff,
+  recoveryPercentage,
+  recoveryMaxMinutes,
   minSaving,
   lastValueDayBefore = undefined,
   lastCountDayBefore = 0
@@ -61,48 +76,49 @@ function calculate(
   const dayBefore = fillArray(lastValueDayBefore, lastCountDayBefore);
   const last = values.length - 1;
 
-  // Create matrix with saving per hour
-  const savingPerHour = [];
-  for (let hour = 0; hour < last; hour++) {
+  // Create matrix with saving per minute
+  const savingPerMinute = [];
+  for (let minutes = 0; minutes < last; minutes++) {
     const row = [];
-    for (let count = 1; count <= maxOffInARow; count++) {
-      const on = hour + count;
-      const saving = values[hour] - values[on >= last ? last : on];
+    for (let count = 1; count <= maxMinutesOff; count++) {
+      const on = minutes + count;
+      const saving = values[minutes] - values[on >= last ? last : on];
       row.push(saving);
     }
-    savingPerHour.push(row);
+    savingPerMinute.push(row);
   }
 
   // Create list with summary saving per sequence
   let savingsList = [];
-  for (let hour = 0; hour < last; hour++) {
-    for (let count = 1; count <= maxOffInARow; count++) {
+  for (let minute = 0; minute < last; minute++) {
+    for (let count = 1; count <= maxMinutesOff; count++) {
       let saving = 0;
-      for (let offset = 0; offset < count && hour + offset < last; offset++) {
-        saving += savingPerHour[hour + offset][count - offset - 1];
+      for (let offset = 0; offset < count && minute + offset < last; offset++) {
+        saving += savingPerMinute[minute + offset][count - offset - 1];
       }
-      if (saving > minSaving * count && hour + count <= last && values[hour] > values[hour + count] + minSaving) {
-        savingsList.push({ hour, count, saving });
+      if (saving > minSaving * count && minute + count <= last && values[minute] > values[minute + count] + minSaving) {
+        savingsList.push({ minute, count, saving });
       }
     }
   }
 
-  savingsList.sort((a, b) => b.saving - a.saving);
+  savingsList.sort((a, b) => b.saving === a.saving ? a.count - b.count : b.saving - a.saving);
   let onOff = values.map((v) => true); // Start with all on
 
   // Find the best possible sequences
   while (savingsList.length > 0) {
-    const { hour, count } = savingsList[0];
+    const { minute, count } = savingsList[0];
     const onOffCopy = [...onOff];
     let alreadyTaken = false;
     for (let c = 0; c < count; c++) {
-      if (!onOff[hour + c]) {
+      if (!onOff[minute + c]) {
         alreadyTaken = true;
       }
-      onOff[hour + c] = false;
+      onOff[minute + c] = false;
     }
-    if (isOnOffSequencesOk([...dayBefore, ...onOff], maxOffInARow, minOnAfterMaxOffInARow) && !alreadyTaken) {
-      savingsList = savingsList.filter((s) => s.hour < hour || s.hour >= hour + count);
+    if (isOnOffSequencesOk([...dayBefore, ...onOff], maxMinutesOff, minMinutesOff, recoveryPercentage,
+      recoveryMaxMinutes) && !alreadyTaken) {
+      savingsList = savingsList.filter((s) => s.minute < minute || s.minute >= minute + count);
     } else {
       onOff = [...onOffCopy];
       savingsList.splice(0, 1);

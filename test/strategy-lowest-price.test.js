@@ -61,7 +61,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct continuous schedule", function (done) {
     const resultContinuous = require("./data/lowest-price-result-cont.json");
-    const flow = makeFlow(4);
+    const flow = makeFlow(240);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -77,7 +77,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct splitted schedule", function (done) {
     const resultSplitted = require("./data/lowest-price-result-split.json");
-    const flow = makeFlow(6);
+    const flow = makeFlow(360);
     flow[0].doNotSplit = false;
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -93,7 +93,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct negative prices continuous schedule", function (done) {
     const resultContinuous = require("./data/lowest-price-result-neg-cont.json");
-    const flow = makeFlow(5, null, true, "00", "00");
+    const flow = makeFlow(300, null, true, "00", "00");
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -109,7 +109,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct negative prices splitted schedule", function (done) {
     const resultSplitted = require("./data/lowest-price-result-neg-split.json");
-    const flow = makeFlow(5, null, true, "00", "00");
+    const flow = makeFlow(300, null, true, "00", "00");
     flow[0].doNotSplit = false;
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -125,7 +125,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct continuous schedule with max price ok", function (done) {
     const resultContinuousMax = require("./data/lowest-price-result-cont-max.json");
-    const flow = makeFlow(4, 1.0);
+    const flow = makeFlow(240, 1.0);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -140,7 +140,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct continuous schedule with max price too high", function (done) {
     const resultContinuousMax = require("./data/lowest-price-result-cont-max-fail.json");
-    const flow = makeFlow(4, 0.23);
+    const flow = makeFlow(240, 0.23);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -155,7 +155,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct splitted schedule with max price", function (done) {
     const resultSplittedMax = require("./data/lowest-price-result-split-max.json");
-    const flow = makeFlow(6, 0.51);
+    const flow = makeFlow(360, 0.51);
     flow[0].doNotSplit = false;
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -171,10 +171,12 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct for all day period - 00-00", function (done) {
     const resultAllDay = require("./data/lowest-price-result-split-allday.json");
-    const flow = makeFlow(8);
+    const flow = makeFlow(480);
     flow[0].doNotSplit = false;
-    flow[0].fromTime = "00";
-    flow[0].toTime = "00";
+    flow[0].fromHour = "00";
+    flow[0].fromMinute = "00";
+    flow[0].toHour = "00";
+    flow[0].toMinute = "00";
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -189,10 +191,12 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct for all day period - 10-10", function (done) {
     const resultAllDay10 = require("./data/lowest-price-result-split-allday10.json");
-    const flow = makeFlow(10);
+    const flow = makeFlow(600);
     flow[0].doNotSplit = false;
-    flow[0].fromTime = "10";
-    flow[0].toTime = "10";
+    flow[0].fromHour = "10";
+    flow[0].fromMinute = "00";
+    flow[0].toHour = "10";
+    flow[0].toMinute = "00";
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -208,10 +212,12 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct for all day period - 10-10 outside on", function (done) {
     const resultAllDay10 = require("./data/lowest-price-result-split-allday10.json");
-    const flow = makeFlow(10);
+    const flow = makeFlow(600);
     flow[0].doNotSplit = false;
-    flow[0].fromTime = "10";
-    flow[0].toTime = "10";
+    flow[0].fromHour = "10";
+    flow[0].fromMinute = "00";
+    flow[0].toHour = "10";
+    flow[0].toMinute = "00";
     flow[0].outputOutsidePeriod = true;
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -229,10 +235,12 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct for all day period - 10-10 nosched on", function (done) {
     const resultAllDay10 = require("./data/lowest-price-result-split-allday10.json");
-    const flow = makeFlow(10);
+    const flow = makeFlow(600);
     flow[0].doNotSplit = false;
-    flow[0].fromTime = "10";
-    flow[0].toTime = "10";
+    flow[0].fromHour = "10";
+    flow[0].fromMinute = "00";
+    flow[0].toHour = "10";
+    flow[0].toMinute = "00";
     flow[0].outputIfNoSchedule = "true";
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -250,7 +258,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct outside selected period - split", function (done) {
     const resultSplitted = require("./data/lowest-price-result-split.json");
-    const flow = makeFlow(6);
+    const flow = makeFlow(360);
     flow[0].doNotSplit = false;
     flow[0].outputOutsidePeriod = true;
     helper.load(lowestPrice, flow, function () {
@@ -260,9 +268,9 @@ describe("ps-strategy-lowest-price node", function () {
         const schedule = cloneDeep(resultSplitted.schedule);
         const config = cloneDeep(resultSplitted.config);
         schedule[0].value = true;
-        schedule.splice(1, 0, { time: "2021-10-11T10:00:00.000+02:00", value: false, countHours: 10 });
-        schedule.splice(4, 0, { time: "2021-10-11T20:00:00.000+02:00", value: true, countHours: 14 });
-        schedule.splice(5, 0, { time: "2021-10-12T10:00:00.000+02:00", value: false, countHours: 14 });
+        schedule.splice(1, 0, { time: "2021-10-11T10:00:00.000+02:00", value: false, countMinutes: 10 * 60 });
+        schedule.splice(4, 0, { time: "2021-10-11T20:00:00.000+02:00", value: true, countMinutes: 14 * 60 });
+        schedule.splice(5, 0, { time: "2021-10-12T10:00:00.000+02:00", value: false, countMinutes: 14 * 60 });
         schedule.splice(schedule.length - 1, 1);
         config.outputOutsidePeriod = true;
         const res = msg.payload.schedule.map((s) => ({ time: s.time, value: s.value }));
@@ -278,7 +286,7 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should plan correct outside selected period - cont", function (done) {
     const resultContinuous = require("./data/lowest-price-result-cont.json");
-    const flow = makeFlow(4);
+    const flow = makeFlow(240);
     flow[0].doNotSplit = true;
     flow[0].outputOutsidePeriod = true;
     helper.load(lowestPrice, flow, function () {
@@ -307,8 +315,8 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should work with 0 hours on", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 48 },
-      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countMinutes: 48 * 60 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countMinutes: null },
     ];
     const flow = makeFlow(0);
     helper.load(lowestPrice, flow, function () {
@@ -325,11 +333,11 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should work with 0 hours on outside on", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: true, countHours: 10 },
-      { time: "2021-10-11T10:00:00.000+02:00", value: false, countHours: 10 },
-      { time: "2021-10-11T20:00:00.000+02:00", value: true, countHours: 14 },
-      { time: "2021-10-12T10:00:00.000+02:00", value: false, countHours: 10 },
-      { time: "2021-10-12T20:00:00.000+02:00", value: true, countHours: 4 },
+      { time: "2021-10-11T00:00:00.000+02:00", value: true, countMinutes: 10 * 60 },
+      { time: "2021-10-11T10:00:00.000+02:00", value: false, countMinutes: 10 * 60 },
+      { time: "2021-10-11T20:00:00.000+02:00", value: true, countMinutes: 14 * 60 },
+      { time: "2021-10-12T10:00:00.000+02:00", value: false, countMinutes: 10 * 60 },
+      { time: "2021-10-12T20:00:00.000+02:00", value: true, countMinutes: 4 * 60 },
     ];
     const flow = makeFlow(0);
     flow[0].outputOutsidePeriod = true;
@@ -347,14 +355,14 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should work with 1 hours on", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 12 },
-      { time: "2021-10-11T12:00:00.000+02:00", value: true, countHours: 1 },
-      { time: "2021-10-11T13:00:00.000+02:00", value: false, countHours: 25 },
-      { time: "2021-10-12T14:00:00.000+02:00", value: true, countHours: 1 },
-      { time: "2021-10-12T15:00:00.000+02:00", value: false, countHours: 9 },
-      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countMinutes: 12 * 60 },
+      { time: "2021-10-11T12:00:00.000+02:00", value: true, countMinutes: 1 * 60 },
+      { time: "2021-10-11T13:00:00.000+02:00", value: false, countMinutes: 25 * 60 },
+      { time: "2021-10-12T14:00:00.000+02:00", value: true, countMinutes: 1 * 60 },
+      { time: "2021-10-12T15:00:00.000+02:00", value: false, countMinutes: 9 * 60 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countMinutes: null },
     ];
-    const flow = makeFlow(1);
+    const flow = makeFlow(60);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -369,14 +377,14 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should work with 24 hours on", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 10 },
-      { time: "2021-10-11T10:00:00.000+02:00", value: true, countHours: 10 },
-      { time: "2021-10-11T20:00:00.000+02:00", value: false, countHours: 14 },
-      { time: "2021-10-12T10:00:00.000+02:00", value: true, countHours: 10 },
-      { time: "2021-10-12T20:00:00.000+02:00", value: false, countHours: 4 },
-      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countMinutes: 10 * 60 },
+      { time: "2021-10-11T10:00:00.000+02:00", value: true, countMinutes: 10 * 60 },
+      { time: "2021-10-11T20:00:00.000+02:00", value: false, countMinutes: 14 * 60 },
+      { time: "2021-10-12T10:00:00.000+02:00", value: true, countMinutes: 10 * 60 },
+      { time: "2021-10-12T20:00:00.000+02:00", value: false, countMinutes: 4 * 60 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countMinutes: null },
     ];
-    const flow = makeFlow(24);
+    const flow = makeFlow(1440);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -393,13 +401,14 @@ describe("ps-strategy-lowest-price node", function () {
   it("should work with data for only current day", function (done) {
     const oneDayPrices = {};
     oneDayPrices.priceData = prices.priceData.filter((d) => d.start.startsWith("2021-10-11"));
+    oneDayPrices.priceData[oneDayPrices.priceData.length - 1].end = "2021-10-12T00:00:00.000+02:00";
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 12 },
-      { time: "2021-10-11T12:00:00.000+02:00", value: true, countHours: 1 },
-      { time: "2021-10-11T13:00:00.000+02:00", value: false, countHours: 11 },
-      { time: "2021-10-12T00:00:00.000+02:00", value: true, countHours: null },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countMinutes: 12 * 60 },
+      { time: "2021-10-11T12:00:00.000+02:00", value: true, countMinutes: 1 * 60 },
+      { time: "2021-10-11T13:00:00.000+02:00", value: false, countMinutes: 11 * 60 },
+      { time: "2021-10-12T00:00:00.000+02:00", value: true, countMinutes: null },
     ];
-    const flow = makeFlow(1);
+    const flow = makeFlow(60);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -425,17 +434,19 @@ describe("ps-strategy-lowest-price node", function () {
 
   it("should handle hours on > period", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: true, countHours: 48 },
-      { time: "2021-10-13T00:00:00.000+02:00", value: false, countHours: null },
+      { time: "2021-10-11T00:00:00.000+02:00", value: true, countMinutes: 48 * 60 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: false, countMinutes: null },
     ];
     const flow = [
       {
         id: "n1",
         type: "ps-strategy-lowest-price",
         name: "test name",
-        fromTime: "17",
-        toTime: "22",
-        hoursOn: 6,
+        fromHour: "17",
+        fromMinute: "00",
+        toHour: "22",
+        toMinute: "00",
+        minutesOn: 360,
         doNotSplit: true,
         sendCurrentValueWhenRescheduling: true,
         outputIfNoSchedule: false,
@@ -475,21 +486,23 @@ describe("ps-strategy-lowest-price node", function () {
   });
   it("should handle hours on > period, false outside", function (done) {
     const result = [
-      { time: "2021-10-11T00:00:00.000+02:00", value: false, countHours: 17 },
-      { time: "2021-10-11T17:00:00.000+02:00", value: true, countHours: 5 },
-      { time: "2021-10-11T22:00:00.000+02:00", value: false, countHours: 19 },
-      { time: "2021-10-12T17:00:00.000+02:00", value: true, countHours: 5 },
-      { time: "2021-10-12T22:00:00.000+02:00", value: false, countHours: 2 },
-      { time: "2021-10-13T00:00:00.000+02:00", value: true, countHours: null },
+      { time: "2021-10-11T00:00:00.000+02:00", value: false, countMinutes: 17 * 60 },
+      { time: "2021-10-11T17:00:00.000+02:00", value: true, countMinutes: 5 * 60 },
+      { time: "2021-10-11T22:00:00.000+02:00", value: false, countMinutes: 19 * 60 },
+      { time: "2021-10-12T17:00:00.000+02:00", value: true, countMinutes: 5 * 60 },
+      { time: "2021-10-12T22:00:00.000+02:00", value: false, countMinutes: 2 * 60 },
+      { time: "2021-10-13T00:00:00.000+02:00", value: true, countMinutes: null },
     ];
     const flow = [
       {
         id: "n1",
         type: "ps-strategy-lowest-price",
         name: "test name",
-        fromTime: "17",
-        toTime: "22",
-        hoursOn: 6,
+        fromHour: "17",
+        fromMinute: "00",
+        toHour: "22",
+        toMinute: "00",
+        minutesOn: 360,
         doNotSplit: true,
         sendCurrentValueWhenRescheduling: true,
         outputIfNoSchedule: true,
@@ -538,9 +551,11 @@ describe("ps-strategy-lowest-price node", function () {
         id: "n1",
         type: "ps-strategy-lowest-price",
         name: "test name",
-        fromTime: "16",
-        toTime: "00",
-        hoursOn: 3,
+        fromHour: "16",
+        fromMinute: 0,
+        toHour: "00",
+        toMinute: 0,
+        minutesOn: 180,
         maxPrice: null,
         doNotSplit: false,
         sendCurrentValueWhenRescheduling: true,
@@ -557,7 +572,8 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).to.have.deep.property("payload", result);
+        expect(msg.payload).to.have.deep.property("schedule", result.schedule);
+        expect(msg.payload).to.have.deep.property("config", result.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -576,9 +592,11 @@ describe("ps-strategy-lowest-price node", function () {
         id: "n1",
         type: "ps-strategy-lowest-price",
         name: "test name",
-        fromTime: "16",
-        toTime: "00",
-        hoursOn: 3,
+        fromHour: "16",
+        fromMinute: 0,
+        toHour: "00",
+        toMinute: 0,
+        minutesOn: 180,
         maxPrice: null,
         doNotSplit: false,
         sendCurrentValueWhenRescheduling: true,
@@ -594,7 +612,8 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).to.have.deep.property("payload", result);
+        expect(msg.payload).to.have.deep.property("schedule", result.schedule);
+        expect(msg.payload).to.have.deep.property("config", result.config);
         n1.warn.should.not.be.called;
         done();
       });
@@ -613,9 +632,11 @@ describe("ps-strategy-lowest-price node", function () {
         id: "n1",
         type: "ps-strategy-lowest-price",
         name: "test name",
-        fromTime: "22",
-        toTime: "08",
-        hoursOn: 3,
+        fromHour: "22",
+        fromMinute: 0,
+        toHour: "08",
+        toMinute: 0,
+        minutesOn: 180,
         maxPrice: null,
         doNotSplit: true,
         sendCurrentValueWhenRescheduling: true,
@@ -631,7 +652,8 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(msg).to.have.deep.property("payload", result.payload);
+        expect(msg.payload).to.have.deep.property("schedule", result.payload.schedule);
+        expect(msg.payload).to.have.deep.property("config", result.payload.config);
         n1.warn.should.not.be.called;
         done();
       });

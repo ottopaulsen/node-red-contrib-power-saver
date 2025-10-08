@@ -20,7 +20,7 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   let output3 = {
     payload: {
       schedule: plan.schedule,
-      hours: plan.hours,
+      minutes: plan.minutes,
       source: plan.source,
       config,
       time: planFromTime.toISO(),

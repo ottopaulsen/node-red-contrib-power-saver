@@ -12,13 +12,13 @@ Strategy node to postpone power consumption until the price is lower.
 
 ## Description
 
-This strategy turns off the hours where the price difference is largest compared to the next hour that is on. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on (during the first hour). This would fit well for turning off a water heater or another thermostat controlled heater.
+This strategy turns off power if money can be saved by postponing the consumption, that is if the price is lower later. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on (during the first period). This would fit well for turning off a water heater or another thermostat controlled heater.
 
 ::: danger 70°C
 Be aware that the norwegian [FHI](https://www.fhi.no/nettpub/legionellaveilederen/) recommends that the temperature in the water heater is at least 70°C.
 :::
 
-The picture at the bottom of the page, under [Integration with MagicMirror](#integration-with-magicmirror), illustrates this by the purple strokes, taking the price from the top of the price curve to the level of the first hour after the save-period.
+The picture at the bottom of the page, under [Integration with MagicMirror](#integration-with-magicmirror), illustrates this by the purple strokes, taking the price from the top of the price curve to the level of the first period after the save-period.
 
 
 
@@ -28,17 +28,19 @@ The picture at the bottom of the page, under [Integration with MagicMirror](#int
 
 | Value                  |                                                                                                                                                                                                |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Max per sequence       | Maximum number of hours to turn off in a sequence                                                                                                                                              |
-| Min recover            | Minimum hours to turn on immediately after a period when turned off the maximum number of hours that is allowed to be turned off                                                               |
+| Max minutes off        | Maximum time (minutes) to turn off in a sequence  | 
+| Min minutes off        | Minimum time (minutes) to turn off in a sequence  | 
+| Recovery time %        | After having turned off, the power must be turned on minimum this % of the time it was off |
+| Max recovery time      | Recovery time does not have to be more then this number of minutes |
 | Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it?                           |
-| Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
+| Output value for on    | Set what value to send to output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
 | Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
 | Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
-| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last time there is price data for.           |
 | Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                     |
 
-::: warning Min recover
-NB! The `Min recover` only has effect if the previous save-period is of length `Max per sequence`. If the save-period is shorter, the following on-period may be as short as one hour.
+::: info Recovery
+The term revovery is used to set things right after having turned off. For example, if this is used to turn off the water heater, the recovery time is the time required to heat the water after having turned off. This is hard to get accurate only by timing, but this is one way to have some control. You set recovery time as a percentage of the time it was turned off, and you can limit it to a maximum time.
 :::
 
 ###
@@ -52,8 +54,10 @@ The following config values can be changed dynamically:
 | Name                               | Description                                              |
 | ---------------------------------- | -------------------------------------------------------- |
 | `contextStorage`                   | String                                                   |
-| `maxHoursToSaveInSequence`         | Number                                                   |
-| `minHoursOnAfterMaxSequenceSaved`  | Number                                                   |
+| `maxMinutesOff`                    | Number                                                   |
+| `minMinutesOff`                    | Number                                                   |
+| `recoveryPercentage`               | Number                                                   |
+| `recoveryMaxMinutes`               | Number                                                   |
 | `minSaving`                        | Number                                                   |
 | `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
 | `sendCurrentValueWhenRescheduling` | Legal values: `true`, `false`                            |
@@ -117,61 +121,68 @@ Example of output:
     {
       "time": "2021-09-30T00:00:00.000+02:00",
       "value": false,
-      "countHours": 1
+      "countMinutes": 60
     },
     {
       "time": "2021-09-30T01:00:00.000+02:00",
       "value": true,
-      "countHours": 23
+      "countMinutes": 1380
     },
     {
       "time": "2021-09-31T00:00:00.000+02:00",
       "value": false,
-      "countHours": null
+      "countMinutes": null
     }
   ],
-  "hours": [
+  "minutes": [
     {
-      "price": 1.2584,
-      "onOff": false,
-      "start": "2021-09-30T00:00:00.000+02:00",
-      "saving": 0.2034
-    },
-    {
-      "price": 1.055,
-      "onOff": true,
-      "start": "2021-09-30T01:00:00.000+02:00",
-      "saving": null
-    },
-    {
-      "price": 1.2054,
-      "onOff": true,
-      "start": "2021-09-30T02:00:00.000+02:00",
-      "saving": null
-    } // ...
+    "start": "2025-09-30T00:00:00.000+02:00",
+    "price": 0.2129,
+    "onOff": false,
+    "saving": 0.0631
+  },
+  {
+    "start": "2025-09-30T00:01:00.000+02:00",
+    "price": 0.2129,
+    "onOff": false,
+    "saving": 0.0631
+  },
+  {
+    "start": "2025-09-30T00:02:00.000+02:00",
+    "price": 0.2129,
+    "onOff": false,
+    "saving": 0.0631
+  }, // ...
   ],
   "source": "Nord Pool",
   "config": {
     "contextStorage": "default",
-    "hasChanged": false,
-    "maxHoursToSaveInSequence": 3,
-    "minHoursOnAfterMaxSequenceSaved": "1",
-    "minSaving": 0.001,
+    "maxMinutesOff": "300",
+    "minMinutesOff": "30",
+    "recoveryPercentage": "50",
+    "recoveryMaxMinutes": "120",
+    "minSaving": 0.01,
+    "outputIfNoSchedule": false,
+    "outputValueForOn": "on",
+    "outputValueForOff": "off",
+    "outputValueForOntype": "str",
+    "outputValueForOfftype": "str",
+    "override": "auto",
     "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": false
+    "hasChanged": false
   },
-  "time": "2021-09-30T23:45:12.123+02:00",
-  "version": "3.1.2"
+  "time": "2025-09-30T23:45:12.123+02:00",
+  "version": "5.0.0"
 }
 ```
 
-The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
+The `schedule` array shows every time the switch is turned on or off. The `minutes` array shows values per minute containing the price (received as input), whether that minute is on or off, the start time of the minute and the amount per kWh that is saved on minutes that are turned off, compared to the next recovery period.
 
 
 
 ### Output saved in context
 
-The `schedule` and the `hours` arrays from Output 3 are both saved to the nodes context in an object with key `lastPlan`. This may be used in the plan for the next day, for example if an off-period at the end of one day continues into the next day. In that case, the `saving` values for the last hours in the day have to be recalculated, since the next hour on is changed when the new day is calculated.
+The `schedule` and the `minutes` arrays from Output 3 are both saved to the nodes context in an object with key `lastPlan`. This may be used in the plan for the next day, for example if an off-period at the end of one day continues into the next day. In that case, the `saving` values for the last minutes in the day have to be recalculated, since the next minute on is changed when the new day is calculated.
 
 You can see the saved data if you select the node in Node-RED, and view "Context data", and refresh the Node context.
 
@@ -181,14 +192,14 @@ You can see the saved data if you select the node in Node-RED, and view "Context
 
 ## Algorithm
 
-The calculation that decides what hours to turn off works as follows:
+The calculation that decides what minutes to turn off works as follows:
 
-1. A matrix (x \* y) is created where x is the number of hours we have price information for, and y is the configured maximum number of hours to turn off in a sequence.
-2. The matrix is filled with how much you save by turning off hour x for y hours.
-3. The matrix is processed calculating all possibilities for turning off a number of hours in a sequence and by that saving money. In this process all non-saving sequences are discarded. Also, if the average saving per hour is less than what you have configured as minimum amount to save per kWh, the sequence is discarded.
+1. A matrix (x \* y) is created where x is the number of minutes we have price information for, and y is the configured maximum number of minutes to turn off in a sequence.
+2. The matrix is filled with how much you save by turning off minute x for y minutes.
+3. The matrix is processed calculating all possibilities for turning off a number of minutes in a sequence and by that saving money. In this process all non-saving sequences are discarded. Also, if the average saving per minute is less than what you have configured as minimum amount to save per kWh, the sequence is discarded.
 4. The remaining sequences are sorted by how much that is saved, in descending order.
-5. Next, a table with one value per hour is created, with all hours in state "on".
-6. Then the saving sequences is applied one by one, turning off the hours in each sequence, discarding sequences that lead to any violation of the rules set by the config.
+5. Next, a table with one value per minute is created, with all minutes in state "on".
+6. Then the saving sequences is applied one by one, turning off the minutes in each sequence, discarding sequences that lead to any violation of the rules set by the config.
 7. When all sequences are processed, the resulting table shows a pretty good savings plan, that in most cases would be the optimal plan.
 
 I say "in most cases", because there is a chance that a group of two or more sequences combined can give a better plan than a single sequence preceeding those two, but where the selection of the one sequence causes the group to be discarded. If anyone encounters this situation, I would be happy to receive the price data set, and try to improve the algorithm even further.
@@ -259,6 +270,10 @@ Are you using [MagicMirror](https://magicmirror.builders/)? Are you also using [
 The purple lines show savings per kWh.
 
 Read more about this in the [MMM-Tibber documentation](https://github.com/ottopaulsen/MMM-Tibber#show-savings).
+
+::: danger Quarterly hour prices
+The MagicMirror integration has not been prepared for quarterly hour prices.
+:::
 
 ## Viewer
 

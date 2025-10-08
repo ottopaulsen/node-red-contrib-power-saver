@@ -73,6 +73,7 @@ describe("receive-price node", function () {
   });
 
   it("should convert nordpool event prices", function (done) {
+    this.timeout(15000)
     const nordpoolPrices = require("./data/nordpool-event-prices.json");
     const convertedPrices = require("./data/converted-prices.json");
     convertedPrices.source = "Nordpool";

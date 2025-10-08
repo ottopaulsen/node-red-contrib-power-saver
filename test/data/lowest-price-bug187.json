@@ -3,17 +3,17 @@
     {
       "time": "2023-11-30T00:00:00.000+01:00",
       "value": false,
-      "countHours": 2
+      "countMinutes": 120
     },
     {
       "time": "2023-11-30T02:00:00.000+01:00",
       "value": true,
-      "countHours": 3
+      "countMinutes": 180
     },
     {
       "time": "2023-11-30T05:00:00.000+01:00",
       "value": false,
-      "countHours": 43
+      "countMinutes": 2580
     }
   ],
   "hours": [

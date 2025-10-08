@@ -1,371 +1,102 @@
 {
   "schedule": [
-    {
-      "time": "2021-10-11T00:00:00.000+02:00",
-      "value": false,
-      "countHours": 2
-    },
-    {
-      "time": "2021-10-11T02:00:00.000+02:00",
-      "value": true,
-      "countHours": 6
-    },
-    {
-      "time": "2021-10-11T08:00:00.000+02:00",
-      "value": false,
-      "countHours": 3
-    },
-    {
-      "time": "2021-10-11T11:00:00.000+02:00",
-      "value": true,
-      "countHours": 7
-    },
-    {
-      "time": "2021-10-11T18:00:00.000+02:00",
-      "value": false,
-      "countHours": 2
-    },
-    {
-      "time": "2021-10-11T20:00:00.000+02:00",
-      "value": true,
-      "countHours": 2
-    },
-    {
-      "time": "2021-10-11T22:00:00.000+02:00",
-      "value": false,
-      "countHours": 3
-    },
-    {
-      "time": "2021-10-12T01:00:00.000+02:00",
-      "value": true,
-      "countHours": 8
-    },
-    {
-      "time": "2021-10-12T09:00:00.000+02:00",
-      "value": false,
-      "countHours": 3
-    },
-    {
-      "time": "2021-10-12T12:00:00.000+02:00",
-      "value": true,
-      "countHours": 4
-    },
-    {
-      "time": "2021-10-12T16:00:00.000+02:00",
-      "value": false,
-      "countHours": 3
-    },
-    {
-      "time": "2021-10-12T19:00:00.000+02:00",
-      "value": true,
-      "countHours": 3
-    },
-    {
-      "time": "2021-10-12T22:00:00.000+02:00",
-      "value": false,
-      "countHours": 1
-    },
-    {
-      "time": "2021-10-12T23:00:00.000+02:00",
-      "value": true,
-      "countHours": 1
-    },
-    {
-      "time": "2021-10-13T00:00:00.000+02:00",
-      "value": false,
-      "countHours": null
-    }
-  ],
-  "hours": [
-    {
-      "start": "2021-10-11T00:00:00.000+02:00",
-      "price": 0.2494,
-      "onOff": false,
-      "saving": 0.0395
-    },
-    {
-      "start": "2021-10-11T01:00:00.000+02:00",
-      "price": 0.2209,
-      "onOff": false,
-      "saving": 0.011
-    },
-    {
-      "start": "2021-10-11T02:00:00.000+02:00",
-      "price": 0.2099,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T03:00:00.000+02:00",
-      "price": 0.219,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T04:00:00.000+02:00",
-      "price": 0.2614,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T05:00:00.000+02:00",
-      "price": 0.4426,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T06:00:00.000+02:00",
-      "price": 0.5433,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T07:00:00.000+02:00",
-      "price": 0.5667,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T08:00:00.000+02:00",
-      "price": 0.5847,
-      "onOff": false,
-      "saving": 0.0723
-    },
-    {
-      "start": "2021-10-11T09:00:00.000+02:00",
-      "price": 0.5762,
-      "onOff": false,
-      "saving": 0.0638
-    },
-    {
-      "start": "2021-10-11T10:00:00.000+02:00",
-      "price": 0.5391,
-      "onOff": false,
-      "saving": 0.0267
-    },
-    {
-      "start": "2021-10-11T11:00:00.000+02:00",
-      "price": 0.5124,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T12:00:00.000+02:00",
-      "price": 0.504,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T13:00:00.000+02:00",
-      "price": 0.5057,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T14:00:00.000+02:00",
-      "price": 0.5066,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T15:00:00.000+02:00",
-      "price": 0.5136,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T16:00:00.000+02:00",
-      "price": 0.5143,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T17:00:00.000+02:00",
-      "price": 0.5306,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T18:00:00.000+02:00",
-      "price": 0.5534,
-      "onOff": false,
-      "saving": 0.0043
-    },
-    {
-      "start": "2021-10-11T19:00:00.000+02:00",
-      "price": 0.5511,
-      "onOff": false,
-      "saving": 0.002
-    },
-    {
-      "start": "2021-10-11T20:00:00.000+02:00",
-      "price": 0.5491,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T21:00:00.000+02:00",
-      "price": 0.5485,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-11T22:00:00.000+02:00",
-      "price": 0.5481,
-      "onOff": false,
-      "saving": 0.1285
-    },
-    {
-      "start": "2021-10-11T23:00:00.000+02:00",
-      "price": 0.5218,
-      "onOff": false,
-      "saving": 0.1022
-    },
-    {
-      "start": "2021-10-12T00:00:00.000+02:00",
-      "price": 0.4533,
-      "onOff": false,
-      "saving": 0.0337
-    },
-    {
-      "start": "2021-10-12T01:00:00.000+02:00",
-      "price": 0.4196,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T02:00:00.000+02:00",
-      "price": 0.4037,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T03:00:00.000+02:00",
-      "price": 0.3829,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T04:00:00.000+02:00",
-      "price": 0.4555,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T05:00:00.000+02:00",
-      "price": 0.4721,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T06:00:00.000+02:00",
-      "price": 0.4903,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T07:00:00.000+02:00",
-      "price": 0.5028,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T08:00:00.000+02:00",
-      "price": 0.5163,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T09:00:00.000+02:00",
-      "price": 0.5264,
-      "onOff": false,
-      "saving": 0.0193
-    },
-    {
-      "start": "2021-10-12T10:00:00.000+02:00",
-      "price": 0.5346,
-      "onOff": false,
-      "saving": 0.0275
-    },
-    {
-      "start": "2021-10-12T11:00:00.000+02:00",
-      "price": 0.5224,
-      "onOff": false,
-      "saving": 0.0153
-    },
-    {
-      "start": "2021-10-12T12:00:00.000+02:00",
-      "price": 0.5071,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T13:00:00.000+02:00",
-      "price": 0.5045,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T14:00:00.000+02:00",
-      "price": 0.5024,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T15:00:00.000+02:00",
-      "price": 0.5038,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T16:00:00.000+02:00",
-      "price": 0.5118,
-      "onOff": false,
-      "saving": 0.0063
-    },
-    {
-      "start": "2021-10-12T17:00:00.000+02:00",
-      "price": 0.5111,
-      "onOff": false,
-      "saving": 0.0056
-    },
-    {
-      "start": "2021-10-12T18:00:00.000+02:00",
-      "price": 0.5108,
-      "onOff": false,
-      "saving": 0.0053
-    },
-    {
-      "start": "2021-10-12T19:00:00.000+02:00",
-      "price": 0.5055,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T20:00:00.000+02:00",
-      "price": 0.5042,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T21:00:00.000+02:00",
-      "price": 0.5259,
-      "onOff": true,
-      "saving": null
-    },
-    {
-      "start": "2021-10-12T22:00:00.000+02:00",
-      "price": 0.5282,
-      "onOff": false,
-      "saving": 0.003
-    },
-    {
-      "start": "2021-10-12T23:00:00.000+02:00",
-      "price": 0.5252,
-      "onOff": true,
-      "saving": null
-    }
-  ],
+  {
+    "time": "2021-10-11T00:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 120
+  },
+  {
+    "time": "2021-10-11T02:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 360
+  },
+  {
+    "time": "2021-10-11T08:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 180
+  },
+  {
+    "time": "2021-10-11T11:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 420
+  },
+  {
+    "time": "2021-10-11T18:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 180
+  },
+  {
+    "time": "2021-10-11T21:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 60
+  },
+  {
+    "time": "2021-10-11T22:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 180
+  },
+  {
+    "time": "2021-10-12T01:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 60
+  },
+  {
+    "time": "2021-10-12T02:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 60
+  },
+  {
+    "time": "2021-10-12T03:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 360
+  },
+  {
+    "time": "2021-10-12T09:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 180
+  },
+  {
+    "time": "2021-10-12T12:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 60
+  },
+  {
+    "time": "2021-10-12T13:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 60
+  },
+  {
+    "time": "2021-10-12T14:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 120
+  },
+  {
+    "time": "2021-10-12T16:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 180
+  },
+  {
+    "time": "2021-10-12T19:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 180
+  },
+  {
+    "time": "2021-10-12T22:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 60
+  },
+  {
+    "time": "2021-10-12T23:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 60
+  },
+  {
+    "time": "2021-10-13T00:00:00.000+02:00",
+    "value": false,
+    "countMinutes": null
+  }
+],
+
   "source": "Tibber",
   "config": {
     "maxHoursToSaveInSequence": 3,

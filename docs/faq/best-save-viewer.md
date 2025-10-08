@@ -4,6 +4,10 @@ sidebar: auto
 
 # Best Save Viewer
 
+::: danger Quarterly hour prices
+The Best Save Viewer has not been prepared for quarterly hour prices.
+:::
+
 ## Tool
 
 Below is a tool you can use to look at how the Best Save node is working.

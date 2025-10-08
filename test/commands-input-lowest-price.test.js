@@ -21,7 +21,7 @@ describe("send command as input to lowest price", () => {
   });
 
   it("should send schedule on command", function (done) {
-    const flow = makeFlow(3, 2);
+    const flow = makeFlow(180, 2);
     let pass = 1;
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -47,7 +47,7 @@ describe("send command as input to lowest price", () => {
   });
 
   it("should send output on command", function (done) {
-    const flow = makeFlow(3, 2, true);
+    const flow = makeFlow(180, 2, true);
     let pass = 1;
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -61,7 +61,7 @@ describe("send command as input to lowest price", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).to.equal(true);
+            expect(equalPlan(result, msg.payload, false)).to.equal(true);
             n1.receive({ payload: { commands: { sendOutput: true }, time: "2021-10-11T11:00:05.000+02:00" } });
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
@@ -89,12 +89,12 @@ describe("send command as input to lowest price", () => {
     });
   });
   it("should reset on command", function (done) {
-    const flow = makeFlow(3, 2, true);
+    const flow = makeFlow(180, 2, true);
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        expect(equalPlan(result, msg.payload)).to.equal(true);
+        expect(equalPlan(result, msg.payload, false)).to.equal(true);
         n1.receive({ payload: { commands: { reset: true } } });
         n1.warn.should.be.calledWithExactly("No price data");
         done();
@@ -106,7 +106,7 @@ describe("send command as input to lowest price", () => {
   });
 
   it("should replan on command", function (done) {
-    const flow = makeFlow(3, 2, true);
+    const flow = makeFlow(180, 2, true);
     let pass = 1;
     helper.load(lowestPrice, flow, function () {
       const n1 = helper.getNode("n1");
@@ -119,12 +119,12 @@ describe("send command as input to lowest price", () => {
         switch (pass) {
           case 1:
             pass++;
-            expect(equalPlan(result, msg.payload)).to.equal(true);
+            expect(equalPlan(result, msg.payload, false)).to.equal(true);
             n1.receive({ payload: { commands: { replan: true }, time: "2021-10-11T00:00:05.000+02:00" } });
             break;
           case 2:
             pass++;
-            expect(equalPlan(result, msg.payload)).to.equal(true);
+            expect(equalPlan(result, msg.payload, false)).to.equal(true);
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
               expect(countOn).to.equal(0);

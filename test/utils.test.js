@@ -10,12 +10,12 @@ const {
   getSavings,
   countAtEnd,
   makeSchedule,
-  makeScheduleFromHours,
+  makeScheduleFromMinutes,
   fillArray,
   extractPlanForDate,
   isSameDate,
 } = require("../src/utils");
-const testResult = require("./data/best-save-result.json");
+const testResult = require("./data/schedule-from-minutes-test-data.json");
 
 describe("utils", () => {
   it("can test boolean config", () => {
@@ -45,7 +45,7 @@ describe("utils", () => {
     expect(getDiffToNextOn(values, [true, true, false], 50)).to.eql([-100, 150, -20]);
     expect(getDiffToNextOn(values, [true, true, false])).to.eql([-100, 170, 0]);
   });
-  it("calculates savings for hours off", () => {
+  it("calculates savings for minutes off", () => {
     const values = [1, 10, 8, 5];
     expect(getSavings(values, [true, true, true, true], 99)).to.eql([null, null, null, null]);
     expect(getSavings(values, [false, false, false, false], 99)).to.eql([-98, -89, -91, -94]);
@@ -73,20 +73,21 @@ describe("utils", () => {
       "2021-06-20T08:00:00+02:00",
       "2021-06-20T09:00:00+02:00",
     ];
-    expect(makeSchedule(onOff, startTimes)).to.eql([
-      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
-      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
-      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
+    const endTime = "2021-06-20T10:00:00+02:00";
+    expect(makeSchedule(onOff, startTimes, endTime)).to.eql([
+      { time: "2021-06-20T05:00:00+02:00", value: false, countMinutes: 120 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countMinutes: 120 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countMinutes: 60 },
     ]);
-    expect(makeSchedule(onOff, startTimes, true)).to.eql([
-      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 },
-      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
-      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
+    expect(makeSchedule(onOff, startTimes, endTime, true)).to.eql([
+      { time: "2021-06-20T05:00:00+02:00", value: false, countMinutes: 120 },
+      { time: "2021-06-20T07:00:00+02:00", value: true, countMinutes: 120 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countMinutes: 60 },
     ]);
-    expect(makeSchedule(onOff, startTimes, false)).to.eql([
-      { time: "2021-06-20T05:00:00+02:00", value: false, countHours: 2 }, // Right???
-      { time: "2021-06-20T07:00:00+02:00", value: true, countHours: 2 },
-      { time: "2021-06-20T09:00:00+02:00", value: false, countHours: 1 },
+    expect(makeSchedule(onOff, startTimes, endTime, false)).to.eql([
+      { time: "2021-06-20T05:00:00+02:00", value: false, countMinutes: 120 }, // Right???
+      { time: "2021-06-20T07:00:00+02:00", value: true, countMinutes: 120 },
+      { time: "2021-06-20T09:00:00+02:00", value: false, countMinutes: 60 },
     ]);
   });
 
@@ -108,7 +109,7 @@ describe("utils", () => {
 
   it("can extract plan for a date", () => {
     const plan = {
-      hours: [
+      minutes: [
         {
           price: 0.3,
           onOff: true,
@@ -150,7 +151,7 @@ describe("utils", () => {
       ],
     };
     const part1 = {
-      hours: [
+      minutes: [
         {
           price: 0.3,
           onOff: true,
@@ -172,7 +173,7 @@ describe("utils", () => {
       ],
     };
     const part2 = {
-      hours: [
+      minutes: [
         {
           price: 0.2,
           onOff: false,
@@ -199,14 +200,9 @@ describe("utils", () => {
     };
     expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).to.eql(part1);
   });
-  it("Can make schedule from hours", () => {
-    const hours = cloneDeep(testResult.hours);
-    const schedule = makeScheduleFromHours(hours, null);
-    const resultToValidate = schedule.map((s) => ({ time: s.time, value: s.value }));
-    resultToValidate.push({
-      time: "2021-06-20T02:50:00.470+02:00",
-      value: false,
-    });
-    expect(resultToValidate).to.eql(testResult.schedule);
+  it("Can make schedule from minutes", () => {
+    const minutes = cloneDeep(testResult.minutes);
+    const schedule = makeScheduleFromMinutes(minutes, null);
+    expect(schedule).to.eql(testResult.schedule);
   });
 });

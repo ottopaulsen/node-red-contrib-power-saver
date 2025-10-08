@@ -7,13 +7,13 @@ next: ./ps-strategy-heat-capacitor.md
 
 ![ps-strategy-lowest-price](../images/node-ps-strategy-lowest-price.png)
 
-Strategy node to turn on power the hours when the price is lowest during a given period, and turn off the other hours.
+Strategy node to turn on power the times when the price is lowest during a given period, and turn off the other times.
 
 
 
 ## Description
 
-The node can work on a specific period from 1 to 24 hours during a 24 hour period. Inside this period, you can decide how many hours that shall be on. The rest of the period will be off. Outside the period, you can select that the output shall be either on or off. You can also decide that the hours on shall be consecutive (one continuous period) or spread around in multiple on-periods.
+The node can work on a specific period during a 24 hour period. Inside this period, you can decide how much time that shall be on. The rest of the period will be off. Outside the period, you can select that the output shall be either on or off. You can also decide that the time on shall be consecutive (one continuous period) or spread around in multiple on-periods.
 
 
 
@@ -23,21 +23,23 @@ The node can work on a specific period from 1 to 24 hours during a 24 hour perio
 
 | Value                  | Description                                                                                                                                                                                    |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| From time              | The start time of the selected period.                                                                                                                                                         |
-| To time                | The end time of the selected period.                                                                                                                                                           |
-| Hours on               | The number of hours that shall be turned on.                                                                                                                                                   |
+| From hour              | Hour of the start time of the selected period.      |
+| From minute              | Minutes of the start time of the selected period.      |
+| To hour              | Hour of the end time of the selected period.      |
+| To minute              | Minutes of the end time of the selected period.      |
+| Minutes on               | The number of minutes that shall be turned on.    |
 | Max price              | If set, does not turn on if price is over this limit. See below.                                                                                                                               |
 | Consecutive on-period  | Check this if you need the on-period to be consecutive.                                                                                                                                        |
 | Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
 | Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
 | Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
-| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last hour there is price data for.           |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last period there is price data for.           |
 | Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                     |
 
-If you want to use a period of 24 hours, set the From Time and To Time to the same value. The time you select is significant in the way that it decides which 24 hours that are considered when finding the hours with lowest price.
+Set the period you want to use by setting start time (From hour and From minute) and end time (To hour and To minute). If you want to use a period of 24 hours, set the same start time and end time. The time you select is significant in the way that it decides which 24 hours that are considered when finding the periods with lowest price.
 
 ::: tip Example with Consecutive On-Period
-One example to need a consecutive on-period can be if you want to control the washing machine. Let's say it needs 3 hours, and you want it to run between 22:00 and 06:00. Set `From Time = 22:00`, `To Time = 06:00` and check the `Consecutive On-Period` flag. This will turn on the cheapest 3-hour period from 22:00 to 06:00.
+One example to need a consecutive on-period can be if you want to control the washing machine. Let's say it needs 3 hours, and you want it to run between 22:00 and 06:00. Set `From hour = 22`, `From minute = 00`, `To hour = 06`, `To minute = 00`, `Minutes on = 180` and check the `Consecutive On-Period` flag. This will turn on the cheapest 3-hour period (180 minutes) from 22:00 to 06:00.
 
 
 
@@ -45,7 +47,7 @@ NB! It is not recommended to run the washing machine when you are sleeping or aw
 :::
 
 ::: tip Example with non-consecutive on-period
-If you have heating cables in the driveway, you may need them to be on only for a few hours every day, for example 4 hours, but it may not be important when this is. Then set `From Time = 00:00`, `To Time = 00:00` and **un-check** the `Consecutive On-Period` flag. This will turn on the 4 cheapest hours during the whole day, and off the rest.
+If you have heating cables in the driveway, you may need them to be on only for a few hours every day, for example 4 hours, but it may not be important when this is. Then set `From hour = 00`, `From minute = 00`, `To hour = 00`, `To minute = 00`, `Minutes on = 240` and **un-check** the `Consecutive On-Period` flag. This will turn on the 4 cheapest hours (240 minutes) during the whole day, and off the rest.
 
 You can use any time for start and end, but it is a good idea to use `00:00`, since the prices normally comes for this period.
 :::
@@ -59,13 +61,13 @@ If you select a period for example from 10:00 to 02:00, it may not be possible t
 :::
 
 ::: warning Max price
-Use this to set a maximum price for hours to be on.
+Use this to set a maximum price for periods to be on.
 Leave this blank if you don't understand how it works.!
-If this is set, the number of hours on may be less then configured for `Hours on`.
+If this is set, the number of minutes on may be less then configured for `Minutes on`.
 
-If `Consecutive on period` is off (not checked), hours will be turned on only if the price is below or equal to `Max price`.
+If `Consecutive on period` is off (not checked), periods will be turned on only if the price is below or equal to `Max price`.
 
-If `Consecutive on period` is on (checked), hours will be turned on only if the average price for the whole period is below or equal to `Max price`. If the average price for the hours that are supposed to be turned on is higher then `Max price`, then **all hours** will be off. This is to make sure that if the switch (or whatever you have connected) is turned on, it is turned on the whole period.
+If `Consecutive on period` is on (checked), the period will be turned on only if the average price for the whole period is below or equal to `Max price`. If the average price for the period that is supposed to be turned on is higher then `Max price`, then **the whole period** will be off. This is to make sure that if the switch (or whatever you have connected) is turned on, it is turned on the whole period.
 
 If you leave `Max price` blank, it has no effect.
 :::
@@ -81,9 +83,11 @@ The following config values can be changed dynamically:
 | Name                               | Description                                              |
 | ---------------------------------- | -------------------------------------------------------- |
 | `contextStorage`                   | String                                                   |
-| `fromTime`                         | String with number, 2 digits, "00"-"23"                  |
-| `toTime`                           | String with number, 2 digits, "00"-"23"                  |
-| `hoursOn`                          | Number                                                   |
+| `fromHour`                         | String with number, 2 digits, "00"-"23"                  |
+| `fromMinute`                       | String with number, 2 digits, "00"-"59"                  |
+| `toHour`                           | String with number, 2 digits, "00"-"23"                  |
+| `toMinute`                         | String with number, 2 digits, "00"-"59"                  |
+| `minutesOn`                        | Number                                                   |
 | `maxPrice`                         | Number                                                   |
 | `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
 | `outputIfNoSchedule`               | Legal values: `true`, `false`                            |
@@ -136,74 +140,89 @@ Example of output:
 ```json
 {
   "schedule": [
+  {
+    "time": "2025-10-07T00:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 420
+  },
+  {
+    "time": "2025-10-07T07:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 300
+  },
+  {
+    "time": "2025-10-07T12:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 1200
+  },
+  {
+    "time": "2025-10-08T08:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 60
+  },
+  {
+    "time": "2025-10-08T09:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 480
+  },
+  {
+    "time": "2025-10-08T17:00:00.000+02:00",
+    "value": true,
+    "countMinutes": 240
+  },
+  {
+    "time": "2025-10-08T21:00:00.000+02:00",
+    "value": false,
+    "countMinutes": 180
+  }
+],
+  "minutes": [
     {
-      "time": "2021-12-10T00:00:00.000+01:00",
-      "value": "true"
-    },
-    {
-      "time": "2021-12-10T04:00:00.000+01:00",
-      "value": true
-    },
-    {
-      "time": "2021-12-10T10:00:00.000+01:00",
-      "value": false
-    },
-    {
-      "time": "2021-12-10T18:00:00.000+01:00",
-      "value": "true"
-    },
-    {
-      "time": "2021-12-11T04:00:00.000+01:00",
-      "value": true
-    },
-    {
-      "time": "2021-12-11T10:00:00.000+01:00",
-      "value": false
-    },
-    {
-      "time": "2021-12-11T18:00:00.000+01:00",
-      "value": "true"
-    }
-  ],
-  "hours": [
-    {
-      "price": 0.4778,
-      "onOff": "true",
-      "start": "2021-12-10T00:00:00.000+01:00",
+      "start": "2025-10-07T00:00:00.000+02:00",
+      "price": 0.1875,
+      "onOff": false,
       "saving": null
     },
     {
-      "price": 0.4828,
-      "onOff": "true",
-      "start": "2021-12-10T01:00:00.000+01:00",
+      "start": "2025-10-07T00:01:00.000+02:00",
+      "price": 0.1875,
+      "onOff": false,
       "saving": null
     },
     //...
     {
-      "price": 0.6514,
-      "onOff": "true",
-      "start": "2021-12-11T23:00:00.000+01:00",
+      "start": "2025-10-07T16:39:00.000+02:00",
+      "price": 0.2578,
+      "onOff": false,
       "saving": null
     }
   ],
   "source": "Tibber",
   "config": {
-    "contextStorage": "default",
-    "fromTime": "04",
-    "toTime": "18",
-    "hasChanged": false,
-    "hoursOn": "06",
+    "fromHour": "00",
+    "fromMinute": "00",
+    "toHour": "00",
+    "toMinute": "00",
+    "minutesOn": 300,
+    "maxPrice": null,
     "doNotSplit": false,
     "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": "true",
-    "outputOutsidePeriod": "true"
+    "outputIfNoSchedule": false,
+    "outputOutsidePeriod": false,
+    "outputValueForOn": true,
+    "outputValueForOff": false,
+    "outputValueForOntype": "bool",
+    "outputValueForOfftype": "bool",
+    "override": "auto",
+    "contextStorage": "default",
+    "hasChanged": false
   },
-  "time": "2021-09-30T23:45:12.123+02:00",
-  "version": "3.1.2"
+  "time": "2025-10-07T18:43:15.921+02:00",
+  "version": "5.0.0"
 }
 ```
 
-The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off, the start time of the hour and the amount per kWh that is saved on hours that are turned off, compared to the next hour that is on.
+The `schedule` array shows every time the switch is turned on or off. The `minutes` array shows values per minute containing the price (received as input), whether that minute is on or off, the start time of the minute and the amount per kWh that is saved on minutes that are turned off, compared to the next minute that is on.
 
 
 
@@ -258,7 +277,7 @@ This is an alternative to fetching new prices and send as input.
 
 ### Multiple nodes works together
 
-You can use multiple nodes simultanously, for different periods, for example if you want more hours on one part of the day than another part, or to make sure there are at least some hours on during each period. In this case set up one Lowest Price node for each period and
+You can use multiple nodes simultanously, for different periods, for example if you want more time on one part of the day than another part, or to make sure there are at least some time on during each period. In this case set up one Lowest Price node for each period and
 combine the output from them into one schedule using the Schedule Merger node:
 
 ![Combine two lowest price nodes](../images/combine-two-lowest-price.png)
@@ -267,11 +286,11 @@ combine the output from them into one schedule using the Schedule Merger node:
 
 ### Highest price
 
-If you want to find the `x` hours with the highest prices, do as follows:
+If you want to find the `x` minutes with the highest prices, do as follows:
 
-1. Calculate `y` as the total number of hours in the period. For example, if the period is from `08:00` to `20:00`, then `y = 12`.
-2. Configure `Hours On = y - x`, so if `x = 4`, then `Hours On = 12 - 4 = 8`.
-3. Use **Output 2** to get a signal when you have the hours with the highest prices. Just remember that the value sent to output 2 is `false`, not `true` as it is on output 1.
+1. Calculate `y` as the total number of minutes in the period. For example, if the period is from `08:00` to `20:00`, then `y = 720`.
+2. Configure `Minutes on = y - x`, so if `x = 240`, then `Minutes on = 720 - 240 = 480`.
+3. Use **Output 2** to get a signal when you have the periods with the highest prices.
 
 ###
 
