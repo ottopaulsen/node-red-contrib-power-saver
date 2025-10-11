@@ -30,7 +30,7 @@ apex_config:
   yaxis:
     - id: price
       show: true
-      decimalsInFloat: 1
+      decimalsInFloat: 2
       floating: false
       forceNiceScale: true
       extend_to: end
@@ -52,15 +52,15 @@ series:
     extend_to: now
     name: Pris
     type: area
-    curve: smooth
+    curve: stepline
     color: tomato
     show:
       legend_value: false
     data_generator: |
-      return entity.attributes.hours.map((entry) => {
+      return entity.attributes.minutes.map((entry) => {
         return [new Date(entry.start), entry.price];
       });
-  - entity: sensor.accumulated_consumption_current_hour_xxxx
+  - entity: sensor.accumulated_consumption_current_hour_xxx
     yaxis_id: usage
     type: column
     name: Forbruk
@@ -68,13 +68,14 @@ series:
       func: max
     show:
       legend_value: false
+    curve: smooth
   - entity: sensor.powersaver
     data_generator: |
-      return entity.attributes.hours.map((entry) => {
+      return entity.attributes.minutes.map((entry) => {
         return [new Date(entry.start), entry.onOff];
       });
     yaxis_id: powersaver
-    name: ' '
+    name: " "
     type: area
     color: rgb(0, 255, 0)
     opacity: 0.2
