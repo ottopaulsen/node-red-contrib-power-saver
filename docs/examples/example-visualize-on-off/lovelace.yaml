@@ -60,7 +60,7 @@ series:
       return entity.attributes.minutes.map((entry) => {
         return [new Date(entry.start), entry.price];
       });
-  - entity: sensor.accumulated_consumption_current_hour_ole_nordgaards_veg_59
+  - entity: sensor.accumulated_consumption_current_hour_xxx
     yaxis_id: usage
     type: column
     name: Forbruk

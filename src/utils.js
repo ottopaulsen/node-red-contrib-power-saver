@@ -105,8 +105,8 @@ function loadDayData(node, date) {
     schedule: [],
     minutes: [],
   };
-  if(!saved.minutes) {
-    saved.minutes = []
+  if(!res.minutes) {
+    res.minutes = []
   }
   return res;
 }
