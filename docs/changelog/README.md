@@ -7,7 +7,14 @@ sidebarDepth: 1
 
 List the most significant changes.
 
-## 5.0.0
+## 5.0.0 beta.1
+
+ - Fix bug `dataDayBefore.minutes is not iterable`
+ - Update example for Lovelace Visualization. That example also has a function node that reduces the number of entries in the minutes array, that can be useful other places too.
+
+Please note that if you have nodes using the hours array on output 3, you need to change those to use the minutes array.
+
+## 5.0.0 beta.0
 
 ::: danger BREAKING CHANGE
 This is a breaking change.
