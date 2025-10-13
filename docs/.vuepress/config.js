@@ -83,6 +83,7 @@ export default defineUserConfig({
             "/examples/example-visualize-on-off/example-visualize-on-off.md",
             "/examples/example-grid-tariff-capacity-part.md",
             "/examples/example-stromstotte.md",
+            "/examples/example-reduce-minutes-array.md",
           ],
         },
       ],
