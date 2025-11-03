@@ -8,7 +8,9 @@ const { fillArray } = require("./utils");
  *
  * @param {*} onOff Array of on/off values
  * @param {*} maxMinutesOff Max number of minutes that can be off in a sequence
- * @param {*} minMinutesOff Min number of minutes that must be on after maxOff is reached
+ * @param {*} minMinutesOff Min number of minutes that must be off to bother
+ * @param {*} recoveryPercentage Percent of off-time that must be on after being off
+ * @param {*} recoveryMaxMinutes Maximum recovery time in minutes
  * @returns
  */
 function isOnOffSequencesOk(
@@ -16,17 +18,23 @@ function isOnOffSequencesOk(
   maxMinutesOff,
   minMinutesOff,
   recoveryPercentage,
-  recoveryMaxMinutes = null,
-  minSaving) {
+  recoveryMaxMinutes = null) {
   let offCount = 0;
   let onCount = 0;
   let reachedMaxOff = false;
-  let reachedMinOn = minMinutesOff === 0;
-  let minOnAfterOff = null;
+  let reachedMinOn = true;
+  let reachedMinOff = null;
+  let minOnAfterOff = 0;
   for (let i = 0; i < onOff.length; i++) {
     if (!onOff[i]) {
       if (maxMinutesOff === 0 || reachedMaxOff) {
         return false;
+      }
+      if(!reachedMinOn) {
+        return false;
+      }
+      if(reachedMinOff === null) {
+        reachedMinOff = false;
       }
       offCount++;
       onCount = 0;
@@ -34,19 +42,29 @@ function isOnOffSequencesOk(
         reachedMaxOff = true;
       }
       if (offCount >= minMinutesOff) {
-        reachedMinOn = true;
+        reachedMinOff = true;
       }
       const minRounded = Math.max(Math.round(offCount * recoveryPercentage / 100), 1)
       minOnAfterOff = Math.min(minRounded, recoveryMaxMinutes ?? minRounded)
+      if(i === onOff.length - 1) {
+        // If last minute, consider min reached
+        reachedMinOn = true;
+        reachedMinOff = true;
+      }
     } else {
+      if(reachedMinOff === false) {
+        return false;
+      }
       onCount++;
       if (onCount >= minOnAfterOff) {
         reachedMaxOff = false;
+        reachedMinOn = true;
       }
       offCount = 0;
+      reachedMinOff = null;
     }
   }
-  return reachedMinOn;
+  return reachedMinOn && !(reachedMinOff === false);
 }
 
 /**
