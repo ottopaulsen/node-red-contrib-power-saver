@@ -58,17 +58,7 @@
     {
       "time": "2021-06-20T02:33:00.000+02:00",
       "value": true,
-      "countMinutes": 3
-    },
-    {
-      "time": "2021-06-20T02:36:00.000+02:00",
-      "value": false,
-      "countMinutes": 1
-    },
-    {
-      "time": "2021-06-20T02:37:00.000+02:00",
-      "value": true,
-      "countMinutes": 1
+      "countMinutes": 5
     },
     {
       "time": "2021-06-20T02:38:00.000+02:00",
