@@ -59,6 +59,8 @@ function isOnOffSequencesOk(
       if (onCount >= minOnAfterOff) {
         reachedMaxOff = false;
         reachedMinOn = true;
+      } else {
+        reachedMinOn = false;
       }
       offCount = 0;
       reachedMinOff = null;

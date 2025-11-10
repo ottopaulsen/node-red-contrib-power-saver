@@ -19,6 +19,32 @@ describe("mostSavedStrategy", () => {
     expect(isOnOffSequencesOk(onOff, 3, 3, 100)).to.equal(false);
     expect(isOnOffSequencesOk(onOff, 3, 3, 50)).to.equal(true);
     expect(isOnOffSequencesOk(onOff, 3, 3, 50, 3)).to.equal(true);
+    expect(isOnOffSequencesOk(onOff, 3, 3, 100)).to.equal(false);
+    expect(isOnOffSequencesOk(onOff, 3, 3, 90)).to.equal(false);
+  });
+
+  it("evaluates a long onOff sequence correct", () => {
+    const minutesSetting = [
+      { count: 465, value: true },
+      { count: 75, value: false },
+      { count: 541, value: true },
+      { count: 74, value: false },
+      { count: 15, value: true },
+      { count: 75, value: false },
+      { count: 1335, value: true },
+      { count: 75, value: false },
+      { count: 315, value: true },
+    ];
+
+    const minutes = [];
+    minutesSetting.forEach((ms) => {
+      for (let i = 0; i < ms.count; i++) {
+        minutes.push(ms.value);
+      }
+    });
+
+    expect(isOnOffSequencesOk(minutes, 75, 15, 85)).to.equal(false);
+
   });
 
   it("saves correct hours", () => {

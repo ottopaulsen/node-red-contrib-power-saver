@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.0.beta.3
+
+ - Fix bug so recoveryPercentage is used properly
+
 ## 5.0.0.beta.2
 
  - Fix bug in Min minutes off
