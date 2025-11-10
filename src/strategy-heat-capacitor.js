@@ -80,9 +80,13 @@ module.exports = function (RED) {
       if (msg.payload.hasOwnProperty("priceData")) {
         if (node.hasOwnProperty("priceData")) {
           node.priceData = mergePriceData(node.priceData, msg.payload.priceData);
-          if (node.priceData.length > 72) node.priceData = node.priceData.slice(-72);
         } else {
           node.priceData = msg.payload.priceData;
+        }
+        if (node.priceData.length) {
+          const latestStart = DateTime.fromISO(node.priceData[node.priceData.length - 1].start);
+          const cutoff = latestStart.minus({ hours: 72 });
+          node.priceData = node.priceData.filter((entry) => DateTime.fromISO(entry.start) >= cutoff);
         }
       }
 
