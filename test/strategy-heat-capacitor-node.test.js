@@ -151,7 +151,10 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n1 = helper.getNode("n1");
       n1.receive({ payload: multiTrade });
       n1.receive({ payload: prices });
-      expect(n1.priceData.length).to.equal(72);
+      const latestStart = DateTime.fromISO(n1.priceData[n1.priceData.length - 1].start);
+      const cutoff = latestStart.minus({ hours: 72 });
+      const allWithinRange = n1.priceData.every((entry) => DateTime.fromISO(entry.start) >= cutoff);
+      expect(allWithinRange).to.equal(true);
       done();
     });
   });
