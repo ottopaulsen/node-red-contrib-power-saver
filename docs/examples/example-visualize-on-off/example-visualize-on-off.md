@@ -2,7 +2,7 @@
 
 The source of this example is made by Kim Storøy, and Otto Paulsen has written the documentation and made some changes to the files.
 
-![Lovelace image](./lovelace.jpg)
+![Lovelace image](./lovelace.png)
 
 ## Introduction
 

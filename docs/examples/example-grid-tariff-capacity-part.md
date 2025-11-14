@@ -790,7 +790,7 @@ const sensors = [
   { id: "sensor.ps_cap_consumption_now", value: "averageConsumptionNow", uom: "kW" },
 ];
 
-sensors.forEach((sensor) => {
+sensors.filter(s => s.value != null).forEach((sensor) => {
   const payload = {
     protocol: "http",
     method: "post",
@@ -946,15 +946,13 @@ const actions = [
     reduceWhenRecommended: true,
     minTimeOffSec: 300,
     payloadToTakeAction: {
-      domain: "climate",
-      service: "turn_off",
+      action: "climate.turn_off",
       target: {
         entity_id: ["climate.varme_gulv_gang"],
       },
     },
     payloadToResetAction: {
-      domain: "climate",
-      service: "turn_on",
+      action: "climate.turn_on",
       target: {
         entity_id: ["climate.varme_gulv_gang"],
       },
@@ -968,15 +966,13 @@ const actions = [
     reduceWhenRecommended: true,
     minTimeOffSec: 300,
     payloadToTakeAction: {
-      domain: "climate",
-      service: "turn_off",
+      action: "climate.turn_off",
       target: {
         entity_id: ["climate.varme_gulv_kjellerstue"],
       },
     },
     payloadToResetAction: {
-      domain: "climate",
-      service: "turn_on",
+      action: "climate.turn_on",
       target: {
         entity_id: ["climate.varme_gulv_kjellerstue"],
       },
@@ -990,15 +986,13 @@ const actions = [
     reduceWhenRecommended: true,
     minTimeOffSec: 30,
     payloadToTakeAction: {
-      domain: "switch",
-      service: "turn_off",
+      action: "switch.turn_off",
       target: {
         entity_id: ["switch.lys_kjokkenskap_switch"],
       },
     },
     payloadToResetAction: {
-      domain: "switch",
-      service: "turn_on",
+      action: "switch.turn_on",
       target: {
         entity_id: ["switch.lys_kjokkenskap_switch"],
       },

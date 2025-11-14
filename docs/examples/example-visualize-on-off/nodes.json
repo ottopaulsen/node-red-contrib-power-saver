@@ -1,88 +1,74 @@
 [
   {
-    "id": "eab799518168f5a3",
-    "type": "ha-entity",
+    "id": "a6c0472f7981fad2",
+    "type": "function",
     "z": "d938c47f.3398f8",
-    "name": "Info fra PS til HA",
-    "server": "ec4a12a1.b2be9",
-    "version": 2,
-    "debugenabled": false,
+    "name": "Reduce minutes count",
+    "func": "const minutes = []\nlet previousHour = \"\"\nlet previousSaving = null\nmsg.payload.minutes.forEach(m => {\n  const hour = m.start.substring(0, 13)\n  if (hour !== previousHour || m.saving !== previousSaving) {\n    minutes.push(m)\n    previousHour = hour\n    previousSaving = m.saving\n  }\n})\n\nmsg.payload.minutes = minutes\nmsg.payload.hours = minutes\n\nreturn msg;",
     "outputs": 1,
-    "entityType": "sensor",
-    "config": [
-      {
-        "property": "name",
-        "value": "Powersaver"
-      },
-      {
-        "property": "device_class",
-        "value": ""
-      },
-      {
-        "property": "icon",
-        "value": ""
-      },
-      {
-        "property": "unit_of_measurement",
-        "value": ""
-      },
-      {
-        "property": "state_class",
-        "value": ""
-      },
-      {
-        "property": "last_reset",
-        "value": ""
-      }
-    ],
-    "state": "payload",
-    "stateType": "str",
-    "attributes": [
-      {
-        "property": "Schedule",
-        "value": "payload.schedule",
-        "valueType": "msg"
-      },
-      {
-        "property": "Hours",
-        "value": "payload.hours",
-        "valueType": "msg"
-      },
-      {
-        "property": "Control",
-        "value": "payload.hours[0].onOff",
-        "valueType": "str"
-      },
-      {
-        "property": "Current",
-        "value": "payload.current",
-        "valueType": "str"
-      }
-    ],
-    "resend": true,
-    "outputLocation": "payload",
-    "outputLocationType": "none",
-    "inputOverride": "allow",
-    "outputOnStateChange": false,
-    "outputPayload": "",
-    "outputPayloadType": "str",
-    "x": 830,
-    "y": 630,
-    "wires": [[]]
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 640,
+    "y": 640,
+    "wires": [["cad33a63f66ef72e"]]
   },
   {
     "id": "cad33a63f66ef72e",
     "type": "function",
     "z": "d938c47f.3398f8",
     "name": "Convert true/false to 1/0",
-    "func": "msg.payload.hours.forEach(h => h.onOff = h.onOff ? \"1\" : \"0\")\nreturn msg;",
+    "func": "msg.payload.minutes.forEach(h => h.onOff = h.onOff ? \"1\" : \"0\")\nreturn msg;",
     "outputs": 1,
+    "timeout": "",
     "noerr": 0,
     "initialize": "",
     "finalize": "",
     "libs": [],
-    "x": 550,
-    "y": 630,
-    "wires": [["eab799518168f5a3", "37a23d88cfc668f2"]]
+    "x": 880,
+    "y": 640,
+    "wires": [["4e2452b33c54d90b"]]
+  },
+  {
+    "id": "4e2452b33c54d90b",
+    "type": "ha-sensor",
+    "z": "d938c47f.3398f8",
+    "name": "Info fra PS til HA",
+    "entityConfig": "eab799518168f5a3",
+    "version": 0,
+    "state": "payload",
+    "stateType": "str",
+    "attributes": [
+      { "property": "Schedule", "value": "payload.schedule", "valueType": "msg" },
+      { "property": "Hours", "value": "payload.hours", "valueType": "msg" },
+      { "property": "Control", "value": "payload.minutes[0].onOff", "valueType": "str" },
+      { "property": "Current", "value": "payload.current", "valueType": "str" },
+      { "property": "Minutes", "value": "payload.minutes", "valueType": "msg" }
+    ],
+    "inputOverride": "allow",
+    "outputProperties": [],
+    "x": 1100,
+    "y": 640,
+    "wires": [[]]
+  },
+  {
+    "id": "eab799518168f5a3",
+    "type": "ha-entity-config",
+    "server": "ec4a12a1.b2be9",
+    "deviceConfig": "",
+    "name": "sensor config for Info fra PS til HA",
+    "version": 6,
+    "entityType": "sensor",
+    "haConfig": [
+      { "property": "name", "value": "Powersaver" },
+      { "property": "device_class", "value": "" },
+      { "property": "icon", "value": "" },
+      { "property": "unit_of_measurement", "value": "" },
+      { "property": "state_class", "value": "" },
+      { "property": "last_reset", "value": "" }
+    ],
+    "resend": true
   }
 ]

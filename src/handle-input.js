@@ -44,29 +44,49 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   }
 
   const dates = [...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate()))];
+  const endTime = priceData[priceData.length - 1].end;
 
   // Load data from day before
   const dateDayBefore = DateTime.fromISO(dates[0]).plus({ days: -1 });
   const dataDayBefore = loadDataJustBefore(node, dateDayBefore);
-  const priceDataDayBefore = dataDayBefore.hours.map((h) => ({ value: h.price, start: h.start }));
+  const priceDataDayBefore = dataDayBefore.minutes.map((h) => ({ value: h.price, start: h.start }));
   const priceDataWithDayBefore = [...priceDataDayBefore, ...priceData];
 
   // Make plan
-  const startTimes = priceDataWithDayBefore.map((d) => d.start);
-  const prices = priceDataWithDayBefore.map((d) => d.value);
-  const onOff = doPlanning(node, priceDataWithDayBefore);
+  // const startTimes = priceDataWithDayBefore.map((d) => d.start);
+  // const prices = priceDataWithDayBefore.map((d) => d.value);
+  const priceDatePerMinute = priceDataWithDayBefore.flatMap((d, i) => {
+    const res = [];
+    const start = DateTime.fromISO(d.start);
+    const end = DateTime.fromISO(d.end ?? priceDataWithDayBefore[i + 1].start)
+    if(!end) {
+      console.error("End time is missing for price data entry", d);
+      return res
+    }
+    let minute = start
+    while (minute < end) {
+      res.push({ start: minute.toISO(), value: d.value });
+      minute = minute.plus({ minutes: 1 });
+    }
+    return res;
+  });
+  const startTimes = priceDatePerMinute.map((d) => d.start);
+  const prices = priceDatePerMinute.map((d) => d.value);
+
+
+  const onOff = doPlanning(node, priceDatePerMinute);
   const savings = calcSavings(prices, onOff);
-  const hours = startTimes.map((v, i) => ({
+  const minutes = startTimes.map((v, i) => ({
     start: startTimes[i],
     price: prices[i],
     onOff: onOff[i],
     saving: savings[i],
   }));
-  const schedule = makeSchedule(onOff, startTimes);
-  addLastSwitchIfNoSchedule(schedule, hours, config);
+  const schedule = makeSchedule(onOff, startTimes, endTime);
+  addLastSwitchIfNoSchedule(schedule, minutes, config);
 
   plan = {
-    hours,
+    minutes,
     schedule,
     source,
   };
@@ -119,22 +139,22 @@ function saveLastPriceData(node, priceData, source) {
 
 // Other
 
-function addLastSwitchIfNoSchedule(schedule, hours, config) {
-  if (!hours.length) {
+function addLastSwitchIfNoSchedule(schedule, minutes, config) {
+  if (!minutes.length) {
     return;
   }
   if (schedule.length > 0 && schedule[schedule.length - 1].value === config.outputIfNoSchedule) {
     return;
   }
-  const nextHour = DateTime.fromISO(hours[hours.length - 1].start).plus({ hours: 1 });
-  schedule.push({ time: nextHour.toISO(), value: config.outputIfNoSchedule, countHours: null });
+  const nexMinute = DateTime.fromISO(minutes[minutes.length - 1].start).plus({ minutes: 1 });
+  schedule.push({ time: nexMinute.toISO(), value: config.outputIfNoSchedule, countMinutes: null });
 }
 
 function loadDataJustBefore(node, dateDayBefore) {
   const dataDayBefore = loadDayData(node, dateDayBefore);
   return {
     schedule: [...dataDayBefore.schedule],
-    hours: [...dataDayBefore.hours],
+    minutes: [...dataDayBefore.minutes],
   };
 }
 

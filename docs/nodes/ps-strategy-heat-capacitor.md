@@ -9,6 +9,8 @@ next: ./ps-strategy-fixed-schedule.md
 
 A strategy for moving consumption from expensive to cheap periods utilizing climate entities.
 
+
+
 ## Description
 
 The heat capacitor strategy utilizes a large body of mass, like your house or cabin, to procure heat at a time where electricity is cheap, and divest at a time where electricity is expensive.
@@ -18,6 +20,8 @@ This is achieved by increasing the temperature setpoint of one or several climat
 It is a good application for cabins/heated storage spaces, as the entity never actually shuts off the climate entities and should therefore be rather safe to apply (still at you own risk :-)). It can also be used for you house, jacuzzi, and/or pool.
 
 ![Temperature profile vs. cost](../images/heat-capacitor-temperatureVsPrice.png)
+
+
 
 ## Configuration
 
@@ -39,7 +43,7 @@ The node consumes price information and outputs $\Delta T$ on its first output a
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### The impact of **Time +1C**
 
@@ -50,6 +54,8 @@ To get started, 90 minutes can be used for air heaters. Later, one can study the
 ### Setpoint
 
 The setpoint, $S_p$, indicates the ideal temperature.
+
+
 
 ### Max temperature adjustment
 
@@ -71,6 +77,8 @@ In the scenario where one should invest at 03:00 at night, and divest at 08:00 i
 - 03:00 to 08:00: $+1~^{\circ}C$
 - 08:00 to 09:00: $-2~^{\circ}C$
 - 09:00 and onward: $-1~^{\circ}C$
+
+
 
 ### Min Savings
 
@@ -99,6 +107,8 @@ All the variables in the config object are optional. You can send only those you
 The config sent like this will be valid until a new config is sent the same way, or until the flow is restarted. On a restart, the original config set up in the node will be used.
 
 When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done. You can send config and price data in the same message. Then both will be used.
+
+
 
 ## Output
 
@@ -132,6 +142,8 @@ The number of degrees which has been added or subtracted to the setpoint
 }
 ```
 
+
+
 ### Output 3
 
 The current schedule as well as some other information. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
@@ -152,6 +164,8 @@ The "trades" key contains a list of dictionaries indicating the trades:
 ```
 
 A trade consists of a `buy action` and a `sell action`. You buy electricity in the heating period, and sell it during the cooling period. `buyPrice` indicates the price at which the electricity is bought, while `sellPrice` indicates the price at which it is sold. This yields the `tradeValue`, which is how much is gained by moving one kWh from the expensive to the cheap period. If you run two 1kWh heaters and is able to turn it off from a 50% load for an hour, you earn 1kWh _ 2 _ 50% \* 0.2558 = 0.2558.
+
+
 
 The temperature variations from the setpoint are shown in a list at the end of the dictionary. The array has minute resolution, meaning that the first value is valid from 07.02.2022 00:00 till 00:01. As such, this is an indexed list, and the `buyIndex` and `sellIndex` values is a reference to the index in this array.
 
@@ -356,4 +370,4 @@ Full example:
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

@@ -3,27 +3,27 @@
     {
       "time": "2021-10-11T00:00:00.000+02:00",
       "value": false,
-      "countHours": 2
+      "countMinutes": 120
     },
     {
       "time": "2021-10-11T02:00:00.000+02:00",
       "value": true,
-      "countHours": 4
+      "countMinutes": 240
     },
     {
       "time": "2021-10-11T06:00:00.000+02:00",
       "value": false,
-      "countHours": 20
+      "countMinutes": 1200
     },
     {
       "time": "2021-10-12T02:00:00.000+02:00",
       "value": true,
-      "countHours": 4
+      "countMinutes": 240
     },
     {
       "time": "2021-10-12T06:00:00.000+02:00",
       "value": false,
-      "countHours": 18
+      "countMinutes": 1080
     }
   ],
   "hours": [

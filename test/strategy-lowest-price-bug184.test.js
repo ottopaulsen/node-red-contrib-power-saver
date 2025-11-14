@@ -29,9 +29,11 @@ describe("ps-strategy-lowest-price-bugs", function () {
         id: "n1",
         type: "ps-strategy-lowest-price",
         name: "test name",
-        fromTime: "20",
-        toTime: "05",
-        hoursOn: 4,
+        fromHour: "20",
+        fromMinute: 0,
+        toHour: "05",
+        toMinute: 0,
+        minutesOn: 240,
         maxPrice: null,
         doNotSplit: false,
         sendCurrentValueWhenRescheduling: true,
@@ -48,7 +50,7 @@ describe("ps-strategy-lowest-price-bugs", function () {
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
         result.current = msg.payload.current;
-        expect(msg).to.have.deep.property("payload", result);
+        expect(msg.payload).to.have.deep.property("schedule", result.schedule);
         n1.warn.should.not.be.called;
         done();
       });

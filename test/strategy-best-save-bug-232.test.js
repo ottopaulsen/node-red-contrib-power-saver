@@ -3,15 +3,15 @@ const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
-const prices = require("./data/best-save-overlap-prices.json");
-const result = require("./data/best-save-overlap-result.json");
+const input = require("./data/bug-232-input.json");
+const output = require("./data/bug-232-output.json");
 const { testPlan: plan, equalPlan } = require("./test-utils");
 const { makeFlow } = require("./strategy-best-save-test-utils");
 const { version } = require("../package.json");
 
 helper.init(require.resolve("node-red"));
 
-describe("ps-strategy-best-save overlapping savings", function () {
+describe("ps-strategy-best-save bug-232", function () {
   beforeEach(function (done) {
     helper.startServer(done);
   });
@@ -22,13 +22,14 @@ describe("ps-strategy-best-save overlapping savings", function () {
     });
   });
 
-  it.skip("should find the best prices when overlapping savings", function (done) {
-    const flow = makeFlow(12, 1, true);
-    flow[0].minSaving = 0.01;
-    const expected = cloneDeep(result);
-    expected.version = version;
-    expected.time = plan.time;
-    expected.source = "Tibber";
+  it.skip("find bug", function (done) {
+    const flow = makeFlow(output.config.maxMinutesOff, output.config.minMinutesOff, output.config.recoveryPercentage  , output.config.recoveryMaxMinutes);
+    flow[0].minSaving = output.config.minSaving;
+    flow[0].outputIfNoSchedule = output.config.outputIfNoSchedule;
+    const expected = cloneDeep(output);
+    expected.version = output.version;
+    expected.time = output.time;
+    expected.source = output.source;
     expected.current = false;
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
@@ -40,13 +41,13 @@ describe("ps-strategy-best-save overlapping savings", function () {
           done();
         }, 900);
       });
-      n1.receive({ payload: makePayload(prices, "2022-08-16T17:14:35.673+02:00") });
+      n1.receive({ payload: makePayload()})
     });
   });
 });
 
-function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
-  payload.time = time;
+function makePayload() {
+  const payload = cloneDeep(input);
+  payload.time = output.time;
   return payload;
 }

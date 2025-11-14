@@ -4,6 +4,10 @@ sidebar: auto
 
 # Best Save Viewer
 
+::: danger Quarterly hour prices
+The Best Save Viewer has not been prepared for quarterly hour prices.
+:::
+
 ## Tool
 
 Below is a tool you can use to look at how the Best Save node is working.
@@ -17,7 +21,7 @@ Then paste it here and see the result below:
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Explanation
 
@@ -33,6 +37,9 @@ Other information about the calculation etc.
 
 Here you can see some summary and average for each date in the data set. Hover over the column title for explanation.
 
+
+
+
 ### Hours
 
 Here is your dta represented per hour, as well as potential savings calculated by the tool. Negative numbers are hidden, but you can select to show them.
@@ -47,6 +54,8 @@ There are the same number of columns as you have configured as `Max in sequence`
 The cells show how much you will save per hWh by turning that hour off for `x` hours,
 starting at that hour. It is the difference between the price at that hour and the price x hours later. Click on a cell to see the cells used in the calculation.
 
+
+
 #### Saving for sequence of x hours
 
 These cells show how much you can save per kWh in average per hour by turning off a sequence of x hours starting at that hour. Click on a cell to see the cells used in the calculation.
@@ -59,7 +68,7 @@ If the number is black, it could be used, but only if all other criteria are sat
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Something seems wrong
 

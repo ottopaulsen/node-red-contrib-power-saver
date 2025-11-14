@@ -3,22 +3,34 @@ import { path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { searchPlugin } from "@vuepress/plugin-search";
 import { googleAnalyticsPlugin } from "@vuepress/plugin-google-analytics";
-
-import { defaultTheme, defineUserConfig } from "vuepress";
+import { viteBundler } from "@vuepress/bundler-vite"
+import { defaultTheme } from "@vuepress/theme-default";
+import { defineUserConfig } from "vuepress";
 
 export default defineUserConfig({
   base: "/",
+  bundler: viteBundler({
+    viteOptions: {
+      css: {
+        preprocessorOptions: {
+          scss: {
+            api: "modern-compiler"
+          }
+        }
+      }
+    }
+  }),
   description: "A Node-RED node collection to save money on hourly changing power prices",
   head: [
-    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "euro.png" }],
-    [
-      "script",
-      {
-        async: true,
-        crossorigin: "anonymous",
-        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
-      },
-    ],
+    ["link", { rel: "shortcut icon", type: "image/x-icon", href: "/euro.png" }],
+    // [
+    //   "script",
+    //   {
+    //     async: true,
+    //     crossorigin: "anonymous",
+    //     src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9857859182772006",
+    //   },
+    // ],
   ],
   lang: "en-US",
   plugins: [
@@ -71,6 +83,7 @@ export default defineUserConfig({
             "/examples/example-visualize-on-off/example-visualize-on-off.md",
             "/examples/example-grid-tariff-capacity-part.md",
             "/examples/example-stromstotte.md",
+            "/examples/example-reduce-minutes-array.md",
           ],
         },
       ],
@@ -79,4 +92,5 @@ export default defineUserConfig({
       "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   }),
+  title: "PowerSaver"
 });

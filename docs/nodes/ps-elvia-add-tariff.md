@@ -14,13 +14,15 @@ You need an Elvia API subscription key to use this node. See [configuration](#el
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Description
 
 When grid tariff changes from hour to hour, this should normally also be considered when finding the most favorable hours to use power. This node retrieves prices from Elvia, so if you are an elvia customer, you can put this node between the `ps-receive-price` node and the strategy nodes. When configured, it will add Elvia tariff to the power prices before doing the calculation:
 
 ![Elvia flow](../images/elvia-flow.png)
+
+
 
 ## Configuration
 
@@ -35,6 +37,8 @@ When your subscription is approved, you will find your subscription key in the
 The first time you use this node, you must create a `ps-elvia-config` entry. Click on the edit button to the right of Elvia Config:
 
 ![Elvia configuration](../images/elvia-config-no-config.png)
+
+
 
 Then enter the Elvia API subscription key:
 
@@ -53,7 +57,7 @@ The next time you use this node, you can select the same config as you created t
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Input
 
@@ -65,4 +69,4 @@ The output is the [common strategy input format](./strategy-input.md)
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

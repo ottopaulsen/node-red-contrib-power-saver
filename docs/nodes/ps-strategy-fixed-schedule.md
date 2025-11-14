@@ -11,6 +11,8 @@ Strategy node to set a fixed schedule.
 This can be used by itself, but it is also perfect to combine with other strategies
 and the [Schedule Merger](./ps-schedule-merger.md) node in order to force periods of the day either on or off.
 
+
+
 ## Description
 
 This strategy can be used to set a period of the day or the week fixed to on or off.
@@ -22,6 +24,8 @@ affected by another schedule, primarily the Fixed Schedule or Lowest Price strat
 Here is an example of how to combine it with the Lowest Price node:
 
 ![ps-strategy-fixed-schedule-example](../images/ps-strategy-fixed-schedule-example.png)
+
+
 
 ## Configuration
 
@@ -41,7 +45,7 @@ Here is an example of how to combine it with the Lowest Price node:
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic config
 
@@ -64,6 +68,8 @@ The following config values can be changed dynamically:
 
 See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
+
+
 ### Dynamic commands
 
 You can send dynamic commands to this node, for example to make it resend output.
@@ -76,6 +82,8 @@ The input is the [common strategy input format](./strategy-input.md).
 The node requires the price-data input in order to know what times to generate schedule for.
 This is especially important when merging the schedule using the Schedule Merger node,
 as all schedules that are merged must be for the exact same period.
+
+
 
 ## Output
 
@@ -97,7 +105,7 @@ The aoutput is similar to the output from the other strategy nodes.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Usage ideas
 
@@ -110,4 +118,4 @@ Lowest Price schedule using the Schedule Merger node with the `OR` function.
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

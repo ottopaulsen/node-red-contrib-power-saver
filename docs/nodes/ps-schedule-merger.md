@@ -7,6 +7,8 @@ next: ./ps-general-add-tariff.md
 
 ![ps-schedule-merger](../images/node-ps-schedule-merger.png)
 
+
+
 ## Description
 
 This node can be used to merge schedules from multiple strategy nodes, and create one resulting schedule. It can be useful for example to have multiple lowest price nodes to cover different periods of the day. Send all schedules as input to this node and get one schedule as output. It works for schedules from Lowest Price, Best Save and Fixed Schedule.
@@ -20,6 +22,8 @@ The schedules that are merged must be for the exact same period and have the exa
 ::: warning Different period
 If a schedule with prices for a different period is received, all saved schedules are deleted, and not used any more.
 :::
+
+
 
 The merge can be done using one of two functions:
 
@@ -42,6 +46,8 @@ sure the switch is turned on or off, and then merge the schedule from the Fixed 
 the schedule from for example the Lowest Price node, using the Schedule Merger node.
 :::
 
+
+
 ## Configuration
 
 ![Schedule Merger Config](../images/schedule-merger-config.png)
@@ -57,7 +63,7 @@ the schedule from for example the Lowest Price node, using the Schedule Merger n
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Dynamic config
 
@@ -76,6 +82,8 @@ The following config values can be changed dynamically:
 | `override`                         | Legal values: `"on"`, `"off"`, `"auto"`                  |
 
 See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
+
+
 
 ### Dynamic commands
 
@@ -113,6 +121,8 @@ You can make your own input by supplying a payload containing an hours array. Ex
 }
 ```
 
+
+
 ## Output
 
 There are three outputs. You use only those you need for your purpose.
@@ -129,21 +139,23 @@ A payload with the value set in config, default `false`, is sent to output 2 whe
 
 When valid input is received, and the schedule is recalculated (after the timeout), the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
+
+
 Example of output:
 
 ```json
 {
   "schedule": [
-    { "time": "2022-10-31T00:00:00.000+01:00", "value": true, "countHours": 5 },
-    { "time": "2022-10-31T05:00:00.000+01:00", "value": false, "countHours": 1 },
-    { "time": "2022-10-31T06:00:00.000+01:00", "value": true, "countHours": 3 },
-    { "time": "2022-10-31T09:00:00.000+01:00", "value": false, "countHours": 2 },
-    { "time": "2022-10-31T11:00:00.000+01:00", "value": true, "countHours": 21 },
-    { "time": "2022-11-01T08:00:00.000+01:00", "value": false, "countHours": 3 },
-    { "time": "2022-11-01T11:00:00.000+01:00", "value": true, "countHours": 3 },
-    { "time": "2022-11-01T14:00:00.000+01:00", "value": false, "countHours": 3 },
-    { "time": "2022-11-01T17:00:00.000+01:00", "value": true, "countHours": 7 },
-    { "time": "2022-11-02T00:00:00.000+01:00", "value": false, "countHours": null }
+    { "time": "2022-10-31T00:00:00.000+01:00", "value": true, "countMinutes": 300 },
+    { "time": "2022-10-31T05:00:00.000+01:00", "value": false, "countMinutes": 60 },
+    { "time": "2022-10-31T06:00:00.000+01:00", "value": true, "countMinutes": 180 },
+    { "time": "2022-10-31T09:00:00.000+01:00", "value": false, "countMinutes": 120 },
+    { "time": "2022-10-31T11:00:00.000+01:00", "value": true, "countMinutes": 1260 },
+    { "time": "2022-11-01T08:00:00.000+01:00", "value": false, "countMinutes": 180 },
+    { "time": "2022-11-01T11:00:00.000+01:00", "value": true, "countMinutes": 180 },
+    { "time": "2022-11-01T14:00:00.000+01:00", "value": false, "countMinutes": 180 },
+    { "time": "2022-11-01T17:00:00.000+01:00", "value": true, "countMinutes": 420 },
+    { "time": "2022-11-02T00:00:00.000+01:00", "value": false, "countMinutes": null }
   ],
   "hours": [
     {
@@ -215,11 +227,15 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `hours` array shows values per hour containing the price (received as input), whether that hour is on or off and the start time of the hour. The `saving` value is always `null`.
 
+
+
 ## Usage ideas
 
 ### Multiple Lowest Price
 
 If you want a switch to be on for example two of the cheapest hours between 00:00 and 08:00, and then the two cheapest hours between 12:00 and 20:00, you can do this by combining the schedule from two Lowest Price nodes, one for each of the mentioned periods. Merge the two using a Schedule Merger node with the `OR` function. Make sure to send `off` if no schedule for all nodes.
+
+
 
 ### Day-filter for strategy nodes
 

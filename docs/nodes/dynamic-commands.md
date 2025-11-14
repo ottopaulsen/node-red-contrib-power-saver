@@ -1,6 +1,3 @@
-###
-
-<AdsenseAdd type="øverst"/>
 
 # Dynamic commands
 
@@ -12,6 +9,8 @@ This applies to the following nodes:
 - Schedule Merger
 
 Commands can be sent together with config or price data. You can command multiple commands in one message, but then put them all in the same commands-object.
+
+
 
 ## Commands
 
@@ -45,7 +44,7 @@ When you do this, the current schedule is actually recalculated based on the las
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### reset
 
@@ -70,6 +69,8 @@ This operation cannot be undone.
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
 :::
 
+
+
 ### replan
 
 By sending this command, you can have the node read the last received prices from the context storage,
@@ -88,4 +89,4 @@ instead of fetching prices again.
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

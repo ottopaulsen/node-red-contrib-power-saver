@@ -2,13 +2,41 @@
 const { DateTime } = require("luxon");
 const { roundPrice, getDiffToNextOn } = require("./utils");
 
-function calculateOpportunities(prices, pattern, amount) {
-  //creating a price vector with minute granularity
-  const tempPrice = Array(prices.length * 60).fill(0);
-  for (let i = 0; i < prices.length; i++) {
-    tempPrice.fill(prices[i], i * 60, (i + 1) * 60);
-    //debugger;
+function buildMinutePriceVector(priceData) {
+  if (!priceData || priceData.length === 0) {
+    return { minutePrices: [], startDate: null };
   }
+
+  const sorted = [...priceData].sort(
+    (a, b) => DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis()
+  );
+
+  const minutePrices = [];
+  let previousIntervalMinutes = 60;
+
+  for (let i = 0; i < sorted.length; i++) {
+    const currentStart = DateTime.fromISO(sorted[i].start);
+    let intervalMinutes = previousIntervalMinutes;
+
+    if (sorted[i + 1]) {
+      intervalMinutes = DateTime.fromISO(sorted[i + 1].start).diff(currentStart, "minutes").minutes;
+    } else if (sorted[i].end) {
+      intervalMinutes = DateTime.fromISO(sorted[i].end).diff(currentStart, "minutes").minutes;
+    }
+
+    intervalMinutes = Math.max(1, Math.round(intervalMinutes));
+    previousIntervalMinutes = intervalMinutes;
+
+    for (let m = 0; m < intervalMinutes; m++) {
+      minutePrices.push(sorted[i].value);
+    }
+  }
+
+  return { minutePrices, startDate: DateTime.fromISO(sorted[0].start) };
+}
+
+function calculateOpportunities(pricesPerMinute, pattern, amount) {
+  const tempPrice = pricesPerMinute;
 
   //Calculate weighted pattern
   const weight = amount / pattern.reduce((a, b) => a + b, 0); //last calculates the sum of all numbers in the pattern
@@ -16,8 +44,9 @@ function calculateOpportunities(prices, pattern, amount) {
 
   //Calculating procurement opportunities. Sliding the pattern over the price vector to find the price for procuring
   //at time t
-  const dot = (a, b) => a.map((x, i) => a[i] * b[i]).reduce((m, n) => m + n);
-  const procurementOpportunities = Array(prices.length * 60 - pattern.length + 1);
+  const dot = (a, b) => a.map((x, i) => a[i] * b[i]).reduce((m, n) => m + n, 0);
+  const procurementLength = Math.max(tempPrice.length - pattern.length + 1, 0);
+  const procurementOpportunities = Array(procurementLength);
   for (let i = 0; i < procurementOpportunities.length; i++) {
     procurementOpportunities[i] = dot(weightedPattern, tempPrice.slice(i, i + pattern.length));
   }
@@ -232,8 +261,7 @@ function runBuySellAlgorithm(
   maxTempAdjustment,
   minSavings
 ) {
-  const prices = [...priceData.map((pd) => pd.value)];
-  const startDate = DateTime.fromISO(priceData[0].start);
+  const { minutePrices, startDate } = buildMinutePriceVector(priceData);
 
   //pattern for how much power is procured/sold when.
   //This has, for now, just a flat acquisition/divestment profile
@@ -243,8 +271,8 @@ function runBuySellAlgorithm(
   const sellPattern = Array(sellDuration).fill(1);
 
   //Calculate what it will cost to procure/sell 1 kWh as a function of time
-  const buyPrices = calculateOpportunities(prices, buyPattern, 1);
-  const sellPrices = calculateOpportunities(prices, sellPattern, 1);
+  const buyPrices = calculateOpportunities(minutePrices, buyPattern, 1);
+  const sellPrices = calculateOpportunities(minutePrices, sellPattern, 1);
 
   //Find dates for when to procure/sell
   const buySell = findBestBuySellPattern(buyPrices, buyPattern.length, sellPrices, sellPattern.length);

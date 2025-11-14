@@ -2,19 +2,19 @@
   "payload": {
     "schedule": [
       {
-        "time": "2021-12-15T00:00:00+01:00",
+        "time": "2021-12-15T00:00:00.000+01:00",
         "value": false,
-        "countHours": 22
+        "countMinutes": 1320
       },
       {
-        "time": "2021-12-15T22:00:00+01:00",
+        "time": "2021-12-15T22:00:00.000+01:00",
         "value": true,
-        "countHours": 3
+        "countMinutes": 180
       },
       {
-        "time": "2021-12-16T01:00:00+01:00",
+        "time": "2021-12-16T01:00:00.000+01:00",
         "value": false,
-        "countHours": 23
+        "countMinutes": 1380
       }
     ],
     "hours": [
@@ -311,9 +311,11 @@
     "config": {
       "hasChanged": false,
       "contextStorage": "default",
-      "fromTime": "22",
-      "toTime": "08",
-      "hoursOn": 3,
+      "fromHour": "22",
+      "fromMinute": 0,
+      "toHour": "08",
+      "toMinute": 0,
+      "minutesOn": 180,
       "maxPrice": null,
       "doNotSplit": true,
       "sendCurrentValueWhenRescheduling": true,

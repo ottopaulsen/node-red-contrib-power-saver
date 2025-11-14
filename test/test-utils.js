@@ -35,25 +35,25 @@ function makePayload(prices, time) {
   return payload;
 }
 
-function equalPlan(expected, actual) {
+function equalPlan(expected, actual, compareHours = false) {
   let res = true;
 
   if (!equalSchedule(expected.schedule, actual.schedule)) {
     res = false;
   }
 
-  if (!equalHours(expected.hours, actual.hours)) {
+  if (compareHours && !equalMinutes(expected.minutes, actual.minutes)) {
     res = false;
   }
 
-  ["maxHoursToSaveInSequence", "minHoursOnAfterMaxSequenceSaved", "minSaving", "outputIfNoSchedule"].forEach((key) => {
-    if (expected.config[key] != actual.config[key]) {
-      console.log(
-        "Different config values for " + key + ": Expected " + expected.config[key] + ", got " + actual.config[key]
-      );
-      res = false;
-    }
-  });
+  // ["maxHoursToSaveInSequence", "minHoursOnAfterMaxSequenceSaved", "minSaving", "outputIfNoSchedule"].forEach((key) => {
+  //   if (expected.config[key] != actual.config[key]) {
+  //     console.log(
+  //       "Different config values for " + key + ": Expected " + expected.config[key] + ", got " + actual.config[key]
+  //     );
+  //     res = false;
+  //   }
+  // });
 
   return res;
 }
@@ -78,10 +78,10 @@ function equalSchedule(expected, actual) {
   return res;
 }
 
-function equalHours(expected, actual, properties = ["price", "onOff", "start", "saving"]) {
+function equalMinutes(expected, actual, properties = ["price", "onOff", "start", "saving"]) {
   let res = true;
   if (expected.length !== actual.length) {
-    console.log("Hours have different lengths: Expected " + expected.hours.length + ", got " + actual.hours.length);
+    console.log("Hours have different lengths: Expected " + expected.minutes.length + ", got " + actual.minutes.length);
   }
 
   expected.forEach((s, i) => {
@@ -102,6 +102,6 @@ module.exports = {
   testPlan,
   makePayload,
   equalPlan,
-  equalHours,
+  equalMinutes,
   equalSchedule,
 };

@@ -20,7 +20,7 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   let output3 = {
     payload: {
       schedule: plan.schedule,
-      hours: plan.hours,
+      minutes: plan.minutes,
       source: plan.source,
       config,
       time: planFromTime.toISO(),
@@ -77,7 +77,7 @@ function runSchedule(node, schedule, time, currentSent = false) {
     node.log("Switching " + onOff + " in " + wait + " milliseconds");
     const statusMessage = `${remainingSchedule.length} changes - ${
       remainingSchedule[0].value ? "on" : "off"
-    } at ${nextTime.toLocaleString(DateTime.TIME_SIMPLE)}`;
+    } at ${nextTime.toFormat("HH:mm")}`;
     node.status({ fill: "green", shape: "dot", text: statusMessage });
     return setTimeout(() => {
       sendSwitch(node, entry.value);
@@ -85,7 +85,7 @@ function runSchedule(node, schedule, time, currentSent = false) {
     }, wait);
   } else {
     const message = "No schedule";
-    node.warn(message);
+    // node.warn(message);
     node.status({ fill: "yellow", shape: "dot", text: message });
     if (!currentSent) {
       sendSwitch(node, node.outputIfNoSchedule);

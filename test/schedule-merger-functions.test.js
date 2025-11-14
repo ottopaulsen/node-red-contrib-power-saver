@@ -10,16 +10,16 @@ describe("schedule-merger-functions", () => {
     const node = useNodeMock();
     const msg = { payload: cloneDeep(bestSaveResult) };
     msg.payload.strategyNodeId = "1";
-    msg.payload.hours[0].onOff = false;
+    msg.payload.minutes[0].onOff = false;
     saveSchedule(node, msg);
     expect(node.context().get()["1"]).to.eql(msg.payload);
 
     msg.payload.strategyNodeId = "2";
-    msg.payload.hours[0].onOff = true;
+    msg.payload.minutes[0].onOff = true;
     saveSchedule(node, msg);
     expect(node.context().get()["2"]).to.eql(msg.payload);
-    expect(node.context().get()["1"].hours[0].onOff).to.equal(false);
-    expect(node.context().get()["2"].hours[0].onOff).to.equal(true);
+    expect(node.context().get()["1"].minutes[0].onOff).to.equal(false);
+    expect(node.context().get()["2"].minutes[0].onOff).to.equal(true);
   });
 
   it("mergeSchedule", () => {
@@ -28,7 +28,7 @@ describe("schedule-merger-functions", () => {
       messages[ds] = {
         payload: {
           strategyNodeId: ds,
-          hours: mergeData[ds],
+          minutes: mergeData[ds],
         },
       };
     });

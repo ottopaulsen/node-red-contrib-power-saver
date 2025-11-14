@@ -7,6 +7,70 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.0.beta.3
+
+ - Implement minute support in Heat Capacitor
+ - Fix bug so recoveryPercentage is used properly
+
+## 5.0.0.beta.2
+
+ - Fix bug in Min minutes off
+
+## 5.0.0 beta.1
+
+ - Fix bug `dataDayBefore.minutes is not iterable`
+ - Update example for Lovelace Visualization. That example also has a function node that reduces the number of entries in the minutes array, that can be useful other places too.
+
+Please note that if you have nodes using the hours array on output 3, you need to change those to use the minutes array.
+
+## 5.0.0 beta.0
+
+::: danger BREAKING CHANGE
+This is a breaking change.
+The Best Save and Lowest Price nodes will require reconfiguration to work properly.
+See the documentation for details.
+
+**Bugs to be expected**
+This is a very early release with support for 15 minutes intervals.
+You should expect to find bugs. Please report using github issues. Please also report bugs in the documentation.
+Not all features are adapted to the 15 minutes price intervals and to the changes done in this version.
+:::
+
+ - Supports 15 minutes price intervals.
+ - Can schedule periods down to minute resolution.
+
+## 4.2.5
+
+ - Changes to Capacity part of grid tariff example, Update sensors node: Adding filter so onoy sensors that has a value are set, to avoid error message.
+ - Changes to Capacity part of grid tariff example, Reduction Actions node: Use `action` in stead of the deprecated `domain` and `service` to perform actions.
+ - Fix favicon in doc.
+ - Remove v2 doc.
+
+
+## 4.2.4
+
+ - Update dependencies
+
+## 4.2.3
+
+ -  Update dependencies
+
+## 4.2.2
+
+ - Remove ads from doc.
+ - Remove console.log msg from node.
+
+## 4.2.1
+
+ - Bugfix version 4.2.0. Change was not effective.
+
+## 4.2.0
+
+ - Format time on node status with HH:MM format. No AM/PM any more.
+ - Remove warning for `No schedule` in debug output.
+
+ 
+
 ## 4.1.5
 
  - Fixed bug based on [this issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues/184). Now correctly uses the value for `outputOutsidePeriod` when the planning period spans midnight, and there is no data available before midnight. In this case, the period from midnight to end time cannot be planned, so `outputIfNoSchedule` will be used until end time, and `outputOutsidePeriod` will be used from then. See the issue for more details.
@@ -14,6 +78,8 @@ List the most significant changes.
 ## 4.1.4
 
 - Update dependencies.
+
+
 
 ## 4.1.3
 
@@ -28,6 +94,8 @@ List the most significant changes.
 
 - Update dependencies
 
+
+
 ## 4.1.0
 
 - Fix bug with override function. It did not override longer than until next scheduled change. Now it overrides until set to auto again.
@@ -40,6 +108,8 @@ This is a major rewrite of some of the central code, in order to lay ground for 
 There are a couple of new nodes that open for many interesting use cases.
 A rewrite like this may lead to changes in behavior, intended or not.
 There are some breaking changes, but most users should not be affected by them.
+
+
 
 ### New features
 
@@ -61,6 +131,8 @@ There are some breaking changes, but most users should not be affected by them.
 - The `sentOnCommand` output has been removed.
 - Some bug-fixes may be regarded as breaking.
 - There may be some changes to what data that is stored in the context.
+
+
 
 ### Bug fixes
 
@@ -131,6 +203,8 @@ There are some breaking changes, but most users should not be affected by them.
 
 - Update github actions to deploy automatically to the npm library.
 
+
+
 ## 3.5.0
 
 - Select what context storage to store data in the node configuration.
@@ -177,6 +251,8 @@ There are some breaking changes, but most users should not be affected by them.
 - Fix node status so it says "No price data" when there is no price data available.
 - Added an FAQ section to the doc.
 
+
+
 ## 3.2.3
 
 - Remove unused imports
@@ -222,6 +298,8 @@ There are some breaking changes, but most users should not be affected by them.
 - Fix bug in Lowest Price node when period goes over midnight.
 - Fix documentation - lots of pages were failing.
 
+
+
 ## 3.0.7
 
 - Fix Nord Pool current state node input.
@@ -264,6 +342,8 @@ There are some breaking changes, but most users should not be affected by them.
 - New documentation.
 - Change node category to Power Saver.
 
+
+
 ## 2.1.0
 
 - Accept config as input, making it possible to dynamically change config
@@ -281,6 +361,8 @@ There are some breaking changes, but most users should not be affected by them.
 ## 2.0.3
 
 - Bugfix
+
+
 
 ## 2.0.2
 
@@ -301,3 +383,4 @@ There are some breaking changes, but most users should not be affected by them.
 ## 1.0.9
 
 - Fix bug in saving last hour of the day.
+

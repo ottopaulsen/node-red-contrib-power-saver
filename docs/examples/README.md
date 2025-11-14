@@ -1,4 +1,3 @@
-<AdsenseAdd type="øverst"/>
 
 # Examples
 
@@ -18,10 +17,12 @@
 
 [Strømstøtte (governmentall support)](./example-stromstotte)
 
+[Reduce minutes-array](./example-reduce-minutes-array)
+
 ## User provided examples
 
 [Output schedule to a sensor entity](./example-next-schedule-entity.md) (by Stefan)
 
 ###
 
-<AdsenseAdd type="nederst"/>
+

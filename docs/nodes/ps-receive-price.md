@@ -7,6 +7,8 @@ next: ./ps-schedule-merger.md
 
 ![ps-receive-price](../images/node-ps-receive-price.png)
 
+
+
 ## Description
 
 The `ps-receive-price` node is used to convert prices from Tibber or Nord Pool to the format used by the strategy nodes. It takes its input directly from the output of the following nodes (see details below):
@@ -17,11 +19,6 @@ The `ps-receive-price` node is used to convert prices from Tibber or Nord Pool t
 
 Output can be sent directly to the strategy nodes (for example `strategy-best-save` or `strategy-lowest-price`), or it can be sent via another node to add grid tariff or other additional costs before the calculation is done.
 
-::: warning Note
-In version 2 of `node-red-contrib-power-saver`, prices were received directly by the Power Saver node.
-This made it hard to add grid tariff before the calculation was done.
-That is why this is now a separate node.
-:::
 
 ## Configuration
 
@@ -29,7 +26,7 @@ There is no configuration except from node name.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ## Input
 
@@ -42,7 +39,7 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
   viewer {
     homes {
       currentSubscription {
-        priceInfo {
+        priceInfo(resolution: QUARTER_HOURLY) {
           today {
             total
             startsAt
@@ -57,6 +54,8 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
   }
 }
 ```
+
+
 
 Send the result from the `tibber-query` node with the query above directly to the `ps-receive-price` node. Make sure it is refreshed when new prices are ready. Prices for the next day are normally ready at 13:00, but refreshing every hour can be a good idea.
 
@@ -92,6 +91,8 @@ Go to the [Tibber Developer pages](https://developer.tibber.com/), sign in, and 
 }
 ```
 
+
+
 Then copy the `id` of the house you want to use prices for. It may look like this:
 
 ```
@@ -106,7 +107,7 @@ Then use the id in the following query, replacing the id with the one you found 
   viewer {
     home(id: "142c1670-ab43-2ab3-ba6d-723703a551e2") {
       currentSubscription{
-        priceInfo{
+        priceInfo(resolution: QUARTER_HOURLY) {
           today {
             total
             startsAt
@@ -126,7 +127,7 @@ This is the query you shall put in the `tibber-query` node.
 
 ###
 
-<AdsenseAdd type="artikkel"/>
+
 
 ### Nord Pool input
 
@@ -141,6 +142,8 @@ When using the `current state` node, configure the output properties to set `msg
 [See example with Nord Pool and `current state` node](../examples/example-nordpool-current-state.md)
 
 [See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
+
+
 
 ### Other input
 
@@ -161,10 +164,12 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
 }
 ```
 
+
+
 ## Output
 
 The output is the [common strategy input format](./strategy-input.md), so it can be sent directly to the strategy nodes, or via any `ps-xxx-add-tariff` node.
 
 ###
 
-<AdsenseAdd type="nederst"/>
+
