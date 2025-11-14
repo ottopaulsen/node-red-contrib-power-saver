@@ -140,21 +140,16 @@ module.exports = function (RED) {
 };
 
 function mergePriceData(priceDataA, priceDataB) {
-  const tempDict = {};
-  priceDataA.forEach((e) => {
-    tempDict[e.start] = e.value;
+  const mergedEntries = new Map();
+  priceDataA.concat(priceDataB).forEach((entry) => {
+    if (!entry?.start) {
+      return;
+    }
+    const existing = mergedEntries.get(entry.start);
+    mergedEntries.set(entry.start, Object.assign({}, existing, entry));
   });
-  priceDataB.forEach((e) => {
-    tempDict[e.start] = e.value;
-  });
 
-  const keys = Object.keys(tempDict);
-  keys.sort();
-
-  const res = Array(keys.length);
-  for (let i = 0; i < res.length; i++) {
-    res[i] = { value: tempDict[keys[i]], start: keys[i] };
-  }
-
-  return res;
+  return Array.from(mergedEntries.values()).sort(
+    (a, b) => DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis()
+  );
 }
