@@ -45,7 +45,8 @@ function isOnOffSequencesOk(
         reachedMinOff = true;
       }
       const minRounded = Math.max(Math.round(offCount * recoveryPercentage / 100), 1)
-      minOnAfterOff = Math.min(minRounded, recoveryMaxMinutes ?? minRounded)
+      const recMaxMin = recoveryMaxMinutes === "" ? null : recoveryMaxMinutes;
+      minOnAfterOff = Math.min(minRounded, recMaxMin ?? minRounded)
       if(i === onOff.length - 1) {
         // If last minute, consider min reached
         reachedMinOn = true;

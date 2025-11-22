@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.0.beta.4
+
+ - Fix bug on recovery time when recoveryMaxMinutes is not set
+
 ## 5.0.0.beta.3
 
  - Implement minute support in Heat Capacitor
