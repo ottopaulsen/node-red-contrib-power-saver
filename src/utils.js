@@ -48,7 +48,7 @@ function sortedIndex(valueArr) {
  *
  * @param {*} valueArr
  */
-function collapseArr(valueArr) {
+function collapseArr(valueArr, itemsEqual = (a, b) => a === b) {
   if (!Array.isArray(valueArr) || valueArr.length === 0) {
     return [];
   }
@@ -59,7 +59,7 @@ function collapseArr(valueArr) {
   let startIndex = 0;
 
   for (let i = 1; i < valueArr.length; i++) {
-    if (valueArr[i] === currentValue) {
+    if (itemsEqual(valueArr[i], currentValue)) {
       count++;
     } else {
       result.push({ value: currentValue, count, startIndex });
