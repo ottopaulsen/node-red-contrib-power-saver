@@ -1,3 +1,4 @@
+const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 
 function booleanConfig(value) {
@@ -24,19 +25,133 @@ function saveOriginalConfig(node, originalConfig) {
  * in sorted order. Highest value first.
  */
 function sortedIndex(valueArr) {
-  const mapped = valueArr.map((v, i) => {
-    return { i, value: v };
+  const collapsed = collapseArr(valueArr);
+  const withNeighbours = addNeighbours(collapsed);
+  const sortedCollapsed = sortCollapsed(withNeighbours);
+  const res = [];
+  sortedCollapsed.forEach((group) => {
+    const start = group.internalOrder === "asc" ? 0 : group.count - 1;;
+    const end = group.internalOrder === "asc" ? group.count : -1;
+    const step = group.internalOrder === "asc" ? 1 : -1;
+    for (let j = start; j !== end; j += step) {
+      res.push(group.startIndex + j);
+    }
   });
-  const sorted = mapped.sort((a, b) => {
-    if (a.value > b.value) {
+  return res;
+}
+
+
+/**
+ * The valueArr contains values.
+ * Collapse consecutive same values into one.
+ * Return array with the collapsed values and their counts.
+ *
+ * @param {*} valueArr
+ */
+function collapseArr(valueArr) {
+  if (!Array.isArray(valueArr) || valueArr.length === 0) {
+    return [];
+  }
+
+  const result = [];
+  let currentValue = valueArr[0];
+  let count = 1;
+  let startIndex = 0;
+
+  for (let i = 1; i < valueArr.length; i++) {
+    if (valueArr[i] === currentValue) {
+      count++;
+    } else {
+      result.push({ value: currentValue, count, startIndex });
+      currentValue = valueArr[i];
+      count = 1;
+      startIndex = i;
+    }
+  }
+
+  result.push({ value: currentValue, count, startIndex });
+
+  return result;
+}
+
+/**
+ * Takes a collapsed array (from collapseArr)
+ * and expands it back to the original value array.
+ *
+ * @param {*} collapsedArr
+ */
+function expandArr(collapsedArr) {
+  const result = [];
+
+  for (const { value, count } of collapsedArr) {
+    for (let i = 0; i < count; i++) {
+      result.push(value);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Take a collapsed array as input.
+ * Add a property 'before' and 'after' to each item:
+ * containing the value before and after in the original array,
+ * or null if there is none.
+ *
+ * @param {*} collapsedArr
+ */
+function addNeighbours(collapsedArr) {
+  if (!Array.isArray(collapsedArr)) return [];
+
+  return collapsedArr.map((item, index) => {
+    const before = index > 0 ? collapsedArr[index - 1].value : null;
+    const after = index < collapsedArr.length - 1 ? collapsedArr[index + 1].value : null;
+
+    return {
+      ...item,
+      before,
+      after,
+    };
+  });
+}
+
+/**
+ * Sort records in collapsed array by value descending,
+ * then by count ascending, then by best of before and after descending.
+ * If before or after is null, null goes first
+ */
+
+function sortCollapsed(collapsedArr) {
+  const sorted = cloneDeep(collapsedArr).sort((a, b) => {
+    // 1. value ascending
+    if (a.value !== b.value) {
+      return b.value - a.value;
+    }
+
+    // 2. count descending
+    if (a.count !== b.count) {
+      return a.count - b.count;
+    }
+
+    // 3. before or after
+    if (a.before === null || a.after === null) {
       return -1;
     }
-    if (a.value < b.value) {
+    if (b.before === null || b.after === null) {
       return 1;
     }
-    return 0;
+    const aBest = Math.max(a.before, a.after);
+    const bBest = Math.max(b.before, b.after);
+
+    return bBest - aBest;
   });
-  return sorted.map((p) => p.i);
+
+  // Set internal ordering for each line
+  sorted.forEach((item) => {
+    item.internalOrder =
+      item.after === null ? "desc" : item.before === null ? "asc" : item.after > item.before ? "desc" : "asc";
+  });
+  return sorted
 }
 
 /**
@@ -105,8 +220,8 @@ function loadDayData(node, date) {
     schedule: [],
     minutes: [],
   };
-  if(!res.minutes) {
-    res.minutes = []
+  if (!res.minutes) {
+    res.minutes = [];
   }
   return res;
 }
@@ -173,13 +288,15 @@ function makeSchedule(onOff, startTimes, endTime, initial = null) {
       res.push(prevRecord);
       prev = value;
     }
-    prevRecord.countMinutes = DateTime.fromISO(i + 1 < startTimes.length ? startTimes[i+1] : endTime).diff(DateTime.fromISO(prevRecord.time), "minutes").minutes;
+    prevRecord.countMinutes = DateTime.fromISO(i + 1 < startTimes.length ? startTimes[i + 1] : endTime).diff(
+      DateTime.fromISO(prevRecord.time),
+      "minutes"
+    ).minutes;
   }
   return res;
 }
 
 function addEndToLast(priceData) {
-
   // Add end property to the last record, that is the same as start + the difference between the last two starts, converted to ISO time
 
   if (priceData.length > 0) {
@@ -192,10 +309,7 @@ function addEndToLast(priceData) {
 }
 
 function makeScheduleFromMinutes(minutes, initial = null) {
-
-  addEndToLast(minutes)
-
-
+  addEndToLast(minutes);
 
   return makeSchedule(
     minutes.map((h) => h.onOff),
@@ -276,8 +390,11 @@ function getOutputForTime(schedule, time, defaultValue) {
 
 module.exports = {
   addEndToLast,
+  addNeighbours,
   booleanConfig,
   calcNullSavings,
+  collapseArr,
+  expandArr,
   countAtEnd,
   extractPlanForDate,
   fillArray,
@@ -298,6 +415,7 @@ module.exports = {
   msgHasPriceData,
   roundPrice,
   saveOriginalConfig,
+  sortCollapsed,
   sortedIndex,
   validationFailure,
 };
