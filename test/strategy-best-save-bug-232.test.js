@@ -5,8 +5,6 @@ const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const input = require("./data/bug-232-input.json");
 const output = require("./data/bug-232-output.json");
-const { testPlan: plan, equalPlan } = require("./test-utils");
-const { makeFlow } = require("./strategy-best-save-test-utils");
 const { version } = require("../package.json");
 
 helper.init(require.resolve("node-red"));

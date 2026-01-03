@@ -20,7 +20,7 @@ function handleOutput(node, config, plan, outputCommands, planFromTime) {
   let output3 = {
     payload: {
       schedule: plan.schedule,
-      minutes: plan.minutes,
+      minutes: collapseMinutes(plan.minutes),
       source: plan.source,
       config,
       time: planFromTime.toISO(),
@@ -74,7 +74,6 @@ function runSchedule(node, schedule, time, currentSent = false) {
     const nextTime = DateTime.fromISO(entry.time);
     const wait = nextTime - time;
     const onOff = entry.value ? "on" : "off";
-    node.log("Switching " + onOff + " in " + wait + " milliseconds");
     const statusMessage = `${remainingSchedule.length} changes - ${
       remainingSchedule[0].value ? "on" : "off"
     } at ${nextTime.toFormat("HH:mm")}`;
@@ -108,6 +107,42 @@ function strategyShallSendSchedule(msg, commands) {
     return commands.sendSchedule;
   }
   return msgHasConfig(msg) || msgHasPriceData(msg) || commands.replan;
+}
+
+function collapseMinutes(minutes) {
+  function itemsEqual(a, b) {
+    return a.price === b.price && a.onOff === b.onOff && a.saving === b.saving;
+  }
+
+
+
+
+  if (!Array.isArray(minutes) || minutes.length === 0) {
+    return [];
+  }
+
+  const result = [];
+  let currentValue = minutes[0];
+  let count = 1;
+  let startIndex = 0;
+
+  for (let i = 1; i < minutes.length; i++) {
+    if (itemsEqual(minutes[i], currentValue)) {
+      count++;
+    } else {
+      result.push({ ...currentValue, count, startIndex });
+      currentValue = minutes[i];
+      count = 1;
+      startIndex = i;
+    }
+  }
+
+  result.push({ ...currentValue, count, startIndex });
+
+  return result;
+
+
+
 }
 
 module.exports = {

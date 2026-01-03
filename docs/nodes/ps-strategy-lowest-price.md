@@ -181,20 +181,23 @@ Example of output:
       "start": "2025-10-07T00:00:00.000+02:00",
       "price": 0.1875,
       "onOff": false,
-      "saving": null
+      "saving": null,
+      "count": 15
     },
     {
-      "start": "2025-10-07T00:01:00.000+02:00",
-      "price": 0.1875,
+      "start": "2025-10-07T00:15:00.000+02:00",
+      "price": 0.1882,
       "onOff": false,
-      "saving": null
+      "saving": null,
+      "count": 15
     },
     //...
     {
-      "start": "2025-10-07T16:39:00.000+02:00",
+      "start": "2025-10-08T23:45:00.000+02:00",
       "price": 0.2578,
       "onOff": false,
-      "saving": null
+      "saving": null,
+      "count": 15
     }
   ],
   "source": "Tibber",

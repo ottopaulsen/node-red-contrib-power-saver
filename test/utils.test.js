@@ -3,6 +3,7 @@ const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 
 const {
+  addNeighbours,
   booleanConfig,
   sortedIndex,
   firstOn,
@@ -14,6 +15,9 @@ const {
   fillArray,
   extractPlanForDate,
   isSameDate,
+  collapseArr,
+  expandArr,
+  sortCollapsed,
 } = require("../src/utils");
 const testResult = require("./data/schedule-from-minutes-test-data.json");
 
@@ -205,4 +209,59 @@ describe("utils", () => {
     const schedule = makeScheduleFromMinutes(minutes, null);
     expect(schedule).to.eql(testResult.schedule);
   });
+
+  it("can collapse", () => {
+    const arr = [1, 1, 1, 2, 2, 3, 3, 3, 3, 1, 1, 2, 2];
+    const collapsed = collapseArr(arr);
+    expectedResult = [
+      { count: 3, startIndex: 0, value: 1 },
+      { count: 2, startIndex: 3, value: 2 },
+      { count: 4, startIndex: 5, value: 3 },
+      { count: 2, startIndex: 9, value: 1 },
+      { count: 2, startIndex: 11, value: 2 },
+    ];
+    expect(collapsed).to.eql(expectedResult);
+  });
+  it("can add before and after", () => {
+    collapsed = [
+      { count: 3, startIndex: 0, value: 1 },
+      { count: 2, startIndex: 3, value: 2 },
+      { count: 4, startIndex: 5, value: 3 },
+      { count: 2, startIndex: 9, value: 1 },
+      { count: 2, startIndex: 11, value: 2 },
+    ];
+    const bestAdded = addNeighbours(collapsed);
+    const expectedBest = [
+      { count: 3, startIndex: 0, value: 1, before: null, after: 2 },
+      { count: 2, startIndex: 3, value: 2, before: 1, after: 3 },
+      { count: 4, startIndex: 5, value: 3, before: 2, after: 1 },
+      { count: 2, startIndex: 9, value: 1, before: 3, after: 2 },
+      { count: 2, startIndex: 11, value: 2, before: 1, after: null },
+    ];
+    expect(bestAdded).to.eql(expectedBest);
+  });
+  it("can sort collapsed", () => {
+    const collapsed = [
+      { count: 3, startIndex: 0, value: 1, before: null, after: 2 },
+      { count: 2, startIndex: 3, value: 2, before: 1, after: 2 },
+      { count: 4, startIndex: 5, value: 2, before: 2, after: 2 },
+      { count: 4, startIndex: 9, value: 2, before: 2, after: 3 },
+      { count: 4, startIndex: 13, value: 3, before: 2, after: 1 },
+      { count: 2, startIndex: 17, value: 1, before: 3, after: 2 },
+      { count: 2, startIndex: 19, value: 2, before: 1, after: null },
+    ];
+    const sortedCollapsed = sortCollapsed(collapsed);
+    const expectedSorted = [
+      { count: 4, startIndex: 13, value: 3, before: 2, after: 1, internalOrder: "asc" },
+      { count: 2, startIndex: 19, value: 2, before: 1, after: null, internalOrder: "desc" },
+      { count: 2, startIndex: 3, value: 2, before: 1, after: 2, internalOrder: "desc" },
+      { count: 4, startIndex: 9, value: 2, before: 2, after: 3, internalOrder: "desc" },
+      { count: 4, startIndex: 5, value: 2, before: 2, after: 2, internalOrder: "asc" },
+      { count: 2, startIndex: 17, value: 1, before: 3, after: 2, internalOrder: "asc" },
+      { count: 3, startIndex: 0, value: 1, before: null, after: 2, internalOrder: "asc" },
+    ];
+    expect(sortedCollapsed).to.eql(expectedSorted);
+  });
+  it("can expand with index", () => {});
+  it("can do it all together", () => {});
 });
