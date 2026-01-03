@@ -135,23 +135,40 @@ Example of output:
     }
   ],
   "minutes": [
-    {
+  {
     "start": "2025-09-30T00:00:00.000+02:00",
     "price": 0.2129,
     "onOff": false,
-    "saving": 0.0631
+    "saving": 0.0631,
+    "count": 15
   },
   {
-    "start": "2025-09-30T00:01:00.000+02:00",
-    "price": 0.2129,
+    "start": "2025-09-30T00:15:00.000+02:00",
+    "price": 0.2127,
     "onOff": false,
-    "saving": 0.0631
+    "saving": 0.0633,
+    "count": 15
   },
   {
-    "start": "2025-09-30T00:02:00.000+02:00",
-    "price": 0.2129,
+    "start": "2025-09-30T00:30:00.000+02:00",
+    "price": 0.2231,
     "onOff": false,
-    "saving": 0.0631
+    "saving": 0.0529,
+    "count": 15
+  },
+  {
+    "start": "2025-09-30T00:45:00.000+02:00",
+    "price": 0.2235,
+    "onOff": false,
+    "saving": 0.0533,
+    "count": 15
+  },
+  {
+    "start": "2025-09-30T01:00:00.000+02:00",
+    "price": 0.2760,
+    "onOff": true,
+    "saving": null,
+    "count": 1380
   }, // ...
   ],
   "source": "Nord Pool",

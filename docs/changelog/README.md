@@ -10,7 +10,7 @@ List the most significant changes.
 ## 5.0.0.beta.5
 
  - Fix Lowest Price so on-periods are not split up if they can go together
- - Collapse minutes array on output 3
+ - Collapse minutes array on output 3 (NB! BREAKING CHANGE)
  - Remove log line "Switching off in x milliseconds"
 
 ## 5.0.0.beta.4
