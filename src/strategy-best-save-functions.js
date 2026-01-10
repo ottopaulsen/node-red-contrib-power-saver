@@ -13,12 +13,7 @@ const { fillArray } = require("./utils");
  * @param {*} recoveryMaxMinutes Maximum recovery time in minutes
  * @returns
  */
-function isOnOffSequencesOk(
-  onOff, 
-  maxMinutesOff,
-  minMinutesOff,
-  recoveryPercentage,
-  recoveryMaxMinutes = null) {
+function isOnOffSequencesOk(onOff, maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes = null) {
   let offCount = 0;
   let onCount = 0;
   let reachedMaxOff = false;
@@ -30,10 +25,10 @@ function isOnOffSequencesOk(
       if (maxMinutesOff === 0 || reachedMaxOff) {
         return false;
       }
-      if(!reachedMinOn) {
+      if (!reachedMinOn) {
         return false;
       }
-      if(reachedMinOff === null) {
+      if (reachedMinOff === null) {
         reachedMinOff = false;
       }
       offCount++;
@@ -44,16 +39,16 @@ function isOnOffSequencesOk(
       if (offCount >= minMinutesOff) {
         reachedMinOff = true;
       }
-      const minRounded = Math.max(Math.round(offCount * recoveryPercentage / 100), 1)
+      const minRounded = Math.max(Math.round((offCount * recoveryPercentage) / 100), 1);
       const recMaxMin = recoveryMaxMinutes === "" ? null : recoveryMaxMinutes;
-      minOnAfterOff = Math.min(minRounded, recMaxMin ?? minRounded)
-      if(i === onOff.length - 1) {
+      minOnAfterOff = Math.min(minRounded, recMaxMin ?? minRounded);
+      if (i === onOff.length - 1) {
         // If last minute, consider min reached
         reachedMinOn = true;
         reachedMinOff = true;
       }
     } else {
-      if(reachedMinOff === false) {
+      if (reachedMinOff === false) {
         return false;
       }
       onCount++;
@@ -123,12 +118,12 @@ function calculate(
     }
   }
 
-  savingsList.sort((a, b) => b.saving === a.saving ? a.count - b.count : b.saving - a.saving);
+  savingsList.sort((b, a) => (b.saving === a.saving ? a.count - b.count : b.saving - a.saving));
   let onOff = values.map((v) => true); // Start with all on
 
   // Find the best possible sequences
   while (savingsList.length > 0) {
-    const { minute, count } = savingsList[0];
+    const { minute, count } = savingsList[savingsList.length - 1];
     const onOffCopy = [...onOff];
     let alreadyTaken = false;
     for (let c = 0; c < count; c++) {
@@ -137,12 +132,11 @@ function calculate(
       }
       onOff[minute + c] = false;
     }
-    if (isOnOffSequencesOk([...dayBefore, ...onOff], maxMinutesOff, minMinutesOff, recoveryPercentage,
-      recoveryMaxMinutes) && !alreadyTaken) {
+    if ( isOnOffSequencesOk( [...dayBefore, ...onOff], maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes ) && !alreadyTaken ) {
       savingsList = savingsList.filter((s) => s.minute < minute || s.minute >= minute + count);
     } else {
       onOff = [...onOffCopy];
-      savingsList.splice(0, 1);
+      savingsList.pop();
     }
   }
   return onOff;
