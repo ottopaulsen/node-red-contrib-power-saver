@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.0.beta.6
+
+ - Best Save Performance improvement
+
 ## 5.0.0.beta.5
 
  - Fix Lowest Price so on-periods are not split up if they can go together
