@@ -7,6 +7,11 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.0.beta.7
+
+ - Fix the general add tariff node so it handles periods that are not exact hours
+ - Update doc for strategy input format
+
 ## 5.0.0.beta.6
 
  - Best Save Performance improvement

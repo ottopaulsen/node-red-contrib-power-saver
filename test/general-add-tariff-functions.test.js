@@ -1,42 +1,8 @@
 const expect = require("chai").expect;
 const { DateTime } = require("luxon");
-const { addTariffToPrices, buildAllHours } = require("../src/general-add-tariff-functions");
+const { addTariffToPrices } = require("../src/general-add-tariff-functions");
 
 describe("general-add-tariff-functions", () => {
-  it("can build all hours 6-22", () => {
-    const periods = [
-      { start: "06", value: 10 },
-      { start: "22", value: 11 },
-    ];
-    const result = [];
-    fillResult(result, 0, 5, 11);
-    fillResult(result, 6, 21, 10);
-    fillResult(result, 22, 23, 11);
-
-    expect(buildAllHours(console, periods)).to.eql(result);
-  });
-  it("can build all hours 0-22", () => {
-    const periods = [
-      { start: "00", value: 10 },
-      { start: "22", value: 11 },
-    ];
-    const result = [];
-    fillResult(result, 0, 21, 10);
-    fillResult(result, 22, 23, 11);
-
-    expect(buildAllHours(console, periods)).to.eql(result);
-  });
-  it("can build all hours 22-23", () => {
-    const periods = [
-      { start: "00", value: 10 },
-      { start: "23", value: 11 },
-    ];
-    const result = [];
-    fillResult(result, 0, 22, 10);
-    fillResult(result, 23, 23, 11);
-
-    expect(buildAllHours(console, periods)).to.eql(result);
-  });
   it("can add tariff to prices", () => {
     const config = {
       validFrom: "2021-12-01",
@@ -53,20 +19,25 @@ describe("general-add-tariff-functions", () => {
     fillResult(values, 22, 23, 21);
     const prices = values.map((_, i) => {
       const start = DateTime.fromISO(config.validFrom).plus({ hours: i }).toISO();
-      return {
+      const res = {
         start,
         value: 10,
       };
+      if(i === values.length -1) {
+        res.end = DateTime.fromISO(config.validFrom).plus({ hours: i +1 }).toISO();
+      }
+      return res
     });
-    const result = values.map((v, i) => {
+    const expected = values.map((v, i) => {
       const start = DateTime.fromISO(config.validFrom).plus({ hours: i }).toISO();
       return {
         start,
         value: v,
       };
     });
-    addTariffToPrices(console, config, prices);
-    expect(prices).to.eql(result);
+    expected[expected.length -1].end = "2021-12-02T00:00:00.000+01:00";
+    const result = addTariffToPrices(console, config, prices);
+    expect(result).to.eql(expected);
   });
   it("pass through when out of period", () => {
     const config = {

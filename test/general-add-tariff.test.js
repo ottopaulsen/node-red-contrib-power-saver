@@ -29,6 +29,7 @@ const prices = {
     {
       value: 2.2,
       start: "2021-10-12T01:00:00.000+02:00",
+      end: "2021-10-13T00:00:00.000+02:00",
     },
   ],
 };
@@ -77,6 +78,12 @@ describe("general-add-tariff node", function () {
     result.priceData[3].value = 2.0345;
     result.priceData[4].value = 2.9;
     result.priceData[5].value = 2.7;
+    result.priceData.push({
+      start: "2021-10-12T03:00:00.000+02:00",
+      value: 3.0,
+    });
+    result.priceData[6].end = result.priceData[5].end;
+    delete result.priceData[5].end;
     result.config = { abc: 123 };
     helper.load(addTariff, flow, function () {
       const n1 = helper.getNode("n1");
@@ -112,6 +119,12 @@ describe("general-add-tariff node", function () {
     result.priceData[3].value = 2.0345;
     result.priceData[4].value = 2.1;
     result.priceData[5].value = 2.2;
+    result.priceData.push({
+      start: "2021-10-12T03:00:00.000+02:00",
+      value: 2.2,
+    });
+    result.priceData[6].end = result.priceData[5].end;
+    delete result.priceData[5].end;
     result.config = { abc: 123 };
     helper.load(addTariff, flow, function () {
       const n1 = helper.getNode("n1");
@@ -150,6 +163,12 @@ describe("general-add-tariff node", function () {
     result.priceData[3].value = 2.0345;
     result.priceData[4].value = 2.1;
     result.priceData[5].value = 2.2;
+    result.priceData.push({
+      start: "2021-10-12T03:00:00.000+02:00",
+      value: 2.2,
+    });
+    result.priceData[6].end = result.priceData[5].end;
+    delete result.priceData[5].end;
     helper.load(addTariff, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -183,6 +202,12 @@ describe("general-add-tariff node", function () {
     result.priceData[3].value = 1.2345;
     result.priceData[4].value = 2.9;
     result.priceData[5].value = 2.7;
+    result.priceData.push({
+      start: "2021-10-12T03:00:00.000+02:00",
+      value: 3.0,
+    });
+    result.priceData[6].end = result.priceData[5].end;
+    delete result.priceData[5].end;
     helper.load(addTariff, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -220,6 +245,44 @@ describe("general-add-tariff node", function () {
         done();
       });
       n1.receive({ payload: prices });
+    });
+  });
+  it("should add to fixed price for 2 days", function (done) {
+    const singlePrice = {
+      priceData: [{ value: 0.5, start: "2026-01-12T00:00:00.000+01:00", end: "2026-01-14T00:00:00.000+01:00" }],
+      source: "Norgespris",
+    };
+
+    const flow = [
+      {
+        id: "n1",
+        type: "ps-general-add-tariff",
+        name: "Add tariff",
+        wires: [["n2"]],
+        periods: [
+          { start: "22", value: "0.307" },
+          { start: "06", value: "0.403" },
+        ],
+        days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
+      },
+      { id: "n2", type: "helper" },
+    ];
+    const result = cloneDeep(singlePrice);
+    result.priceData = [
+      { value: 0.807, start: "2026-01-12T00:00:00.000+01:00" },
+      { value: 0.903, start: "2026-01-12T06:00:00.000+01:00" },
+      { value: 0.807, start: "2026-01-12T22:00:00.000+01:00" },
+      { value: 0.903, start: "2026-01-13T06:00:00.000+01:00" },
+      { value: 0.807, start: "2026-01-13T22:00:00.000+01:00", end: "2026-01-14T00:00:00.000+01:00" },
+    ];
+    helper.load(addTariff, flow, function () {
+      const n1 = helper.getNode("n1");
+      const n2 = helper.getNode("n2");
+      n2.on("input", function (msg) {
+        expect(msg).to.have.deep.property("payload", result);
+        done();
+      });
+      n1.receive({ payload: singlePrice });
     });
   });
 });

@@ -23,7 +23,7 @@ module.exports = function (RED) {
         return;
       }
 
-      addTariffToPrices(node, effectiveConfig, prices);
+      msg.payload.priceData = addTariffToPrices(node, effectiveConfig, prices);
 
       node.send(msg);
     });
