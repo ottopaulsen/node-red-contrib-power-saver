@@ -1,0 +1,292 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-strategy-light-saver", {
+    category: "Power Saver",
+    color: "#FFCC66",
+    defaults: {
+      name: { value: "Light Saver" },
+      server: { value: "", type: "server", required: true },
+      entityId: { value: [] },
+    },
+    inputs: 0,
+    outputs: 1,
+    icon: "font-awesome/fa-lightbulb-o",
+    label: function () {
+      return this.name || "Light Saver";
+    },
+    outputLabels: ["state change"],
+    oneditprepare: function () {
+      const node = this;
+      const $server = $("#node-input-server");
+      const $entityList = $("#entity-list");
+      
+      let availableEntities = [];
+      
+      // Initialize server selector and get entities
+      const updateEntities = function() {
+        const serverId = $server.val();
+        if (!serverId) {
+          $entityList.html('<div class="form-tips" style="padding: 10px;">Please select a Home Assistant server first</div>');
+          return;
+        }
+        
+        $entityList.html('<div class="form-tips" style="padding: 10px;">Loading entities from Home Assistant...</div>');
+        
+        // Try multiple API endpoints that might exist
+        const tryEndpoints = [
+          `homeassistant/${serverId}/entities`,
+          `homeassistant/entities/${serverId}`,
+          `homeassistant/entities?server=${serverId}`,
+        ];
+        
+        let attemptCount = 0;
+        
+        const tryNextEndpoint = function() {
+          if (attemptCount >= tryEndpoints.length) {
+            // All endpoints failed, still render but without entities (manual entry mode)
+            console.log('Could not fetch entities from any endpoint, using manual entry mode');
+            availableEntities = [];
+            renderEntityList();
+            return;
+          }
+          
+          console.log('Trying endpoint:', tryEndpoints[attemptCount]);
+          
+          $.getJSON(tryEndpoints[attemptCount])
+            .done(function(entities) {
+              console.log('Got response:', entities);
+              
+              if (!entities || entities.length === 0) {
+                console.log('Empty response, trying next endpoint');
+                attemptCount++;
+                tryNextEndpoint();
+                return;
+              }
+              
+              // Success! Extract entity IDs
+              availableEntities = entities.map(e => e.entity_id || e);
+              console.log('Loaded', availableEntities.length, 'entities');
+              renderEntityList();
+            })
+            .fail(function(jqxhr, textStatus, error) {
+              console.log('Failed:', textStatus, error);
+              attemptCount++;
+              tryNextEndpoint();
+            });
+        };
+        
+        tryNextEndpoint();
+      };
+      
+      const renderEntityList = function() {
+        let html = `
+          <label>
+            <i class="fa fa-list"></i> Entities
+          </label>
+          <ol id="entity-selector-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+        `;
+        $entityList.html(html);
+        
+        const $list = $('#entity-selector-list');
+        
+        // Add existing entities
+        if (node.entityId && node.entityId.length > 0) {
+          node.entityId.forEach(entityId => {
+            addEntityRow($list, entityId);
+          });
+        } else {
+          // Add one empty row
+          addEntityRow($list, '');
+        }
+        
+        // Make it sortable
+        $list.sortable({
+          axis: 'y',
+          handle: '.node-input-entity-handle',
+          cursor: 'move'
+        });
+      };
+      
+      const addEntityRow = function($list, entityId) {
+        const row = $('<li/>').css({
+          padding: '5px',
+          border: '1px solid #ccc',
+          marginBottom: '5px',
+          backgroundColor: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px'
+        });
+        
+        const handle = $('<i class="node-input-entity-handle fa fa-bars"/>').css({
+          cursor: 'move',
+          color: '#999',
+          width: '20px',
+          textAlign: 'center'
+        });
+        
+        const inputWrapper = $('<div/>').css({
+          flex: '1',
+          position: 'relative'
+        });
+        
+        // Create search input
+        const searchInput = $('<input type="text" placeholder="Search or type entity ID..."/>').css({
+          width: '100%',
+          padding: '5px',
+          boxSizing: 'border-box'
+        });
+        
+        // Create dropdown
+        const select = $('<select class="entity-selector" size="8"/>').css({
+          width: '100%',
+          display: 'none',
+          position: 'absolute',
+          top: '100%',
+          left: '0',
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          maxHeight: '200px',
+          marginTop: '2px'
+        });
+        
+        // Populate dropdown
+        const populateSelect = function(filter) {
+          select.empty();
+          
+          if (availableEntities.length === 0) {
+            select.append('<option disabled>No entities found - type entity ID manually</option>');
+            return;
+          }
+          
+          // Group entities by domain
+          const grouped = {};
+          let matchCount = 0;
+          
+          availableEntities.forEach(entity => {
+            if (!filter || entity.toLowerCase().includes(filter.toLowerCase())) {
+              const domain = entity.split('.')[0];
+              if (!grouped[domain]) grouped[domain] = [];
+              grouped[domain].push(entity);
+              matchCount++;
+            }
+          });
+          
+          if (matchCount === 0) {
+            select.append('<option disabled>No matches found</option>');
+            return;
+          }
+          
+          Object.keys(grouped).sort().forEach(domain => {
+            const optgroup = $(`<optgroup label="${domain.toUpperCase()}"/>`);
+            grouped[domain].sort().forEach(entity => {
+              optgroup.append($('<option/>').val(entity).text(entity));
+            });
+            select.append(optgroup);
+          });
+        };
+        
+        // Set initial value
+        if (entityId) {
+          searchInput.val(entityId);
+        }
+        
+        // Show/hide dropdown on focus
+        searchInput.on('focus', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        searchInput.on('blur', function() {
+          setTimeout(() => select.hide(), 200);
+        });
+        
+        // Filter on input
+        searchInput.on('input', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        // Select from dropdown
+        select.on('click', 'option', function() {
+          const val = $(this).val();
+          if (val) {
+            searchInput.val(val);
+          }
+          select.hide();
+        });
+        
+        inputWrapper.append(searchInput).append(select);
+        
+        const addButton = $('<button type="button" class="editor-button editor-button-small" title="Add Entity"><i class="fa fa-plus"></i></button>').on('click', function(e) {
+          e.preventDefault();
+          addEntityRow($list, '');
+        });
+        
+        const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Entity"><i class="fa fa-trash"></i></button>').on('click', function(e) {
+          e.preventDefault();
+          row.remove();
+        });
+        
+        row.append(handle).append(inputWrapper).append(addButton).append(deleteButton);
+        $list.append(row);
+      };
+      
+      // Initialize on server change
+      $server.on("change", updateEntities);
+      
+      // Initialize on open
+      setTimeout(updateEntities, 100);
+    },
+    oneditsave: function() {
+      const selectedEntities = [];
+      $("#entity-selector-list").find('input[type="text"]').each(function() {
+        const val = $(this).val().trim();
+        if (val) {
+          selectedEntities.push(val);
+        }
+      });
+      this.entityId = selectedEntities;
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-strategy-light-saver">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server" style="width: 70%">
+    </div>
+    <div class="form-row">
+        <div id="entity-list"></div>
+    </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-strategy-light-saver">
+  A node to monitor Home Assistant entities and send state changes to the output.
+
+  ### Inputs
+  None - This node monitors Home Assistant entities automatically.
+
+  ### Outputs
+  1. **State changes**
+     - Sends a message when any of the selected entities changes state
+     - `msg.payload` contains the new state
+     - `msg.entity_id` contains the entity ID
+     - `msg.data` contains the full state object from Home Assistant
+
+  ### Configuration
+  - **Server**: Select the Home Assistant server configuration
+  - **Entities**: Select one or more Home Assistant entities to monitor
+
+  ### Details
+  This node connects to Home Assistant via websocket and monitors the selected entities.
+  When any entity changes state, it sends the state change information to the output.
+
+  Requires the `node-red-contrib-home-assistant-websocket` package to be installed.
+
+  Please read more in the [node documentation](https://powersaver.no/nodes/ps-strategy-light-saver)
+</script>
