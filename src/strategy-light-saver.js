@@ -4,14 +4,7 @@ module.exports = function (RED) {
     const node = this;
     node.status({});
 
-    const serverConfig = RED.nodes.getNode(config.server);
     const entities = Array.isArray(config.entityId) ? config.entityId : [];
-
-    if (!serverConfig) {
-      node.status({ fill: "red", shape: "ring", text: "No server configured" });
-      node.error("No Home Assistant server configured");
-      return;
-    }
 
     if (entities.length === 0) {
       node.status({ fill: "yellow", shape: "ring", text: "No entities selected" });
@@ -19,58 +12,127 @@ module.exports = function (RED) {
       return;
     }
 
+    const serverConfigNode = RED.nodes.getNode(config.server);
+    if (!serverConfigNode) {
+      node.status({ fill: "red", shape: "ring", text: "No server configured" });
+      node.error("No Home Assistant server configured");
+      return;
+    }
+
     node.status({ fill: "yellow", shape: "ring", text: "Connecting..." });
 
-    // Store entity listeners
-    const entityListeners = {};
+    // Try to get the HA module from require.cache since it's already loaded
+    let haModule = null;
+    const cacheKeys = Object.keys(require.cache);
+    const haModulePath = cacheKeys.find(k => k.includes('node-red-contrib-home-assistant-websocket') && k.includes('homeAssistant'));
+    
+    if (haModulePath) {
+      try {
+        haModule = require.cache[haModulePath].exports;
+        node.warn("Found HA module in cache: " + haModulePath);
+      } catch (e) {
+        node.warn("Failed to load from cache: " + e.message);
+      }
+    }
+    
+    // Try alternative: find the main module exports
+    if (!haModule) {
+      const mainModulePath = cacheKeys.find(k => 
+        k.includes('node-red-contrib-home-assistant-websocket') && 
+        (k.endsWith('index.js') || k.includes('homeAssistant/index'))
+      );
+      if (mainModulePath) {
+        try {
+          haModule = require.cache[mainModulePath].exports;
+          node.warn("Found HA module at: " + mainModulePath);
+        } catch (e) {
+          node.warn("Failed to load: " + e.message);
+        }
+      }
+    }
+
+    if (!haModule || !haModule.getHomeAssistant) {
+      node.error("Could not access getHomeAssistant function from HA module");
+      node.status({ fill: "red", shape: "ring", text: "HA module not accessible" });
+      return;
+    }
+
+    const homeAssistant = haModule.getHomeAssistant(serverConfigNode);
+    if (!homeAssistant || !homeAssistant.eventBus) {
+      node.error("Could not get homeAssistant or eventBus");
+      node.status({ fill: "red", shape: "ring", text: "No eventBus" });
+      return;
+    }
+
+    node.warn("Successfully got eventBus!");
 
     // Function to handle state changes
-    const handleStateChange = function (entityId, newState, oldState) {
-      node.status({ fill: "green", shape: "dot", text: `Last: ${entityId}` });
+    const handleStateChange = function (event) {
+      node.send({
+        topic: "debug",
+        payload: "Event received!",
+        event: event
+      });
+      
+      if (!event || !event.event || !event.event.data) return;
+      
+      const entityId = event.event.data.entity_id;
+      const newState = event.event.data.new_state;
+      const oldState = event.event.data.old_state;
+      
+      if (!entityId || !newState) return;
+      
+      node.status({ 
+        fill: "green", 
+        shape: "dot", 
+        text: `${entityId}: ${newState.state}` 
+      });
       
       const msg = {
+        topic: entityId,
         payload: newState.state,
-        entity_id: entityId,
         data: {
           entity_id: entityId,
-          new_state: newState,
-          old_state: oldState,
+          new_state: {
+            state: newState.state,
+            attributes: newState.attributes || {},
+            last_changed: newState.last_changed,
+            last_updated: newState.last_updated,
+          },
+          old_state: oldState ? {
+            state: oldState.state,
+            attributes: oldState.attributes || {},
+            last_changed: oldState.last_changed,
+            last_updated: oldState.last_updated,
+          } : null,
+          timestamp: new Date().toISOString(),
         },
       };
 
       node.send(msg);
     };
 
-    // Subscribe to entity state changes
-    // Note: This is a placeholder implementation
-    // In a real implementation, this would use the Home Assistant websocket API
-    // via node-red-contrib-home-assistant-websocket integration
     try {
       entities.forEach((entityId) => {
-        // Placeholder for actual Home Assistant integration
-        // In a real implementation, you would subscribe to entity state changes like:
-        // serverConfig.websocket.subscribeToStateChanges(entityId, (newState, oldState) => {
-        //   handleStateChange(entityId, newState, oldState);
-        // });
-        
-        node.log(`Monitoring entity: ${entityId}`);
+        const eventTopic = `ha_events:state_changed:${entityId}`;
+        homeAssistant.eventBus.on(eventTopic, handleStateChange);
+        node.warn(`Subscribed to: ${eventTopic}`);
       });
 
       node.status({ fill: "green", shape: "dot", text: `Monitoring ${entities.length} entities` });
     } catch (err) {
-      node.status({ fill: "red", shape: "ring", text: "Connection failed" });
-      node.error(`Failed to subscribe to entities: ${err.message}`);
+      node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
+      node.error(`Failed to subscribe: ${err.message}`);
     }
 
     // Clean up on node close
     node.on("close", function () {
-      // Unsubscribe from all entities
-      Object.keys(entityListeners).forEach((entityId) => {
-        // Placeholder for cleanup
-        // In a real implementation: serverConfig.websocket.unsubscribe(entityListeners[entityId]);
-        node.log(`Unsubscribed from entity: ${entityId}`);
-      });
-      
+      if (homeAssistant && homeAssistant.eventBus) {
+        entities.forEach((entityId) => {
+          const eventTopic = `ha_events:state_changed:${entityId}`;
+          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
+        });
+      }
       node.status({});
     });
   }

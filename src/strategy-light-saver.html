@@ -80,9 +80,12 @@
       const renderEntityList = function() {
         let html = `
           <label>
-            <i class="fa fa-list"></i> Entities
+            <i class="fa fa-list"></i> Triggers
           </label>
           <ol id="entity-selector-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <button type="button" id="add-entity-btn" class="editor-button" style="margin-top: 5px;">
+            <i class="fa fa-plus"></i> Add Entity
+          </button>
         `;
         $entityList.html(html);
         
@@ -97,6 +100,12 @@
           // Add one empty row
           addEntityRow($list, '');
         }
+        
+        // Add button handler
+        $('#add-entity-btn').on('click', function(e) {
+          e.preventDefault();
+          addEntityRow($list, '');
+        });
         
         // Make it sortable
         $list.sortable({
@@ -218,17 +227,12 @@
         
         inputWrapper.append(searchInput).append(select);
         
-        const addButton = $('<button type="button" class="editor-button editor-button-small" title="Add Entity"><i class="fa fa-plus"></i></button>').on('click', function(e) {
-          e.preventDefault();
-          addEntityRow($list, '');
-        });
-        
         const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Entity"><i class="fa fa-trash"></i></button>').on('click', function(e) {
           e.preventDefault();
           row.remove();
         });
         
-        row.append(handle).append(inputWrapper).append(addButton).append(deleteButton);
+        row.append(handle).append(inputWrapper).append(deleteButton);
         $list.append(row);
       };
       
@@ -273,14 +277,16 @@
 
   ### Outputs
   1. **State changes**
-     - Sends a message when any of the selected entities changes state
-     - `msg.payload` contains the new state
-     - `msg.entity_id` contains the entity ID
-     - `msg.data` contains the full state object from Home Assistant
+     - `msg.topic` - The entity ID that triggered the state change
+     - `msg.payload` - The new state value
+     - `msg.data.entity_id` - The entity ID
+     - `msg.data.new_state` - Full new state object with state, attributes, timestamps
+     - `msg.data.old_state` - Full old state object (or null if unavailable)
+     - `msg.data.timestamp` - ISO timestamp when the state change was processed
 
   ### Configuration
   - **Server**: Select the Home Assistant server configuration
-  - **Entities**: Select one or more Home Assistant entities to monitor
+  - **Triggers**: Select one or more Home Assistant entities to monitor for state changes
 
   ### Details
   This node connects to Home Assistant via websocket and monitors the selected entities.
