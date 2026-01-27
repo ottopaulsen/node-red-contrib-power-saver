@@ -24,6 +24,7 @@
       // Initialize server selector and get entities
       const updateEntities = function() {
         const serverId = $server.val();
+        
         if (!serverId) {
           $entityList.html('<div class="form-tips" style="padding: 10px;">Please select a Home Assistant server first</div>');
           return;
@@ -31,50 +32,29 @@
         
         $entityList.html('<div class="form-tips" style="padding: 10px;">Loading entities from Home Assistant...</div>');
         
-        // Try multiple API endpoints that might exist
-        const tryEndpoints = [
-          `homeassistant/${serverId}/entities`,
-          `homeassistant/entities/${serverId}`,
-          `homeassistant/entities?server=${serverId}`,
-        ];
+        // Use the working endpoint format
+        const endpoint = `homeassistant/entities/${serverId}`;
         
-        let attemptCount = 0;
-        
-        const tryNextEndpoint = function() {
-          if (attemptCount >= tryEndpoints.length) {
-            // All endpoints failed, still render but without entities (manual entry mode)
-            console.log('Could not fetch entities from any endpoint, using manual entry mode');
+        $.getJSON(endpoint)
+          .done(function(entities) {
+            if (!entities || entities.length === 0) {
+              console.warn('No entities returned from Home Assistant');
+              availableEntities = [];
+              renderEntityList();
+              return;
+            }
+            
+            // Extract entity IDs
+            availableEntities = entities.map(e => e.entity_id || e);
+            console.log('Loaded', availableEntities.length, 'entities from Home Assistant');
+            renderEntityList();
+          })
+          .fail(function(jqxhr, textStatus, error) {
+            console.error('Failed to load entities:', textStatus, error);
+            RED.notify('Failed to load entities from Home Assistant', 'error');
             availableEntities = [];
             renderEntityList();
-            return;
-          }
-          
-          console.log('Trying endpoint:', tryEndpoints[attemptCount]);
-          
-          $.getJSON(tryEndpoints[attemptCount])
-            .done(function(entities) {
-              console.log('Got response:', entities);
-              
-              if (!entities || entities.length === 0) {
-                console.log('Empty response, trying next endpoint');
-                attemptCount++;
-                tryNextEndpoint();
-                return;
-              }
-              
-              // Success! Extract entity IDs
-              availableEntities = entities.map(e => e.entity_id || e);
-              console.log('Loaded', availableEntities.length, 'entities');
-              renderEntityList();
-            })
-            .fail(function(jqxhr, textStatus, error) {
-              console.log('Failed:', textStatus, error);
-              attemptCount++;
-              tryNextEndpoint();
-            });
-        };
-        
-        tryNextEndpoint();
+          });
       };
       
       const renderEntityList = function() {
