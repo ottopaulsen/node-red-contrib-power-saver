@@ -7,6 +7,7 @@
       server: { value: "", type: "server", required: true },
       triggers: { value: [] },
       lights: { value: [] },
+      nightSensor: { value: null },
       levels: { value: [{ fromTime: "00:00", level: 100 }] },
     },
     inputs: 1,
@@ -21,6 +22,7 @@
       const $server = $("#node-input-server");
       const $triggersContainer = $("#triggers-container");
       const $lightsContainer = $("#lights-container");
+      const $nightSensorContainer = $("#night-sensor-container");
       const $levelsContainer = $("#levels-container");
       
       let availableEntities = [];
@@ -66,6 +68,7 @@
       const renderEntityLists = function() {
         renderTriggers();
         renderLights();
+        renderNightSensor();
         renderLevels();
       };
       
@@ -147,6 +150,119 @@
         updateDeleteButtons($list);
       };
       
+      const renderNightSensor = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-moon-o"></i> Night sensor
+          </label>
+          <div id="night-sensor-input" style="margin-top: 5px;"></div>
+        `;
+        $nightSensorContainer.html(html);
+        
+        const $container = $('#night-sensor-input');
+        
+        // Create single entity selector
+        const wrapper = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          padding: '5px',
+          border: '1px solid #ccc',
+          backgroundColor: '#fff'
+        });
+        
+        const inputWrapper = $('<div/>').css({
+          flex: '1',
+          position: 'relative'
+        });
+        
+        const searchInput = $('<input type="text" id="night-sensor-search" placeholder="Search or type entity ID..."/>').css({
+          width: '100%',
+          padding: '5px',
+          boxSizing: 'border-box'
+        });
+        
+        const select = $('<select class="entity-selector" size="8"/>').css({
+          width: '100%',
+          display: 'none',
+          position: 'absolute',
+          top: '100%',
+          left: '0',
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          maxHeight: '200px',
+          marginTop: '2px'
+        });
+        
+        const populateSelect = function(filter) {
+          select.empty();
+          
+          if (availableEntities.length === 0) {
+            select.append('<option disabled>No entities found - type entity ID manually</option>');
+            return;
+          }
+          
+          const filterPrefixes = 'binary_sensor'.split(',');
+          const filtered = availableEntities.filter(e => {
+            if (!filter || filter === '') return filterPrefixes.some(p => e.startsWith(p + '.'));
+            const matchesFilter = e.toLowerCase().includes(filter.toLowerCase());
+            const matchesPrefix = filterPrefixes.some(p => e.startsWith(p + '.'));
+            return matchesFilter && matchesPrefix;
+          });
+          
+          if (filtered.length === 0) {
+            select.append('<option disabled>No matching entities found</option>');
+            return;
+          }
+          
+          const grouped = {};
+          filtered.forEach(entity => {
+            const domain = entity.split('.')[0];
+            if (!grouped[domain]) grouped[domain] = [];
+            grouped[domain].push(entity);
+          });
+          
+          Object.keys(grouped).sort().forEach(domain => {
+            const optgroup = $('<optgroup/>').attr('label', domain);
+            grouped[domain].sort().forEach(entity => {
+              optgroup.append($('<option/>').val(entity).text(entity));
+            });
+            select.append(optgroup);
+          });
+        };
+        
+        if (node.nightSensor && node.nightSensor.entity_id) {
+          searchInput.val(node.nightSensor.entity_id);
+        }
+        
+        searchInput.on('focus', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        searchInput.on('blur', function() {
+          setTimeout(() => select.hide(), 200);
+        });
+        
+        searchInput.on('input', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        select.on('click', 'option', function() {
+          const val = $(this).val();
+          if (val) {
+            searchInput.val(val);
+          }
+          select.hide();
+        });
+        
+        inputWrapper.append(searchInput).append(select);
+        wrapper.append(inputWrapper);
+        $container.append(wrapper);
+      };
+      
       const renderLevels = function() {
         let html = `
           <label style="margin-top: 20px;">
@@ -204,7 +320,7 @@
           whiteSpace: 'nowrap'
         });
         
-        const fromTimeInput = $('<input type="text" class="from-time-input" placeholder="HH:MM" maxlength="5"/>').css({
+        const fromTimeInput = $('<input type="text" class="from-time-input keeper-ignore" placeholder="HH:MM" maxlength="5"/>').css({
           width: '60px',
           padding: '3px',
           textAlign: 'center',
@@ -506,6 +622,14 @@
       });
       this.lights = lights;
       
+      // Save night sensor
+      const nightSensorEntityId = $('#night-sensor-search').val().trim();
+      if (nightSensorEntityId) {
+        this.nightSensor = { entity_id: nightSensorEntityId };
+      } else {
+        this.nightSensor = null;
+      }
+      
       // Save levels
       const levels = [];
       $("#levels-list li").each(function() {
@@ -537,6 +661,9 @@
     </div>
     <div class="form-row">
         <div id="lights-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="night-sensor-container"></div>
     </div>
     <div class="form-row">
         <div id="levels-container"></div>

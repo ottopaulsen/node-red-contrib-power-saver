@@ -9,6 +9,7 @@ module.exports = function (RED) {
 
     const triggers = Array.isArray(config.triggers) ? config.triggers : [];
     const lights = Array.isArray(config.lights) ? config.lights : [];
+    const nightSensor = config.nightSensor || null;
     const levels = Array.isArray(config.levels) ? config.levels : [];
 
     if (triggers.length === 0) {
@@ -83,13 +84,13 @@ module.exports = function (RED) {
       
       node.log(`Processing state change for ${entityId}: ${newState.state}`);
       
-      // Find the trigger in the array and update it
+      const now = new Date();
+      const timestamp = now.toISOString().substring(0, 19); // Format: yyyy-mm-ddTHH:MM:SS
+      const timeOnly = now.toISOString().substring(11, 19); // Format: HH:MM:SS
+      
+      // Check if it's a trigger
       const trigger = triggers.find(t => t.entity_id === entityId);
       if (trigger) {
-        const now = new Date();
-        const timestamp = now.toISOString().substring(0, 19); // Format: yyyy-mm-ddTHH:MM:SS
-        const timeOnly = now.toISOString().substring(11, 19); // Format: HH:MM:SS
-        
         trigger.lastChanged = timestamp;
         trigger.state = newState.state;
         
@@ -100,9 +101,25 @@ module.exports = function (RED) {
           shape: "dot", 
           text: `${entityId}: ${newState.state} - updated ${timeOnly}` 
         });
-      } else {
-        node.warn(`Received state change for ${entityId} but not found in triggers list`);
+        return;
       }
+      
+      // Check if it's the night sensor
+      if (nightSensor && nightSensor.entity_id === entityId) {
+        nightSensor.lastChanged = timestamp;
+        nightSensor.state = newState.state;
+        
+        node.log(`Updated night sensor ${entityId}: state=${nightSensor.state}, lastChanged=${nightSensor.lastChanged}`);
+        
+        node.status({ 
+          fill: "green", 
+          shape: "dot", 
+          text: `Night: ${newState.state} - updated ${timeOnly}` 
+        });
+        return;
+      }
+      
+      node.warn(`Received state change for ${entityId} but not found in triggers or nightSensor`);
     };
 
     // Handle input messages
@@ -136,12 +153,73 @@ module.exports = function (RED) {
         output.payload.lights = lights;
       }
       
+      if (commands.sendNightSensor === true) {
+        output.payload.nightSensor = nightSensor;
+      }
+      
       if (commands.sendLevels === true) {
         output.payload.levels = levels;
       }
       
+      // Fetch states from HA for entities that don't have state yet
+      const entitiesToFetch = [];
+      
+      // Check triggers
+      if (commands.sendTriggers === true) {
+        triggers.forEach(trigger => {
+          if (!trigger.state && trigger.entity_id) {
+            entitiesToFetch.push(trigger.entity_id);
+          }
+        });
+      }
+      
+      // Check night sensor
+      if (commands.sendNightSensor === true && nightSensor && !nightSensor.state && nightSensor.entity_id) {
+        entitiesToFetch.push(nightSensor.entity_id);
+      }
+      
+      // Fetch missing states if any
+      if (entitiesToFetch.length > 0) {
+        node.log(`Fetching states for ${entitiesToFetch.length} entities: ${entitiesToFetch.join(', ')}`);
+        
+        try {
+          // Access states from the websocket - it's stored as a flat object
+          const states = homeAssistant.websocket.states;
+          node.log(`States object type: ${typeof states}, keys count: ${states ? Object.keys(states).length : 0}`);
+          
+          if (states && typeof states === 'object') {
+            entitiesToFetch.forEach(entityId => {
+              const stateObj = states[entityId];
+              node.log(`Looking for ${entityId}, found: ${stateObj ? 'yes' : 'no'}`);
+              
+              if (stateObj) {
+                const trigger = triggers.find(t => t.entity_id === entityId);
+                if (trigger) {
+                  trigger.state = stateObj.state;
+                  trigger.lastChanged = stateObj.last_changed || stateObj.last_updated;
+                  node.log(`Fetched state for trigger ${entityId}: ${stateObj.state}`);
+                }
+                
+                if (nightSensor && nightSensor.entity_id === entityId) {
+                  nightSensor.state = stateObj.state;
+                  nightSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
+                  node.log(`Fetched state for night sensor ${entityId}: ${stateObj.state}`);
+                }
+              } else {
+                node.warn(`State not found for ${entityId}`);
+              }
+            });
+          } else {
+            node.warn('States object not available or not an object');
+          }
+        } catch (err) {
+          node.warn(`Failed to fetch states: ${err.message}`);
+          node.warn(err.stack);
+        }
+      }
+      
       // Only send if we have something to send (beyond just version)
-      if (output.payload.triggers || output.payload.lights || output.payload.levels) {
+      if (output.payload.triggers || output.payload.lights || output.payload.nightSensor || output.payload.levels) {
         node.send(output);
       }
     });
@@ -154,9 +232,17 @@ module.exports = function (RED) {
         homeAssistant.eventBus.on(eventTopic, handleStateChange);
         node.log(`Subscribed to ${eventTopic}`);
       });
+      
+      // Subscribe to night sensor if configured
+      if (nightSensor && nightSensor.entity_id) {
+        const eventTopic = `ha_events:state_changed:${nightSensor.entity_id}`;
+        homeAssistant.eventBus.on(eventTopic, handleStateChange);
+        node.log(`Subscribed to night sensor: ${eventTopic}`);
+      }
 
-      node.status({ fill: "green", shape: "dot", text: `Monitoring ${triggers.length} triggers, ${lights.length} lights, ${levels.length} levels` });
-      node.log(`Monitoring ${triggers.length} triggers, ${lights.length} lights, and ${levels.length} levels`);
+      const nightSensorText = nightSensor ? ', 1 night sensor' : '';
+      node.status({ fill: "green", shape: "dot", text: `Monitoring ${triggers.length} triggers, ${lights.length} lights${nightSensorText}, ${levels.length} levels` });
+      node.log(`Monitoring ${triggers.length} triggers, ${lights.length} lights${nightSensorText}, and ${levels.length} levels`);
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
       node.error(`Failed to subscribe: ${err.message}`);
@@ -175,6 +261,11 @@ module.exports = function (RED) {
           const eventTopic = `ha_events:state_changed:${entityId}`;
           homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
         });
+        
+        if (nightSensor && nightSensor.entity_id) {
+          const eventTopic = `ha_events:state_changed:${nightSensor.entity_id}`;
+          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
+        }
       }
       node.status({});
     });
