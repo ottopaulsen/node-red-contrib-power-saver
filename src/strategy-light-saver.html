@@ -5,9 +5,10 @@
     defaults: {
       name: { value: "Light Saver" },
       server: { value: "", type: "server", required: true },
-      entityId: { value: [] },
+      triggers: { value: [] },
+      lights: { value: [] },
     },
-    inputs: 0,
+    inputs: 1,
     outputs: 1,
     icon: "font-awesome/fa-lightbulb-o",
     label: function () {
@@ -17,7 +18,8 @@
     oneditprepare: function () {
       const node = this;
       const $server = $("#node-input-server");
-      const $entityList = $("#entity-list");
+      const $triggersContainer = $("#triggers-container");
+      const $lightsContainer = $("#lights-container");
       
       let availableEntities = [];
       
@@ -26,11 +28,13 @@
         const serverId = $server.val();
         
         if (!serverId) {
-          $entityList.html('<div class="form-tips" style="padding: 10px;">Please select a Home Assistant server first</div>');
+          $triggersContainer.html('<div class="form-tips" style="padding: 10px;">Please select a Home Assistant server first</div>');
+          $lightsContainer.html('<div class="form-tips" style="padding: 10px;">Please select a Home Assistant server first</div>');
           return;
         }
         
-        $entityList.html('<div class="form-tips" style="padding: 10px;">Loading entities from Home Assistant...</div>');
+        $triggersContainer.html('<div class="form-tips" style="padding: 10px;">Loading entities from Home Assistant...</div>');
+        $lightsContainer.html('<div class="form-tips" style="padding: 10px;">Loading entities from Home Assistant...</div>');
         
         // Use the working endpoint format
         const endpoint = `homeassistant/entities/${serverId}`;
@@ -40,51 +44,56 @@
             if (!entities || entities.length === 0) {
               console.warn('No entities returned from Home Assistant');
               availableEntities = [];
-              renderEntityList();
+              renderEntityLists();
               return;
             }
             
             // Extract entity IDs
             availableEntities = entities.map(e => e.entity_id || e);
             console.log('Loaded', availableEntities.length, 'entities from Home Assistant');
-            renderEntityList();
+            renderEntityLists();
           })
           .fail(function(jqxhr, textStatus, error) {
             console.error('Failed to load entities:', textStatus, error);
             RED.notify('Failed to load entities from Home Assistant', 'error');
             availableEntities = [];
-            renderEntityList();
+            renderEntityLists();
           });
       };
       
-      const renderEntityList = function() {
+      const renderEntityLists = function() {
+        renderTriggers();
+        renderLights();
+      };
+      
+      const renderTriggers = function() {
         let html = `
           <label>
             <i class="fa fa-list"></i> Triggers
           </label>
-          <ol id="entity-selector-list" style="list-style: none; padding: 0; margin: 0;"></ol>
-          <button type="button" id="add-entity-btn" class="editor-button" style="margin-top: 5px;">
+          <ol id="triggers-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <button type="button" id="add-trigger-btn" class="editor-button" style="margin-top: 5px;">
             <i class="fa fa-plus"></i> Add Entity
           </button>
         `;
-        $entityList.html(html);
+        $triggersContainer.html(html);
         
-        const $list = $('#entity-selector-list');
+        const $list = $('#triggers-list');
         
-        // Add existing entities
-        if (node.entityId && node.entityId.length > 0) {
-          node.entityId.forEach(entityId => {
-            addEntityRow($list, entityId);
+        // Add existing triggers
+        if (node.triggers && node.triggers.length > 0) {
+          node.triggers.forEach(trigger => {
+            addEntityRow($list, trigger.entity_id || '', 'binary_sensor');
           });
         } else {
           // Add one empty row
-          addEntityRow($list, '');
+          addEntityRow($list, '', 'binary_sensor');
         }
         
         // Add button handler
-        $('#add-entity-btn').on('click', function(e) {
+        $('#add-trigger-btn').on('click', function(e) {
           e.preventDefault();
-          addEntityRow($list, '');
+          addEntityRow($list, '', 'binary_sensor');
         });
         
         // Make it sortable
@@ -95,7 +104,45 @@
         });
       };
       
-      const addEntityRow = function($list, entityId) {
+      const renderLights = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-lightbulb-o"></i> Lights
+          </label>
+          <ol id="lights-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <button type="button" id="add-light-btn" class="editor-button" style="margin-top: 5px;">
+            <i class="fa fa-plus"></i> Add Entity
+          </button>
+        `;
+        $lightsContainer.html(html);
+        
+        const $list = $('#lights-list');
+        
+        // Add existing lights
+        if (node.lights && node.lights.length > 0) {
+          node.lights.forEach(light => {
+            addEntityRow($list, light.entity_id || '', 'light,switch');
+          });
+        } else {
+          // Add one empty row
+          addEntityRow($list, '', 'light,switch');
+        }
+        
+        // Add button handler
+        $('#add-light-btn').on('click', function(e) {
+          e.preventDefault();
+          addEntityRow($list, '', 'light,switch');
+        });
+        
+        // Make it sortable
+        $list.sortable({
+          axis: 'y',
+          handle: '.node-input-entity-handle',
+          cursor: 'move'
+        });
+      };
+      
+      const addEntityRow = function($list, entityId, filterPrefix) {
         const row = $('<li/>').css({
           padding: '5px',
           border: '1px solid #ccc',
@@ -148,11 +195,20 @@
             return;
           }
           
+          // Filter entities based on prefix
+          let filteredEntities = availableEntities;
+          if (filterPrefix) {
+            const prefixes = filterPrefix.split(',');
+            filteredEntities = availableEntities.filter(e => 
+              prefixes.some(prefix => e.startsWith(prefix + '.'))
+            );
+          }
+          
           // Group entities by domain
           const grouped = {};
           let matchCount = 0;
           
-          availableEntities.forEach(entity => {
+          filteredEntities.forEach(entity => {
             if (!filter || entity.toLowerCase().includes(filter.toLowerCase())) {
               const domain = entity.split('.')[0];
               if (!grouped[domain]) grouped[domain] = [];
@@ -223,14 +279,25 @@
       setTimeout(updateEntities, 100);
     },
     oneditsave: function() {
-      const selectedEntities = [];
-      $("#entity-selector-list").find('input[type="text"]').each(function() {
+      // Save triggers
+      const triggers = [];
+      $("#triggers-list").find('input[type="text"]').each(function() {
         const val = $(this).val().trim();
         if (val) {
-          selectedEntities.push(val);
+          triggers.push({ entity_id: val });
         }
       });
-      this.entityId = selectedEntities;
+      this.triggers = triggers;
+      
+      // Save lights
+      const lights = [];
+      $("#lights-list").find('input[type="text"]').each(function() {
+        const val = $(this).val().trim();
+        if (val) {
+          lights.push({ entity_id: val });
+        }
+      });
+      this.lights = lights;
     }
   });
 </script>
@@ -245,7 +312,10 @@
         <input type="text" id="node-input-server" style="width: 70%">
     </div>
     <div class="form-row">
-        <div id="entity-list"></div>
+        <div id="triggers-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="lights-container"></div>
     </div>
 </script>
 

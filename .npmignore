@@ -1,0 +1,13 @@
+# Exclude documentation and non-essential files from npm package
+docs/
+test/
+examples/
+.github/
+public/
+donation.png
+firebase.json
+.firebaserc
+.eslintrc.js
+CHANGELOG.md
+*.md
+!README.md

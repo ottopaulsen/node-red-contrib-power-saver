@@ -1,14 +1,18 @@
 module.exports = function (RED) {
+  const packageJson = require('../package.json');
+  const VERSION = packageJson.version;
+  
   function StrategyLightSaverNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
     node.status({});
 
-    const entities = Array.isArray(config.entityId) ? config.entityId : [];
+    const triggers = Array.isArray(config.triggers) ? config.triggers : [];
+    const lights = Array.isArray(config.lights) ? config.lights : [];
 
-    if (entities.length === 0) {
-      node.status({ fill: "yellow", shape: "ring", text: "No entities selected" });
-      node.warn("No entities selected to monitor");
+    if (triggers.length === 0) {
+      node.status({ fill: "yellow", shape: "ring", text: "No triggers selected" });
+      node.warn("No triggers selected to monitor");
       return;
     }
 
@@ -29,7 +33,6 @@ module.exports = function (RED) {
     if (haModulePath) {
       try {
         haModule = require.cache[haModulePath].exports;
-        node.warn("Found HA module in cache: " + haModulePath);
       } catch (e) {
         node.warn("Failed to load from cache: " + e.message);
       }
@@ -44,7 +47,6 @@ module.exports = function (RED) {
       if (mainModulePath) {
         try {
           haModule = require.cache[mainModulePath].exports;
-          node.warn("Found HA module at: " + mainModulePath);
         } catch (e) {
           node.warn("Failed to load: " + e.message);
         }
@@ -64,71 +66,107 @@ module.exports = function (RED) {
       return;
     }
 
-    node.warn("Successfully got eventBus!");
-
     // Function to handle state changes
     const handleStateChange = function (event) {
-      node.send({
-        topic: "debug",
-        payload: "Event received!",
-        event: event
-      });
+      node.log("State change event received: " + JSON.stringify(event).substring(0, 200));
       
-      if (!event || !event.event || !event.event.data) return;
+      if (!event || !event.event) return;
       
-      const entityId = event.event.data.entity_id;
-      const newState = event.event.data.new_state;
-      const oldState = event.event.data.old_state;
+      const entityId = event.event.entity_id;
+      const newState = event.event.new_state;
       
-      if (!entityId || !newState) return;
+      if (!entityId || !newState) {
+        node.warn(`Event missing entity_id or new_state: ${JSON.stringify(event).substring(0, 100)}`);
+        return;
+      }
       
-      node.status({ 
-        fill: "green", 
-        shape: "dot", 
-        text: `${entityId}: ${newState.state}` 
-      });
+      node.log(`Processing state change for ${entityId}: ${newState.state}`);
       
-      const msg = {
-        topic: entityId,
-        payload: newState.state,
-        data: {
-          entity_id: entityId,
-          new_state: {
-            state: newState.state,
-            attributes: newState.attributes || {},
-            last_changed: newState.last_changed,
-            last_updated: newState.last_updated,
-          },
-          old_state: oldState ? {
-            state: oldState.state,
-            attributes: oldState.attributes || {},
-            last_changed: oldState.last_changed,
-            last_updated: oldState.last_updated,
-          } : null,
-          timestamp: new Date().toISOString(),
-        },
-      };
-
-      node.send(msg);
+      // Find the trigger in the array and update it
+      const trigger = triggers.find(t => t.entity_id === entityId);
+      if (trigger) {
+        const now = new Date();
+        const timestamp = now.toISOString().substring(0, 19); // Format: yyyy-mm-ddTHH:MM:SS
+        const timeOnly = now.toISOString().substring(11, 19); // Format: HH:MM:SS
+        
+        trigger.lastChanged = timestamp;
+        trigger.state = newState.state;
+        
+        node.log(`Updated trigger ${entityId}: state=${trigger.state}, lastChanged=${trigger.lastChanged}`);
+        
+        node.status({ 
+          fill: "green", 
+          shape: "dot", 
+          text: `${entityId}: ${newState.state} - updated ${timeOnly}` 
+        });
+      } else {
+        node.warn(`Received state change for ${entityId} but not found in triggers list`);
+      }
     };
 
+    // Handle input messages
+    node.on("input", function(msg) {
+      let payload = msg.payload;
+      
+      // If payload is a string, try to parse it as JSON
+      if (typeof payload === 'string') {
+        try {
+          payload = JSON.parse(payload);
+        } catch (e) {
+          node.warn("Failed to parse payload as JSON: " + e.message);
+          return;
+        }
+      }
+      
+      if (!payload || !payload.commands) return;
+      
+      const commands = payload.commands;
+      const output = { 
+        payload: {
+          version: VERSION
+        }
+      };
+      
+      if (commands.sendTriggers === true) {
+        output.payload.triggers = triggers;
+      }
+      
+      if (commands.sendLights === true) {
+        output.payload.lights = lights;
+      }
+      
+      // Only send if we have something to send (beyond just version)
+      if (output.payload.triggers || output.payload.lights) {
+        node.send(output);
+      }
+    });
+
     try {
-      entities.forEach((entityId) => {
+      // Subscribe to state_changed events for each trigger
+      triggers.forEach((trigger) => {
+        const entityId = trigger.entity_id;
         const eventTopic = `ha_events:state_changed:${entityId}`;
         homeAssistant.eventBus.on(eventTopic, handleStateChange);
-        node.warn(`Subscribed to: ${eventTopic}`);
+        node.log(`Subscribed to ${eventTopic}`);
       });
 
-      node.status({ fill: "green", shape: "dot", text: `Monitoring ${entities.length} entities` });
+      node.status({ fill: "green", shape: "dot", text: `Monitoring ${triggers.length} triggers, ${lights.length} lights` });
+      node.log(`Monitoring ${triggers.length} triggers and ${lights.length} lights`);
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
       node.error(`Failed to subscribe: ${err.message}`);
+      node.error(err.stack);
+      return;
     }
+
+    // Note: Initial states will be populated as state change events come in
+    // The websocket.states object is not populated immediately at startup
 
     // Clean up on node close
     node.on("close", function () {
       if (homeAssistant && homeAssistant.eventBus) {
-        entities.forEach((entityId) => {
+        triggers.forEach((trigger) => {
+          const entityId = trigger.entity_id;
           const eventTopic = `ha_events:state_changed:${entityId}`;
           homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
         });
