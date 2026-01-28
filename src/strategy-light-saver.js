@@ -122,6 +122,65 @@ module.exports = function (RED) {
       node.warn(`Received state change for ${entityId} but not found in triggers or nightSensor`);
     };
 
+    // Function to fetch current states from Home Assistant
+    const fetchMissingStates = function() {
+      const entitiesToFetch = [];
+      
+      // Check triggers
+      triggers.forEach(trigger => {
+        if (!trigger.state && trigger.entity_id) {
+          entitiesToFetch.push({ id: trigger.entity_id, type: 'trigger' });
+        }
+      });
+      
+      // Check night sensor
+      if (nightSensor && !nightSensor.state && nightSensor.entity_id) {
+        entitiesToFetch.push({ id: nightSensor.entity_id, type: 'nightSensor' });
+      }
+      
+      if (entitiesToFetch.length === 0) {
+        node.log('All entities already have states');
+        return;
+      }
+      
+      node.log(`Fetching states for ${entitiesToFetch.length} entities: ${entitiesToFetch.map(e => e.id).join(', ')}`);
+      
+      try {
+        // Access states from the websocket - it's stored as a flat object
+        const states = homeAssistant.websocket.states;
+        node.log(`States object type: ${typeof states}, keys count: ${states ? Object.keys(states).length : 0}`);
+        
+        if (states && typeof states === 'object') {
+          entitiesToFetch.forEach(entity => {
+            const stateObj = states[entity.id];
+            node.log(`Looking for ${entity.id}, found: ${stateObj ? 'yes' : 'no'}`);
+            
+            if (stateObj) {
+              if (entity.type === 'trigger') {
+                const trigger = triggers.find(t => t.entity_id === entity.id);
+                if (trigger) {
+                  trigger.state = stateObj.state;
+                  trigger.lastChanged = stateObj.last_changed || stateObj.last_updated;
+                  node.log(`Fetched state for trigger ${entity.id}: ${stateObj.state}`);
+                }
+              } else if (entity.type === 'nightSensor') {
+                nightSensor.state = stateObj.state;
+                nightSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
+                node.log(`Fetched state for night sensor ${entity.id}: ${stateObj.state}`);
+              }
+            } else {
+              node.warn(`State not found for ${entity.id}`);
+            }
+          });
+        } else {
+          node.warn('States object not available or not an object');
+        }
+      } catch (err) {
+        node.warn(`Failed to fetch states: ${err.message}`);
+        node.warn(err.stack);
+      }
+    };
+
     // Handle input messages
     node.on("input", function(msg) {
       let payload = msg.payload;
@@ -162,61 +221,7 @@ module.exports = function (RED) {
       }
       
       // Fetch states from HA for entities that don't have state yet
-      const entitiesToFetch = [];
-      
-      // Check triggers
-      if (commands.sendTriggers === true) {
-        triggers.forEach(trigger => {
-          if (!trigger.state && trigger.entity_id) {
-            entitiesToFetch.push(trigger.entity_id);
-          }
-        });
-      }
-      
-      // Check night sensor
-      if (commands.sendNightSensor === true && nightSensor && !nightSensor.state && nightSensor.entity_id) {
-        entitiesToFetch.push(nightSensor.entity_id);
-      }
-      
-      // Fetch missing states if any
-      if (entitiesToFetch.length > 0) {
-        node.log(`Fetching states for ${entitiesToFetch.length} entities: ${entitiesToFetch.join(', ')}`);
-        
-        try {
-          // Access states from the websocket - it's stored as a flat object
-          const states = homeAssistant.websocket.states;
-          node.log(`States object type: ${typeof states}, keys count: ${states ? Object.keys(states).length : 0}`);
-          
-          if (states && typeof states === 'object') {
-            entitiesToFetch.forEach(entityId => {
-              const stateObj = states[entityId];
-              node.log(`Looking for ${entityId}, found: ${stateObj ? 'yes' : 'no'}`);
-              
-              if (stateObj) {
-                const trigger = triggers.find(t => t.entity_id === entityId);
-                if (trigger) {
-                  trigger.state = stateObj.state;
-                  trigger.lastChanged = stateObj.last_changed || stateObj.last_updated;
-                  node.log(`Fetched state for trigger ${entityId}: ${stateObj.state}`);
-                }
-                
-                if (nightSensor && nightSensor.entity_id === entityId) {
-                  nightSensor.state = stateObj.state;
-                  nightSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
-                  node.log(`Fetched state for night sensor ${entityId}: ${stateObj.state}`);
-                }
-              } else {
-                node.warn(`State not found for ${entityId}`);
-              }
-            });
-          } else {
-            node.warn('States object not available or not an object');
-          }
-        } catch (err) {
-          node.warn(`Failed to fetch states: ${err.message}`);
-          node.warn(err.stack);
-        }
-      }
+      fetchMissingStates();
       
       // Only send if we have something to send (beyond just version)
       if (output.payload.triggers || output.payload.lights || output.payload.nightSensor || output.payload.levels) {
@@ -243,6 +248,12 @@ module.exports = function (RED) {
       const nightSensorText = nightSensor ? ', 1 night sensor' : '';
       node.status({ fill: "green", shape: "dot", text: `Monitoring ${triggers.length} triggers, ${lights.length} lights${nightSensorText}, ${levels.length} levels` });
       node.log(`Monitoring ${triggers.length} triggers, ${lights.length} lights${nightSensorText}, and ${levels.length} levels`);
+      
+      // Fetch initial states after a delay to allow HA to connect
+      setTimeout(() => {
+        node.log('Fetching initial states after startup delay...');
+        fetchMissingStates();
+      }, 6000); // 6 seconds should be enough for HA to connect
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
       node.error(`Failed to subscribe: ${err.message}`);
