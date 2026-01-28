@@ -7,6 +7,7 @@
       server: { value: "", type: "server", required: true },
       triggers: { value: [] },
       lights: { value: [] },
+      levels: { value: [{ fromTime: "00:00", level: 100 }] },
     },
     inputs: 1,
     outputs: 1,
@@ -20,6 +21,7 @@
       const $server = $("#node-input-server");
       const $triggersContainer = $("#triggers-container");
       const $lightsContainer = $("#lights-container");
+      const $levelsContainer = $("#levels-container");
       
       let availableEntities = [];
       
@@ -64,6 +66,17 @@
       const renderEntityLists = function() {
         renderTriggers();
         renderLights();
+        renderLevels();
+      };
+      
+      // Helper to update delete button visibility based on list count
+      const updateDeleteButtons = function($list) {
+        const count = $list.children().length;
+        if (count > 1) {
+          $list.find('button[title="Delete Entity"], button[title="Delete Level"]').show();
+        } else {
+          $list.find('button[title="Delete Entity"], button[title="Delete Level"]').hide();
+        }
       };
       
       const renderTriggers = function() {
@@ -83,25 +96,21 @@
         // Add existing triggers
         if (node.triggers && node.triggers.length > 0) {
           node.triggers.forEach(trigger => {
-            addEntityRow($list, trigger.entity_id || '', 'binary_sensor');
+            addEntityRow($list, trigger.entity_id || '', 'binary_sensor', trigger.timeoutMinutes);
           });
         } else {
           // Add one empty row
-          addEntityRow($list, '', 'binary_sensor');
+          addEntityRow($list, '', 'binary_sensor', '');
         }
         
         // Add button handler
         $('#add-trigger-btn').on('click', function(e) {
           e.preventDefault();
-          addEntityRow($list, '', 'binary_sensor');
+          addEntityRow($list, '', 'binary_sensor', '');
+          updateDeleteButtons($list);
         });
         
-        // Make it sortable
-        $list.sortable({
-          axis: 'y',
-          handle: '.node-input-entity-handle',
-          cursor: 'move'
-        });
+        updateDeleteButtons($list);
       };
       
       const renderLights = function() {
@@ -121,28 +130,176 @@
         // Add existing lights
         if (node.lights && node.lights.length > 0) {
           node.lights.forEach(light => {
-            addEntityRow($list, light.entity_id || '', 'light,switch');
+            addEntityRow($list, light.entity_id || '', 'light,switch', null);
           });
         } else {
           // Add one empty row
-          addEntityRow($list, '', 'light,switch');
+          addEntityRow($list, '', 'light,switch', null);
         }
         
         // Add button handler
         $('#add-light-btn').on('click', function(e) {
           e.preventDefault();
-          addEntityRow($list, '', 'light,switch');
+          addEntityRow($list, '', 'light,switch', null);
+          updateDeleteButtons($list);
         });
         
-        // Make it sortable
-        $list.sortable({
-          axis: 'y',
-          handle: '.node-input-entity-handle',
-          cursor: 'move'
-        });
+        updateDeleteButtons($list);
       };
       
-      const addEntityRow = function($list, entityId, filterPrefix) {
+      const renderLevels = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-adjust"></i> Light levels
+          </label>
+          <ol id="levels-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <button type="button" id="add-level-btn" class="editor-button" style="margin-top: 5px;">
+            <i class="fa fa-plus"></i> Add Level
+          </button>
+        `;
+        $levelsContainer.html(html);
+        
+        const $list = $('#levels-list');
+        
+        // Add existing levels
+        if (node.levels && node.levels.length > 0) {
+          node.levels.forEach(level => {
+            addLevelRow($list, level.fromTime || '', level.level !== undefined ? level.level : '');
+          });
+        } else {
+          // Add one default row
+          addLevelRow($list, '00:00', 100);
+        }
+        
+        // Add button handler
+        $('#add-level-btn').on('click', function(e) {
+          e.preventDefault();
+          addLevelRow($list, '', '');
+          updateDeleteButtons($list);
+        });
+        
+        updateDeleteButtons($list);
+      };
+      
+      const addLevelRow = function($list, fromTime, level) {
+        const row = $('<li/>').css({
+          padding: '5px',
+          border: '1px solid #ccc',
+          marginBottom: '5px',
+          backgroundColor: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        });
+        
+        // From time input
+        const fromTimeWrapper = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px'
+        });
+        
+        const fromTimeLabel = $('<span/>').text('From time:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        const fromTimeInput = $('<input type="text" class="from-time-input" placeholder="HH:MM" maxlength="5"/>').css({
+          width: '60px',
+          padding: '3px',
+          textAlign: 'center',
+          fontFamily: 'monospace'
+        });
+        
+        if (fromTime) {
+          fromTimeInput.val(fromTime);
+        }
+        
+        // Validate time format HH:MM
+        fromTimeInput.on('blur', function() {
+          let val = $(this).val().trim();
+          if (val === '') return;
+          
+          // Try to parse time
+          const match = val.match(/^(\d{1,2}):?(\d{2})$/);
+          if (match) {
+            let hours = parseInt(match[1]);
+            let minutes = parseInt(match[2]);
+            
+            if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+              $(this).val(String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0'));
+              $(this).css('border-color', '');
+              return;
+            }
+          }
+          
+          // Invalid format
+          $(this).css('border-color', 'red');
+          RED.notify('Invalid time format. Use HH:MM (00:00 to 23:59)', 'warning');
+        });
+        
+        fromTimeWrapper.append(fromTimeLabel).append(fromTimeInput);
+        
+        // Level input
+        const levelWrapper = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px'
+        });
+        
+        const levelLabel = $('<span/>').text('Level:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        const levelInput = $('<input type="number" class="level-input" min="0" max="100" step="1" placeholder=""/>').css({
+          width: '50px',
+          padding: '3px',
+          textAlign: 'right'
+        });
+        
+        if (level !== '') {
+          levelInput.val(level);
+        }
+        
+        // Validate level
+        levelInput.on('input', function() {
+          let val = $(this).val();
+          if (val !== '') {
+            val = parseInt(val);
+            if (isNaN(val) || val < 0) {
+              $(this).val('');
+            } else if (val > 100) {
+              $(this).val(100);
+            } else {
+              $(this).val(Math.floor(val));
+            }
+          }
+        });
+        
+        const levelUnit = $('<span/>').text('%').css({
+          fontSize: '11px'
+        });
+        
+        levelWrapper.append(levelLabel).append(levelInput).append(levelUnit);
+        
+        const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Level"><i class="fa fa-trash"></i></button>');
+        
+        deleteButton.on('click', function(e) {
+          e.preventDefault();
+          if ($list.children().length > 1) {
+            row.remove();
+            updateDeleteButtons($list);
+          } else {
+            RED.notify('At least one level is required', 'warning');
+          }
+        });
+        
+        row.append(fromTimeWrapper).append(levelWrapper).append(deleteButton);
+        $list.append(row);
+      };
+      
+      const addEntityRow = function($list, entityId, filterPrefix, timeoutMinutes) {
         const row = $('<li/>').css({
           padding: '5px',
           border: '1px solid #ccc',
@@ -151,13 +308,6 @@
           display: 'flex',
           alignItems: 'center',
           gap: '5px'
-        });
-        
-        const handle = $('<i class="node-input-entity-handle fa fa-bars"/>').css({
-          cursor: 'move',
-          color: '#999',
-          width: '20px',
-          textAlign: 'center'
         });
         
         const inputWrapper = $('<div/>').css({
@@ -263,12 +413,64 @@
         
         inputWrapper.append(searchInput).append(select);
         
+        // Add timeout input for triggers (null means it's a light)
+        let timeoutWrapper = null;
+        if (timeoutMinutes !== null) {
+          timeoutWrapper = $('<div/>').css({
+            display: 'flex',
+            alignItems: 'center',
+            gap: '3px',
+            minWidth: '120px'
+          });
+          
+          const timeoutLabel = $('<span/>').text('Timeout:').css({
+            fontSize: '11px',
+            whiteSpace: 'nowrap'
+          });
+          
+          const timeoutInput = $('<input type="number" class="timeout-input" min="0" max="999" step="1" placeholder=""/>').css({
+            width: '50px',
+            padding: '3px',
+            textAlign: 'right'
+          });
+          
+          const timeoutUnit = $('<span/>').text('min').css({
+            fontSize: '11px'
+          });
+          
+          if (timeoutMinutes !== undefined && timeoutMinutes !== '') {
+            timeoutInput.val(timeoutMinutes);
+          }
+          
+          // Validate input
+          timeoutInput.on('input', function() {
+            let val = $(this).val();
+            if (val !== '') {
+              val = parseInt(val);
+              if (isNaN(val) || val < 0) {
+                $(this).val('');
+              } else if (val > 999) {
+                $(this).val(999);
+              } else {
+                $(this).val(Math.floor(val));
+              }
+            }
+          });
+          
+          timeoutWrapper.append(timeoutLabel).append(timeoutInput).append(timeoutUnit);
+        }
+        
         const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Entity"><i class="fa fa-trash"></i></button>').on('click', function(e) {
           e.preventDefault();
           row.remove();
+          updateDeleteButtons($list);
         });
         
-        row.append(handle).append(inputWrapper).append(deleteButton);
+        row.append(inputWrapper);
+        if (timeoutWrapper) {
+          row.append(timeoutWrapper);
+        }
+        row.append(deleteButton);
         $list.append(row);
       };
       
@@ -281,23 +483,42 @@
     oneditsave: function() {
       // Save triggers
       const triggers = [];
-      $("#triggers-list").find('input[type="text"]').each(function() {
-        const val = $(this).val().trim();
-        if (val) {
-          triggers.push({ entity_id: val });
+      $("#triggers-list li").each(function() {
+        const entityId = $(this).find('input[type="text"]').val().trim();
+        if (entityId) {
+          const trigger = { entity_id: entityId };
+          const timeoutVal = $(this).find('.timeout-input').val();
+          if (timeoutVal !== '' && timeoutVal !== undefined) {
+            trigger.timeoutMinutes = parseInt(timeoutVal);
+          }
+          triggers.push(trigger);
         }
       });
       this.triggers = triggers;
       
       // Save lights
       const lights = [];
-      $("#lights-list").find('input[type="text"]').each(function() {
-        const val = $(this).val().trim();
-        if (val) {
-          lights.push({ entity_id: val });
+      $("#lights-list li").each(function() {
+        const entityId = $(this).find('input[type="text"]').val().trim();
+        if (entityId) {
+          lights.push({ entity_id: entityId });
         }
       });
       this.lights = lights;
+      
+      // Save levels
+      const levels = [];
+      $("#levels-list li").each(function() {
+        const fromTime = $(this).find('.from-time-input').val().trim();
+        const level = $(this).find('.level-input').val();
+        if (fromTime && level !== '') {
+          levels.push({ 
+            fromTime: fromTime,
+            level: parseInt(level)
+          });
+        }
+      });
+      this.levels = levels;
     }
   });
 </script>
@@ -316,6 +537,9 @@
     </div>
     <div class="form-row">
         <div id="lights-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="levels-container"></div>
     </div>
 </script>
 

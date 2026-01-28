@@ -9,6 +9,7 @@ module.exports = function (RED) {
 
     const triggers = Array.isArray(config.triggers) ? config.triggers : [];
     const lights = Array.isArray(config.lights) ? config.lights : [];
+    const levels = Array.isArray(config.levels) ? config.levels : [];
 
     if (triggers.length === 0) {
       node.status({ fill: "yellow", shape: "ring", text: "No triggers selected" });
@@ -135,8 +136,12 @@ module.exports = function (RED) {
         output.payload.lights = lights;
       }
       
+      if (commands.sendLevels === true) {
+        output.payload.levels = levels;
+      }
+      
       // Only send if we have something to send (beyond just version)
-      if (output.payload.triggers || output.payload.lights) {
+      if (output.payload.triggers || output.payload.lights || output.payload.levels) {
         node.send(output);
       }
     });
@@ -150,8 +155,8 @@ module.exports = function (RED) {
         node.log(`Subscribed to ${eventTopic}`);
       });
 
-      node.status({ fill: "green", shape: "dot", text: `Monitoring ${triggers.length} triggers, ${lights.length} lights` });
-      node.log(`Monitoring ${triggers.length} triggers and ${lights.length} lights`);
+      node.status({ fill: "green", shape: "dot", text: `Monitoring ${triggers.length} triggers, ${lights.length} lights, ${levels.length} levels` });
+      node.log(`Monitoring ${triggers.length} triggers, ${lights.length} lights, and ${levels.length} levels`);
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
       node.error(`Failed to subscribe: ${err.message}`);
