@@ -5,9 +5,11 @@
     defaults: {
       name: { value: "Light Saver" },
       server: { value: "", type: "server", required: true },
-      triggers: { value: [] },
       lights: { value: [] },
+      lightTimeout: { value: 10 },
+      triggers: { value: [] },
       nightSensor: { value: null },
+      nightLevel: { value: null },
       levels: { value: [{ fromTime: "00:00", level: 100 }] },
     },
     inputs: 1,
@@ -20,8 +22,9 @@
     oneditprepare: function () {
       const node = this;
       const $server = $("#node-input-server");
-      const $triggersContainer = $("#triggers-container");
       const $lightsContainer = $("#lights-container");
+      const $lightTimeoutContainer = $("#light-timeout-container");
+      const $triggersContainer = $("#triggers-container");
       const $nightSensorContainer = $("#night-sensor-container");
       const $levelsContainer = $("#levels-container");
       
@@ -66,8 +69,9 @@
       };
       
       const renderEntityLists = function() {
-        renderTriggers();
         renderLights();
+        renderLightTimeout();
+        renderTriggers();
         renderNightSensor();
         renderLevels();
       };
@@ -82,43 +86,9 @@
         }
       };
       
-      const renderTriggers = function() {
-        let html = `
-          <label>
-            <i class="fa fa-list"></i> Triggers
-          </label>
-          <ol id="triggers-list" style="list-style: none; padding: 0; margin: 0;"></ol>
-          <button type="button" id="add-trigger-btn" class="editor-button" style="margin-top: 5px;">
-            <i class="fa fa-plus"></i> Add Entity
-          </button>
-        `;
-        $triggersContainer.html(html);
-        
-        const $list = $('#triggers-list');
-        
-        // Add existing triggers
-        if (node.triggers && node.triggers.length > 0) {
-          node.triggers.forEach(trigger => {
-            addEntityRow($list, trigger.entity_id || '', 'binary_sensor', trigger.timeoutMinutes);
-          });
-        } else {
-          // Add one empty row
-          addEntityRow($list, '', 'binary_sensor', '');
-        }
-        
-        // Add button handler
-        $('#add-trigger-btn').on('click', function(e) {
-          e.preventDefault();
-          addEntityRow($list, '', 'binary_sensor', '');
-          updateDeleteButtons($list);
-        });
-        
-        updateDeleteButtons($list);
-      };
-      
       const renderLights = function() {
         let html = `
-          <label style="margin-top: 20px;">
+          <label>
             <i class="fa fa-lightbulb-o"></i> Lights
           </label>
           <ol id="lights-list" style="list-style: none; padding: 0; margin: 0;"></ol>
@@ -144,6 +114,77 @@
         $('#add-light-btn').on('click', function(e) {
           e.preventDefault();
           addEntityRow($list, '', 'light,switch', null);
+          updateDeleteButtons($list);
+        });
+        
+        updateDeleteButtons($list);
+      };
+      
+      const renderLightTimeout = function() {
+        let html = `
+          <div style="margin-top: 20px; display: flex; align-items: center; gap: 5px;">
+            <label style="margin: 0; white-space: nowrap; min-width: 150px;">
+              <i class="fa fa-clock-o"></i> Keep light on for
+            </label>
+            <input type="number" id="light-timeout-input" min="1" max="999" step="1" style="width: 60px; padding: 3px; text-align: right;" />
+            <span style="font-size: 11px;">min</span>
+          </div>
+        `;
+        $lightTimeoutContainer.html(html);
+        
+        const $input = $('#light-timeout-input');
+        
+        // Set existing value
+        if (node.lightTimeout !== undefined && node.lightTimeout !== null) {
+          $input.val(node.lightTimeout);
+        } else {
+          $input.val(10); // Default
+        }
+        
+        // Validate input
+        $input.on('input', function() {
+          let val = $(this).val();
+          if (val !== '') {
+            val = parseInt(val);
+            if (isNaN(val) || val < 1) {
+              $(this).val(1);
+            } else if (val > 999) {
+              $(this).val(999);
+            } else {
+              $(this).val(Math.floor(val));
+            }
+          }
+        });
+      };
+      
+      const renderTriggers = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-list"></i> Triggers
+          </label>
+          <ol id="triggers-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <button type="button" id="add-trigger-btn" class="editor-button" style="margin-top: 5px;">
+            <i class="fa fa-plus"></i> Add Entity
+          </button>
+        `;
+        $triggersContainer.html(html);
+        
+        const $list = $('#triggers-list');
+        
+        // Add existing triggers
+        if (node.triggers && node.triggers.length > 0) {
+          node.triggers.forEach(trigger => {
+            addEntityRow($list, trigger.entity_id || '', 'binary_sensor', trigger.timeoutMinutes);
+          });
+        } else {
+          // Add one empty row
+          addEntityRow($list, '', 'binary_sensor', '');
+        }
+        
+        // Add button handler
+        $('#add-trigger-btn').on('click', function(e) {
+          e.preventDefault();
+          addEntityRow($list, '', 'binary_sensor', '');
           updateDeleteButtons($list);
         });
         
@@ -268,14 +309,43 @@
           <label style="margin-top: 20px;">
             <i class="fa fa-adjust"></i> Light levels
           </label>
-          <ol id="levels-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <div style="margin-top: 5px;">
+            <div style="display: flex; align-items: center; gap: 5px; padding: 5px; border: 1px solid #ccc; backgroundColor: '#fff'; margin-bottom: 5px;">
+              <span style="font-size: 11px; white-space: nowrap;">Night level:</span>
+              <input type="number" id="night-level-input" min="0" max="100" step="1" placeholder="" style="width: 50px; padding: 3px; text-align: right;" />
+              <span style="font-size: 11px;">%</span>
+              <span style="font-size: 10px; color: #666; margin-left: 10px;">Level used when night sensor is on</span>
+            </div>
+          </div>
+          <ol id="levels-list" style="list-style: none; padding: 0; margin: 0; margin-top: 5px;"></ol>
           <button type="button" id="add-level-btn" class="editor-button" style="margin-top: 5px;">
             <i class="fa fa-plus"></i> Add Level
           </button>
         `;
         $levelsContainer.html(html);
         
+        const $nightLevelInput = $('#night-level-input');
         const $list = $('#levels-list');
+        
+        // Set existing night level value
+        if (node.nightLevel !== undefined && node.nightLevel !== null && node.nightLevel !== '') {
+          $nightLevelInput.val(node.nightLevel);
+        }
+        
+        // Validate night level input
+        $nightLevelInput.on('input', function() {
+          let val = $(this).val();
+          if (val !== '') {
+            val = parseInt(val);
+            if (isNaN(val) || val < 0) {
+              $(this).val('');
+            } else if (val > 100) {
+              $(this).val(100);
+            } else {
+              $(this).val(Math.floor(val));
+            }
+          }
+        });
         
         // Add existing levels
         if (node.levels && node.levels.length > 0) {
@@ -597,6 +667,20 @@
       setTimeout(updateEntities, 100);
     },
     oneditsave: function() {
+      // Save lights (now first)
+      const lights = [];
+      $("#lights-list li").each(function() {
+        const entityId = $(this).find('input[type="text"]').val().trim();
+        if (entityId) {
+          lights.push({ entity_id: entityId });
+        }
+      });
+      this.lights = lights;
+      
+      // Save light timeout
+      const lightTimeoutVal = $('#light-timeout-input').val();
+      this.lightTimeout = lightTimeoutVal !== '' ? parseInt(lightTimeoutVal) : 10;
+      
       // Save triggers
       const triggers = [];
       $("#triggers-list li").each(function() {
@@ -612,16 +696,6 @@
       });
       this.triggers = triggers;
       
-      // Save lights
-      const lights = [];
-      $("#lights-list li").each(function() {
-        const entityId = $(this).find('input[type="text"]').val().trim();
-        if (entityId) {
-          lights.push({ entity_id: entityId });
-        }
-      });
-      this.lights = lights;
-      
       // Save night sensor
       const nightSensorEntityId = $('#night-sensor-search').val().trim();
       if (nightSensorEntityId) {
@@ -629,6 +703,10 @@
       } else {
         this.nightSensor = null;
       }
+      
+      // Save night level (level used when night sensor is on)
+      const nightLevelVal = $('#night-level-input').val();
+      this.nightLevel = nightLevelVal !== '' ? parseInt(nightLevelVal) : null;
       
       // Save levels
       const levels = [];
@@ -657,10 +735,13 @@
         <input type="text" id="node-input-server" style="width: 70%">
     </div>
     <div class="form-row">
-        <div id="triggers-container"></div>
+        <div id="lights-container"></div>
     </div>
     <div class="form-row">
-        <div id="lights-container"></div>
+        <div id="light-timeout-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="triggers-container"></div>
     </div>
     <div class="form-row">
         <div id="night-sensor-container"></div>
