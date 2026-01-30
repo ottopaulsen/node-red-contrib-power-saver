@@ -2,7 +2,7 @@
   RED.nodes.registerType("ps-strategy-light-saver", {
     category: "Power Saver",
     color: "#FFCC66",
-    defaults: {
+      defaults: {
       name: { value: "Light Saver" },
       server: { value: "", type: "server", required: true },
       lights: { value: [] },
@@ -11,6 +11,7 @@
       nightSensor: { value: null },
       nightLevel: { value: null },
       levels: { value: [{ fromTime: "00:00", level: 100 }] },
+      debugLog: { value: false }
     },
     inputs: 1,
     outputs: 1,
@@ -244,7 +245,7 @@
             return;
           }
           
-          const filterPrefixes = 'binary_sensor'.split(',');
+          const filterPrefixes = 'binary_sensor,input_boolean'.split(',');
           const filtered = availableEntities.filter(e => {
             if (!filter || filter === '') return filterPrefixes.some(p => e.startsWith(p + '.'));
             const matchesFilter = e.toLowerCase().includes(filter.toLowerCase());
@@ -748,6 +749,12 @@
     </div>
     <div class="form-row">
         <div id="levels-container"></div>
+    </div>
+    <div class="form-row">
+        <label style="width: auto;">
+            <input type="checkbox" id="node-input-debugLog" style="width: auto; vertical-align: middle;">
+            <span style="vertical-align: middle;">Debug log</span>
+        </label>
     </div>
 </script>
 
