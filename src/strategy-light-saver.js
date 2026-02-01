@@ -15,9 +15,13 @@ module.exports = function (RED) {
       lightTimeout: config.lightTimeout !== undefined ? config.lightTimeout : 10,
       nightSensor: config.nightSensor || null,
       nightLevel: config.nightLevel !== undefined ? config.nightLevel : null, // Level used when night sensor is on
+      turnOffAtNight: config.turnOffAtNight !== false, // Default true
+      turnOffAtNightDelay: config.turnOffAtNightDelay !== undefined ? config.turnOffAtNightDelay : 0,
       levels: Array.isArray(config.levels) ? config.levels : [],
       debugLog: config.debugLog === true
     };
+    
+    let turnOffAtNightTimer = null; // Timer for turning off lights when night sensor activates
     
     // Debug logging function
     const debugLog = function(message) {
@@ -99,7 +103,29 @@ module.exports = function (RED) {
 
     // Function to handle state changes
     const handleStateChange = function (event) {
-      funcs.handleStateChange(event, nodeConfig, state, nodeWrapper, homeAssistant);
+      const result = funcs.handleStateChange(event, nodeConfig, state, nodeWrapper, homeAssistant);
+      
+      // Check if night sensor turned on
+      if (result && result.nightSensorTurnedOn && nodeConfig.turnOffAtNight && nodeConfig.nightSensor) {
+        debugLog(`Night sensor turned on, scheduling lights to night level after ${nodeConfig.turnOffAtNightDelay} seconds`);
+        
+        // Clear any existing timer
+        if (turnOffAtNightTimer) {
+          clearTimeout(turnOffAtNightTimer);
+        }
+        
+        // Set lights to night level after delay
+        turnOffAtNightTimer = setTimeout(() => {
+          debugLog('Applying night level to lights');
+          const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
+          if (level !== null) {
+            funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+            node.status({ fill: "blue", shape: "dot", text: `Night mode: ${level}%` });
+          } else {
+            node.warn('Could not determine level for night mode');
+          }
+        }, nodeConfig.turnOffAtNightDelay * 1000);
+      }
     };
     
     // Function to check timeouts every minute
@@ -204,6 +230,13 @@ module.exports = function (RED) {
         clearInterval(timeoutCheckInterval);
         timeoutCheckInterval = null;
         debugLog('Cleared timeout check timer');
+      }
+      
+      // Clear turn off at night timer
+      if (turnOffAtNightTimer) {
+        clearTimeout(turnOffAtNightTimer);
+        turnOffAtNightTimer = null;
+        debugLog('Cleared turn off at night timer');
       }
       
       if (homeAssistant && homeAssistant.eventBus) {

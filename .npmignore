@@ -4,6 +4,11 @@ test/
 examples/
 .github/
 public/
+coverage/
+.nyc_output/
+.vscode/
+.firebase/
+temp/
 donation.png
 firebase.json
 .firebaserc
@@ -11,3 +16,4 @@ firebase.json
 CHANGELOG.md
 *.md
 !README.md
+*.tgz

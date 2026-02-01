@@ -10,6 +10,8 @@
       triggers: { value: [] },
       nightSensor: { value: null },
       nightLevel: { value: null },
+      turnOffAtNight: { value: true },
+      turnOffAtNightDelay: { value: 0 },
       levels: { value: [{ fromTime: "00:00", level: 100 }] },
       debugLog: { value: false }
     },
@@ -303,6 +305,37 @@
         inputWrapper.append(searchInput).append(select);
         wrapper.append(inputWrapper);
         $container.append(wrapper);
+        
+        // Update turn off at night controls based on night sensor selection
+        updateTurnOffAtNightControls();
+        
+        // Watch for changes to night sensor input
+        searchInput.on('change input blur', function() {
+          setTimeout(updateTurnOffAtNightControls, 100);
+        });
+      };
+      
+      const updateTurnOffAtNightControls = function() {
+        const $turnOffAtNight = $('#node-input-turnOffAtNight');
+        const $turnOffAtNightDelay = $('#node-input-turnOffAtNightDelay');
+        const $nightSensorSearch = $('#night-sensor-search');
+        
+        // Check if night sensor input exists yet
+        if ($nightSensorSearch.length === 0) {
+          return; // Not rendered yet, will be called again after render
+        }
+        
+        const nightSensorValue = ($nightSensorSearch.val() || '').trim();
+        
+        // Disable both if no night sensor
+        if (!nightSensorValue) {
+          $turnOffAtNight.prop('disabled', true);
+          $turnOffAtNightDelay.prop('disabled', true);
+        } else {
+          $turnOffAtNight.prop('disabled', false);
+          // Delay is enabled only if checkbox is checked
+          $turnOffAtNightDelay.prop('disabled', !$turnOffAtNight.prop('checked'));
+        }
       };
       
       const renderLevels = function() {
@@ -664,6 +697,11 @@
       // Initialize on server change
       $server.on("change", updateEntities);
       
+      // Add checkbox listener for turn off at night
+      $('#node-input-turnOffAtNight').on('change', function() {
+        updateTurnOffAtNightControls();
+      });
+      
       // Initialize on open
       setTimeout(updateEntities, 100);
     },
@@ -746,6 +784,19 @@
     </div>
     <div class="form-row">
         <div id="night-sensor-container"></div>
+    </div>
+    <div class="form-row">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <label style="width: auto; margin: 0;">
+                <input type="checkbox" id="node-input-turnOffAtNight" style="width: auto; vertical-align: middle;">
+                <span style="vertical-align: middle;">Turn off at night</span>
+            </label>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <label for="node-input-turnOffAtNightDelay" style="margin: 0; white-space: nowrap;">Delay:</label>
+                <input type="number" id="node-input-turnOffAtNightDelay" min="0" max="999" step="1" style="width: 80px;" required>
+                <span style="white-space: nowrap;">sec</span>
+            </div>
+        </div>
     </div>
     <div class="form-row">
         <div id="levels-container"></div>

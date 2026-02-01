@@ -77,6 +77,7 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
   
   // Check if it's the night sensor
   if (config.nightSensor && config.nightSensor.entity_id === entityId) {
+    const oldState = config.nightSensor.state;
     config.nightSensor.lastChanged = timestamp;
     config.nightSensor.state = newState.state;
     
@@ -87,6 +88,11 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
       shape: "dot", 
       text: `Night: ${newState.state} - updated ${timeOnly}` 
     });
+    
+    // Return a signal that night sensor turned on (for turn off at night feature)
+    if (oldState !== 'on' && newState.state === 'on') {
+      return { nightSensorTurnedOn: true };
+    }
     return;
   }
   
