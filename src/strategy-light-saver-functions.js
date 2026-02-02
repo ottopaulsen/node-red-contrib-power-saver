@@ -51,8 +51,41 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
     
     node.log(`Updated trigger ${entityId}: state=${trigger.state}, lastChanged=${trigger.lastChanged}`);
     
-    // If trigger turned on and timedOut is true, control the lights
+    // If trigger turned on and timedOut is true, check if lights should be activated
     if (newState.state === 'on' && state.timedOut === true) {
+      // Check enable sensor if configured
+      if (config.enableSensor && config.enableSensor.entity_id) {
+        const enableSensorState = config.enableSensor.state;
+        
+        if (enableSensorState === 'off' && config.enableSensor.lastChanged) {
+          // Check how long enable sensor has been off
+          const lastChangedTime = parseUTCTimestamp(config.enableSensor.lastChanged);
+          const minutesOff = (now - lastChangedTime) / 1000 / 60;
+          
+          if (minutesOff > config.disableDelay) {
+            node.log(`Enable sensor has been off for ${minutesOff.toFixed(1)} minutes (> ${config.disableDelay} min), not activating lights`);
+            node.status({ 
+              fill: "yellow", 
+              shape: "ring", 
+              text: `Disabled - enable sensor off for ${minutesOff.toFixed(0)} min` 
+            });
+            return;
+          } else {
+            node.log(`Enable sensor has been off for ${minutesOff.toFixed(1)} minutes (< ${config.disableDelay} min), activating lights`);
+          }
+        } else if (enableSensorState === 'off' && !config.enableSensor.lastChanged) {
+          // Enable sensor is off but we don't know for how long - don't activate
+          node.log(`Enable sensor is off (unknown duration), not activating lights`);
+          node.status({ 
+            fill: "yellow", 
+            shape: "ring", 
+            text: `Disabled - enable sensor off` 
+          });
+          return;
+        }
+        // If enable sensor is on, continue normally
+      }
+      
       node.log(`Trigger ${entityId} turned on while timedOut=true, activating lights`);
       state.timedOut = false; // Reset timedOut after activating lights
       
@@ -96,7 +129,22 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
     return;
   }
   
-  node.warn(`Received state change for ${entityId} but not found in triggers or nightSensor`);
+  // Check if it's the enable sensor
+  if (config.enableSensor && config.enableSensor.entity_id === entityId) {
+    config.enableSensor.lastChanged = timestamp;
+    config.enableSensor.state = newState.state;
+    
+    node.log(`Updated enable sensor ${entityId}: state=${config.enableSensor.state}, lastChanged=${config.enableSensor.lastChanged}`);
+    
+    node.status({ 
+      fill: "green", 
+      shape: "dot", 
+      text: `Enable: ${newState.state} - updated ${timeOnly}` 
+    });
+    return;
+  }
+  
+  node.warn(`Received state change for ${entityId} but not found in triggers, nightSensor, or enableSensor`);
 }
 
 /**
@@ -325,6 +373,11 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
     entitiesToFetch.push({ id: config.nightSensor.entity_id, type: 'nightSensor' });
   }
   
+  // Check enable sensor
+  if (config.enableSensor && !config.enableSensor.state) {
+    entitiesToFetch.push({ id: config.enableSensor.entity_id, type: 'enableSensor' });
+  }
+  
   if (entitiesToFetch.length === 0) {
     node.log('All entities already have states');
   } else {
@@ -352,6 +405,10 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
               config.nightSensor.state = stateObj.state;
               config.nightSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
               node.log(`Fetched state for night sensor ${entity.id}: ${stateObj.state}`);
+            } else if (entity.type === 'enableSensor') {
+              config.enableSensor.state = stateObj.state;
+              config.enableSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
+              node.log(`Fetched state for enable sensor ${entity.id}: ${stateObj.state}`);
             }
           } else {
             node.warn(`State not found for ${entity.id}`);

@@ -13,6 +13,8 @@
       turnOffAtNight: { value: true },
       turnOffAtNightDelay: { value: 0 },
       levels: { value: [{ fromTime: "00:00", level: 100 }] },
+      enableSensor: { value: null },
+      disableDelay: { value: 0 },
       debugLog: { value: false }
     },
     inputs: 1,
@@ -30,6 +32,7 @@
       const $triggersContainer = $("#triggers-container");
       const $nightSensorContainer = $("#night-sensor-container");
       const $levelsContainer = $("#levels-container");
+      const $enableSensorContainer = $("#enable-sensor-container");
       
       let availableEntities = [];
       
@@ -77,6 +80,7 @@
         renderTriggers();
         renderNightSensor();
         renderLevels();
+        renderEnableSensor();
       };
       
       // Helper to update delete button visibility based on list count
@@ -399,6 +403,129 @@
         });
         
         updateDeleteButtons($list);
+      };
+      
+      const renderEnableSensor = function() {
+        let html = `
+          <label style="margin-top: 20px; white-space: nowrap;">
+            <i class="fa fa-toggle-on"></i> Enable sensor
+          </label>
+          <div style="margin-top: 5px; display: flex; align-items: center; gap: 10px;">
+            <div id="enable-sensor-input" style="flex: 1;"></div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <label for="node-input-disableDelay" style="margin: 0; white-space: nowrap;">Disable delay:</label>
+              <input type="number" id="node-input-disableDelay" min="0" max="999" step="1" style="width: 80px;" required>
+              <span style="white-space: nowrap;">min</span>
+            </div>
+          </div>
+        `;
+        $enableSensorContainer.html(html);
+        
+        const $container = $('#enable-sensor-input');
+        
+        // Create single entity selector (similar to night sensor)
+        const wrapper = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          padding: '5px',
+          border: '1px solid #ccc',
+          backgroundColor: '#fff'
+        });
+        
+        const inputWrapper = $('<div/>').css({
+          flex: '1',
+          position: 'relative'
+        });
+        
+        const searchInput = $('<input type="text" id="enable-sensor-search" placeholder="Search or type entity ID..."/>').css({
+          width: '100%',
+          padding: '5px',
+          boxSizing: 'border-box'
+        });
+        
+        const select = $('<select class="entity-selector" size="8"/>').css({
+          width: '100%',
+          display: 'none',
+          position: 'absolute',
+          top: '100%',
+          left: '0',
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          maxHeight: '200px',
+          marginTop: '2px'
+        });
+        
+        const populateSelect = function(filter) {
+          select.empty();
+          
+          if (availableEntities.length === 0) {
+            select.append('<option disabled>No entities found - type entity ID manually</option>');
+            return;
+          }
+          
+          // Filter for binary_sensor and input_boolean
+          const filterPrefixes = 'binary_sensor,input_boolean'.split(',');
+          const filtered = availableEntities.filter(e => {
+            if (!filter || filter === '') return filterPrefixes.some(p => e.startsWith(p + '.'));
+            const matchesFilter = e.toLowerCase().includes(filter.toLowerCase());
+            const matchesPrefix = filterPrefixes.some(p => e.startsWith(p + '.'));
+            return matchesFilter && matchesPrefix;
+          });
+          
+          if (filtered.length === 0) {
+            select.append('<option disabled>No matching entities found</option>');
+            return;
+          }
+          
+          const grouped = {};
+          filtered.forEach(entity => {
+            const domain = entity.split('.')[0];
+            if (!grouped[domain]) grouped[domain] = [];
+            grouped[domain].push(entity);
+          });
+          
+          Object.keys(grouped).sort().forEach(domain => {
+            const optgroup = $('<optgroup/>').attr('label', domain);
+            grouped[domain].sort().forEach(entity => {
+              optgroup.append($('<option/>').val(entity).text(entity));
+            });
+            select.append(optgroup);
+          });
+        };
+        
+        if (node.enableSensor && node.enableSensor.entity_id) {
+          searchInput.val(node.enableSensor.entity_id);
+        }
+        
+        searchInput.on('focus', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        searchInput.on('blur', function() {
+          setTimeout(() => select.hide(), 300);
+        });
+        
+        searchInput.on('input', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        select.on('mousedown', 'option', function(e) {
+          e.preventDefault(); // Prevent blur from firing
+          const val = $(this).val();
+          if (val) {
+            searchInput.val(val);
+          }
+          select.hide();
+          searchInput.focus();
+        });
+        
+        inputWrapper.append(searchInput).append(select);
+        wrapper.append(inputWrapper);
+        $container.append(wrapper);
       };
       
       const addLevelRow = function($list, fromTime, level) {
@@ -760,6 +887,14 @@
         }
       });
       this.levels = levels;
+      
+      // Save enable sensor
+      const enableSensorEntityId = $('#enable-sensor-search').val().trim();
+      if (enableSensorEntityId) {
+        this.enableSensor = { entity_id: enableSensorEntityId };
+      } else {
+        this.enableSensor = null;
+      }
     }
   });
 </script>
@@ -802,10 +937,14 @@
         <div id="levels-container"></div>
     </div>
     <div class="form-row">
+        <div id="enable-sensor-container"></div>
+    </div>
+    <div class="form-row">
         <label style="width: auto;">
             <input type="checkbox" id="node-input-debugLog" style="width: auto; vertical-align: middle;">
             <span style="vertical-align: middle;">Debug log</span>
         </label>
+        <div style="height: 15px;"></div>
     </div>
 </script>
 

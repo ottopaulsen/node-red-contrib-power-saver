@@ -18,6 +18,8 @@ module.exports = function (RED) {
       turnOffAtNight: config.turnOffAtNight !== false, // Default true
       turnOffAtNightDelay: config.turnOffAtNightDelay !== undefined ? config.turnOffAtNightDelay : 0,
       levels: Array.isArray(config.levels) ? config.levels : [],
+      enableSensor: config.enableSensor || null,
+      disableDelay: config.disableDelay !== undefined ? config.disableDelay : 0,
       debugLog: config.debugLog === true
     };
     
@@ -203,10 +205,18 @@ module.exports = function (RED) {
         homeAssistant.eventBus.on(eventTopic, handleStateChange);
         debugLog(`Subscribed to night sensor: ${eventTopic}`);
       }
+      
+      // Subscribe to enable sensor if configured
+      if (nodeConfig.enableSensor && nodeConfig.enableSensor.entity_id) {
+        const eventTopic = `ha_events:state_changed:${nodeConfig.enableSensor.entity_id}`;
+        homeAssistant.eventBus.on(eventTopic, handleStateChange);
+        debugLog(`Subscribed to enable sensor: ${eventTopic}`);
+      }
 
       const nightSensorText = nodeConfig.nightSensor ? ', 1 night sensor' : '';
-      node.status({ fill: "green", shape: "dot", text: `Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}, ${nodeConfig.levels.length} levels` });
-      debugLog(`Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}, and ${nodeConfig.levels.length} levels`);
+      const enableSensorText = nodeConfig.enableSensor ? ', 1 enable sensor' : '';
+      node.status({ fill: "green", shape: "dot", text: `Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${enableSensorText}, ${nodeConfig.levels.length} levels` });
+      debugLog(`Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${enableSensorText}, and ${nodeConfig.levels.length} levels`);
       
       // Fetch initial states after a delay to allow HA to connect
       setTimeout(() => {
@@ -248,6 +258,11 @@ module.exports = function (RED) {
         
         if (nodeConfig.nightSensor && nodeConfig.nightSensor.entity_id) {
           const eventTopic = `ha_events:state_changed:${nodeConfig.nightSensor.entity_id}`;
+          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
+        }
+        
+        if (nodeConfig.enableSensor && nodeConfig.enableSensor.entity_id) {
+          const eventTopic = `ha_events:state_changed:${nodeConfig.enableSensor.entity_id}`;
           homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
         }
       }
