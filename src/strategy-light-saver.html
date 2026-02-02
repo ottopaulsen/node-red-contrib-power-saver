@@ -382,6 +382,7 @@
           <div style="margin-top: 5px;">
             <div style="display: flex; align-items: center; gap: 5px; padding: 5px; border: 1px solid #ccc; backgroundColor: '#fff'; margin-bottom: 5px;">
               <span style="font-size: 11px; white-space: nowrap;">Night level:</span>
+              <input type="range" id="night-level-slider" min="0" max="100" step="1" style="flex: 1; min-width: 100px;" />
               <input type="number" id="night-level-input" min="0" max="100" step="1" placeholder="" style="width: 50px; padding: 3px; text-align: right;" />
               <span style="font-size: 11px;">%</span>
               <span style="font-size: 10px; color: #666; margin-left: 10px;">Level used when night sensor is on</span>
@@ -395,25 +396,38 @@
         $levelsContainer.html(html);
         
         const $nightLevelInput = $('#night-level-input');
+        const $nightLevelSlider = $('#night-level-slider');
         const $list = $('#levels-list');
         
         // Set existing night level value
         if (node.nightLevel !== undefined && node.nightLevel !== null && node.nightLevel !== '') {
           $nightLevelInput.val(node.nightLevel);
+          $nightLevelSlider.val(node.nightLevel);
         }
         
-        // Validate night level input
+        // Synchronize slider and input for night level
+        $nightLevelSlider.on('input', function() {
+          const val = $(this).val();
+          $nightLevelInput.val(val);
+        });
+        
         $nightLevelInput.on('input', function() {
           let val = $(this).val();
           if (val !== '') {
             val = parseInt(val);
             if (isNaN(val) || val < 0) {
               $(this).val('');
+              $nightLevelSlider.val(0);
             } else if (val > 100) {
               $(this).val(100);
+              $nightLevelSlider.val(100);
             } else {
-              $(this).val(Math.floor(val));
+              const intVal = Math.floor(val);
+              $(this).val(intVal);
+              $nightLevelSlider.val(intVal);
             }
+          } else {
+            $nightLevelSlider.val(0);
           }
         });
         
@@ -533,16 +547,22 @@
         
         fromTimeWrapper.append(fromTimeLabel).append(fromTimeInput);
         
-        // Level input
+        // Level input with slider
         const levelWrapper = $('<div/>').css({
           display: 'flex',
           alignItems: 'center',
-          gap: '5px'
+          gap: '5px',
+          flex: '1'
         });
         
         const levelLabel = $('<span/>').text('Level:').css({
           fontSize: '11px',
           whiteSpace: 'nowrap'
+        });
+        
+        const levelSlider = $('<input type="range" class="level-slider" min="0" max="100" step="1"/>').css({
+          flex: '1',
+          minWidth: '100px'
         });
         
         const levelInput = $('<input type="number" class="level-input" min="0" max="100" step="1" placeholder=""/>').css({
@@ -551,22 +571,34 @@
           textAlign: 'right'
         });
         
-        if (level !== '') {
-          levelInput.val(level);
-        }
+        // Set default value to 50 if level is not provided
+        const defaultLevel = (level !== undefined && level !== '') ? level : 50;
+        levelInput.val(defaultLevel);
+        levelSlider.val(defaultLevel);
         
-        // Validate level
+        // Synchronize slider and input
+        levelSlider.on('input', function() {
+          const val = $(this).val();
+          levelInput.val(val);
+        });
+        
         levelInput.on('input', function() {
           let val = $(this).val();
           if (val !== '') {
             val = parseInt(val);
             if (isNaN(val) || val < 0) {
               $(this).val('');
+              levelSlider.val(0);
             } else if (val > 100) {
               $(this).val(100);
+              levelSlider.val(100);
             } else {
-              $(this).val(Math.floor(val));
+              const intVal = Math.floor(val);
+              $(this).val(intVal);
+              levelSlider.val(intVal);
             }
+          } else {
+            levelSlider.val(0);
           }
         });
         
@@ -574,7 +606,7 @@
           fontSize: '11px'
         });
         
-        levelWrapper.append(levelLabel).append(levelInput).append(levelUnit);
+        levelWrapper.append(levelLabel).append(levelSlider).append(levelInput).append(levelUnit);
         
         const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Level"><i class="fa fa-trash"></i></button>');
         
@@ -675,6 +707,11 @@
         updateTurnOffAtNightControls();
       });
       
+      // Ensure turnOffAtNightDelay shows 0 if not set
+      if (!node.turnOffAtNightDelay && node.turnOffAtNightDelay !== 0) {
+        $('#node-input-turnOffAtNightDelay').val(0);
+      }
+      
       // Initialize on open
       setTimeout(updateEntities, 100);
     },
@@ -746,6 +783,20 @@
 </script>
 
 <script type="text/html" data-template-name="ps-strategy-light-saver">
+    <style>
+        /* Hide spinner arrows for level input fields */
+        #night-level-input::-webkit-inner-spin-button,
+        #night-level-input::-webkit-outer-spin-button,
+        .level-input::-webkit-inner-spin-button,
+        .level-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #night-level-input,
+        .level-input {
+            -moz-appearance: textfield;
+        }
+    </style>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" style="width: 70%">
@@ -764,9 +815,6 @@
         <div id="triggers-container"></div>
     </div>
     <div class="form-row">
-        <div id="levels-container"></div>
-    </div>
-    <div class="form-row">
         <div id="night-sensor-container"></div>
     </div>
     <div class="form-row">
@@ -776,11 +824,14 @@
                 <span style="vertical-align: middle;">Turn off at night</span>
             </label>
             <div style="display: flex; align-items: center; gap: 5px;">
-                <label for="node-input-turnOffAtNightDelay" style="margin: 0; white-space: nowrap;">Delay:</label>
+                <label for="node-input-turnOffAtNightDelay" style="margin: 0; white-space: nowrap; text-align: right;">Delay:</label>
                 <input type="number" id="node-input-turnOffAtNightDelay" min="0" max="999" step="1" style="width: 80px;" required>
                 <span style="white-space: nowrap;">sec</span>
             </div>
         </div>
+    </div>
+    <div class="form-row">
+        <div id="levels-container"></div>
     </div>
     <div class="form-row">
         <div id="enable-sensor-container"></div>
