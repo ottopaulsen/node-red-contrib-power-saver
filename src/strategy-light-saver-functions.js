@@ -15,6 +15,50 @@ function parseUTCTimestamp(timestamp) {
 }
 
 /**
+ * Check if it's currently night mode based on night sensor state and invert setting
+ * @param {object} config - Configuration object with nightSensor and invertNightSensor
+ * @returns {boolean} - True if it's night mode, false otherwise
+ */
+function isNightMode(config) {
+  if (!config.nightSensor || !config.nightSensor.state) {
+    return false;
+  }
+  
+  const sensorState = config.nightSensor.state;
+  const isOn = (sensorState === 'on' || sensorState === true || sensorState === 'true');
+  
+  // If inverted, night mode is when sensor is off
+  if (config.invertNightSensor) {
+    return !isOn;
+  }
+  
+  // Normal mode: night mode is when sensor is on
+  return isOn;
+}
+
+/**
+ * Check if it's currently away mode based on away sensor state and invert setting
+ * @param {object} config - Configuration object with awaySensor and invertAwaySensor
+ * @returns {boolean} - True if it's away mode, false otherwise
+ */
+function isAwayMode(config) {
+  if (!config.awaySensor || !config.awaySensor.state) {
+    return false;
+  }
+  
+  const sensorState = config.awaySensor.state;
+  const isOn = (sensorState === 'on' || sensorState === true || sensorState === 'true');
+  
+  // If inverted, away mode is when sensor is off
+  if (config.invertAwaySensor) {
+    return !isOn;
+  }
+  
+  // Normal mode: away mode is when sensor is on
+  return isOn;
+}
+
+/**
  * Handle state change events from Home Assistant
  * @param {object} event - The state change event from HA
  * @param {object} config - Configuration object with triggers, lights, nightSensor, etc.
@@ -51,41 +95,8 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
     
     node.log(`Updated trigger ${entityId}: state=${trigger.state}, lastChanged=${trigger.lastChanged}`);
     
-    // If trigger turned on and timedOut is true, check if lights should be activated
+    // If trigger turned on and timedOut is true, activate lights
     if (newState.state === 'on' && state.timedOut === true) {
-      // Check enable sensor if configured
-      if (config.enableSensor && config.enableSensor.entity_id) {
-        const enableSensorState = config.enableSensor.state;
-        
-        if (enableSensorState === 'off' && config.enableSensor.lastChanged) {
-          // Check how long enable sensor has been off
-          const lastChangedTime = parseUTCTimestamp(config.enableSensor.lastChanged);
-          const minutesOff = (now - lastChangedTime) / 1000 / 60;
-          
-          if (minutesOff > config.disableDelay) {
-            node.log(`Enable sensor has been off for ${minutesOff.toFixed(1)} minutes (> ${config.disableDelay} min), not activating lights`);
-            node.status({ 
-              fill: "yellow", 
-              shape: "ring", 
-              text: `Disabled - enable sensor off for ${minutesOff.toFixed(0)} min` 
-            });
-            return;
-          } else {
-            node.log(`Enable sensor has been off for ${minutesOff.toFixed(1)} minutes (< ${config.disableDelay} min), activating lights`);
-          }
-        } else if (enableSensorState === 'off' && !config.enableSensor.lastChanged) {
-          // Enable sensor is off but we don't know for how long - don't activate
-          node.log(`Enable sensor is off (unknown duration), not activating lights`);
-          node.status({ 
-            fill: "yellow", 
-            shape: "ring", 
-            text: `Disabled - enable sensor off` 
-          });
-          return;
-        }
-        // If enable sensor is on, continue normally
-      }
-      
       node.log(`Trigger ${entityId} turned on while timedOut=true, activating lights`);
       state.timedOut = false; // Reset timedOut after activating lights
       
@@ -110,7 +121,7 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
   
   // Check if it's the night sensor
   if (config.nightSensor && config.nightSensor.entity_id === entityId) {
-    const oldState = config.nightSensor.state;
+    const wasNightMode = isNightMode(config); // Check if it was night mode before update
     config.nightSensor.lastChanged = timestamp;
     config.nightSensor.state = newState.state;
     
@@ -122,29 +133,37 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
       text: `Night: ${newState.state} - updated ${timeOnly}` 
     });
     
-    // Return a signal that night sensor turned on (for turn off at night feature)
-    if (oldState !== 'on' && newState.state === 'on') {
+    // Return a signal that night sensor turned on/activated (considering invert setting)
+    const isNowNightMode = isNightMode(config);
+    if (!wasNightMode && isNowNightMode) {
       return { nightSensorTurnedOn: true };
     }
     return;
   }
   
-  // Check if it's the enable sensor
-  if (config.enableSensor && config.enableSensor.entity_id === entityId) {
-    config.enableSensor.lastChanged = timestamp;
-    config.enableSensor.state = newState.state;
+  // Check if it's the away sensor
+  if (config.awaySensor && config.awaySensor.entity_id === entityId) {
+    const wasAwayMode = isAwayMode(config); // Check if it was away mode before update
+    config.awaySensor.lastChanged = timestamp;
+    config.awaySensor.state = newState.state;
     
-    node.log(`Updated enable sensor ${entityId}: state=${config.enableSensor.state}, lastChanged=${config.enableSensor.lastChanged}`);
+    node.log(`Updated away sensor ${entityId}: state=${config.awaySensor.state}, lastChanged=${config.awaySensor.lastChanged}`);
     
     node.status({ 
       fill: "green", 
       shape: "dot", 
-      text: `Enable: ${newState.state} - updated ${timeOnly}` 
+      text: `Away: ${newState.state} - updated ${timeOnly}` 
     });
+    
+    // Return a signal that away sensor turned on/activated (considering invert setting)
+    const isNowAwayMode = isAwayMode(config);
+    if (!wasAwayMode && isNowAwayMode) {
+      return { awaySensorTurnedOn: true };
+    }
     return;
   }
   
-  node.warn(`Received state change for ${entityId} but not found in triggers, nightSensor, or enableSensor`);
+  node.warn(`Received state change for ${entityId} but not found in triggers, nightSensor, or awaySensor`);
 }
 
 /**
@@ -157,9 +176,8 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
 function findCurrentLevel(config, node, clock = null) {
   const now = clock ? clock.now() : new Date();
   
-  // If night sensor is on and nightLevel is set, use that
-  if (config.nightSensor && config.nightSensor.state === 'on' && 
-      config.nightLevel !== null && config.nightLevel !== undefined) {
+  // If night sensor is active and nightLevel is set, use that
+  if (isNightMode(config) && config.nightLevel !== null && config.nightLevel !== undefined) {
     node.log(`Using night level: ${config.nightLevel}%`);
     return config.nightLevel;
   }
@@ -373,9 +391,9 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
     entitiesToFetch.push({ id: config.nightSensor.entity_id, type: 'nightSensor' });
   }
   
-  // Check enable sensor
-  if (config.enableSensor && !config.enableSensor.state) {
-    entitiesToFetch.push({ id: config.enableSensor.entity_id, type: 'enableSensor' });
+  // Check away sensor
+  if (config.awaySensor && !config.awaySensor.state) {
+    entitiesToFetch.push({ id: config.awaySensor.entity_id, type: 'awaySensor' });
   }
   
   if (entitiesToFetch.length === 0) {
@@ -405,10 +423,10 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
               config.nightSensor.state = stateObj.state;
               config.nightSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
               node.log(`Fetched state for night sensor ${entity.id}: ${stateObj.state}`);
-            } else if (entity.type === 'enableSensor') {
-              config.enableSensor.state = stateObj.state;
-              config.enableSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
-              node.log(`Fetched state for enable sensor ${entity.id}: ${stateObj.state}`);
+            } else if (entity.type === 'awaySensor') {
+              config.awaySensor.state = stateObj.state;
+              config.awaySensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
+              node.log(`Fetched state for away sensor ${entity.id}: ${stateObj.state}`);
             }
           } else {
             node.warn(`State not found for ${entity.id}`);
@@ -468,6 +486,8 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
 
 module.exports = {
   parseUTCTimestamp,
+  isNightMode,
+  isAwayMode,
   handleStateChange,
   findCurrentLevel,
   controlLights,

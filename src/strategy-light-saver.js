@@ -14,16 +14,19 @@ module.exports = function (RED) {
       lights: Array.isArray(config.lights) ? config.lights : [],
       lightTimeout: config.lightTimeout !== undefined ? config.lightTimeout : 10,
       nightSensor: config.nightSensor || null,
-      nightLevel: config.nightLevel !== undefined ? config.nightLevel : null, // Level used when night sensor is on
-      turnOffAtNight: config.turnOffAtNight !== false, // Default true
-      turnOffAtNightDelay: config.turnOffAtNightDelay !== undefined ? config.turnOffAtNightDelay : 0,
+      nightLevel: config.nightLevel !== undefined ? config.nightLevel : null,
+      nightDelay: config.nightDelay !== undefined ? config.nightDelay : 0,
+      invertNightSensor: config.invertNightSensor === true,
+      awaySensor: config.awaySensor || null,
+      awayLevel: config.awayLevel !== undefined ? config.awayLevel : null,
+      awayDelay: config.awayDelay !== undefined ? config.awayDelay : 0,
+      invertAwaySensor: config.invertAwaySensor === true,
       levels: Array.isArray(config.levels) ? config.levels : [],
-      enableSensor: config.enableSensor || null,
-      disableDelay: config.disableDelay !== undefined ? config.disableDelay : 0,
       debugLog: config.debugLog === true
     };
     
-    let turnOffAtNightTimer = null; // Timer for turning off lights when night sensor activates
+    let nightActivationTimer = null; // Timer for setting lights to night level when night sensor activates
+    let awayActivationTimer = null; // Timer for setting lights to away level when away sensor activates
     
     // Debug logging function
     const debugLog = function(message) {
@@ -107,17 +110,17 @@ module.exports = function (RED) {
     const handleStateChange = function (event) {
       const result = funcs.handleStateChange(event, nodeConfig, state, nodeWrapper, homeAssistant);
       
-      // Check if night sensor turned on
-      if (result && result.nightSensorTurnedOn && nodeConfig.turnOffAtNight && nodeConfig.nightSensor) {
-        debugLog(`Night sensor turned on, scheduling lights to night level after ${nodeConfig.turnOffAtNightDelay} seconds`);
+      // Check if night sensor activated (turned on or off if inverted)
+      if (result && result.nightSensorTurnedOn && nodeConfig.nightSensor) {
+        debugLog(`Night sensor activated, scheduling lights to night level after ${nodeConfig.nightDelay} seconds`);
         
         // Clear any existing timer
-        if (turnOffAtNightTimer) {
-          clearTimeout(turnOffAtNightTimer);
+        if (nightActivationTimer) {
+          clearTimeout(nightActivationTimer);
         }
         
         // Set lights to night level after delay
-        turnOffAtNightTimer = setTimeout(() => {
+        nightActivationTimer = setTimeout(() => {
           debugLog('Applying night level to lights');
           const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
           if (level !== null) {
@@ -126,7 +129,25 @@ module.exports = function (RED) {
           } else {
             node.warn('Could not determine level for night mode');
           }
-        }, nodeConfig.turnOffAtNightDelay * 1000);
+        }, nodeConfig.nightDelay * 1000);
+      }
+      
+      // Check if away sensor activated (turned on or off if inverted)
+      if (result && result.awaySensorTurnedOn && nodeConfig.awaySensor) {
+        debugLog(`Away sensor activated, scheduling lights to away level after ${nodeConfig.awayDelay} seconds`);
+        
+        // Clear any existing timer
+        if (awayActivationTimer) {
+          clearTimeout(awayActivationTimer);
+        }
+        
+        // Set lights to away level after delay
+        awayActivationTimer = setTimeout(() => {
+          debugLog('Applying away level to lights');
+          const level = nodeConfig.awayLevel !== null && nodeConfig.awayLevel !== undefined ? nodeConfig.awayLevel : 0;
+          funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+          node.status({ fill: "yellow", shape: "dot", text: `Away mode: ${level}%` });
+        }, nodeConfig.awayDelay * 1000);
       }
     };
     
@@ -206,17 +227,17 @@ module.exports = function (RED) {
         debugLog(`Subscribed to night sensor: ${eventTopic}`);
       }
       
-      // Subscribe to enable sensor if configured
-      if (nodeConfig.enableSensor && nodeConfig.enableSensor.entity_id) {
-        const eventTopic = `ha_events:state_changed:${nodeConfig.enableSensor.entity_id}`;
+      // Subscribe to away sensor if configured
+      if (nodeConfig.awaySensor && nodeConfig.awaySensor.entity_id) {
+        const eventTopic = `ha_events:state_changed:${nodeConfig.awaySensor.entity_id}`;
         homeAssistant.eventBus.on(eventTopic, handleStateChange);
-        debugLog(`Subscribed to enable sensor: ${eventTopic}`);
+        debugLog(`Subscribed to away sensor: ${eventTopic}`);
       }
 
       const nightSensorText = nodeConfig.nightSensor ? ', 1 night sensor' : '';
-      const enableSensorText = nodeConfig.enableSensor ? ', 1 enable sensor' : '';
-      node.status({ fill: "green", shape: "dot", text: `Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${enableSensorText}, ${nodeConfig.levels.length} levels` });
-      debugLog(`Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${enableSensorText}, and ${nodeConfig.levels.length} levels`);
+      const awaySensorText = nodeConfig.awaySensor ? ', 1 away sensor' : '';
+      node.status({ fill: "green", shape: "dot", text: `Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${awaySensorText}, ${nodeConfig.levels.length} levels` });
+      debugLog(`Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${awaySensorText}, and ${nodeConfig.levels.length} levels`);
       
       // Fetch initial states after a delay to allow HA to connect
       setTimeout(() => {
@@ -242,11 +263,18 @@ module.exports = function (RED) {
         debugLog('Cleared timeout check timer');
       }
       
-      // Clear turn off at night timer
-      if (turnOffAtNightTimer) {
-        clearTimeout(turnOffAtNightTimer);
-        turnOffAtNightTimer = null;
-        debugLog('Cleared turn off at night timer');
+      // Clear night activation timer
+      if (nightActivationTimer) {
+        clearTimeout(nightActivationTimer);
+        nightActivationTimer = null;
+        debugLog('Cleared night activation timer');
+      }
+      
+      // Clear away activation timer
+      if (awayActivationTimer) {
+        clearTimeout(awayActivationTimer);
+        awayActivationTimer = null;
+        debugLog('Cleared away activation timer');
       }
       
       if (homeAssistant && homeAssistant.eventBus) {
@@ -261,8 +289,8 @@ module.exports = function (RED) {
           homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
         }
         
-        if (nodeConfig.enableSensor && nodeConfig.enableSensor.entity_id) {
-          const eventTopic = `ha_events:state_changed:${nodeConfig.enableSensor.entity_id}`;
+        if (nodeConfig.awaySensor && nodeConfig.awaySensor.entity_id) {
+          const eventTopic = `ha_events:state_changed:${nodeConfig.awaySensor.entity_id}`;
           homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
         }
       }
