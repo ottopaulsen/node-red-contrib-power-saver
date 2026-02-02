@@ -78,9 +78,124 @@
         renderLights();
         renderLightTimeout();
         renderTriggers();
-        renderNightSensor();
         renderLevels();
+        renderNightSensor();
         renderEnableSensor();
+      };
+      
+      // Helper to create entity selector with search and dropdown
+      const createEntitySelector = function(initialValue, filterPrefix, useMousedown) {
+        const inputWrapper = $('<div/>').css({
+          flex: '1',
+          position: 'relative'
+        });
+        
+        const searchInput = $('<input type="text" placeholder="Search or type entity ID..."/>').css({
+          width: '100%',
+          padding: '5px',
+          boxSizing: 'border-box'
+        });
+        
+        const select = $('<select class="entity-selector" size="8"/>').css({
+          width: '100%',
+          display: 'none',
+          position: 'absolute',
+          top: '100%',
+          left: '0',
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          maxHeight: '200px',
+          marginTop: '2px'
+        });
+        
+        const populateSelect = function(filter) {
+          select.empty();
+          
+          if (availableEntities.length === 0) {
+            select.append('<option disabled>No entities found - type entity ID manually</option>');
+            return;
+          }
+          
+          let filteredEntities = availableEntities;
+          if (filterPrefix) {
+            const prefixes = filterPrefix.split(',');
+            filteredEntities = availableEntities.filter(e => 
+              prefixes.some(prefix => e.startsWith(prefix + '.'))
+            );
+          }
+          
+          const grouped = {};
+          let matchCount = 0;
+          
+          filteredEntities.forEach(entity => {
+            if (!filter || entity.toLowerCase().includes(filter.toLowerCase())) {
+              const domain = entity.split('.')[0];
+              if (!grouped[domain]) grouped[domain] = [];
+              grouped[domain].push(entity);
+              matchCount++;
+            }
+          });
+          
+          if (matchCount === 0) {
+            select.append('<option disabled>No matches found</option>');
+            return;
+          }
+          
+          Object.keys(grouped).sort().forEach(domain => {
+            const optgroup = $(`<optgroup label="${domain.toUpperCase()}"/>`);
+            grouped[domain].sort().forEach(entity => {
+              optgroup.append($('<option/>').val(entity).text(entity));
+            });
+            select.append(optgroup);
+          });
+        };
+        
+        if (initialValue) {
+          searchInput.val(initialValue);
+        }
+        
+        searchInput.on('focus', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        searchInput.on('blur', function() {
+          setTimeout(() => select.hide(), useMousedown ? 300 : 200);
+        });
+        
+        searchInput.on('input', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        if (useMousedown) {
+          select.on('mousedown', 'option', function(e) {
+            e.preventDefault();
+            const val = $(this).val();
+            if (val) {
+              searchInput.val(val);
+            }
+            select.hide();
+            searchInput.focus();
+          });
+        } else {
+          select.on('click', 'option', function() {
+            const val = $(this).val();
+            if (val) {
+              searchInput.val(val);
+            }
+            select.hide();
+          });
+        }
+        
+        inputWrapper.append(searchInput).append(select);
+        
+        return {
+          wrapper: inputWrapper,
+          searchInput: searchInput,
+          select: select
+        };
       };
       
       // Helper to update delete button visibility based on list count
@@ -209,7 +324,6 @@
         
         const $container = $('#night-sensor-input');
         
-        // Create single entity selector
         const wrapper = $('<div/>').css({
           display: 'flex',
           alignItems: 'center',
@@ -219,102 +333,20 @@
           backgroundColor: '#fff'
         });
         
-        const inputWrapper = $('<div/>').css({
-          flex: '1',
-          position: 'relative'
-        });
+        const initialValue = node.nightSensor && node.nightSensor.entity_id ? node.nightSensor.entity_id : '';
+        const selector = createEntitySelector(initialValue, 'binary_sensor,input_boolean', false);
         
-        const searchInput = $('<input type="text" id="night-sensor-search" placeholder="Search or type entity ID..."/>').css({
-          width: '100%',
-          padding: '5px',
-          boxSizing: 'border-box'
-        });
+        // Set ID on search input for later reference
+        selector.searchInput.attr('id', 'night-sensor-search');
         
-        const select = $('<select class="entity-selector" size="8"/>').css({
-          width: '100%',
-          display: 'none',
-          position: 'absolute',
-          top: '100%',
-          left: '0',
-          zIndex: 1000,
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          maxHeight: '200px',
-          marginTop: '2px'
-        });
-        
-        const populateSelect = function(filter) {
-          select.empty();
-          
-          if (availableEntities.length === 0) {
-            select.append('<option disabled>No entities found - type entity ID manually</option>');
-            return;
-          }
-          
-          const filterPrefixes = 'binary_sensor,input_boolean'.split(',');
-          const filtered = availableEntities.filter(e => {
-            if (!filter || filter === '') return filterPrefixes.some(p => e.startsWith(p + '.'));
-            const matchesFilter = e.toLowerCase().includes(filter.toLowerCase());
-            const matchesPrefix = filterPrefixes.some(p => e.startsWith(p + '.'));
-            return matchesFilter && matchesPrefix;
-          });
-          
-          if (filtered.length === 0) {
-            select.append('<option disabled>No matching entities found</option>');
-            return;
-          }
-          
-          const grouped = {};
-          filtered.forEach(entity => {
-            const domain = entity.split('.')[0];
-            if (!grouped[domain]) grouped[domain] = [];
-            grouped[domain].push(entity);
-          });
-          
-          Object.keys(grouped).sort().forEach(domain => {
-            const optgroup = $('<optgroup/>').attr('label', domain);
-            grouped[domain].sort().forEach(entity => {
-              optgroup.append($('<option/>').val(entity).text(entity));
-            });
-            select.append(optgroup);
-          });
-        };
-        
-        if (node.nightSensor && node.nightSensor.entity_id) {
-          searchInput.val(node.nightSensor.entity_id);
-        }
-        
-        searchInput.on('focus', function() {
-          populateSelect($(this).val());
-          select.show();
-        });
-        
-        searchInput.on('blur', function() {
-          setTimeout(() => select.hide(), 200);
-        });
-        
-        searchInput.on('input', function() {
-          populateSelect($(this).val());
-          select.show();
-        });
-        
-        select.on('click', 'option', function() {
-          const val = $(this).val();
-          if (val) {
-            searchInput.val(val);
-          }
-          select.hide();
-        });
-        
-        inputWrapper.append(searchInput).append(select);
-        wrapper.append(inputWrapper);
+        wrapper.append(selector.wrapper);
         $container.append(wrapper);
         
         // Update turn off at night controls based on night sensor selection
         updateTurnOffAtNightControls();
         
         // Watch for changes to night sensor input
-        searchInput.on('change input blur', function() {
+        selector.searchInput.on('change input blur', function() {
           setTimeout(updateTurnOffAtNightControls, 100);
         });
       };
@@ -423,7 +455,6 @@
         
         const $container = $('#enable-sensor-input');
         
-        // Create single entity selector (similar to night sensor)
         const wrapper = $('<div/>').css({
           display: 'flex',
           alignItems: 'center',
@@ -433,98 +464,13 @@
           backgroundColor: '#fff'
         });
         
-        const inputWrapper = $('<div/>').css({
-          flex: '1',
-          position: 'relative'
-        });
+        const initialValue = node.enableSensor && node.enableSensor.entity_id ? node.enableSensor.entity_id : '';
+        const selector = createEntitySelector(initialValue, 'binary_sensor,input_boolean', true);
         
-        const searchInput = $('<input type="text" id="enable-sensor-search" placeholder="Search or type entity ID..."/>').css({
-          width: '100%',
-          padding: '5px',
-          boxSizing: 'border-box'
-        });
+        // Set ID on search input for later reference
+        selector.searchInput.attr('id', 'enable-sensor-search');
         
-        const select = $('<select class="entity-selector" size="8"/>').css({
-          width: '100%',
-          display: 'none',
-          position: 'absolute',
-          top: '100%',
-          left: '0',
-          zIndex: 1000,
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          maxHeight: '200px',
-          marginTop: '2px'
-        });
-        
-        const populateSelect = function(filter) {
-          select.empty();
-          
-          if (availableEntities.length === 0) {
-            select.append('<option disabled>No entities found - type entity ID manually</option>');
-            return;
-          }
-          
-          // Filter for binary_sensor and input_boolean
-          const filterPrefixes = 'binary_sensor,input_boolean'.split(',');
-          const filtered = availableEntities.filter(e => {
-            if (!filter || filter === '') return filterPrefixes.some(p => e.startsWith(p + '.'));
-            const matchesFilter = e.toLowerCase().includes(filter.toLowerCase());
-            const matchesPrefix = filterPrefixes.some(p => e.startsWith(p + '.'));
-            return matchesFilter && matchesPrefix;
-          });
-          
-          if (filtered.length === 0) {
-            select.append('<option disabled>No matching entities found</option>');
-            return;
-          }
-          
-          const grouped = {};
-          filtered.forEach(entity => {
-            const domain = entity.split('.')[0];
-            if (!grouped[domain]) grouped[domain] = [];
-            grouped[domain].push(entity);
-          });
-          
-          Object.keys(grouped).sort().forEach(domain => {
-            const optgroup = $('<optgroup/>').attr('label', domain);
-            grouped[domain].sort().forEach(entity => {
-              optgroup.append($('<option/>').val(entity).text(entity));
-            });
-            select.append(optgroup);
-          });
-        };
-        
-        if (node.enableSensor && node.enableSensor.entity_id) {
-          searchInput.val(node.enableSensor.entity_id);
-        }
-        
-        searchInput.on('focus', function() {
-          populateSelect($(this).val());
-          select.show();
-        });
-        
-        searchInput.on('blur', function() {
-          setTimeout(() => select.hide(), 300);
-        });
-        
-        searchInput.on('input', function() {
-          populateSelect($(this).val());
-          select.show();
-        });
-        
-        select.on('mousedown', 'option', function(e) {
-          e.preventDefault(); // Prevent blur from firing
-          const val = $(this).val();
-          if (val) {
-            searchInput.val(val);
-          }
-          select.hide();
-          searchInput.focus();
-        });
-        
-        inputWrapper.append(searchInput).append(select);
-        wrapper.append(inputWrapper);
+        wrapper.append(selector.wrapper);
         $container.append(wrapper);
       };
       
@@ -657,108 +603,8 @@
           gap: '5px'
         });
         
-        const inputWrapper = $('<div/>').css({
-          flex: '1',
-          position: 'relative'
-        });
-        
-        // Create search input
-        const searchInput = $('<input type="text" placeholder="Search or type entity ID..."/>').css({
-          width: '100%',
-          padding: '5px',
-          boxSizing: 'border-box'
-        });
-        
-        // Create dropdown
-        const select = $('<select class="entity-selector" size="8"/>').css({
-          width: '100%',
-          display: 'none',
-          position: 'absolute',
-          top: '100%',
-          left: '0',
-          zIndex: 1000,
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          maxHeight: '200px',
-          marginTop: '2px'
-        });
-        
-        // Populate dropdown
-        const populateSelect = function(filter) {
-          select.empty();
-          
-          if (availableEntities.length === 0) {
-            select.append('<option disabled>No entities found - type entity ID manually</option>');
-            return;
-          }
-          
-          // Filter entities based on prefix
-          let filteredEntities = availableEntities;
-          if (filterPrefix) {
-            const prefixes = filterPrefix.split(',');
-            filteredEntities = availableEntities.filter(e => 
-              prefixes.some(prefix => e.startsWith(prefix + '.'))
-            );
-          }
-          
-          // Group entities by domain
-          const grouped = {};
-          let matchCount = 0;
-          
-          filteredEntities.forEach(entity => {
-            if (!filter || entity.toLowerCase().includes(filter.toLowerCase())) {
-              const domain = entity.split('.')[0];
-              if (!grouped[domain]) grouped[domain] = [];
-              grouped[domain].push(entity);
-              matchCount++;
-            }
-          });
-          
-          if (matchCount === 0) {
-            select.append('<option disabled>No matches found</option>');
-            return;
-          }
-          
-          Object.keys(grouped).sort().forEach(domain => {
-            const optgroup = $(`<optgroup label="${domain.toUpperCase()}"/>`);
-            grouped[domain].sort().forEach(entity => {
-              optgroup.append($('<option/>').val(entity).text(entity));
-            });
-            select.append(optgroup);
-          });
-        };
-        
-        // Set initial value
-        if (entityId) {
-          searchInput.val(entityId);
-        }
-        
-        // Show/hide dropdown on focus
-        searchInput.on('focus', function() {
-          populateSelect($(this).val());
-          select.show();
-        });
-        
-        searchInput.on('blur', function() {
-          setTimeout(() => select.hide(), 200);
-        });
-        
-        // Filter on input
-        searchInput.on('input', function() {
-          populateSelect($(this).val());
-          select.show();
-        });
-        
-        // Select from dropdown
-        select.on('click', 'option', function() {
-          const val = $(this).val();
-          if (val) {
-            searchInput.val(val);
-          }
-          select.hide();
-        });
-        
-        inputWrapper.append(searchInput).append(select);
+        // Create entity selector
+        const selector = createEntitySelector(entityId, filterPrefix, false);
         
         // Add timeout input for triggers (null means it's a light)
         let timeoutWrapper = null;
@@ -813,7 +659,7 @@
           updateDeleteButtons($list);
         });
         
-        row.append(inputWrapper);
+        row.append(selector.wrapper);
         if (timeoutWrapper) {
           row.append(timeoutWrapper);
         }
@@ -918,6 +764,9 @@
         <div id="triggers-container"></div>
     </div>
     <div class="form-row">
+        <div id="levels-container"></div>
+    </div>
+    <div class="form-row">
         <div id="night-sensor-container"></div>
     </div>
     <div class="form-row">
@@ -932,9 +781,6 @@
                 <span style="white-space: nowrap;">sec</span>
             </div>
         </div>
-    </div>
-    <div class="form-row">
-        <div id="levels-container"></div>
     </div>
     <div class="form-row">
         <div id="enable-sensor-container"></div>
