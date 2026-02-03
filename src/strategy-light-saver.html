@@ -17,6 +17,10 @@
       awayDelay: { value: 0 },
       invertAwaySensor: { value: false },
       levels: { value: [{ fromTime: "00:00", level: 100 }] },
+      overrideEnabled: { value: false },
+      overrideType: { value: 'on' },
+      overrideLevel: { value: 50 },
+      override: { value: 'auto' },
       debugLog: { value: false }
     },
     inputs: 1,
@@ -37,6 +41,59 @@
       const $levelsContainer = $("#levels-container");
       
       let availableEntities = [];
+      
+      // Convert override from config to HTML properties if it exists
+      if (node.override !== undefined) {
+        if (node.override === 'auto') {
+          node.overrideEnabled = false;
+          node.overrideType = 'on';
+        } else if (node.override === 'off') {
+          node.overrideEnabled = true;
+          node.overrideType = 'off';
+        } else if (node.override === 'on') {
+          node.overrideEnabled = true;
+          node.overrideType = 'on';
+        } else if (typeof node.override === 'number') {
+          node.overrideEnabled = true;
+          node.overrideType = 'level';
+          node.overrideLevel = node.override;
+        }
+      }
+      
+      // Try to get runtime override state from custom endpoint (overrides saved config)
+      $.getJSON('ps-strategy-light-saver/' + node.id + '/override', function(data) {
+        if (data && data.override !== undefined) {
+          if (data.override === 'auto') {
+            node.overrideEnabled = false;
+            node.overrideType = 'on';
+          } else if (data.override === 'off') {
+            node.overrideEnabled = true;
+            node.overrideType = 'off';
+          } else if (data.override === 'on') {
+            node.overrideEnabled = true;
+            node.overrideType = 'on';
+          } else if (typeof data.override === 'number') {
+            node.overrideEnabled = true;
+            node.overrideType = 'level';
+            node.overrideLevel = data.override;
+          }
+          
+          // Update UI with runtime state
+          setTimeout(() => {
+            $('#node-input-overrideEnabled').prop('checked', node.overrideEnabled === true);
+            if (node.overrideType) {
+              $(`input[name="overrideType"][value="${node.overrideType}"]`).prop('checked', true);
+            }
+            if (node.overrideLevel !== undefined) {
+              $('#node-input-overrideLevel').val(node.overrideLevel);
+              $('#override-level-slider').val(node.overrideLevel);
+            }
+            updateOverrideControls();
+          }, 200);
+        }
+      }).fail(function() {
+        // Endpoint not available or no data, use config values
+      });
       
       // Initialize server selector and get entities
       const updateEntities = function() {
@@ -842,11 +899,82 @@
         $list.append(row);
       };
       
+      // Function to update override controls
+      const updateOverrideControls = function() {
+        const $overrideEnabled = $('#node-input-overrideEnabled');
+        const $overrideType = $('input[name="overrideType"]');
+        const $overrideSlider = $('#override-level-slider');
+        const $overrideInput = $('#node-input-overrideLevel');
+        
+        const isEnabled = $overrideEnabled.prop('checked');
+        
+        // Enable/disable radio buttons and level controls
+        $overrideType.prop('disabled', !isEnabled);
+        
+        if (isEnabled) {
+          // If no radio button is selected, select the saved one or default to 'on'
+          let selectedType = $('input[name="overrideType"]:checked').val();
+          if (!selectedType) {
+            selectedType = node.overrideType || 'on';
+            $(`input[name="overrideType"][value="${selectedType}"]`).prop('checked', true);
+          }
+          
+          const levelEnabled = selectedType === 'level';
+          $overrideSlider.prop('disabled', !levelEnabled);
+          $overrideInput.prop('disabled', !levelEnabled);
+        } else {
+          $overrideSlider.prop('disabled', true);
+          $overrideInput.prop('disabled', true);
+        }
+      };
+      
       // Initialize on server change
       $server.on("change", updateEntities);
       
+      // Initialize override controls
+      $('#node-input-overrideEnabled').on('change', updateOverrideControls);
+      $('input[name="overrideType"]').on('change', updateOverrideControls);
+      
+      // Synchronize override slider and input
+      $('#override-level-slider').on('input', function() {
+        $('#node-input-overrideLevel').val($(this).val());
+      });
+      
+      $('#node-input-overrideLevel').on('input', function() {
+        let val = $(this).val();
+        if (val !== '') {
+          val = parseInt(val);
+          if (isNaN(val) || val < 0) {
+            $(this).val(0);
+            $('#override-level-slider').val(0);
+          } else if (val > 100) {
+            $(this).val(100);
+            $('#override-level-slider').val(100);
+          } else {
+            $('#override-level-slider').val(val);
+          }
+        }
+      });
+      
       // Initialize on open
-      setTimeout(updateEntities, 100);
+      setTimeout(() => {
+        updateEntities();
+        
+        // Set the checkbox based on overrideEnabled
+        $('#node-input-overrideEnabled').prop('checked', node.overrideEnabled === true);
+        
+        // Set the radio button based on saved overrideType
+        if (node.overrideType) {
+          $(`input[name="overrideType"][value="${node.overrideType}"]`).prop('checked', true);
+        }
+        
+        // Update slider value
+        if (node.overrideLevel !== undefined) {
+          $('#override-level-slider').val(node.overrideLevel);
+        }
+        
+        updateOverrideControls();
+      }, 100);
     },
     oneditsave: function() {
       // Save lights (now first)
@@ -911,6 +1039,27 @@
       } else {
         this.awaySensor = null;
       }
+      
+      // Save override settings
+      // Convert HTML properties to override for storage
+      const overrideEnabled = $('#node-input-overrideEnabled').prop('checked');
+      const selectedType = $('input[name="overrideType"]:checked').val();
+      const overrideLevel = parseInt($('#node-input-overrideLevel').val());
+      
+      this.overrideEnabled = overrideEnabled;
+      this.overrideType = selectedType || 'on';
+      this.overrideLevel = overrideLevel;
+      
+      // Calculate and save override
+      if (!overrideEnabled) {
+        this.override = 'auto';
+      } else if (selectedType === 'off') {
+        this.override = 'off';
+      } else if (selectedType === 'on') {
+        this.override = 'on';
+      } else if (selectedType === 'level') {
+        this.override = overrideLevel;
+      }
     }
   });
 </script>
@@ -922,6 +1071,8 @@
         #night-level-input::-webkit-outer-spin-button,
         #node-input-awayLevel::-webkit-inner-spin-button,
         #node-input-awayLevel::-webkit-outer-spin-button,
+        #node-input-overrideLevel::-webkit-inner-spin-button,
+        #node-input-overrideLevel::-webkit-outer-spin-button,
         .level-input::-webkit-inner-spin-button,
         .level-input::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -929,6 +1080,7 @@
         }
         #night-level-input,
         #node-input-awayLevel,
+        #node-input-overrideLevel,
         .level-input {
             -moz-appearance: textfield;
         }
@@ -958,6 +1110,29 @@
     </div>
     <div class="form-row">
         <div id="levels-container"></div>
+    </div>
+    <div class="form-row">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;">
+            <label style="width: auto; margin: 0 30px 0 0;">
+                <input type="checkbox" id="node-input-overrideEnabled" style="width: auto; vertical-align: middle;">
+                <span style="vertical-align: middle;">Override:</span>
+            </label>
+            <label style="width: 50px; margin: 0; display: flex; align-items: center; gap: 3px;">
+                <input type="radio" name="overrideType" value="off" style="width: auto; margin: 0;">
+                <span>Off</span>
+            </label>
+            <label style="width: 50px; margin: 0; display: flex; align-items: center; gap: 3px;">
+                <input type="radio" name="overrideType" value="on" style="width: auto; margin: 0;">
+                <span>On</span>
+            </label>
+            <label style="width: 60px; margin: 0; display: flex; align-items: center; gap: 3px;">
+                <input type="radio" name="overrideType" value="level" style="width: auto; margin: 0;">
+                <span>Level:</span>
+            </label>
+            <input type="range" id="override-level-slider" min="0" max="100" step="1" style="flex: 1; min-width: 100px; margin-left: 3px;" />
+            <input type="number" id="node-input-overrideLevel" min="0" max="100" step="1" style="width: 50px; padding: 3px; text-align: right;" />
+            <span style="font-size: 11px;">%</span>
+        </div>
     </div>
     <div class="form-row">
         <label style="width: auto;">

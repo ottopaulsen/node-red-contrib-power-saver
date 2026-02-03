@@ -8,6 +8,18 @@ module.exports = function (RED) {
     const node = this;
     node.status({});
 
+    // Initialize override from config
+    let override = 'auto';
+    if (config.overrideEnabled === true) {
+      if (config.overrideType === 'off') {
+        override = 'off';
+      } else if (config.overrideType === 'on') {
+        override = 'on';
+      } else if (config.overrideType === 'level') {
+        override = config.overrideLevel !== undefined ? config.overrideLevel : 50;
+      }
+    }
+
     // Configuration
     const nodeConfig = {
       triggers: Array.isArray(config.triggers) ? config.triggers : [],
@@ -22,12 +34,31 @@ module.exports = function (RED) {
       awayDelay: config.awayDelay !== undefined ? config.awayDelay : 0,
       invertAwaySensor: config.invertAwaySensor === true,
       levels: Array.isArray(config.levels) ? config.levels : [],
-      debugLog: config.debugLog === true
+      debugLog: config.debugLog === true,
+      override: override
     };
+    
+    // Helper function to save override state to context
+    const saveOverrideState = function() {
+      node.context().set('override', nodeConfig.override);
+      node.context().set('overrideEnabled', nodeConfig.override !== 'auto');
+      if (nodeConfig.override === 'auto') {
+        node.context().set('overrideType', 'on');
+      } else if (nodeConfig.override === 'off') {
+        node.context().set('overrideType', 'off');
+      } else if (nodeConfig.override === 'on') {
+        node.context().set('overrideType', 'on');
+      } else if (typeof nodeConfig.override === 'number') {
+        node.context().set('overrideType', 'level');
+        node.context().set('overrideLevel', nodeConfig.override);
+      }
+    };
+    
+    // Save initial override state
+    saveOverrideState();
     
     let nightActivationTimer = null; // Timer for setting lights to night level when night sensor activates
     let awayActivationTimer = null; // Timer for setting lights to away level when away sensor activates
-    let overrideMode = 'auto'; // Override mode: 'auto', 'off', 'on', or number (0-100)
     
     // Debug logging function
     const debugLog = function(message) {
@@ -109,9 +140,9 @@ module.exports = function (RED) {
 
     // Function to handle state changes
     const handleStateChange = function (event) {
-      // If override mode is active (not 'auto'), don't process state changes
-      if (overrideMode !== 'auto') {
-        debugLog('Override mode active, ignoring state change');
+      // If override is active (not 'auto'), don't process state changes
+      if (nodeConfig.override !== 'auto') {
+        debugLog('Override active, ignoring state change');
         return;
       }
       
@@ -160,8 +191,8 @@ module.exports = function (RED) {
     
     // Function to check timeouts every minute
     const checkTimeouts = function() {
-      // If override mode is active (not 'auto'), don't check timeouts
-      if (overrideMode !== 'auto') {
+      // If override is active (not 'auto'), don't check timeouts
+      if (nodeConfig.override !== 'auto') {
         return;
       }
       
@@ -252,6 +283,12 @@ module.exports = function (RED) {
           nodeConfig.debugLog = payload.config.debugLog;
         }
         
+        // Check for override and apply it before sending configs
+        if (payload.config.override !== undefined) {
+          nodeConfig.override = payload.config.override;
+          saveOverrideState();
+        }
+        
         // Send old config
         node.send({
           payload: {
@@ -265,7 +302,7 @@ module.exports = function (RED) {
           timeoutCheckInterval = setInterval(checkTimeouts, 60000);
         }
         
-        // Send new config
+        // Send new config (with updated override)
         node.send({
           payload: {
             newConfig: JSON.parse(JSON.stringify(nodeConfig))
@@ -274,31 +311,25 @@ module.exports = function (RED) {
         
         debugLog('Configuration updated via input');
         
-        // Check for override after config update
+        // Apply override actions after config is sent
         if (payload.config.override !== undefined) {
-          const override = payload.config.override;
-          
-          if (override === 'off') {
-            overrideMode = 'off';
+          if (nodeConfig.override === 'off') {
             funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
             node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
-            debugLog('Override mode: OFF - lights turned off');
-          } else if (override === 'on') {
-            overrideMode = 'on';
+            debugLog('Override: OFF - lights turned off');
+          } else if (nodeConfig.override === 'on') {
             const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
             if (level !== null) {
               funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
-              debugLog(`Override mode: ON - lights set to ${level}%`);
+              debugLog(`Override: ON - lights set to ${level}%`);
             }
-          } else if (typeof override === 'number' && override >= 0 && override <= 100) {
-            overrideMode = override;
-            funcs.controlLights(nodeConfig.lights, override, nodeWrapper, homeAssistant);
-            node.status({ fill: "green", shape: "dot", text: `Override: ${override}%` });
-            debugLog(`Override mode: ${override}% - lights set to ${override}%`);
-          } else if (override === 'auto') {
-            overrideMode = 'auto';
-            debugLog('Override mode: AUTO - returned to normal operation');
+          } else if (typeof nodeConfig.override === 'number' && nodeConfig.override >= 0 && nodeConfig.override <= 100) {
+            funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
+            node.status({ fill: "green", shape: "dot", text: `Override: ${nodeConfig.override}%` });
+            debugLog(`Override: ${nodeConfig.override}% - lights set to ${nodeConfig.override}%`);
+          } else if (nodeConfig.override === 'auto') {
+            debugLog('Override: AUTO - returned to normal operation');
             
             // If triggers are not timed out, set lights to correct level
             if (state.timedOut === false) {
@@ -315,7 +346,7 @@ module.exports = function (RED) {
               node.status({ fill: "blue", shape: "dot", text: "Override: AUTO (normal operation)" });
             }
           } else {
-            node.warn(`Invalid override value: ${override}`);
+            node.warn(`Invalid override value: ${nodeConfig.override}`);
           }
         }
       }
@@ -366,6 +397,26 @@ module.exports = function (RED) {
       setTimeout(() => {
         debugLog('Fetching initial states after startup delay...');
         fetchMissingStates();
+        
+        // Apply override after states are fetched
+        setTimeout(() => {
+          if (nodeConfig.override !== 'auto') {
+            debugLog(`Applying override from config: ${nodeConfig.override}`);
+            if (nodeConfig.override === 'off') {
+              funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+              node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
+            } else if (nodeConfig.override === 'on') {
+              const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
+              if (level !== null) {
+                funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+                node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
+              }
+            } else if (typeof nodeConfig.override === 'number') {
+              funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
+              node.status({ fill: "green", shape: "dot", text: `Override: ${nodeConfig.override}%` });
+            }
+          }
+        }, 2000); // Wait 2 more seconds for states to be available
       }, 6000); // 6 seconds should be enough for HA to connect
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
@@ -422,4 +473,28 @@ module.exports = function (RED) {
   }
 
   RED.nodes.registerType("ps-strategy-light-saver", StrategyLightSaverNode);
+  
+  // Add HTTP endpoint to get runtime override state
+  RED.httpAdmin.get('/ps-strategy-light-saver/:id/override', function(req, res) {
+    const nodeId = req.params.id;
+    const node = RED.nodes.getNode(nodeId);
+    
+    if (!node) {
+      res.status(404).json({ error: 'Node not found' });
+      return;
+    }
+    
+    // Get override state from context
+    const override = node.context().get('override');
+    const overrideEnabled = node.context().get('overrideEnabled');
+    const overrideType = node.context().get('overrideType');
+    const overrideLevel = node.context().get('overrideLevel');
+    
+    res.json({
+      override: override !== undefined ? override : 'auto',
+      overrideEnabled: overrideEnabled !== undefined ? overrideEnabled : false,
+      overrideType: overrideType !== undefined ? overrideType : 'on',
+      overrideLevel: overrideLevel !== undefined ? overrideLevel : 50
+    });
+  });
 };
