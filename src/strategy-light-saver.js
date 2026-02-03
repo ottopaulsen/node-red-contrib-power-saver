@@ -311,7 +311,7 @@ module.exports = function (RED) {
         
         debugLog('Configuration updated via input');
         
-        // Apply override actions after config is sent
+        // Apply override actions immediately after config is sent
         if (payload.config.override !== undefined) {
           if (nodeConfig.override === 'off') {
             funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
@@ -323,6 +323,11 @@ module.exports = function (RED) {
               funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
               debugLog(`Override: ON - lights set to ${level}%`);
+            } else {
+              // If we can't determine level, use 100% as default
+              funcs.controlLights(nodeConfig.lights, 100, nodeWrapper, homeAssistant);
+              node.status({ fill: "green", shape: "dot", text: "Override: ON (100%)" });
+              debugLog('Override: ON - lights set to 100% (default)');
             }
           } else if (typeof nodeConfig.override === 'number' && nodeConfig.override >= 0 && nodeConfig.override <= 100) {
             funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
@@ -330,8 +335,9 @@ module.exports = function (RED) {
             debugLog(`Override: ${nodeConfig.override}% - lights set to ${nodeConfig.override}%`);
           } else if (nodeConfig.override === 'auto') {
             debugLog('Override: AUTO - returned to normal operation');
+            node.status({ fill: "blue", shape: "dot", text: "Override: AUTO" });
             
-            // If triggers are not timed out, set lights to correct level
+            // If triggers are not timed out, set lights to correct level immediately
             if (state.timedOut === false) {
               debugLog('Triggers active, setting lights to appropriate level');
               const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
@@ -339,11 +345,7 @@ module.exports = function (RED) {
                 funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
                 node.status({ fill: "green", shape: "dot", text: `AUTO: ${level}%` });
                 debugLog(`Lights set to ${level}% (auto mode with active triggers)`);
-              } else {
-                node.status({ fill: "blue", shape: "dot", text: "Override: AUTO (normal operation)" });
               }
-            } else {
-              node.status({ fill: "blue", shape: "dot", text: "Override: AUTO (normal operation)" });
             }
           } else {
             node.warn(`Invalid override value: ${nodeConfig.override}`);
@@ -398,26 +400,32 @@ module.exports = function (RED) {
         debugLog('Fetching initial states after startup delay...');
         fetchMissingStates();
         
-        // Apply override after states are fetched
+        // Apply override immediately after fetching states
         setTimeout(() => {
           if (nodeConfig.override !== 'auto') {
             debugLog(`Applying override from config: ${nodeConfig.override}`);
             if (nodeConfig.override === 'off') {
               funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
               node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
+              debugLog('Override: OFF applied on startup');
             } else if (nodeConfig.override === 'on') {
               const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
               if (level !== null) {
                 funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
                 node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
+                debugLog(`Override: ON applied on startup - ${level}%`);
+              } else {
+                node.warn('Override ON on startup: Could not determine level');
+                node.status({ fill: "yellow", shape: "dot", text: "Override: ON (no level)" });
               }
             } else if (typeof nodeConfig.override === 'number') {
               funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: `Override: ${nodeConfig.override}%` });
+              debugLog(`Override: ${nodeConfig.override}% applied on startup`);
             }
           }
-        }, 2000); // Wait 2 more seconds for states to be available
-      }, 6000); // 6 seconds should be enough for HA to connect
+        }, 1000); // Wait 1 second for states to be available (reduced from 2)
+      }, 4000); // Reduced from 6 seconds - HA connection should be faster
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
       node.error(`Failed to subscribe: ${err.message}`);
