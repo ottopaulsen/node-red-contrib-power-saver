@@ -27,6 +27,7 @@ module.exports = function (RED) {
     
     let nightActivationTimer = null; // Timer for setting lights to night level when night sensor activates
     let awayActivationTimer = null; // Timer for setting lights to away level when away sensor activates
+    let overrideMode = 'auto'; // Override mode: 'auto', 'off', 'on', or number (0-100)
     
     // Debug logging function
     const debugLog = function(message) {
@@ -108,6 +109,12 @@ module.exports = function (RED) {
 
     // Function to handle state changes
     const handleStateChange = function (event) {
+      // If override mode is active (not 'auto'), don't process state changes
+      if (overrideMode !== 'auto') {
+        debugLog('Override mode active, ignoring state change');
+        return;
+      }
+      
       const result = funcs.handleStateChange(event, nodeConfig, state, nodeWrapper, homeAssistant);
       
       // Check if night sensor activated (turned on or off if inverted)
@@ -153,6 +160,11 @@ module.exports = function (RED) {
     
     // Function to check timeouts every minute
     const checkTimeouts = function() {
+      // If override mode is active (not 'auto'), don't check timeouts
+      if (overrideMode !== 'auto') {
+        return;
+      }
+      
       funcs.checkTimeouts(nodeConfig, state, nodeWrapper, homeAssistant);
     };
 
@@ -185,25 +197,136 @@ module.exports = function (RED) {
         }
       }
       
-      if (!payload || !payload.commands) return;
+      if (!payload) return;
       
-      const commands = payload.commands;
+      let sendConfigRequested = false;
       
-      // If sendSettings is true, send all configuration
-      if (commands.sendSettings === true) {
-        // Fetch states from HA for entities that don't have state yet
+      // Check for sendConfig request in commands
+      if (payload.commands && payload.commands.sendConfig === true) {
+        sendConfigRequested = true;
+      }
+      
+      // Check for config updates
+      if (payload.config && typeof payload.config === 'object') {
+        // Save old config before changes
+        const oldConfig = JSON.parse(JSON.stringify(nodeConfig));
+        
+        // Apply config changes
+        if (payload.config.triggers !== undefined) {
+          nodeConfig.triggers = Array.isArray(payload.config.triggers) ? payload.config.triggers : [];
+        }
+        if (payload.config.lights !== undefined) {
+          nodeConfig.lights = Array.isArray(payload.config.lights) ? payload.config.lights : [];
+        }
+        if (payload.config.lightTimeout !== undefined) {
+          nodeConfig.lightTimeout = payload.config.lightTimeout;
+        }
+        if (payload.config.nightSensor !== undefined) {
+          nodeConfig.nightSensor = payload.config.nightSensor;
+        }
+        if (payload.config.nightLevel !== undefined) {
+          nodeConfig.nightLevel = payload.config.nightLevel;
+        }
+        if (payload.config.nightDelay !== undefined) {
+          nodeConfig.nightDelay = payload.config.nightDelay;
+        }
+        if (payload.config.invertNightSensor !== undefined) {
+          nodeConfig.invertNightSensor = payload.config.invertNightSensor;
+        }
+        if (payload.config.awaySensor !== undefined) {
+          nodeConfig.awaySensor = payload.config.awaySensor;
+        }
+        if (payload.config.awayLevel !== undefined) {
+          nodeConfig.awayLevel = payload.config.awayLevel;
+        }
+        if (payload.config.awayDelay !== undefined) {
+          nodeConfig.awayDelay = payload.config.awayDelay;
+        }
+        if (payload.config.invertAwaySensor !== undefined) {
+          nodeConfig.invertAwaySensor = payload.config.invertAwaySensor;
+        }
+        if (payload.config.levels !== undefined) {
+          nodeConfig.levels = Array.isArray(payload.config.levels) ? payload.config.levels : [];
+        }
+        if (payload.config.debugLog !== undefined) {
+          nodeConfig.debugLog = payload.config.debugLog;
+        }
+        
+        // Send old config
+        node.send({
+          payload: {
+            oldConfig: oldConfig
+          }
+        });
+        
+        // Clear and restart timeout check interval to use new timeouts
+        if (timeoutCheckInterval) {
+          clearInterval(timeoutCheckInterval);
+          timeoutCheckInterval = setInterval(checkTimeouts, 60000);
+        }
+        
+        // Send new config
+        node.send({
+          payload: {
+            newConfig: JSON.parse(JSON.stringify(nodeConfig))
+          }
+        });
+        
+        debugLog('Configuration updated via input');
+        
+        // Check for override after config update
+        if (payload.config.override !== undefined) {
+          const override = payload.config.override;
+          
+          if (override === 'off') {
+            overrideMode = 'off';
+            funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+            node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
+            debugLog('Override mode: OFF - lights turned off');
+          } else if (override === 'on') {
+            overrideMode = 'on';
+            const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
+            if (level !== null) {
+              funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+              node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
+              debugLog(`Override mode: ON - lights set to ${level}%`);
+            }
+          } else if (typeof override === 'number' && override >= 0 && override <= 100) {
+            overrideMode = override;
+            funcs.controlLights(nodeConfig.lights, override, nodeWrapper, homeAssistant);
+            node.status({ fill: "green", shape: "dot", text: `Override: ${override}%` });
+            debugLog(`Override mode: ${override}% - lights set to ${override}%`);
+          } else if (override === 'auto') {
+            overrideMode = 'auto';
+            debugLog('Override mode: AUTO - returned to normal operation');
+            
+            // If triggers are not timed out, set lights to correct level
+            if (state.timedOut === false) {
+              debugLog('Triggers active, setting lights to appropriate level');
+              const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
+              if (level !== null) {
+                funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+                node.status({ fill: "green", shape: "dot", text: `AUTO: ${level}%` });
+                debugLog(`Lights set to ${level}% (auto mode with active triggers)`);
+              } else {
+                node.status({ fill: "blue", shape: "dot", text: "Override: AUTO (normal operation)" });
+              }
+            } else {
+              node.status({ fill: "blue", shape: "dot", text: "Override: AUTO (normal operation)" });
+            }
+          } else {
+            node.warn(`Invalid override value: ${override}`);
+          }
+        }
+      }
+      
+      // Send config if requested
+      if (sendConfigRequested) {
         fetchMissingStates();
         
         const output = { 
           payload: {
-            version: VERSION,
-            triggers: nodeConfig.triggers,
-            lights: nodeConfig.lights,
-            lightTimeout: nodeConfig.lightTimeout,
-            nightSensor: nodeConfig.nightSensor,
-            nightLevel: nodeConfig.nightLevel,
-            levels: nodeConfig.levels,
-            timedOut: state.timedOut
+            config: JSON.parse(JSON.stringify(nodeConfig))
           }
         };
         
