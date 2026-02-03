@@ -176,6 +176,14 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
 function findCurrentLevel(config, node, clock = null) {
   const now = clock ? clock.now() : new Date();
   
+  // Priority: Away sensor > Night sensor > Time-based levels
+  
+  // If away sensor is active and awayLevel is set, use that
+  if (isAwayMode(config) && config.awayLevel !== null && config.awayLevel !== undefined) {
+    node.log(`Using away level: ${config.awayLevel}%`);
+    return config.awayLevel;
+  }
+  
   // If night sensor is active and nightLevel is set, use that
   if (isNightMode(config) && config.nightLevel !== null && config.nightLevel !== undefined) {
     node.log(`Using night level: ${config.nightLevel}%`);

@@ -637,4 +637,190 @@ describe("strategy-light-saver-functions", function () {
       expect(call.service_data.brightness_pct).to.equal(30);
     });
   });
+
+  describe("isNightMode", function () {
+    it("should return true when night sensor is on and not inverted", function () {
+      const config = {
+        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
+        invertNightSensor: false
+      };
+
+      const result = funcs.isNightMode(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return false when night sensor is off and not inverted", function () {
+      const config = {
+        nightSensor: { state: 'off', entity_id: 'binary_sensor.night' },
+        invertNightSensor: false
+      };
+
+      const result = funcs.isNightMode(config);
+      expect(result).to.be.false;
+    });
+
+    it("should return false when night sensor is on and inverted", function () {
+      const config = {
+        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
+        invertNightSensor: true
+      };
+
+      const result = funcs.isNightMode(config);
+      expect(result).to.be.false;
+    });
+
+    it("should return true when night sensor is off and inverted", function () {
+      const config = {
+        nightSensor: { state: 'off', entity_id: 'binary_sensor.night' },
+        invertNightSensor: true
+      };
+
+      const result = funcs.isNightMode(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return false when night sensor is not configured", function () {
+      const config = {
+        nightSensor: null,
+        invertNightSensor: false
+      };
+
+      const result = funcs.isNightMode(config);
+      expect(result).to.be.false;
+    });
+
+    it("should return false when night sensor has no state", function () {
+      const config = {
+        nightSensor: { entity_id: 'binary_sensor.night' },
+        invertNightSensor: false
+      };
+
+      const result = funcs.isNightMode(config);
+      expect(result).to.be.false;
+    });
+  });
+
+  describe("isAwayMode", function () {
+    it("should return true when away sensor is on and not inverted", function () {
+      const config = {
+        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
+        invertAwaySensor: false
+      };
+
+      const result = funcs.isAwayMode(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return false when away sensor is off and not inverted", function () {
+      const config = {
+        awaySensor: { state: 'off', entity_id: 'binary_sensor.away' },
+        invertAwaySensor: false
+      };
+
+      const result = funcs.isAwayMode(config);
+      expect(result).to.be.false;
+    });
+
+    it("should return false when away sensor is on and inverted", function () {
+      const config = {
+        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
+        invertAwaySensor: true
+      };
+
+      const result = funcs.isAwayMode(config);
+      expect(result).to.be.false;
+    });
+
+    it("should return true when away sensor is off and inverted", function () {
+      const config = {
+        awaySensor: { state: 'off', entity_id: 'binary_sensor.away' },
+        invertAwaySensor: true
+      };
+
+      const result = funcs.isAwayMode(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return false when away sensor is not configured", function () {
+      const config = {
+        awaySensor: null,
+        invertAwaySensor: false
+      };
+
+      const result = funcs.isAwayMode(config);
+      expect(result).to.be.false;
+    });
+
+    it("should return false when away sensor has no state", function () {
+      const config = {
+        awaySensor: { entity_id: 'binary_sensor.away' },
+        invertAwaySensor: false
+      };
+
+      const result = funcs.isAwayMode(config);
+      expect(result).to.be.false;
+    });
+  });
+
+  describe("findCurrentLevel with away mode", function () {
+    it("should return away level when away sensor is on", function () {
+      const config = {
+        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
+        awayLevel: 10,
+        invertAwaySensor: false,
+        nightSensor: { state: 'off', entity_id: 'binary_sensor.night' },
+        nightLevel: 25,
+        levels: [{ fromTime: "00:00", level: 100 }]
+      };
+
+      const level = funcs.findCurrentLevel(config, mockNode, mockClock);
+
+      expect(level).to.equal(10);
+      expect(mockNode.log.calledWith('Using away level: 10%')).to.be.true;
+    });
+
+    it("should prioritize away level over night level", function () {
+      const config = {
+        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
+        awayLevel: 10,
+        invertAwaySensor: false,
+        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
+        nightLevel: 25,
+        invertNightSensor: false,
+        levels: [{ fromTime: "00:00", level: 100 }]
+      };
+
+      const level = funcs.findCurrentLevel(config, mockNode, mockClock);
+
+      expect(level).to.equal(10);
+      expect(mockNode.log.calledWith('Using away level: 10%')).to.be.true;
+    });
+
+    it("should fall through to time-based level when awayLevel is not set", function () {
+      const config = {
+        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
+        awayLevel: null,
+        invertAwaySensor: false,
+        levels: [{ fromTime: "00:00", level: 100 }]
+      };
+
+      const level = funcs.findCurrentLevel(config, mockNode, mockClock);
+
+      expect(level).to.equal(100);
+    });
+
+    it("should use away level with inverted sensor", function () {
+      const config = {
+        awaySensor: { state: 'off', entity_id: 'binary_sensor.away' },
+        awayLevel: 5,
+        invertAwaySensor: true,
+        levels: [{ fromTime: "00:00", level: 100 }]
+      };
+
+      const level = funcs.findCurrentLevel(config, mockNode, mockClock);
+
+      expect(level).to.equal(5);
+      expect(mockNode.log.calledWith('Using away level: 5%')).to.be.true;
+    });
+  });
 });
