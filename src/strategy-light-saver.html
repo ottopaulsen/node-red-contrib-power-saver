@@ -17,10 +17,8 @@
       awayDelay: { value: 0 },
       invertAwaySensor: { value: false },
       levels: { value: [{ fromTime: "00:00", level: 100 }] },
-      overrideEnabled: { value: false },
-      overrideType: { value: 'on' },
-      overrideLevel: { value: 50 },
       override: { value: 'auto' },
+      contextStorage: { value: "default", required: false },
       debugLog: { value: false }
     },
     inputs: 1,
@@ -42,58 +40,27 @@
       
       let availableEntities = [];
       
-      // Convert override from config to HTML properties if it exists
+      // Convert override from config to UI fields (local variables only for display)
+      let uiOverrideEnabled = false;
+      let uiOverrideType = 'on';
+      let uiOverrideLevel = 50;
+      
       if (node.override !== undefined) {
         if (node.override === 'auto') {
-          node.overrideEnabled = false;
-          node.overrideType = 'on';
+          uiOverrideEnabled = false;
+          uiOverrideType = 'on';
         } else if (node.override === 'off') {
-          node.overrideEnabled = true;
-          node.overrideType = 'off';
+          uiOverrideEnabled = true;
+          uiOverrideType = 'off';
         } else if (node.override === 'on') {
-          node.overrideEnabled = true;
-          node.overrideType = 'on';
+          uiOverrideEnabled = true;
+          uiOverrideType = 'on';
         } else if (typeof node.override === 'number') {
-          node.overrideEnabled = true;
-          node.overrideType = 'level';
-          node.overrideLevel = node.override;
+          uiOverrideEnabled = true;
+          uiOverrideType = 'level';
+          uiOverrideLevel = node.override;
         }
       }
-      
-      // Try to get runtime override state from custom endpoint (overrides saved config)
-      $.getJSON('ps-strategy-light-saver/' + node.id + '/override', function(data) {
-        if (data && data.override !== undefined) {
-          if (data.override === 'auto') {
-            node.overrideEnabled = false;
-            node.overrideType = 'on';
-          } else if (data.override === 'off') {
-            node.overrideEnabled = true;
-            node.overrideType = 'off';
-          } else if (data.override === 'on') {
-            node.overrideEnabled = true;
-            node.overrideType = 'on';
-          } else if (typeof data.override === 'number') {
-            node.overrideEnabled = true;
-            node.overrideType = 'level';
-            node.overrideLevel = data.override;
-          }
-          
-          // Update UI with runtime state
-          setTimeout(() => {
-            $('#node-input-overrideEnabled').prop('checked', node.overrideEnabled === true);
-            if (node.overrideType) {
-              $(`input[name="overrideType"][value="${node.overrideType}"]`).prop('checked', true);
-            }
-            if (node.overrideLevel !== undefined) {
-              $('#node-input-overrideLevel').val(node.overrideLevel);
-              $('#override-level-slider').val(node.overrideLevel);
-            }
-            updateOverrideControls();
-          }, 200);
-        }
-      }).fail(function() {
-        // Endpoint not available or no data, use config values
-      });
       
       // Initialize server selector and get entities
       const updateEntities = function() {
@@ -912,10 +879,10 @@
         $overrideType.prop('disabled', !isEnabled);
         
         if (isEnabled) {
-          // If no radio button is selected, select the saved one or default to 'on'
+          // If no radio button is selected, select default 'on'
           let selectedType = $('input[name="overrideType"]:checked').val();
           if (!selectedType) {
-            selectedType = node.overrideType || 'on';
+            selectedType = 'on';
             $(`input[name="overrideType"][value="${selectedType}"]`).prop('checked', true);
           }
           
@@ -956,22 +923,25 @@
         }
       });
       
+      // Initialize context storage selector
+      $("#node-input-contextStorage").typedInput({
+        types: [
+          {
+            value: "storages",
+            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
+          },
+        ],
+      });
+      
       // Initialize on open
       setTimeout(() => {
         updateEntities();
         
-        // Set the checkbox based on overrideEnabled
-        $('#node-input-overrideEnabled').prop('checked', node.overrideEnabled === true);
-        
-        // Set the radio button based on saved overrideType
-        if (node.overrideType) {
-          $(`input[name="overrideType"][value="${node.overrideType}"]`).prop('checked', true);
-        }
-        
-        // Update slider value
-        if (node.overrideLevel !== undefined) {
-          $('#override-level-slider').val(node.overrideLevel);
-        }
+        // Set UI fields from local variables (config values only, not runtime)
+        $('#node-input-overrideEnabled').prop('checked', uiOverrideEnabled);
+        $(`input[name="overrideType"][value="${uiOverrideType}"]`).prop('checked', true);
+        $('#override-level-slider').val(uiOverrideLevel);
+        $('#node-input-overrideLevel').val(uiOverrideLevel);
         
         updateOverrideControls();
       }, 100);
@@ -1040,17 +1010,12 @@
         this.awaySensor = null;
       }
       
-      // Save override settings
-      // Convert HTML properties to override for storage
+      // Calculate and save override from UI fields
       const overrideEnabled = $('#node-input-overrideEnabled').prop('checked');
       const selectedType = $('input[name="overrideType"]:checked').val();
       const overrideLevel = parseInt($('#node-input-overrideLevel').val());
       
-      this.overrideEnabled = overrideEnabled;
-      this.overrideType = selectedType || 'on';
-      this.overrideLevel = overrideLevel;
-      
-      // Calculate and save override
+      // Save only override to config
       if (!overrideEnabled) {
         this.override = 'auto';
       } else if (selectedType === 'off') {
@@ -1133,6 +1098,10 @@
             <input type="number" id="node-input-overrideLevel" min="0" max="100" step="1" style="width: 50px; padding: 3px; text-align: right;" />
             <span style="font-size: 11px;">%</span>
         </div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-contextStorage" style="width: 240px;"><i class="fa fa-archive"></i> Context storage</label>
+        <input type="text" id="node-input-contextStorage" style="width: 200px">
     </div>
     <div class="form-row">
         <label style="width: auto;">

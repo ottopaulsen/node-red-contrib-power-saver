@@ -7,18 +7,20 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const node = this;
     node.status({});
+    
+    // Store context storage setting
+    node.contextStorage = config.contextStorage || "default";
 
-    // Initialize override from config
-    let override = 'auto';
-    if (config.overrideEnabled === true) {
-      if (config.overrideType === 'off') {
-        override = 'off';
-      } else if (config.overrideType === 'on') {
-        override = 'on';
-      } else if (config.overrideType === 'level') {
-        override = config.overrideLevel !== undefined ? config.overrideLevel : 50;
-      }
+    // Load saved runtime override from context storage
+    let runtimeOverride = null;
+    try {
+      runtimeOverride = node.context().get('override', node.contextStorage);
+    } catch (err) {
+      // Context storage might not be available (e.g., in tests)
     }
+    
+    // Use runtime override if available, otherwise use config override
+    const override = runtimeOverride !== null && runtimeOverride !== undefined ? runtimeOverride : (config.override || 'auto');
 
     // Configuration
     const nodeConfig = {
@@ -38,34 +40,28 @@ module.exports = function (RED) {
       override: override
     };
     
-    // Helper function to save override state to context
-    const saveOverrideState = function() {
-      node.context().set('override', nodeConfig.override);
-      node.context().set('overrideEnabled', nodeConfig.override !== 'auto');
-      if (nodeConfig.override === 'auto') {
-        node.context().set('overrideType', 'on');
-      } else if (nodeConfig.override === 'off') {
-        node.context().set('overrideType', 'off');
-      } else if (nodeConfig.override === 'on') {
-        node.context().set('overrideType', 'on');
-      } else if (typeof nodeConfig.override === 'number') {
-        node.context().set('overrideType', 'level');
-        node.context().set('overrideLevel', nodeConfig.override);
-      }
-    };
-    
-    // Save initial override state
-    saveOverrideState();
-    
-    let nightActivationTimer = null; // Timer for setting lights to night level when night sensor activates
-    let awayActivationTimer = null; // Timer for setting lights to away level when away sensor activates
-    
-    // Debug logging function
+    // Debug logging function (defined early so other functions can use it)
     const debugLog = function(message) {
       if (nodeConfig.debugLog) {
         node.log(message);
       }
     };
+    
+    // Save override to context storage (for persistence across restarts)
+    const saveOverride = function() {
+      try {
+        node.context().set('override', nodeConfig.override, node.contextStorage);
+        debugLog(`Override saved to context storage: ${nodeConfig.override}`);
+      } catch (err) {
+        // Silently fail if context storage not available
+      }
+    };
+    
+    // Save initial override
+    saveOverride();
+    
+    let nightActivationTimer = null; // Timer for setting lights to night level when night sensor activates
+    let awayActivationTimer = null; // Timer for setting lights to away level when away sensor activates
     
     // Create wrapper node object with debug logging
     const nodeWrapper = {
@@ -286,7 +282,7 @@ module.exports = function (RED) {
         // Check for override and apply it before sending configs
         if (payload.config.override !== undefined) {
           nodeConfig.override = payload.config.override;
-          saveOverrideState();
+          saveOverride();
         }
         
         // Send old config
@@ -424,8 +420,8 @@ module.exports = function (RED) {
               debugLog(`Override: ${nodeConfig.override}% applied on startup`);
             }
           }
-        }, 1000); // Wait 1 second for states to be available (reduced from 2)
-      }, 4000); // Reduced from 6 seconds - HA connection should be faster
+        }, 2000); // Wait 2 seconds for states to be available
+      }, 6000); // Wait 6 seconds for HA connection
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
       node.error(`Failed to subscribe: ${err.message}`);
@@ -481,28 +477,4 @@ module.exports = function (RED) {
   }
 
   RED.nodes.registerType("ps-strategy-light-saver", StrategyLightSaverNode);
-  
-  // Add HTTP endpoint to get runtime override state
-  RED.httpAdmin.get('/ps-strategy-light-saver/:id/override', function(req, res) {
-    const nodeId = req.params.id;
-    const node = RED.nodes.getNode(nodeId);
-    
-    if (!node) {
-      res.status(404).json({ error: 'Node not found' });
-      return;
-    }
-    
-    // Get override state from context
-    const override = node.context().get('override');
-    const overrideEnabled = node.context().get('overrideEnabled');
-    const overrideType = node.context().get('overrideType');
-    const overrideLevel = node.context().get('overrideLevel');
-    
-    res.json({
-      override: override !== undefined ? override : 'auto',
-      overrideEnabled: overrideEnabled !== undefined ? overrideEnabled : false,
-      overrideType: overrideType !== undefined ? overrideType : 'on',
-      overrideLevel: overrideLevel !== undefined ? overrideLevel : 50
-    });
-  });
 };
