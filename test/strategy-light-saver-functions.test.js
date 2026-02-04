@@ -55,6 +55,97 @@ describe("strategy-light-saver-functions", function () {
     });
   });
 
+  describe("extractBrightnessLevel", function () {
+    it("should return 0 for off state", function () {
+      const stateObj = { state: 'off' };
+      const result = funcs.extractBrightnessLevel(stateObj);
+      expect(result).to.equal(0);
+    });
+
+    it("should return 100 for on state without brightness", function () {
+      const stateObj = { state: 'on', attributes: {} };
+      const result = funcs.extractBrightnessLevel(stateObj);
+      expect(result).to.equal(100);
+    });
+
+    it("should convert brightness from 0-255 to 0-100", function () {
+      const stateObj = { state: 'on', attributes: { brightness: 128 } };
+      const result = funcs.extractBrightnessLevel(stateObj);
+      expect(result).to.equal(50);
+    });
+
+    it("should handle brightness 255 as 100%", function () {
+      const stateObj = { state: 'on', attributes: { brightness: 255 } };
+      const result = funcs.extractBrightnessLevel(stateObj);
+      expect(result).to.equal(100);
+    });
+
+    it("should handle brightness 0 as 0%", function () {
+      const stateObj = { state: 'on', attributes: { brightness: 0 } };
+      const result = funcs.extractBrightnessLevel(stateObj);
+      expect(result).to.equal(0);
+    });
+
+    it("should return null for null input", function () {
+      const result = funcs.extractBrightnessLevel(null);
+      expect(result).to.be.null;
+    });
+
+    it("should return null for unknown state", function () {
+      const stateObj = { state: 'unavailable' };
+      const result = funcs.extractBrightnessLevel(stateObj);
+      expect(result).to.be.null;
+    });
+  });
+
+  describe("isSensorActive", function () {
+    it("should return false if sensor is null", function () {
+      const result = funcs.isSensorActive(null, false);
+      expect(result).to.be.false;
+    });
+
+    it("should return false if sensor has no state", function () {
+      const result = funcs.isSensorActive({}, false);
+      expect(result).to.be.false;
+    });
+
+    it("should return true when sensor is 'on' and not inverted", function () {
+      const sensor = { state: 'on' };
+      const result = funcs.isSensorActive(sensor, false);
+      expect(result).to.be.true;
+    });
+
+    it("should return false when sensor is 'off' and not inverted", function () {
+      const sensor = { state: 'off' };
+      const result = funcs.isSensorActive(sensor, false);
+      expect(result).to.be.false;
+    });
+
+    it("should return false when sensor is 'on' and inverted", function () {
+      const sensor = { state: 'on' };
+      const result = funcs.isSensorActive(sensor, true);
+      expect(result).to.be.false;
+    });
+
+    it("should return true when sensor is 'off' and inverted", function () {
+      const sensor = { state: 'off' };
+      const result = funcs.isSensorActive(sensor, true);
+      expect(result).to.be.true;
+    });
+
+    it("should handle boolean true state", function () {
+      const sensor = { state: true };
+      const result = funcs.isSensorActive(sensor, false);
+      expect(result).to.be.true;
+    });
+
+    it("should handle string 'true' state", function () {
+      const sensor = { state: 'true' };
+      const result = funcs.isSensorActive(sensor, false);
+      expect(result).to.be.true;
+    });
+  });
+
   describe("findCurrentLevel", function () {
     it("should return night level when night sensor is on", function () {
       const config = {

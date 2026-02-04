@@ -15,25 +15,54 @@ function parseUTCTimestamp(timestamp) {
 }
 
 /**
+ * Extract brightness level from Home Assistant state object
+ * @param {object} stateObj - State object from Home Assistant
+ * @returns {number|null} - Brightness level 0-100, or null if state is unknown
+ */
+function extractBrightnessLevel(stateObj) {
+  if (!stateObj) return null;
+  
+  if (stateObj.state === 'off') {
+    return 0;
+  } else if (stateObj.state === 'on') {
+    // Check if it has brightness attribute
+    if (stateObj.attributes && stateObj.attributes.brightness !== undefined) {
+      // Convert 0-255 to 0-100
+      return Math.round((stateObj.attributes.brightness / 255) * 100);
+    } else {
+      // Switch without brightness
+      return 100;
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Check if a sensor is currently active based on state and invert setting
+ * @param {object} sensor - Sensor object with state property
+ * @param {boolean} invertFlag - Whether to invert the sensor logic
+ * @returns {boolean} - True if sensor is active, false otherwise
+ */
+function isSensorActive(sensor, invertFlag) {
+  if (!sensor || !sensor.state) {
+    return false;
+  }
+  
+  const sensorState = sensor.state;
+  const isOn = (sensorState === 'on' || sensorState === true || sensorState === 'true');
+  
+  // If inverted, active when sensor is off
+  return invertFlag ? !isOn : isOn;
+}
+
+/**
  * Check if it's currently night mode based on night sensor state and invert setting
  * @param {object} config - Configuration object with nightSensor and invertNightSensor
  * @returns {boolean} - True if it's night mode, false otherwise
  */
 function isNightMode(config) {
-  if (!config.nightSensor || !config.nightSensor.state) {
-    return false;
-  }
-  
-  const sensorState = config.nightSensor.state;
-  const isOn = (sensorState === 'on' || sensorState === true || sensorState === 'true');
-  
-  // If inverted, night mode is when sensor is off
-  if (config.invertNightSensor) {
-    return !isOn;
-  }
-  
-  // Normal mode: night mode is when sensor is on
-  return isOn;
+  return isSensorActive(config.nightSensor, config.invertNightSensor);
 }
 
 /**
@@ -42,20 +71,7 @@ function isNightMode(config) {
  * @returns {boolean} - True if it's away mode, false otherwise
  */
 function isAwayMode(config) {
-  if (!config.awaySensor || !config.awaySensor.state) {
-    return false;
-  }
-  
-  const sensorState = config.awaySensor.state;
-  const isOn = (sensorState === 'on' || sensorState === true || sensorState === 'true');
-  
-  // If inverted, away mode is when sensor is off
-  if (config.invertAwaySensor) {
-    return !isOn;
-  }
-  
-  // Normal mode: away mode is when sensor is on
-  return isOn;
+  return isSensorActive(config.awaySensor, config.invertAwaySensor);
 }
 
 /**
@@ -500,6 +516,8 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
 
 module.exports = {
   parseUTCTimestamp,
+  extractBrightnessLevel,
+  isSensorActive,
   isNightMode,
   isAwayMode,
   handleStateChange,

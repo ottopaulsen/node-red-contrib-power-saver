@@ -3,6 +3,15 @@ module.exports = function (RED) {
   const VERSION = packageJson.version;
   const funcs = require('./strategy-light-saver-functions');
   
+  // Timing constants
+  const STARTUP_DELAYS = {
+    HA_CONNECTION_WAIT: 6000,      // Wait for HA connection (ms)
+    STATE_FETCH_WAIT: 2000,        // Wait for states to be available (ms)
+    IMMEDIATE_CHECK_WAIT: 1000     // Initial timeout check after restart (ms)
+  };
+  
+  const TIMEOUT_CHECK_INTERVAL = 60000; // Check timeouts every minute (ms)
+  
   function StrategyLightSaverNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
@@ -214,20 +223,8 @@ module.exports = function (RED) {
         return;
       }
       
-      // Extract brightness level from state
-      let actualLevel = null;
-      if (newState.state === 'off') {
-        actualLevel = 0;
-      } else if (newState.state === 'on') {
-        // Check if it has brightness attribute
-        if (newState.attributes && newState.attributes.brightness !== undefined) {
-          // Convert 0-255 to 0-100
-          actualLevel = Math.round((newState.attributes.brightness / 255) * 100);
-        } else {
-          // Switch without brightness
-          actualLevel = 100;
-        }
-      }
+      // Extract brightness level using helper function
+      const actualLevel = funcs.extractBrightnessLevel(newState);
       
       // Update light state
       const oldLevel = light.actualLevel;
@@ -267,17 +264,8 @@ module.exports = function (RED) {
           nodeConfig.lights.forEach(light => {
             const stateObj = states[light.entity_id];
             if (stateObj) {
-              // Extract brightness level
-              let actualLevel = null;
-              if (stateObj.state === 'off') {
-                actualLevel = 0;
-              } else if (stateObj.state === 'on') {
-                if (stateObj.attributes && stateObj.attributes.brightness !== undefined) {
-                  actualLevel = Math.round((stateObj.attributes.brightness / 255) * 100);
-                } else {
-                  actualLevel = 100;
-                }
-              }
+              // Extract brightness level using helper function
+              const actualLevel = funcs.extractBrightnessLevel(stateObj);
               light.actualLevel = actualLevel;
               light.lastChanged = stateObj.last_changed || stateObj.last_updated;
               debugLog(`Fetched initial state for light ${light.entity_id}: ${actualLevel}%`);
@@ -293,11 +281,11 @@ module.exports = function (RED) {
       // Start timeout check timer if initial timedOut was just set
       if (initialTimedOutWasSet && !timeoutCheckInterval) {
         debugLog('Starting timeout check timer (runs every minute)');
-        timeoutCheckInterval = setInterval(checkTimeouts, 60000); // 60000ms = 1 minute
+        timeoutCheckInterval = setInterval(checkTimeouts, TIMEOUT_CHECK_INTERVAL);
         
         // Run an immediate check in case lights should already be turned off after restart
         debugLog('Running immediate timeout check after restart');
-        setTimeout(() => checkTimeouts(), 1000); // Check after 1 second to ensure states are loaded
+        setTimeout(() => checkTimeouts(), STARTUP_DELAYS.IMMEDIATE_CHECK_WAIT);
       }
     };
 
@@ -386,7 +374,7 @@ module.exports = function (RED) {
         // Clear and restart timeout check interval to use new timeouts
         if (timeoutCheckInterval) {
           clearInterval(timeoutCheckInterval);
-          timeoutCheckInterval = setInterval(checkTimeouts, 60000);
+          timeoutCheckInterval = setInterval(checkTimeouts, TIMEOUT_CHECK_INTERVAL);
         }
         
         // Send new config (with updated override)
@@ -555,8 +543,8 @@ module.exports = function (RED) {
               debugLog(`Override: ${nodeConfig.override}% applied on startup`);
             }
           }
-        }, 2000); // Wait 2 seconds for states to be available
-      }, 6000); // Wait 6 seconds for HA connection
+        }, STARTUP_DELAYS.STATE_FETCH_WAIT);
+      }, STARTUP_DELAYS.HA_CONNECTION_WAIT);
     } catch (err) {
       node.status({ fill: "red", shape: "ring", text: "Subscription failed" });
       node.error(`Failed to subscribe: ${err.message}`);

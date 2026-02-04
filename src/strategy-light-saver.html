@@ -1120,6 +1120,7 @@
   - **Name**: Optional name for the node
   - **Server**: Home Assistant server connection
   - **Lights**: List of light entities to control (lights or switches)
+    - The node tracks both the commanded level and actual state for each light
   - **Keep light on for**: Default timeout in minutes when no motion is detected on any trigger (1-999)
   - **Triggers**: Motion sensors or binary sensors that trigger light activation
     - Each trigger can have its own timeout override in minutes
@@ -1135,8 +1136,12 @@
     - **From time**: Time when this level becomes active (HH:MM format, 24-hour)
     - **Level**: Brightness percentage (0-100%)
   - **Override**: Manual control to override automatic behavior
-    - When enabled, choose Off (turn all lights off), On (normal automatic level), or Level (specific brightness 0-100%)
-    - Override can be controlled via input messages
+    - **Off**: Turn all lights off and block automatic control
+    - **On**: Set lights to their normal automatic level
+    - **Level**: Set lights to a specific brightness (0-100%)
+    - **Auto**: Return to normal automatic operation
+    - Override persists across Node-RED restarts
+  - **Context storage**: Choose where to persist runtime state (default, file, etc.)
   - **Debug log**: Enable detailed logging for troubleshooting
 
   ### Behavior
@@ -1154,9 +1159,17 @@
   ### Level Priority
 
   When multiple conditions are active, brightness is determined in this order:
-  1. **Away mode** (highest priority) - If away sensor is active and away level is set
-  2. **Night mode** - If night sensor is active and night level is set
-  3. **Time-based levels** - Based on current time matching configured levels
+  1. **Override** (highest priority) - Manual control blocks all automatic behavior
+  2. **Away mode** - If away sensor is active and away level is set
+  3. **Night mode** - If night sensor is active and night level is set
+  4. **Time-based levels** - Based on current time matching configured levels
+
+  ### Light State Tracking
+
+  The node tracks the following for each light:
+  - **Set level**: The brightness level commanded by this node
+  - **Actual level**: The current brightness read from Home Assistant
+  - **Last changed**: Timestamp when the actual level last changed
 
   ### Requirements
 
