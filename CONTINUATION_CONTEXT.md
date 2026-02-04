@@ -22,16 +22,16 @@ Always show last 10 lines of npm pack output.
 ## Project Structure
 ```
 src/
-  strategy-light-saver.html         # UI config (43KB, 1070+ lines)
-  strategy-light-saver.js           # Runtime logic (8KB, 400+ lines)
-  strategy-light-saver-functions.js # Business logic (15KB, 500+ lines)
+  light-saver.html         # UI config (43KB, 1070+ lines)
+  light-saver.js           # Runtime logic (8KB, 400+ lines)
+  light-saver-functions.js # Business logic (15KB, 500+ lines)
 test/
-  strategy-light-saver-functions.test.js  # 41 unit tests (all passing)
+  light-saver-functions.test.js  # 41 unit tests (all passing)
 ```
 
 ## Key Files & Architecture
 
-### HTML File (strategy-light-saver.html)
+### HTML File (light-saver.html)
 - **Lines 1-22:** Node defaults (all config properties)
 - **Lines 27-905:** `oneditprepare` function
   - Lines 86-189: `createEntitySelector()` - reusable entity dropdown helper
@@ -43,7 +43,7 @@ test/
 - **Lines 979-1042:** HTML template with form rows
 - **Lines 1044-1074:** Help text (markdown)
 
-### JS File (strategy-light-saver.js)
+### JS File (light-saver.js)
 - **Lines 12-26:** nodeConfig initialization
 - **Lines 28-43:** Override mode initialization from config
 - **Lines 110-159:** `handleStateChange()` wrapper - blocks if override active
@@ -51,7 +51,7 @@ test/
 - **Lines 186-335:** Input message handler for config updates and override control
 - **Lines 338-411:** Event subscriptions and initialization
 
-### Functions File (strategy-light-saver-functions.js)
+### Functions File (light-saver-functions.js)
 - **Exported functions:** parseUTCTimestamp, isNightMode, isAwayMode, handleStateChange, findCurrentLevel, controlLights, turnOffAllLights, checkTimeouts, fetchMissingStates
 - **Key helper:** `parseUTCTimestamp()` - CRITICAL: adds 'Z' to HA timestamps (they're UTC but lack suffix)
 - **Mode helpers:** `isNightMode()` and `isAwayMode()` handle invert logic
@@ -140,7 +140,7 @@ Night sensor > Away sensor > Time-based levels
 5. **.npmignore critical** - Must exclude `*.tgz` to prevent size explosion
 
 ## Testing
-- 41 unit tests in `test/strategy-light-saver-functions.test.js`
+- 41 unit tests in `test/light-saver-functions.test.js`
 - Run: `npm test`
 - All tests passing as of 7cg
 

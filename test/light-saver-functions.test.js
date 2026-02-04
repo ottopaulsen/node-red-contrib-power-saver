@@ -1,8 +1,8 @@
 const expect = require("chai").expect;
 const sinon = require("sinon");
-const funcs = require("../src/strategy-light-saver-functions");
+const funcs = require("../src/light-saver-functions");
 
-describe("strategy-light-saver-functions", function () {
+describe("light-saver-functions", function () {
   let mockNode;
   let mockHomeAssistant;
   let mockWebsocket;
@@ -149,8 +149,11 @@ describe("strategy-light-saver-functions", function () {
   describe("findCurrentLevel", function () {
     it("should return night level when night sensor is on", function () {
       const config = {
-        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
-        nightLevel: 25,
+        nightSensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.night',
+          level: 25
+        },
         levels: [{ fromTime: "00:00", level: 100 }]
       };
 
@@ -162,8 +165,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should fall through to time-based level when nightLevel is not set", function () {
       const config = {
-        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
-        nightLevel: null,
+        nightSensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.night',
+          level: null
+        },
         levels: [{ fromTime: "00:00", level: 100 }]
       };
 
@@ -175,8 +181,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return time-based level when night sensor is off", function () {
       const config = {
-        nightSensor: { state: 'off', entity_id: 'binary_sensor.night' },
-        nightLevel: 25,
+        nightSensor: { 
+          state: 'off', 
+          entity_id: 'binary_sensor.night',
+          level: 25
+        },
         levels: [
           { fromTime: "00:00", level: 20 },
           { fromTime: "06:00", level: 100 },
@@ -194,7 +203,6 @@ describe("strategy-light-saver-functions", function () {
     it("should wrap to previous day if current time is before all levels", function () {
       const config = {
         nightSensor: null,
-        nightLevel: null,
         levels: [
           { fromTime: "06:00", level: 100 },
           { fromTime: "22:00", level: 50 }
@@ -215,7 +223,6 @@ describe("strategy-light-saver-functions", function () {
     it("should return null if no levels are defined", function () {
       const config = {
         nightSensor: null,
-        nightLevel: null,
         levels: []
       };
 
@@ -228,7 +235,6 @@ describe("strategy-light-saver-functions", function () {
     it("should handle midnight correctly", function () {
       const config = {
         nightSensor: null,
-        nightLevel: null,
         levels: [
           { fromTime: "00:00", level: 20 },
           { fromTime: "06:00", level: 100 }
@@ -577,7 +583,6 @@ describe("strategy-light-saver-functions", function () {
         ],
         lights: [{ entity_id: 'light.living_room' }],
         nightSensor: null,
-        nightLevel: null,
         levels: [{ fromTime: "00:00", level: 100 }]
       };
       const state = { timedOut: false };
@@ -606,7 +611,6 @@ describe("strategy-light-saver-functions", function () {
         ],
         lights: [{ entity_id: 'light.living_room' }],
         nightSensor: null,
-        nightLevel: null,
         levels: [{ fromTime: "00:00", level: 80 }]
       };
       const state = { timedOut: true };
@@ -638,7 +642,6 @@ describe("strategy-light-saver-functions", function () {
         ],
         lights: [{ entity_id: 'light.living_room' }],
         nightSensor: null,
-        nightLevel: null,
         levels: [{ fromTime: "00:00", level: 80 }]
       };
       const state = { timedOut: false };
@@ -663,8 +666,12 @@ describe("strategy-light-saver-functions", function () {
       const config = {
         triggers: [{ entity_id: 'binary_sensor.motion1', state: 'off' }],
         lights: [],
-        nightSensor: { entity_id: 'binary_sensor.night', state: 'off', lastChanged: '2026-01-29T15:00:00Z' },
-        nightLevel: 25,
+        nightSensor: { 
+          entity_id: 'binary_sensor.night', 
+          state: 'off', 
+          lastChanged: '2026-01-29T15:00:00Z',
+          level: 25
+        },
         levels: []
       };
       const state = { timedOut: false };
@@ -690,7 +697,6 @@ describe("strategy-light-saver-functions", function () {
         triggers: [{ entity_id: 'binary_sensor.motion1' }],
         lights: [],
         nightSensor: null,
-        nightLevel: null,
         levels: []
       };
       const state = { timedOut: false };
@@ -706,8 +712,11 @@ describe("strategy-light-saver-functions", function () {
       const config = {
         triggers: [{ entity_id: 'binary_sensor.motion1', state: 'off' }],
         lights: [{ entity_id: 'light.living_room' }],
-        nightSensor: { entity_id: 'binary_sensor.night', state: 'on' },
-        nightLevel: 30,
+        nightSensor: { 
+          entity_id: 'binary_sensor.night', 
+          state: 'on',
+          level: 30
+        },
         levels: [{ fromTime: "00:00", level: 100 }]
       };
       const state = { timedOut: true };
@@ -732,8 +741,11 @@ describe("strategy-light-saver-functions", function () {
   describe("isNightMode", function () {
     it("should return true when night sensor is on and not inverted", function () {
       const config = {
-        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
-        invertNightSensor: false
+        nightSensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.night',
+          invert: false
+        }
       };
 
       const result = funcs.isNightMode(config);
@@ -742,8 +754,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when night sensor is off and not inverted", function () {
       const config = {
-        nightSensor: { state: 'off', entity_id: 'binary_sensor.night' },
-        invertNightSensor: false
+        nightSensor: { 
+          state: 'off', 
+          entity_id: 'binary_sensor.night',
+          invert: false
+        }
       };
 
       const result = funcs.isNightMode(config);
@@ -752,8 +767,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when night sensor is on and inverted", function () {
       const config = {
-        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
-        invertNightSensor: true
+        nightSensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.night',
+          invert: true
+        }
       };
 
       const result = funcs.isNightMode(config);
@@ -762,8 +780,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return true when night sensor is off and inverted", function () {
       const config = {
-        nightSensor: { state: 'off', entity_id: 'binary_sensor.night' },
-        invertNightSensor: true
+        nightSensor: { 
+          state: 'off', 
+          entity_id: 'binary_sensor.night',
+          invert: true
+        }
       };
 
       const result = funcs.isNightMode(config);
@@ -772,8 +793,7 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when night sensor is not configured", function () {
       const config = {
-        nightSensor: null,
-        invertNightSensor: false
+        nightSensor: null
       };
 
       const result = funcs.isNightMode(config);
@@ -782,8 +802,10 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when night sensor has no state", function () {
       const config = {
-        nightSensor: { entity_id: 'binary_sensor.night' },
-        invertNightSensor: false
+        nightSensor: { 
+          entity_id: 'binary_sensor.night',
+          invert: false
+        }
       };
 
       const result = funcs.isNightMode(config);
@@ -794,8 +816,11 @@ describe("strategy-light-saver-functions", function () {
   describe("isAwayMode", function () {
     it("should return true when away sensor is on and not inverted", function () {
       const config = {
-        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
-        invertAwaySensor: false
+        awaySensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.away',
+          invert: false
+        }
       };
 
       const result = funcs.isAwayMode(config);
@@ -804,8 +829,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when away sensor is off and not inverted", function () {
       const config = {
-        awaySensor: { state: 'off', entity_id: 'binary_sensor.away' },
-        invertAwaySensor: false
+        awaySensor: { 
+          state: 'off', 
+          entity_id: 'binary_sensor.away',
+          invert: false
+        }
       };
 
       const result = funcs.isAwayMode(config);
@@ -814,8 +842,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when away sensor is on and inverted", function () {
       const config = {
-        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
-        invertAwaySensor: true
+        awaySensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.away',
+          invert: true
+        }
       };
 
       const result = funcs.isAwayMode(config);
@@ -824,8 +855,11 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return true when away sensor is off and inverted", function () {
       const config = {
-        awaySensor: { state: 'off', entity_id: 'binary_sensor.away' },
-        invertAwaySensor: true
+        awaySensor: { 
+          state: 'off', 
+          entity_id: 'binary_sensor.away',
+          invert: true
+        }
       };
 
       const result = funcs.isAwayMode(config);
@@ -834,8 +868,7 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when away sensor is not configured", function () {
       const config = {
-        awaySensor: null,
-        invertAwaySensor: false
+        awaySensor: null
       };
 
       const result = funcs.isAwayMode(config);
@@ -844,8 +877,10 @@ describe("strategy-light-saver-functions", function () {
 
     it("should return false when away sensor has no state", function () {
       const config = {
-        awaySensor: { entity_id: 'binary_sensor.away' },
-        invertAwaySensor: false
+        awaySensor: { 
+          entity_id: 'binary_sensor.away',
+          invert: false
+        }
       };
 
       const result = funcs.isAwayMode(config);
@@ -856,11 +891,18 @@ describe("strategy-light-saver-functions", function () {
   describe("findCurrentLevel with away mode", function () {
     it("should return away level when away sensor is on", function () {
       const config = {
-        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
-        awayLevel: 10,
-        invertAwaySensor: false,
-        nightSensor: { state: 'off', entity_id: 'binary_sensor.night' },
-        nightLevel: 25,
+        awaySensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.away',
+          level: 10,
+          invert: false
+        },
+        nightSensor: { 
+          state: 'off', 
+          entity_id: 'binary_sensor.night',
+          level: 25,
+          invert: false
+        },
         levels: [{ fromTime: "00:00", level: 100 }]
       };
 
@@ -872,12 +914,18 @@ describe("strategy-light-saver-functions", function () {
 
     it("should prioritize away level over night level", function () {
       const config = {
-        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
-        awayLevel: 10,
-        invertAwaySensor: false,
-        nightSensor: { state: 'on', entity_id: 'binary_sensor.night' },
-        nightLevel: 25,
-        invertNightSensor: false,
+        awaySensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.away',
+          level: 10,
+          invert: false
+        },
+        nightSensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.night',
+          level: 25,
+          invert: false
+        },
         levels: [{ fromTime: "00:00", level: 100 }]
       };
 
@@ -889,9 +937,12 @@ describe("strategy-light-saver-functions", function () {
 
     it("should fall through to time-based level when awayLevel is not set", function () {
       const config = {
-        awaySensor: { state: 'on', entity_id: 'binary_sensor.away' },
-        awayLevel: null,
-        invertAwaySensor: false,
+        awaySensor: { 
+          state: 'on', 
+          entity_id: 'binary_sensor.away',
+          level: null,
+          invert: false
+        },
         levels: [{ fromTime: "00:00", level: 100 }]
       };
 
@@ -902,9 +953,12 @@ describe("strategy-light-saver-functions", function () {
 
     it("should use away level with inverted sensor", function () {
       const config = {
-        awaySensor: { state: 'off', entity_id: 'binary_sensor.away' },
-        awayLevel: 5,
-        invertAwaySensor: true,
+        awaySensor: { 
+          state: 'off', 
+          entity_id: 'binary_sensor.away',
+          level: 5,
+          invert: true
+        },
         levels: [{ fromTime: "00:00", level: 100 }]
       };
 

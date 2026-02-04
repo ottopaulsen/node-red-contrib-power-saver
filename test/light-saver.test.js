@@ -1,11 +1,11 @@
 const expect = require("chai").expect;
 const sinon = require("sinon");
 const helper = require("node-red-node-test-helper");
-const lightSaver = require("../src/strategy-light-saver.js");
+const lightSaver = require("../src/light-saver.js");
 
 helper.init(require.resolve("node-red"));
 
-describe("ps-strategy-light-saver node", function () {
+describe("ps-light-saver node", function () {
   beforeEach(function (done) {
     helper.startServer(done);
   });
@@ -21,7 +21,7 @@ describe("ps-strategy-light-saver node", function () {
       const flow = [
         {
           id: "n1",
-          type: "ps-strategy-light-saver",
+          type: "ps-light-saver",
           name: "Light Saver Test",
           triggers: [{ entity_id: "binary_sensor.motion1" }],
           lights: [{ entity_id: "light.living_room" }],
@@ -42,7 +42,7 @@ describe("ps-strategy-light-saver node", function () {
       const flow = [
         {
           id: "n1",
-          type: "ps-strategy-light-saver",
+          type: "ps-light-saver",
           name: "No Server",
           triggers: [{ entity_id: "binary_sensor.motion1" }],
           lights: [{ entity_id: "light.living_room" }]
@@ -61,7 +61,7 @@ describe("ps-strategy-light-saver node", function () {
       const flow = [
         {
           id: "n1",
-          type: "ps-strategy-light-saver",
+          type: "ps-light-saver",
           name: "Full Config",
           triggers: [
             { entity_id: "binary_sensor.motion1", timeoutMinutes: 5 },
@@ -96,7 +96,7 @@ describe("ps-strategy-light-saver node", function () {
       const flow = [
         {
           id: "n1",
-          type: "ps-strategy-light-saver",
+          type: "ps-light-saver",
           name: "No Triggers",
           triggers: [],
           lights: [{ entity_id: "light.living_room" }],
@@ -116,7 +116,7 @@ describe("ps-strategy-light-saver node", function () {
       const flow = [
         {
           id: "n1",
-          type: "ps-strategy-light-saver",
+          type: "ps-light-saver",
           name: "No Lights",
           triggers: [{ entity_id: "binary_sensor.motion1" }],
           lights: [],
@@ -136,7 +136,7 @@ describe("ps-strategy-light-saver node", function () {
       const flow = [
         {
           id: "n1",
-          type: "ps-strategy-light-saver",
+          type: "ps-light-saver",
           name: "Defaults",
           triggers: [{ entity_id: "binary_sensor.motion1" }],
           lights: [{ entity_id: "light.living_room" }]

@@ -1,4 +1,4 @@
-// Business logic functions for strategy-light-saver node
+// Business logic functions for light-saver node
 // These functions are exported for testing
 
 /**
@@ -58,20 +58,20 @@ function isSensorActive(sensor, invertFlag) {
 
 /**
  * Check if it's currently night mode based on night sensor state and invert setting
- * @param {object} config - Configuration object with nightSensor and invertNightSensor
+ * @param {object} config - Configuration object with nightSensor
  * @returns {boolean} - True if it's night mode, false otherwise
  */
 function isNightMode(config) {
-  return isSensorActive(config.nightSensor, config.invertNightSensor);
+  return isSensorActive(config.nightSensor, config.nightSensor?.invert);
 }
 
 /**
  * Check if it's currently away mode based on away sensor state and invert setting
- * @param {object} config - Configuration object with awaySensor and invertAwaySensor
+ * @param {object} config - Configuration object with awaySensor
  * @returns {boolean} - True if it's away mode, false otherwise
  */
 function isAwayMode(config) {
-  return isSensorActive(config.awaySensor, config.invertAwaySensor);
+  return isSensorActive(config.awaySensor, config.awaySensor?.invert);
 }
 
 /**
@@ -184,7 +184,7 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
 
 /**
  * Find the appropriate light level based on time and night sensor
- * @param {object} config - Configuration object with nightSensor, nightLevel, levels
+ * @param {object} config - Configuration object with awaySensor, nightSensor, levels
  * @param {object} node - Node-RED node object for logging
  * @param {object} clock - Clock abstraction for getting current time (for testing)
  * @returns {number|null} The level (0-100) or null if no level found
@@ -195,15 +195,15 @@ function findCurrentLevel(config, node, clock = null) {
   // Priority: Away sensor > Night sensor > Time-based levels
   
   // If away sensor is active and awayLevel is set, use that
-  if (isAwayMode(config) && config.awayLevel !== null && config.awayLevel !== undefined) {
-    node.log(`Using away level: ${config.awayLevel}%`);
-    return config.awayLevel;
+  if (isAwayMode(config) && config.awaySensor?.level !== null && config.awaySensor?.level !== undefined) {
+    node.log(`Using away level: ${config.awaySensor.level}%`);
+    return config.awaySensor.level;
   }
   
   // If night sensor is active and nightLevel is set, use that
-  if (isNightMode(config) && config.nightLevel !== null && config.nightLevel !== undefined) {
-    node.log(`Using night level: ${config.nightLevel}%`);
-    return config.nightLevel;
+  if (isNightMode(config) && config.nightSensor?.level !== null && config.nightSensor?.level !== undefined) {
+    node.log(`Using night level: ${config.nightSensor.level}%`);
+    return config.nightSensor.level;
   }
   
   // Otherwise, find level from levels list based on current time

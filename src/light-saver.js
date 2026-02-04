@@ -1,7 +1,7 @@
 module.exports = function (RED) {
   const packageJson = require('../package.json');
   const VERSION = packageJson.version;
-  const funcs = require('./strategy-light-saver-functions');
+  const funcs = require('./light-saver-functions');
   
   // Timing constants
   const STARTUP_DELAYS = {
@@ -31,7 +31,7 @@ module.exports = function (RED) {
     // Use runtime override if available, otherwise use config override
     const override = runtimeOverride !== null && runtimeOverride !== undefined ? runtimeOverride : (config.override || 'auto');
 
-    // Configuration
+    // Configuration - restructure to separate config from state
     const nodeConfig = {
       triggers: Array.isArray(config.triggers) ? config.triggers : [],
       lights: Array.isArray(config.lights) ? config.lights.map(light => ({
@@ -41,14 +41,22 @@ module.exports = function (RED) {
         lastChanged: light.lastChanged || null
       })) : [],
       lightTimeout: config.lightTimeout !== undefined ? config.lightTimeout : 10,
-      nightSensor: config.nightSensor || null,
-      nightLevel: config.nightLevel !== undefined ? config.nightLevel : null,
-      nightDelay: config.nightDelay !== undefined ? config.nightDelay : 0,
-      invertNightSensor: config.invertNightSensor === true,
-      awaySensor: config.awaySensor || null,
-      awayLevel: config.awayLevel !== undefined ? config.awayLevel : null,
-      awayDelay: config.awayDelay !== undefined ? config.awayDelay : 0,
-      invertAwaySensor: config.invertAwaySensor === true,
+      nightSensor: config.nightSensor ? {
+        entity_id: config.nightSensor.entity_id || config.nightSensor,
+        state: config.nightSensor.state || null,
+        lastChanged: config.nightSensor.lastChanged || null,
+        level: config.nightLevel !== undefined ? config.nightLevel : null,
+        delay: config.nightDelay !== undefined ? config.nightDelay : 0,
+        invert: config.invertNightSensor === true
+      } : null,
+      awaySensor: config.awaySensor ? {
+        entity_id: config.awaySensor.entity_id || config.awaySensor,
+        state: config.awaySensor.state || null,
+        lastChanged: config.awaySensor.lastChanged || null,
+        level: config.awayLevel !== undefined ? config.awayLevel : null,
+        delay: config.awayDelay !== undefined ? config.awayDelay : 0,
+        invert: config.invertAwaySensor === true
+      } : null,
       levels: Array.isArray(config.levels) ? config.levels : [],
       debugLog: config.debugLog === true,
       override: override
@@ -160,7 +168,7 @@ module.exports = function (RED) {
       
       // Check if night sensor activated (turned on or off if inverted)
       if (result && result.nightSensorTurnedOn && nodeConfig.nightSensor) {
-        debugLog(`Night sensor activated, scheduling lights to night level after ${nodeConfig.nightDelay} seconds`);
+        debugLog(`Night sensor activated, scheduling lights to night level after ${nodeConfig.nightSensor.delay} seconds`);
         
         // Clear any existing timer
         if (nightActivationTimer) {
@@ -177,12 +185,12 @@ module.exports = function (RED) {
           } else {
             node.warn('Could not determine level for night mode');
           }
-        }, nodeConfig.nightDelay * 1000);
+        }, nodeConfig.nightSensor.delay * 1000);
       }
       
       // Check if away sensor activated (turned on or off if inverted)
       if (result && result.awaySensorTurnedOn && nodeConfig.awaySensor) {
-        debugLog(`Away sensor activated, scheduling lights to away level after ${nodeConfig.awayDelay} seconds`);
+        debugLog(`Away sensor activated, scheduling lights to away level after ${nodeConfig.awaySensor.delay} seconds`);
         
         // Clear any existing timer
         if (awayActivationTimer) {
@@ -192,10 +200,10 @@ module.exports = function (RED) {
         // Set lights to away level after delay
         awayActivationTimer = setTimeout(() => {
           debugLog('Applying away level to lights');
-          const level = nodeConfig.awayLevel !== null && nodeConfig.awayLevel !== undefined ? nodeConfig.awayLevel : 0;
+          const level = nodeConfig.awaySensor.level !== null && nodeConfig.awaySensor.level !== undefined ? nodeConfig.awaySensor.level : 0;
           funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
           node.status({ fill: "yellow", shape: "dot", text: `Away mode: ${level}%` });
-        }, nodeConfig.awayDelay * 1000);
+        }, nodeConfig.awaySensor.delay * 1000);
       }
     };
     
@@ -306,10 +314,16 @@ module.exports = function (RED) {
       if (!payload) return;
       
       let sendConfigRequested = false;
+      let sendStateRequested = false;
       
-      // Check for sendConfig request in commands
-      if (payload.commands && payload.commands.sendConfig === true) {
-        sendConfigRequested = true;
+      // Check for sendConfig/sendState request in commands
+      if (payload.commands && typeof payload.commands === 'object') {
+        if (payload.commands.sendConfig === true) {
+          sendConfigRequested = true;
+        }
+        if (payload.commands.sendState === true) {
+          sendStateRequested = true;
+        }
       }
       
       // Check for config updates
@@ -330,26 +344,8 @@ module.exports = function (RED) {
         if (payload.config.nightSensor !== undefined) {
           nodeConfig.nightSensor = payload.config.nightSensor;
         }
-        if (payload.config.nightLevel !== undefined) {
-          nodeConfig.nightLevel = payload.config.nightLevel;
-        }
-        if (payload.config.nightDelay !== undefined) {
-          nodeConfig.nightDelay = payload.config.nightDelay;
-        }
-        if (payload.config.invertNightSensor !== undefined) {
-          nodeConfig.invertNightSensor = payload.config.invertNightSensor;
-        }
         if (payload.config.awaySensor !== undefined) {
           nodeConfig.awaySensor = payload.config.awaySensor;
-        }
-        if (payload.config.awayLevel !== undefined) {
-          nodeConfig.awayLevel = payload.config.awayLevel;
-        }
-        if (payload.config.awayDelay !== undefined) {
-          nodeConfig.awayDelay = payload.config.awayDelay;
-        }
-        if (payload.config.invertAwaySensor !== undefined) {
-          nodeConfig.invertAwaySensor = payload.config.invertAwaySensor;
         }
         if (payload.config.levels !== undefined) {
           nodeConfig.levels = Array.isArray(payload.config.levels) ? payload.config.levels : [];
@@ -464,17 +460,78 @@ module.exports = function (RED) {
         }
       }
       
-      // Send config if requested
-      if (sendConfigRequested) {
+      // Send config and/or state if requested (combined in one message)
+      if (sendConfigRequested || sendStateRequested) {
         fetchMissingStates();
         
-        const output = { 
-          payload: {
-            config: JSON.parse(JSON.stringify(nodeConfig))
-          }
-        };
+        const payload = {};
         
-        node.send(output);
+        // Add config if requested
+        if (sendConfigRequested) {
+          payload.config = {
+            triggers: nodeConfig.triggers.map(t => ({
+              entity_id: t.entity_id,
+              timeoutMinutes: t.timeoutMinutes
+            })),
+            lights: nodeConfig.lights.map(l => ({
+              entity_id: l.entity_id
+            })),
+            lightTimeout: nodeConfig.lightTimeout,
+            nightSensor: nodeConfig.nightSensor ? {
+              entity_id: nodeConfig.nightSensor.entity_id,
+              level: nodeConfig.nightSensor.level,
+              delay: nodeConfig.nightSensor.delay,
+              invert: nodeConfig.nightSensor.invert
+            } : null,
+            awaySensor: nodeConfig.awaySensor ? {
+              entity_id: nodeConfig.awaySensor.entity_id,
+              level: nodeConfig.awaySensor.level,
+              delay: nodeConfig.awaySensor.delay,
+              invert: nodeConfig.awaySensor.invert
+            } : null,
+            levels: nodeConfig.levels,
+            debugLog: nodeConfig.debugLog,
+            override: nodeConfig.override
+          };
+        }
+        
+        // Add state if requested
+        if (sendStateRequested) {
+          payload.state = {
+            timedOut: state.timedOut,
+            triggers: nodeConfig.triggers.map(t => ({
+              entity_id: t.entity_id,
+              state: t.state,
+              lastChanged: t.lastChanged,
+              timeoutMinutes: t.timeoutMinutes
+            })),
+            lights: nodeConfig.lights.map(l => ({
+              entity_id: l.entity_id,
+              setLevel: l.setLevel,
+              actualLevel: l.actualLevel,
+              lastChanged: l.lastChanged
+            })),
+            nightSensor: nodeConfig.nightSensor ? {
+              entity_id: nodeConfig.nightSensor.entity_id,
+              state: nodeConfig.nightSensor.state,
+              lastChanged: nodeConfig.nightSensor.lastChanged,
+              level: nodeConfig.nightSensor.level,
+              delay: nodeConfig.nightSensor.delay,
+              invert: nodeConfig.nightSensor.invert
+            } : null,
+            awaySensor: nodeConfig.awaySensor ? {
+              entity_id: nodeConfig.awaySensor.entity_id,
+              state: nodeConfig.awaySensor.state,
+              lastChanged: nodeConfig.awaySensor.lastChanged,
+              level: nodeConfig.awaySensor.level,
+              delay: nodeConfig.awaySensor.delay,
+              invert: nodeConfig.awaySensor.invert
+            } : null,
+            override: nodeConfig.override
+          };
+        }
+        
+        node.send({ payload });
       }
     });
 
@@ -606,5 +663,5 @@ module.exports = function (RED) {
     });
   }
 
-  RED.nodes.registerType("ps-strategy-light-saver", StrategyLightSaverNode);
+  RED.nodes.registerType("ps-light-saver", StrategyLightSaverNode);
 };
