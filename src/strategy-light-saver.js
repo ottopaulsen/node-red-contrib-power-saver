@@ -25,7 +25,12 @@ module.exports = function (RED) {
     // Configuration
     const nodeConfig = {
       triggers: Array.isArray(config.triggers) ? config.triggers : [],
-      lights: Array.isArray(config.lights) ? config.lights : [],
+      lights: Array.isArray(config.lights) ? config.lights.map(light => ({
+        entity_id: typeof light === 'string' ? light : light.entity_id,
+        setLevel: light.setLevel || null,
+        actualLevel: light.actualLevel || null,
+        lastChanged: light.lastChanged || null
+      })) : [],
       lightTimeout: config.lightTimeout !== undefined ? config.lightTimeout : 10,
       nightSensor: config.nightSensor || null,
       nightLevel: config.nightLevel !== undefined ? config.nightLevel : null,
@@ -185,6 +190,62 @@ module.exports = function (RED) {
       }
     };
     
+    // Function to handle light state changes
+    const handleLightStateChange = function (event) {
+      debugLog(`Light state change event received: ${JSON.stringify(event).substring(0, 200)}`);
+      
+      if (!event || !event.event) {
+        debugLog('Invalid event structure');
+        return;
+      }
+      
+      const entityId = event.event.entity_id;
+      const newState = event.event.new_state;
+      
+      if (!newState) {
+        debugLog(`No new state for ${entityId}`);
+        return;
+      }
+      
+      // Find the light in our config
+      const light = nodeConfig.lights.find(l => l.entity_id === entityId);
+      if (!light) {
+        debugLog(`Light ${entityId} not found in config`);
+        return;
+      }
+      
+      // Extract brightness level from state
+      let actualLevel = null;
+      if (newState.state === 'off') {
+        actualLevel = 0;
+      } else if (newState.state === 'on') {
+        // Check if it has brightness attribute
+        if (newState.attributes && newState.attributes.brightness !== undefined) {
+          // Convert 0-255 to 0-100
+          actualLevel = Math.round((newState.attributes.brightness / 255) * 100);
+        } else {
+          // Switch without brightness
+          actualLevel = 100;
+        }
+      }
+      
+      // Update light state
+      const oldLevel = light.actualLevel;
+      light.actualLevel = actualLevel;
+      light.lastChanged = newState.last_changed || newState.last_updated;
+      
+      debugLog(`Light ${entityId} changed from ${oldLevel}% to ${actualLevel}% at ${light.lastChanged}`);
+      
+      // Send lights list to output
+      node.send({
+        payload: {
+          lights: nodeConfig.lights
+        }
+      });
+      
+      debugLog(`Sent lights list to output (${nodeConfig.lights.length} lights)`);
+    };
+    
     // Function to check timeouts every minute
     const checkTimeouts = function() {
       // If override is active (not 'auto'), don't check timeouts
@@ -198,6 +259,36 @@ module.exports = function (RED) {
     // Function to fetch current states from Home Assistant
     const fetchMissingStates = function() {
       const initialTimedOutWasSet = funcs.fetchMissingStates(nodeConfig, state, nodeWrapper, homeAssistant);
+      
+      // Fetch initial light states
+      try {
+        const states = homeAssistant.websocket.states;
+        if (states && typeof states === 'object') {
+          nodeConfig.lights.forEach(light => {
+            const stateObj = states[light.entity_id];
+            if (stateObj) {
+              // Extract brightness level
+              let actualLevel = null;
+              if (stateObj.state === 'off') {
+                actualLevel = 0;
+              } else if (stateObj.state === 'on') {
+                if (stateObj.attributes && stateObj.attributes.brightness !== undefined) {
+                  actualLevel = Math.round((stateObj.attributes.brightness / 255) * 100);
+                } else {
+                  actualLevel = 100;
+                }
+              }
+              light.actualLevel = actualLevel;
+              light.lastChanged = stateObj.last_changed || stateObj.last_updated;
+              debugLog(`Fetched initial state for light ${light.entity_id}: ${actualLevel}%`);
+            } else {
+              nodeWrapper.warn(`State not found for light ${light.entity_id}`);
+            }
+          });
+        }
+      } catch (err) {
+        nodeWrapper.warn(`Failed to fetch light states: ${err.message}`);
+      }
       
       // Start timeout check timer if initial timedOut was just set
       if (initialTimedOutWasSet && !timeoutCheckInterval) {
@@ -349,6 +440,42 @@ module.exports = function (RED) {
         }
       }
       
+      // Handle level input (different from override - respects timeout)
+      if (payload.level !== undefined) {
+        const level = payload.level;
+        debugLog(`Level input received: ${level}`);
+        
+        if (level === 'off') {
+          funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+          debugLog('Level: OFF - lights turned off');
+        } else if (level === 'on') {
+          const currentLevel = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
+          if (currentLevel !== null) {
+            funcs.controlLights(nodeConfig.lights, currentLevel, nodeWrapper, homeAssistant);
+            debugLog(`Level: ON - lights set to ${currentLevel}%`);
+          } else {
+            node.warn('Level: ON - could not determine level');
+          }
+        } else if (level === 'auto') {
+          // Check timeout and set accordingly
+          if (state.timedOut === false) {
+            const currentLevel = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
+            if (currentLevel !== null) {
+              funcs.controlLights(nodeConfig.lights, currentLevel, nodeWrapper, homeAssistant);
+              debugLog(`Level: AUTO - lights set to ${currentLevel}% (triggers active)`);
+            }
+          } else {
+            funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+            debugLog('Level: AUTO - lights turned off (timed out)');
+          }
+        } else if (typeof level === 'number' && level >= 0 && level <= 100) {
+          funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+          debugLog(`Level: ${level}% - lights set to ${level}%`);
+        } else {
+          node.warn(`Invalid level value: ${level}`);
+        }
+      }
+      
       // Send config if requested
       if (sendConfigRequested) {
         fetchMissingStates();
@@ -385,6 +512,14 @@ module.exports = function (RED) {
         homeAssistant.eventBus.on(eventTopic, handleStateChange);
         debugLog(`Subscribed to away sensor: ${eventTopic}`);
       }
+      
+      // Subscribe to light state changes
+      nodeConfig.lights.forEach((light) => {
+        const entityId = light.entity_id;
+        const eventTopic = `ha_events:state_changed:${entityId}`;
+        homeAssistant.eventBus.on(eventTopic, handleLightStateChange);
+        debugLog(`Subscribed to light: ${eventTopic}`);
+      });
 
       const nightSensorText = nodeConfig.nightSensor ? ', 1 night sensor' : '';
       const awaySensorText = nodeConfig.awaySensor ? ', 1 away sensor' : '';
@@ -471,6 +606,13 @@ module.exports = function (RED) {
           const eventTopic = `ha_events:state_changed:${nodeConfig.awaySensor.entity_id}`;
           homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
         }
+        
+        // Unsubscribe from light state changes
+        nodeConfig.lights.forEach((light) => {
+          const entityId = light.entity_id;
+          const eventTopic = `ha_events:state_changed:${entityId}`;
+          homeAssistant.eventBus.removeListener(eventTopic, handleLightStateChange);
+        });
       }
       node.status({});
     });

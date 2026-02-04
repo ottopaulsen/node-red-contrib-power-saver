@@ -248,6 +248,9 @@ function controlLights(lights, level, node, homeAssistant) {
     const entityId = light.entity_id;
     const domain = entityId.split('.')[0];
     
+    // Store the level we're setting
+    light.setLevel = level;
+    
     if (domain === 'switch') {
       // For switches: turn off if level is 0, on if level > 0
       const service = level === 0 ? 'turn_off' : 'turn_on';
@@ -301,6 +304,9 @@ function turnOffAllLights(lights, node, homeAssistant) {
   lights.forEach(light => {
     const entityId = light.entity_id;
     const domain = entityId.split('.')[0];
+    
+    // Store that we're setting level to 0
+    light.setLevel = 0;
     
     node.log(`Calling ${domain}.turn_off for ${entityId}`);
     homeAssistant.websocket.send({
