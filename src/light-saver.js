@@ -389,16 +389,17 @@ module.exports = function (RED) {
             node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
             debugLog('Override: OFF - lights turned off');
           } else if (nodeConfig.override === 'on') {
+            // Set lights to the appropriate automatic level and keep them there
             const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
             if (level !== null) {
               funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
-              debugLog(`Override: ON - lights set to ${level}%`);
+              debugLog(`Override: ON - lights set to ${level}% (locked)`);
             } else {
-              // If we can't determine level, use 100% as default
+              node.warn('Override ON: Could not determine level, using 100%');
               funcs.controlLights(nodeConfig.lights, 100, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: "Override: ON (100%)" });
-              debugLog('Override: ON - lights set to 100% (default)');
+              debugLog('Override: ON - lights set to 100% (fallback)');
             }
           } else if (typeof nodeConfig.override === 'number' && nodeConfig.override >= 0 && nodeConfig.override <= 100) {
             funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
@@ -585,14 +586,17 @@ module.exports = function (RED) {
               node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
               debugLog('Override: OFF applied on startup');
             } else if (nodeConfig.override === 'on') {
+              // Set lights to the appropriate automatic level and keep them there
               const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
               if (level !== null) {
                 funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
                 node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
-                debugLog(`Override: ON applied on startup - ${level}%`);
+                debugLog(`Override: ON applied on startup - ${level}% (locked)`);
               } else {
-                node.warn('Override ON on startup: Could not determine level');
-                node.status({ fill: "yellow", shape: "dot", text: "Override: ON (no level)" });
+                node.warn('Override ON on startup: Could not determine level, using 100%');
+                funcs.controlLights(nodeConfig.lights, 100, nodeWrapper, homeAssistant);
+                node.status({ fill: "green", shape: "dot", text: "Override: ON (100%)" });
+                debugLog('Override: ON applied on startup - 100% (fallback)');
               }
             } else if (typeof nodeConfig.override === 'number') {
               funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);

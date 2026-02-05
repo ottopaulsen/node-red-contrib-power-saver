@@ -16,6 +16,8 @@ actions:
     link: /examples/
     type: primary
 features:
+  - title: Light control
+    details: Light Saver node for advanced fully automated motion based light control
   - title: Automatic scheduling
     details: Automatically calculate best plan and send signal to turn on and off.
   - title: Multiple strategies
@@ -33,8 +35,12 @@ footer: Created by Otto Paulsen and contributors
 footerHtml: true
 ---
 
-::: danger PowerSaver 5 beta
-PowerSaver version 5 with support for 15 minutes price intervals has been pre-released. The version is not stable and not very much tested. Use it at your own risk (but that goes for any version anyway). Please report bugs as github issues.
+::: tip New Light Saver node
+A brand new [node](/nodes/ps-light-saver.html#ps-light-saver) gives you powerful control of smart lights. Have lights turn on before you enter the room. Keep them on as long as there os motion. Turn them off quickly if you did not enter the room. Set different default levels at different times of day. Keep off at night. Keep your manual adjustments until you leave. Try it out!
+:::
+
+::: warning PowerSaver 5 beta
+PowerSaver version 5 with support for 15 minutes price intervals has been pre-released. The version has been tested for some time now and seems pretty stable, but there are probably still some issues. Use it at your own risk (but that goes for any version anyway). Please report bugs as github issues.
 
 This documentation is for version 5!
 :::

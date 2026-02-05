@@ -83,6 +83,12 @@ Use this to get a list of the tariff types available in the Elvia API.
 
 Use this to get the Elvia grid tariff for a selected tariff type.
 
+### [ps-light-saver](./ps-light-saver)
+
+![ps-light-saver](../images/node-ps-light-saver.png)
+
+A node for advanced light control based on motion.
+
 ###
 
 
