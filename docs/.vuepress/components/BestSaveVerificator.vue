@@ -127,12 +127,16 @@
         </td>
       </tr>
     </table>
+
+    <!-- Visual Chart -->
+    <BestSaveChart :payload="payload" v-if="payload.minutes && payload.minutes.length > 0" />
   </div>
 </template>
 
 <script setup>
 import { computed, reactive, ref, watch } from "vue";
 import { DateTime } from "luxon";
+import BestSaveChart from './BestSaveChart.vue';
 
 const message = ref("");
 const showNegative = ref(false);
