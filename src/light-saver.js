@@ -55,6 +55,13 @@ module.exports = function (RED) {
         delay: config.awayDelay !== undefined ? config.awayDelay : 0,
         invert: config.invertAwaySensor === true
       } : null,
+      brightnessSensor: config.brightnessSensor ? {
+        entity_id: config.brightnessSensor.entity_id || config.brightnessSensor,
+        state: config.brightnessSensor.state || null,
+        lastChanged: config.brightnessSensor.lastChanged || null,
+        limit: config.brightnessLimit !== undefined && config.brightnessLimit !== null ? config.brightnessLimit : null,
+        mode: config.brightnessMode || 'max'
+      } : null,
       levels: Array.isArray(config.levels) ? config.levels : [],
       debugLog: config.debugLog === true,
       override: override
@@ -348,6 +355,9 @@ module.exports = function (RED) {
         if (payload.config.awaySensor !== undefined) {
           nodeConfig.awaySensor = payload.config.awaySensor;
         }
+        if (payload.config.brightnessSensor !== undefined) {
+          nodeConfig.brightnessSensor = payload.config.brightnessSensor;
+        }
         if (payload.config.levels !== undefined) {
           nodeConfig.levels = Array.isArray(payload.config.levels) ? payload.config.levels : [];
         }
@@ -565,6 +575,13 @@ module.exports = function (RED) {
         debugLog(`Subscribed to away sensor: ${eventTopic}`);
       }
       
+      // Subscribe to brightness sensor if configured
+      if (nodeConfig.brightnessSensor && nodeConfig.brightnessSensor.entity_id) {
+        const eventTopic = `ha_events:state_changed:${nodeConfig.brightnessSensor.entity_id}`;
+        homeAssistant.eventBus.on(eventTopic, handleStateChange);
+        debugLog(`Subscribed to brightness sensor: ${eventTopic}`);
+      }
+      
       // Subscribe to light state changes
       nodeConfig.lights.forEach((light) => {
         const entityId = light.entity_id;
@@ -575,8 +592,9 @@ module.exports = function (RED) {
 
       const nightSensorText = nodeConfig.nightSensor ? ', 1 night sensor' : '';
       const awaySensorText = nodeConfig.awaySensor ? ', 1 away sensor' : '';
-      node.status({ fill: "green", shape: "dot", text: `Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${awaySensorText}, ${nodeConfig.levels.length} levels` });
-      debugLog(`Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${awaySensorText}, and ${nodeConfig.levels.length} levels`);
+      const brightnessSensorText = nodeConfig.brightnessSensor ? ', 1 brightness sensor' : '';
+      node.status({ fill: "green", shape: "dot", text: `Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${awaySensorText}${brightnessSensorText}, ${nodeConfig.levels.length} levels` });
+      debugLog(`Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${awaySensorText}${brightnessSensorText}, and ${nodeConfig.levels.length} levels`);
       
       // Fetch initial states after a delay to allow HA to connect
       startupTimeoutId = setTimeout(() => {
@@ -680,6 +698,11 @@ module.exports = function (RED) {
         
         if (nodeConfig.awaySensor && nodeConfig.awaySensor.entity_id) {
           const eventTopic = `ha_events:state_changed:${nodeConfig.awaySensor.entity_id}`;
+          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
+        }
+        
+        if (nodeConfig.brightnessSensor && nodeConfig.brightnessSensor.entity_id) {
+          const eventTopic = `ha_events:state_changed:${nodeConfig.brightnessSensor.entity_id}`;
           homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
         }
         

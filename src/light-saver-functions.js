@@ -78,6 +78,41 @@ function isAwayMode(config) {
 }
 
 /**
+ * Check if brightness allows lights to turn on based on brightness sensor and limit
+ * @param {object} config - Configuration object with brightnessSensor
+ * @returns {boolean} - True if lights are allowed to turn on, false otherwise
+ */
+function isBrightnessAllowingLights(config) {
+  if (!config.brightnessSensor || !config.brightnessSensor.entity_id) {
+    return true; // No brightness limit configured, always allow
+  }
+  
+  if (config.brightnessSensor.limit === null || config.brightnessSensor.limit === undefined) {
+    return true; // No limit set, always allow
+  }
+  
+  if (config.brightnessSensor.state === null || config.brightnessSensor.state === undefined) {
+    return true; // No state yet, allow (fail-open)
+  }
+  
+  const brightness = parseFloat(config.brightnessSensor.state);
+  if (isNaN(brightness)) {
+    return true; // Invalid brightness value, allow (fail-open)
+  }
+  
+  const limit = config.brightnessSensor.limit;
+  const mode = config.brightnessSensor.mode || 'max';
+  
+  if (mode === 'min') {
+    // Lights allowed when brightness is ABOVE limit (dark enough)
+    return brightness > limit;
+  } else {
+    // Lights allowed when brightness is BELOW limit (default: max mode)
+    return brightness < limit;
+  }
+}
+
+/**
  * Handle state change events from Home Assistant
  * @param {object} event - The state change event from HA
  * @param {object} config - Configuration object with triggers, lights, nightSensor, etc.
@@ -116,12 +151,17 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
     
     // If trigger turned on and timedOut is true, activate lights
     if (newState.state === 'on' && state.timedOut === true) {
-      node.log(`Trigger ${entityId} turned on while timedOut=true, activating lights`);
+      node.log(`Trigger ${entityId} turned on while timedOut=true, checking brightness and activating lights`);
       state.timedOut = false; // Reset timedOut after activating lights
       
-      const level = findCurrentLevel(config, node, clock);
-      if (level !== null) {
-        controlLights(config.lights, level, node, homeAssistant);
+      // Check brightness limit before turning on lights
+      if (isBrightnessAllowingLights(config)) {
+        const level = findCurrentLevel(config, node, clock);
+        if (level !== null) {
+          controlLights(config.lights, level, node, homeAssistant);
+        }
+      } else {
+        node.log('Brightness limit prevents lights from turning on');
       }
     }
     
@@ -182,7 +222,43 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
     return;
   }
   
-  node.warn(`Received state change for ${entityId} but not found in triggers, nightSensor, or awaySensor`);
+  // Check if it's the brightness sensor
+  if (config.brightnessSensor && config.brightnessSensor.entity_id === entityId) {
+    const wasBrightnessAllowing = isBrightnessAllowingLights(config); // Check before update
+    const oldBrightness = config.brightnessSensor.state;
+    config.brightnessSensor.lastChanged = timestamp;
+    config.brightnessSensor.state = newState.state;
+    
+    node.log(`Updated brightness sensor ${entityId}: state=${config.brightnessSensor.state}, lastChanged=${config.brightnessSensor.lastChanged}`);
+    
+    node.status({ 
+      fill: "green", 
+      shape: "dot", 
+      text: `Brightness: ${newState.state} - updated ${timeOnly}` 
+    });
+    
+    // Check if brightness crossed threshold to allow lights
+    const isNowBrightnessAllowing = isBrightnessAllowingLights(config);
+    if (!wasBrightnessAllowing && isNowBrightnessAllowing) {
+      // Brightness crossed threshold - lights are now allowed
+      // If lights are off and there was motion within timeout (timedOut is false), turn lights on
+      if (state.timedOut === false) {
+        node.log('Brightness crossed threshold and motion detected within timeout, turning lights on');
+        const level = findCurrentLevel(config, node, clock);
+        if (level !== null) {
+          controlLights(config.lights, level, node, homeAssistant);
+        }
+      }
+    } else if (wasBrightnessAllowing && !isNowBrightnessAllowing) {
+      // Brightness crossed threshold - lights are no longer allowed
+      // We don't turn lights off here, let the timeout mechanism handle it
+      node.log('Brightness crossed threshold, lights no longer allowed to turn on (but staying on if already on)');
+    }
+    
+    return;
+  }
+  
+  node.warn(`Received state change for ${entityId} but not found in triggers, nightSensor, awaySensor, or brightnessSensor`);
 }
 
 /**
@@ -429,6 +505,11 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
     entitiesToFetch.push({ id: config.awaySensor.entity_id, type: 'awaySensor' });
   }
   
+  // Check brightness sensor
+  if (config.brightnessSensor && !config.brightnessSensor.state) {
+    entitiesToFetch.push({ id: config.brightnessSensor.entity_id, type: 'brightnessSensor' });
+  }
+  
   if (entitiesToFetch.length === 0) {
     node.log('All entities already have states');
   } else {
@@ -460,6 +541,10 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
               config.awaySensor.state = stateObj.state;
               config.awaySensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
               node.log(`Fetched state for away sensor ${entity.id}: ${stateObj.state}`);
+            } else if (entity.type === 'brightnessSensor') {
+              config.brightnessSensor.state = stateObj.state;
+              config.brightnessSensor.lastChanged = stateObj.last_changed || stateObj.last_updated;
+              node.log(`Fetched state for brightness sensor ${entity.id}: ${stateObj.state}`);
             }
           } else {
             node.warn(`State not found for ${entity.id}`);
@@ -523,6 +608,7 @@ module.exports = {
   isSensorActive,
   isNightMode,
   isAwayMode,
+  isBrightnessAllowingLights,
   handleStateChange,
   findCurrentLevel,
   controlLights,

@@ -49,7 +49,9 @@ You need at least one sensor to trigger the light, normally a motion sensor, but
 Litghts and sensors are selected from Home Assistant. 
 
 Configuration example. See description below:
+
 ![Light Saver Config](../images/light-saver-config-1.png)
+
 ![Light Saver Config](../images/light-saver-config-2.png)
 
 | Value                  | Description                                                                                                                                                                                    |
@@ -67,6 +69,9 @@ Configuration example. See description below:
 | Away sensor invert     | Reverse the away sensor logic. When checked, away mode is active when the sensor is off/false instead of on/true.                                                                              |
 | Away level             | Brightness level (0-100%) to use when away sensor is active. Leave empty to disable away level (night or time-based levels will be used instead).                                              |
 | Away delay             | Seconds to wait (0-999) before applying away level when away sensor activates. This way you can keep the light on while you are getting out.   |
+| Brightness sensor      | Optional sensor or `input_number` that reports brightness (e.g., lux, illuminance). When configured with a limit, controls when lights are allowed to turn on based on ambient brightness.      |
+| Brightness limit       | Numeric threshold value for brightness comparison. Lights only turn on when brightness passes this threshold according to the selected mode.                                                    |
+| Min/Max mode           | **Max** (default): Lights turn on when brightness is below limit (darker conditions). **Min**: Lights turn on when brightness is above limit (brighter conditions).                            |
 | Light levels           | Time-based brightness levels throughout the day. Each entry specifies a time (HH:MM, 24-hour format) and a brightness level (0-100%). The level remains active until the next time entry. This is the level that the light will be turned on to when motion is detected after a timeout.    |
 | Override               | Check to override automatic behavior and set the node out of play. Select if the light shall be off, on or have a specific level. See [Override](#override) section below for details.                                                                                            |
 | Context storage        | Choose where to persist runtime state across Node-RED restarts (default, file, etc.). Must match a context store configured in Node-RED's `settings.js` file.                                  |
@@ -114,6 +119,7 @@ The following config values can be changed dynamically by sending messages to th
 | `lightTimeout`                     | Number (minutes), default timeout for lights            |
 | `nightSensor`                      | Object with `entity_id`, `level`, `delay`, `invert`      |
 | `awaySensor`                       | Object with `entity_id`, `level`, `delay`, `invert`      |
+| `brightnessSensor`                 | Object with `entity_id`, `limit`, `mode`                 |
 | `levels`                           | Array of level objects with `fromTime` and `level`       |
 | `debugLog`                         | Legal values: `true`, `false`                            |
 | `override`                         | Legal values: `"on"`, `"off"`, `"auto"`, or number 0-100 |
@@ -302,6 +308,13 @@ When the `sendState` command is received, the node sends runtime state data:
         "delay": 10,
         "invert": false
       },
+      "brightnessSensor": {
+        "entity_id": "sensor.illuminance",
+        "state": "45.2",
+        "lastChanged": "2026-02-04T18:20:00.000Z",
+        "limit": 50,
+        "mode": "max"
+      },
       "override": "auto"
     }
   }
@@ -349,11 +362,20 @@ If override is set to anything other than "auto", the override value takes compl
 ### 2. Trigger Monitoring
 The node continuously monitors all configured trigger sensors:
 - When any trigger turns on (detects motion), `timedOut` is set to `false`
-- If `timedOut` was `true` before the trigger activated, lights turn on to the appropriate level
+- If `timedOut` was `true` before the trigger activated, and brightness limit allows (if configured), lights turn on to the appropriate level
 - Each trigger has its own timeout period (or uses the default)
 - When all triggers have been off for their respective timeout periods, `timedOut` is set to `true` and lights turn off
 
-### 3. Level Priority
+### 3. Brightness Limit Check
+If a brightness sensor is configured with a limit:
+- When lights would normally turn on due to motion, the brightness is checked first
+- **Max mode** (default): Lights only turn on if brightness is below the limit (darker conditions)
+- **Min mode**: Lights only turn on if brightness is above the limit (brighter conditions)
+- When brightness crosses the threshold and motion was detected within timeout, lights automatically turn on
+- If brightness prevents lights from turning on, they remain off until brightness crosses the threshold
+- Brightness checks do not affect lights that are already on
+
+### 4. Level Priority
 When determining what brightness level to use, the node applies this priority order:
 
 1. **Override** (if not "auto") - Blocks all automatic control

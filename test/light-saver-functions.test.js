@@ -929,6 +929,157 @@ describe("light-saver-functions", function () {
     });
   });
 
+  describe("isBrightnessAllowingLights", function () {
+    it("should return true when no brightness sensor configured", function () {
+      const config = {
+        brightnessSensor: null
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return true when brightness sensor has no limit", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '100',
+          limit: null,
+          mode: 'max'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return true when brightness sensor has no state yet", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: null,
+          limit: 50,
+          mode: 'max'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return true in max mode when brightness is below limit", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '30',
+          limit: 50,
+          mode: 'max'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return false in max mode when brightness is above limit", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '70',
+          limit: 50,
+          mode: 'max'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.false;
+    });
+
+    it("should return true in min mode when brightness is above limit", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '70',
+          limit: 50,
+          mode: 'min'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true;
+    });
+
+    it("should return false in min mode when brightness is below limit", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '30',
+          limit: 50,
+          mode: 'min'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.false;
+    });
+
+    it("should handle brightness at exactly the limit in max mode", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '50',
+          limit: 50,
+          mode: 'max'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.false; // Equal is not less than
+    });
+
+    it("should handle brightness at exactly the limit in min mode", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '50',
+          limit: 50,
+          mode: 'min'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.false; // Equal is not greater than
+    });
+
+    it("should default to max mode when mode not specified", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: '30',
+          limit: 50
+          // mode not specified
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true; // 30 < 50, so allowed in max mode
+    });
+
+    it("should return true for invalid brightness value", function () {
+      const config = {
+        brightnessSensor: { 
+          entity_id: 'sensor.brightness',
+          state: 'invalid',
+          limit: 50,
+          mode: 'max'
+        }
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true; // Fail-open
+    });
+  });
+
   describe("findCurrentLevel with away mode", function () {
     it("should return away level when away sensor is on", function () {
       const config = {

@@ -7,6 +7,11 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.0.beta 8
+
+ - Added new node Light Saver for advanced light control based on motion sensor.
+ - Update layout of edit dialogs.
+
 ## 5.0.0.beta.7
 
  - Fix the general add tariff node so it handles periods that are not exact hours

@@ -3,7 +3,7 @@
 /* 740px * 1.6 = 1184px */
 
 :root {
-  --content-width: 1184px;
+  --content-width: 800px;
 }
 
 .theme-default-content:not(.custom) {
