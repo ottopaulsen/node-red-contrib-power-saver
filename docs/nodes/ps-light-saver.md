@@ -1,5 +1,3 @@
----
----
 
 # ps-light-saver
 

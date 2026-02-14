@@ -45,7 +45,7 @@ function extractBrightnessLevel(stateObj) {
  * @returns {boolean} - True if sensor is active, false otherwise
  */
 function isSensorActive(sensor, invertFlag) {
-  if (!sensor || !sensor.state) {
+  if (!sensor || sensor.state === undefined || sensor.state === null) {
     return false;
   }
   

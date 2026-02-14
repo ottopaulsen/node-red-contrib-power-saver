@@ -144,6 +144,30 @@ describe("light-saver-functions", function () {
       const result = funcs.isSensorActive(sensor, false);
       expect(result).to.be.true;
     });
+
+    it("should handle boolean false state without invert", function () {
+      const sensor = { state: false };
+      const result = funcs.isSensorActive(sensor, false);
+      expect(result).to.be.false;
+    });
+
+    it("should handle boolean false state with invert", function () {
+      const sensor = { state: false };
+      const result = funcs.isSensorActive(sensor, true);
+      expect(result).to.be.true;
+    });
+
+    it("should handle string 'false' state without invert", function () {
+      const sensor = { state: 'false' };
+      const result = funcs.isSensorActive(sensor, false);
+      expect(result).to.be.false;
+    });
+
+    it("should handle string 'false' state with invert", function () {
+      const sensor = { state: 'false' };
+      const result = funcs.isSensorActive(sensor, true);
+      expect(result).to.be.true;
+    });
   });
 
   describe("findCurrentLevel", function () {

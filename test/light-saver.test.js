@@ -1,5 +1,4 @@
 const expect = require("chai").expect;
-const sinon = require("sinon");
 const helper = require("node-red-node-test-helper");
 const lightSaver = require("../src/light-saver.js");
 

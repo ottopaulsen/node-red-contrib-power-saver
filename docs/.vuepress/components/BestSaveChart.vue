@@ -165,16 +165,20 @@
     <div class="sequence-savings" v-if="offSequenceSavings.length > 0">
       <h4>Savings per OFF Sequence</h4>
       <table>
-        <tr>
-          <th>Sequence</th>
-          <th>Duration</th>
-          <th>Avg Saving per kWh</th>
-        </tr>
-        <tr v-for="(seq, i) in offSequenceSavings" :key="'seq-' + i">
-          <td>{{ i + 1 }}</td>
-          <td>{{ seq.durationMinutes }} minutes</td>
-          <td>{{ seq.avgSavingPerKwh }}</td>
-        </tr>
+        <thead>
+          <tr>
+            <th>Sequence</th>
+            <th>Duration</th>
+            <th>Avg Saving per kWh</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(seq, i) in offSequenceSavings" :key="'seq-' + i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ seq.durationMinutes }} minutes</td>
+            <td>{{ seq.avgSavingPerKwh }}</td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
@@ -182,18 +186,22 @@
     <div class="schedule-info">
       <h4>Schedule Periods</h4>
       <table>
-        <tr>
-          <th>Start Time</th>
-          <th>Duration</th>
-          <th>State</th>
-        </tr>
-        <tr v-for="(period, i) in schedule" :key="'period-' + i">
-          <td>{{ formatTime(period.time) }}</td>
-          <td>{{ period.countMinutes }} minutes</td>
-          <td :class="period.value ? 'on-text' : 'off-text'">
-            {{ period.value ? 'ON' : 'OFF' }}
-          </td>
-        </tr>
+        <thead>
+          <tr>
+            <th>Start Time</th>
+            <th>Duration</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(period, i) in schedule" :key="'period-' + i">
+            <td>{{ formatTime(period.time) }}</td>
+            <td>{{ period.countMinutes }} minutes</td>
+            <td :class="period.value ? 'on-text' : 'off-text'">
+              {{ period.value ? 'ON' : 'OFF' }}
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>

@@ -4,6 +4,12 @@ sidebar: auto
 
 # Best Save Viewer
 
+::: danger WIP
+The viewer tool is work in progress.
+It give some useful information, but not all is correct.
+Use with care.
+:::
+
 ## Tool
 
 Below is a tool you can use to look at how the Best Save node is working.
@@ -26,8 +32,8 @@ Then paste it here and see the result below:
 This is the configuration you have used in the Best Save node:
 - **Max minutes off**: Maximum number of consecutive minutes the output can be off
 - **Min minutes off**: Minimum number of minutes to remain off once turned off
-- **Recovery percentage**: Percentage of the max minutes off that must be "on" before allowing another off sequence
-- **Max recovery minutes**: Maximum time allowed for recovery period
+- **Recovery percentage**: Percentage of the actual minutes off that must be "on" before allowing another off sequence
+- **Max recovery minutes**: Maximum time for recovery period
 - **Minimum saving**: The minimum saving per kWh required to turn off
 - **Output values**: The actual values sent for On and Off states
 - **Send when rescheduling**: Whether to send output when schedule changes
@@ -38,7 +44,7 @@ This is the configuration you have used in the Best Save node:
 
 Other information about the calculation:
 - **Node version**: The version of the node that generated the data
-- **Data timestamp**: When the calculation was made
+- **Data timestamp**: Time the data was handled by the Best Save node
 - **Price source**: Where the price data comes from (e.g., Tibber, Nordpool)
 - **Current output**: The current state (On or Off)
 

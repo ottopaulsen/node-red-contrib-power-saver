@@ -1,6 +1,4 @@
 module.exports = function (RED) {
-  const packageJson = require('../package.json');
-  const VERSION = packageJson.version;
   const funcs = require('./light-saver-functions');
   
   // Timing constants
@@ -84,6 +82,9 @@ module.exports = function (RED) {
     
     let nightActivationTimer = null; // Timer for setting lights to night level when night sensor activates
     let awayActivationTimer = null; // Timer for setting lights to away level when away sensor activates
+    let startupTimeoutId = null; // Timer for initial state fetch
+    let overrideTimeoutId = null; // Timer for applying override after state fetch
+    let immediateCheckTimeoutId = null; // Timer for immediate timeout check after restart
     
     // Create wrapper node object with debug logging
     const nodeWrapper = {
@@ -286,14 +287,14 @@ module.exports = function (RED) {
         nodeWrapper.warn(`Failed to fetch light states: ${err.message}`);
       }
       
-      // Start timeout check timer if initial timedOut was just set
-      if (initialTimedOutWasSet && !timeoutCheckInterval) {
+      // Start timeout check timer if we have state and interval not yet running
+      if (state.timedOut !== undefined && !timeoutCheckInterval) {
         debugLog('Starting timeout check timer (runs every minute)');
         timeoutCheckInterval = setInterval(checkTimeouts, TIMEOUT_CHECK_INTERVAL);
         
         // Run an immediate check in case lights should already be turned off after restart
         debugLog('Running immediate timeout check after restart');
-        setTimeout(() => checkTimeouts(), STARTUP_DELAYS.IMMEDIATE_CHECK_WAIT);
+        immediateCheckTimeoutId = setTimeout(() => checkTimeouts(), STARTUP_DELAYS.IMMEDIATE_CHECK_WAIT);
       }
     };
 
@@ -573,12 +574,12 @@ module.exports = function (RED) {
       debugLog(`Monitoring ${nodeConfig.triggers.length} triggers, ${nodeConfig.lights.length} lights${nightSensorText}${awaySensorText}, and ${nodeConfig.levels.length} levels`);
       
       // Fetch initial states after a delay to allow HA to connect
-      setTimeout(() => {
+      startupTimeoutId = setTimeout(() => {
         debugLog('Fetching initial states after startup delay...');
         fetchMissingStates();
         
         // Apply override immediately after fetching states
-        setTimeout(() => {
+        overrideTimeoutId = setTimeout(() => {
           if (nodeConfig.override !== 'auto') {
             debugLog(`Applying override from config: ${nodeConfig.override}`);
             if (nodeConfig.override === 'off') {
@@ -637,6 +638,27 @@ module.exports = function (RED) {
         clearTimeout(awayActivationTimer);
         awayActivationTimer = null;
         debugLog('Cleared away activation timer');
+      }
+      
+      // Clear startup timeout
+      if (startupTimeoutId) {
+        clearTimeout(startupTimeoutId);
+        startupTimeoutId = null;
+        debugLog('Cleared startup timeout');
+      }
+      
+      // Clear override timeout
+      if (overrideTimeoutId) {
+        clearTimeout(overrideTimeoutId);
+        overrideTimeoutId = null;
+        debugLog('Cleared override timeout');
+      }
+      
+      // Clear immediate check timeout
+      if (immediateCheckTimeoutId) {
+        clearTimeout(immediateCheckTimeoutId);
+        immediateCheckTimeoutId = null;
+        debugLog('Cleared immediate check timeout');
       }
       
       if (homeAssistant && homeAssistant.eventBus) {
