@@ -2,16 +2,19 @@
 // These functions are exported for testing
 
 /**
- * Parse a timestamp string as UTC, adding 'Z' suffix if missing
- * Home Assistant returns timestamps without 'Z', which causes them to be parsed as local time
+ * Parse a timestamp string as UTC, handling timezone offsets
+ * Home Assistant may return timestamps with or without 'Z' or timezone offsets like +00:00
  * @param {string} timestamp - ISO timestamp string
  * @returns {Date} - Date object parsed as UTC
  */
 function parseUTCTimestamp(timestamp) {
   if (!timestamp) return null;
-  // If timestamp doesn't end with 'Z', add it to force UTC parsing
-  const utcTimestamp = timestamp.endsWith('Z') ? timestamp : timestamp + 'Z';
-  return new Date(utcTimestamp);
+  // If timestamp already has 'Z' or a timezone offset (+HH:MM or -HH:MM), use as-is
+  if (timestamp.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(timestamp)) {
+    return new Date(timestamp);
+  }
+  // Otherwise, add 'Z' to force UTC parsing
+  return new Date(timestamp + 'Z');
 }
 
 /**

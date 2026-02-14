@@ -53,6 +53,23 @@ describe("light-saver-functions", function () {
       const result = funcs.parseUTCTimestamp(undefined);
       expect(result).to.be.null;
     });
+
+    it("should handle timestamp with +00:00 offset", function () {
+      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35+00:00');
+      expect(result.toISOString()).to.equal('2026-01-29T21:53:35.000Z');
+    });
+
+    it("should handle timestamp with positive offset", function () {
+      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35+05:30');
+      // +05:30 means 5.5 hours ahead, so UTC should be 5.5 hours earlier
+      expect(result.toISOString()).to.equal('2026-01-29T16:23:35.000Z');
+    });
+
+    it("should handle timestamp with negative offset", function () {
+      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35-05:00');
+      // -05:00 means 5 hours behind, so UTC should be 5 hours later
+      expect(result.toISOString()).to.equal('2026-01-30T02:53:35.000Z');
+    });
   });
 
   describe("extractBrightnessLevel", function () {

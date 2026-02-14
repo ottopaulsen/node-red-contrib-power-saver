@@ -410,7 +410,7 @@ module.exports = function (RED) {
             debugLog('Override: AUTO - returned to normal operation');
             node.status({ fill: "blue", shape: "dot", text: "Override: AUTO" });
             
-            // If triggers are not timed out, set lights to correct level immediately
+            // Set lights to correct level based on timeout state
             if (state.timedOut === false) {
               debugLog('Triggers active, setting lights to appropriate level');
               const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
@@ -419,6 +419,11 @@ module.exports = function (RED) {
                 node.status({ fill: "green", shape: "dot", text: `AUTO: ${level}%` });
                 debugLog(`Lights set to ${level}% (auto mode with active triggers)`);
               }
+            } else if (state.timedOut === true) {
+              debugLog('Triggers timed out, turning lights off');
+              funcs.controlLights(nodeConfig.lights, 0, nodeWrapper, homeAssistant);
+              node.status({ fill: "yellow", shape: "ring", text: "AUTO: Timed out (off)" });
+              debugLog('Lights turned off (auto mode with timed out triggers)');
             }
           } else {
             node.warn(`Invalid override value: ${nodeConfig.override}`);
