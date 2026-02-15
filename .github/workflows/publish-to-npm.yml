@@ -21,4 +21,4 @@ jobs:
           timezoneLinux: "Europe/Oslo"
       - run: npm ci
       - run: 'npm run test'
-      - run: npm publish --tag beta --provenance
+      - run: npm publish--provenance
