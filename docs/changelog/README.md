@@ -7,9 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
-## 5.0.0.beta 8
+## 5.0.0
 
  - Added new node Light Saver for advanced light control based on motion sensor.
+ - Minute reesolution as released in previous beta-versions.
  - Update layout of edit dialogs.
 
 ## 5.0.0.beta.7

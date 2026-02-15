@@ -9,6 +9,11 @@ Node to automatically control lights based on motion sensors.
 This node can only be used with Home Assistant.
 :::
 
+::: warning Experimental
+You should regard this node as experimental, as it is brand new and has not been tested for many different conditions.
+The documentation may not be accurate on all details, and may even contain errors.
+:::
+
 
 
 ## Description
@@ -25,7 +30,8 @@ Here are some of the main ideas:
 * You can configure different default levels on different times of the day.
 * You can have separate night levels or away levels that override the standard time of day levels.
 * If motion remains, the lights will not change automatically, so for example if you set the desired level manually,
-it will remain as long as there is motion inside the configured timeout.
+it will remain as long as there is motion inside the configured timeout. Exception:
+* If you use the brightness sensor, lights may turn on automatically when it gets dark, even if there is constant motion.
 
 The node works fine without any input or output, but you can use input to control or configure it, and you can get interesting information on the output.
 
@@ -39,12 +45,16 @@ When the night sensor goes on, all lights are set to the night level after the d
 
 The away sensor works exactly the same way as the night sensor, and it overrides the night sensor, so you can have a specific light setting when you are away.
 
+### Brightness limit
+
+You may set a brightness limit, using a brightness sensor (luminance etc.), so lights are only turned on if it is dark. This is specially useful for outdoor lights.
+
 
 ## Configuration
 
 You normally configure one node for each light, but if you have multiple lights that shall be controlled exactlhy the same way, you can add multiple lights to each node.
 
-You need at least one sensor to trigger the light, normally a motion sensor, but you may use other sensors too, for example a door lock to turn on the light when you open the door. Often it is convenient to control one light with muløtiple sensors. You may turn on the light in the bathroom when there is motion in the hall outside so that the light is on when you enter the bathroom. You can set a short timeout on this sensor so thjat if you do not enter the bathroom and trigger the sensor inside, the light will turn off sooner.
+You need at least one sensor to trigger the light, normally a motion sensor, but you may use other sensors too, for example a door lock to turn on the light when you open the door. Often it is convenient to control one light with multiple sensors. You may turn on the light in the bathroom when there is motion in the hall outside so that the light is on when you enter the bathroom. You can set a short timeout on this sensor so that if you do not enter the bathroom and trigger the sensor inside, the light will turn off sooner.
 
 Litghts and sensors are selected from Home Assistant. 
 
@@ -86,7 +96,7 @@ Switches or lights that can only turn on or off will be switched off if the leve
 ### Override
 
 If you want to set the node temporarily out of play, check the override checkbox and select how you want the light to be set.
-You can force the light to be off, on or at a specific level. If you select on, the level will be based on the time of they settings, but the light will never turn off. If you change the light manually, you manual change will be used instead. If Node-RED restarts, the override setting may override your manual setting.
+You can force the light to be off, on or at a specific level. If you select on, the level will be based on the time of they settings, but the light will never turn off. If you change the light manually, your manual change will be used instead. If Node-RED restarts, the override setting may override your manual setting.
 
 You can also override by using dynamic config (see below). Then the following values can be useds:
 
@@ -108,6 +118,8 @@ When override is set to "Off", "On", or a specific level, the node will not resp
 
 ## Input
 
+The node works fine without any input. It is reading state directly from home assistant for all normal operation. You can however use input for dynamic configuration.
+
 ### Dynamic config
 
 The following config values can be changed dynamically by sending messages to the node's input:
@@ -119,7 +131,7 @@ The following config values can be changed dynamically by sending messages to th
 | `lightTimeout`                     | Number (minutes), default timeout for lights            |
 | `nightSensor`                      | Object with `entity_id`, `level`, `delay`, `invert`      |
 | `awaySensor`                       | Object with `entity_id`, `level`, `delay`, `invert`      |
-| `brightnessSensor`                 | Object with `entity_id`, `limit`, `mode`                 |
+| `brightnessSensor`                 | Object with `entity_id`, `limit`, `mode` (min or max)                 |
 | `levels`                           | Array of level objects with `fromTime` and `level`       |
 | `debugLog`                         | Legal values: `true`, `false`                            |
 | `override`                         | Legal values: `"on"`, `"off"`, `"auto"`, or number 0-100 |
