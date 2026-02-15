@@ -7,6 +7,7 @@ This applies to the following nodes:
 - Lowest Price
 - Heat Capacitor
 - Schedule Merger
+- Light Saver
 
 
 

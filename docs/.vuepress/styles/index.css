@@ -1,0 +1,20 @@
+/* Increase page max-width by 60% */
+/* Default VuePress theme max-width is 740px */
+/* 740px * 1.6 = 1184px */
+
+:root {
+  --content-width: 800px;
+}
+
+.theme-default-content:not(.custom) {
+  max-width: var(--content-width) !important;
+}
+
+.page {
+  max-width: var(--content-width) !important;
+}
+
+/* For the container */
+.theme-container .page {
+  max-width: var(--content-width) !important;
+}

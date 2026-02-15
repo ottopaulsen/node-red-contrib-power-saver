@@ -1,0 +1,1306 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-light-saver", {
+    category: "Power Saver",
+    color: "#FFCC66",
+      defaults: {
+      name: { value: "Light Saver" },
+      server: { value: "", type: "server", required: true },
+      lights: { value: [] },
+      lightTimeout: { value: 10 },
+      triggers: { value: [] },
+      nightSensor: { value: null },
+      nightLevel: { value: null },
+      nightDelay: { value: 0 },
+      invertNightSensor: { value: false },
+      awaySensor: { value: null },
+      awayLevel: { value: null },
+      awayDelay: { value: 0 },
+      invertAwaySensor: { value: false },
+      brightnessSensor: { value: null },
+      brightnessLimit: { value: null },
+      brightnessMode: { value: 'max' },
+      levels: { value: [{ fromTime: "00:00", level: 100 }] },
+      override: { value: 'auto' },
+      contextStorage: { value: "default", required: false },
+      debugLog: { value: false }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-lightbulb-o",
+    label: function () {
+      return this.name || "Light Saver";
+    },
+    outputLabels: ["state change"],
+    oneditprepare: function () {
+      const node = this;
+      const $server = $("#node-input-server");
+      const $lightsContainer = $("#lights-container");
+      const $lightTimeoutContainer = $("#light-timeout-container");
+      const $triggersContainer = $("#triggers-container");
+      const $nightSensorContainer = $("#night-sensor-container");
+      const $awaySensorContainer = $("#away-sensor-container");
+      const $brightnessSensorContainer = $("#brightness-sensor-container");
+      const $levelsContainer = $("#levels-container");
+      
+      let availableEntities = [];
+      
+      // Convert override from config to UI fields (local variables only for display)
+      let uiOverrideEnabled = false;
+      let uiOverrideType = 'on';
+      let uiOverrideLevel = 50;
+      
+      if (node.override !== undefined) {
+        if (node.override === 'auto') {
+          uiOverrideEnabled = false;
+          uiOverrideType = 'on';
+        } else if (node.override === 'off') {
+          uiOverrideEnabled = true;
+          uiOverrideType = 'off';
+        } else if (node.override === 'on') {
+          uiOverrideEnabled = true;
+          uiOverrideType = 'on';
+        } else if (typeof node.override === 'number') {
+          uiOverrideEnabled = true;
+          uiOverrideType = 'level';
+          uiOverrideLevel = node.override;
+        }
+      }
+      
+      // Initialize server selector and get entities
+      const updateEntities = function() {
+        const serverId = $server.val();
+        
+        if (!serverId) {
+          $triggersContainer.html('<div class="form-tips" style="padding: 10px;">Please select a Home Assistant server first</div>');
+          $lightsContainer.html('<div class="form-tips" style="padding: 10px;">Please select a Home Assistant server first</div>');
+          return;
+        }
+        
+        $triggersContainer.html('<div class="form-tips" style="padding: 10px;">Loading entities from Home Assistant...</div>');
+        $lightsContainer.html('<div class="form-tips" style="padding: 10px;">Loading entities from Home Assistant...</div>');
+        
+        // Use the working endpoint format
+        const endpoint = `homeassistant/entities/${serverId}`;
+        
+        $.getJSON(endpoint)
+          .done(function(entities) {
+            if (!entities || entities.length === 0) {
+              console.warn('No entities returned from Home Assistant');
+              availableEntities = [];
+              renderEntityLists();
+              return;
+            }
+            
+            // Extract entity IDs
+            availableEntities = entities.map(e => e.entity_id || e);
+            console.log('Loaded', availableEntities.length, 'entities from Home Assistant');
+            renderEntityLists();
+          })
+          .fail(function(jqxhr, textStatus, error) {
+            console.error('Failed to load entities:', textStatus, error);
+            RED.notify('Failed to load entities from Home Assistant', 'error');
+            availableEntities = [];
+            renderEntityLists();
+          });
+      };
+      
+      const renderEntityLists = function() {
+        renderLights();
+        renderLightTimeout();
+        renderTriggers();
+        renderNightSensor();
+        renderAwaySensor();
+        renderBrightnessSensor();
+        renderLevels();
+      };
+      
+      // Helper to create entity selector with search and dropdown
+      const createEntitySelector = function(initialValue, filterPrefix, useMousedown) {
+        const inputWrapper = $('<div/>').css({
+          flex: '1',
+          position: 'relative'
+        });
+        
+        const searchInput = $('<input type="text" placeholder="Search or type entity ID..."/>').css({
+          width: '100%',
+          padding: '5px',
+          boxSizing: 'border-box'
+        });
+        
+        const select = $('<select class="entity-selector" size="8"/>').css({
+          width: '100%',
+          display: 'none',
+          position: 'absolute',
+          top: '100%',
+          left: '0',
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          maxHeight: '200px',
+          marginTop: '2px'
+        });
+        
+        const populateSelect = function(filter) {
+          select.empty();
+          
+          if (availableEntities.length === 0) {
+            select.append('<option disabled>No entities found - type entity ID manually</option>');
+            return;
+          }
+          
+          let filteredEntities = availableEntities;
+          if (filterPrefix) {
+            const prefixes = filterPrefix.split(',');
+            filteredEntities = availableEntities.filter(e => 
+              prefixes.some(prefix => e.startsWith(prefix + '.'))
+            );
+          }
+          
+          const grouped = {};
+          let matchCount = 0;
+          
+          filteredEntities.forEach(entity => {
+            if (!filter || entity.toLowerCase().includes(filter.toLowerCase())) {
+              const domain = entity.split('.')[0];
+              if (!grouped[domain]) grouped[domain] = [];
+              grouped[domain].push(entity);
+              matchCount++;
+            }
+          });
+          
+          if (matchCount === 0) {
+            select.append('<option disabled>No matches found</option>');
+            return;
+          }
+          
+          Object.keys(grouped).sort().forEach(domain => {
+            const optgroup = $(`<optgroup label="${domain.toUpperCase()}"/>`);
+            grouped[domain].sort().forEach(entity => {
+              optgroup.append($('<option/>').val(entity).text(entity));
+            });
+            select.append(optgroup);
+          });
+        };
+        
+        if (initialValue) {
+          searchInput.val(initialValue);
+        }
+        
+        searchInput.on('focus', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        searchInput.on('blur', function() {
+          setTimeout(() => select.hide(), useMousedown ? 300 : 200);
+        });
+        
+        searchInput.on('input', function() {
+          populateSelect($(this).val());
+          select.show();
+        });
+        
+        if (useMousedown) {
+          select.on('mousedown', 'option', function(e) {
+            e.preventDefault();
+            const val = $(this).val();
+            if (val) {
+              searchInput.val(val);
+            }
+            select.hide();
+            searchInput.focus();
+          });
+        } else {
+          select.on('click', 'option', function() {
+            const val = $(this).val();
+            if (val) {
+              searchInput.val(val);
+            }
+            select.hide();
+          });
+        }
+        
+        inputWrapper.append(searchInput).append(select);
+        
+        return {
+          wrapper: inputWrapper,
+          searchInput: searchInput,
+          select: select
+        };
+      };
+      
+      // Helper to update delete button visibility based on list count
+      const updateDeleteButtons = function($list) {
+        const count = $list.children().length;
+        if (count > 1) {
+          $list.find('button[title="Delete Entity"], button[title="Delete Level"]').show();
+        } else {
+          $list.find('button[title="Delete Entity"], button[title="Delete Level"]').hide();
+        }
+      };
+      
+      const renderLights = function() {
+        let html = `
+          <label>
+            <i class="fa fa-lightbulb-o"></i> Lights
+          </label>
+          <ol id="lights-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <button type="button" id="add-light-btn" class="editor-button" style="margin-top: 5px;">
+            <i class="fa fa-plus"></i> Add Entity
+          </button>
+        `;
+        $lightsContainer.html(html);
+        
+        const $list = $('#lights-list');
+        
+        // Add existing lights
+        if (node.lights && node.lights.length > 0) {
+          node.lights.forEach(light => {
+            addEntityRow($list, light.entity_id || '', 'light,switch', null);
+          });
+        } else {
+          // Add one empty row
+          addEntityRow($list, '', 'light,switch', null);
+        }
+        
+        // Add button handler
+        $('#add-light-btn').on('click', function(e) {
+          e.preventDefault();
+          addEntityRow($list, '', 'light,switch', null);
+          updateDeleteButtons($list);
+        });
+        
+        updateDeleteButtons($list);
+      };
+      
+      const renderLightTimeout = function() {
+        let html = `
+          <div style="margin-top: 20px; display: flex; align-items: center; gap: 5px;">
+            <label style="margin: 0; white-space: nowrap; min-width: 150px;">
+              <i class="fa fa-clock-o"></i> Keep light on for
+            </label>
+            <input type="number" id="light-timeout-input" min="1" max="999" step="1" style="width: 60px; padding: 3px; text-align: right;" />
+            <span style="font-size: 11px;">min</span>
+          </div>
+        `;
+        $lightTimeoutContainer.html(html);
+        
+        const $input = $('#light-timeout-input');
+        
+        // Set existing value
+        if (node.lightTimeout !== undefined && node.lightTimeout !== null) {
+          $input.val(node.lightTimeout);
+        } else {
+          $input.val(10); // Default
+        }
+        
+        // Validate input
+        $input.on('input', function() {
+          let val = $(this).val();
+          if (val !== '') {
+            val = parseInt(val);
+            if (isNaN(val) || val < 1) {
+              $(this).val(1);
+            } else if (val > 999) {
+              $(this).val(999);
+            } else {
+              $(this).val(Math.floor(val));
+            }
+          }
+        });
+      };
+      
+      const renderTriggers = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-list"></i> Triggers
+          </label>
+          <ol id="triggers-list" style="list-style: none; padding: 0; margin: 0;"></ol>
+          <button type="button" id="add-trigger-btn" class="editor-button" style="margin-top: 5px;">
+            <i class="fa fa-plus"></i> Add Entity
+          </button>
+        `;
+        $triggersContainer.html(html);
+        
+        const $list = $('#triggers-list');
+        
+        // Add existing triggers
+        if (node.triggers && node.triggers.length > 0) {
+          node.triggers.forEach(trigger => {
+            addEntityRow($list, trigger.entity_id || '', 'binary_sensor', trigger.timeoutMinutes);
+          });
+        } else {
+          // Add one empty row
+          addEntityRow($list, '', 'binary_sensor', '');
+        }
+        
+        // Add button handler
+        $('#add-trigger-btn').on('click', function(e) {
+          e.preventDefault();
+          addEntityRow($list, '', 'binary_sensor', '');
+          updateDeleteButtons($list);
+        });
+        
+        updateDeleteButtons($list);
+      };
+      
+      const renderNightSensor = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-moon-o"></i> Night sensor
+          </label>
+          <div id="night-sensor-input" style="margin-top: 5px;"></div>
+        `;
+        $nightSensorContainer.html(html);
+        
+        const $container = $('#night-sensor-input');
+        
+        // Row 1: Night sensor selector + Invert checkbox
+        const sensorRow = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '5px',
+          border: '1px solid #ccc',
+          backgroundColor: '#fff',
+          marginBottom: '5px'
+        });
+        
+        const initialValue = node.nightSensor && node.nightSensor.entity_id ? node.nightSensor.entity_id : '';
+        const selector = createEntitySelector(initialValue, 'binary_sensor,input_boolean', false);
+        
+        // Set ID on search input for later reference
+        selector.searchInput.attr('id', 'night-sensor-search');
+        
+        // Invert checkbox
+        const invertLabel = $('<label/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          margin: 0,
+          whiteSpace: 'nowrap'
+        });
+        const invertCheckbox = $('<input type="checkbox" id="node-input-invertNightSensor"/>').css({
+          width: 'auto'
+        });
+        if (node.invertNightSensor) {
+          invertCheckbox.prop('checked', true);
+        }
+        invertLabel.append(invertCheckbox).append($('<span/>').text('Invert'));
+        
+        sensorRow.append(selector.wrapper).append(invertLabel);
+        $container.append(sensorRow);
+        
+        // Row 2: Night level + Delay
+        const levelRow = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '5px',
+          border: '1px solid #ccc',
+          backgroundColor: '#fff'
+        });
+        
+        // Night level label
+        const nightLevelLabel = $('<span/>').text('Night level:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        // Night level slider
+        const nightLevelSlider = $('<input type="range" id="night-level-slider" min="0" max="100" step="1"/>').css({
+          flex: '1',
+          minWidth: '100px'
+        });
+        
+        // Night level input
+        const nightLevelInput = $('<input type="number" id="night-level-input" min="0" max="100" step="1" placeholder=""/>').css({
+          width: '50px',
+          padding: '3px',
+          textAlign: 'right'
+        });
+        
+        // Set initial value for night level
+        const nightLevelValue = node.nightLevel !== null && node.nightLevel !== undefined ? node.nightLevel : 0;
+        nightLevelInput.val(nightLevelValue);
+        nightLevelSlider.val(nightLevelValue);
+        
+        // Synchronize slider and input
+        nightLevelSlider.on('input', function() {
+          nightLevelInput.val($(this).val());
+        });
+        
+        nightLevelInput.on('input', function() {
+          let val = $(this).val();
+          if (val !== '') {
+            val = parseInt(val);
+            if (isNaN(val) || val < 0) {
+              $(this).val(0);
+              nightLevelSlider.val(0);
+            } else if (val > 100) {
+              $(this).val(100);
+              nightLevelSlider.val(100);
+            } else {
+              nightLevelSlider.val(val);
+            }
+          }
+        });
+        
+        const percentLabel = $('<span/>').text('%').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        // Delay label
+        const delayLabel = $('<span/>').text('Delay:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap',
+          marginLeft: '10px'
+        });
+        
+        // Delay input
+        const delayInput = $('<input type="number" id="node-input-nightDelay" min="0" max="999" step="1"/>').css({
+          width: '60px',
+          padding: '3px',
+          textAlign: 'right'
+        });
+        
+        // Set initial value for delay
+        const delayValue = node.nightDelay !== null && node.nightDelay !== undefined ? node.nightDelay : 0;
+        delayInput.val(delayValue);
+        
+        const secLabel = $('<span/>').text('sec').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        levelRow.append(nightLevelLabel)
+          .append(nightLevelSlider)
+          .append(nightLevelInput)
+          .append(percentLabel)
+          .append(delayLabel)
+          .append(delayInput)
+          .append(secLabel);
+        
+        $container.append(levelRow);
+      };
+      
+      const renderLevels = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-adjust"></i> Light levels
+          </label>
+          <ol id="levels-list" style="list-style: none; padding: 0; margin: 0; margin-top: 5px;"></ol>
+          <button type="button" id="add-level-btn" class="editor-button" style="margin-top: 5px;">
+            <i class="fa fa-plus"></i> Add Level
+          </button>
+        `;
+        $levelsContainer.html(html);
+        
+        const $list = $('#levels-list');
+        
+        // Add existing levels
+        if (node.levels && node.levels.length > 0) {
+          node.levels.forEach(level => {
+            addLevelRow($list, level.fromTime || '', level.level !== undefined ? level.level : '');
+          });
+        } else {
+          // Add one default row
+          addLevelRow($list, '00:00', 100);
+        }
+        
+        // Add button handler
+        $('#add-level-btn').on('click', function(e) {
+          e.preventDefault();
+          addLevelRow($list, '', '');
+          updateDeleteButtons($list);
+        });
+        
+        updateDeleteButtons($list);
+      };
+      
+      const renderAwaySensor = function() {
+        let html = `
+          <label style="margin-top: 20px;">
+            <i class="fa fa-plane"></i> Away sensor
+          </label>
+          <div id="away-sensor-input" style="margin-top: 5px;"></div>
+        `;
+        $awaySensorContainer.html(html);
+        
+        const $container = $('#away-sensor-input');
+        
+        // Row 1: Away sensor selector + Invert checkbox
+        const sensorRow = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '5px',
+          border: '1px solid #ccc',
+          backgroundColor: '#fff',
+          marginBottom: '5px'
+        });
+        
+        const initialValue = node.awaySensor && node.awaySensor.entity_id ? node.awaySensor.entity_id : '';
+        const selector = createEntitySelector(initialValue, 'binary_sensor,input_boolean', false);
+        
+        // Set ID on search input for later reference
+        selector.searchInput.attr('id', 'away-sensor-search');
+        
+        // Invert checkbox
+        const invertLabel = $('<label/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          margin: 0,
+          whiteSpace: 'nowrap'
+        });
+        const invertCheckbox = $('<input type="checkbox" id="node-input-invertAwaySensor"/>').css({
+          width: 'auto'
+        });
+        if (node.invertAwaySensor) {
+          invertCheckbox.prop('checked', true);
+        }
+        invertLabel.append(invertCheckbox).append($('<span/>').text('Invert'));
+        
+        sensorRow.append(selector.wrapper).append(invertLabel);
+        $container.append(sensorRow);
+        
+        // Row 2: Away level + Delay
+        const levelRow = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '5px',
+          border: '1px solid #ccc',
+          backgroundColor: '#fff'
+        });
+        
+        // Away level label
+        const awayLevelLabel = $('<span/>').text('Away level:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        // Away level slider
+        const awayLevelSlider = $('<input type="range" id="away-level-slider" min="0" max="100" step="1"/>').css({
+          flex: '1',
+          minWidth: '100px'
+        });
+        
+        // Away level input
+        const awayLevelInput = $('<input type="number" id="node-input-awayLevel" min="0" max="100" step="1" placeholder=""/>').css({
+          width: '50px',
+          padding: '3px',
+          textAlign: 'right'
+        });
+        
+        // Set initial value for away level
+        const awayLevelValue = node.awayLevel !== null && node.awayLevel !== undefined ? node.awayLevel : 0;
+        awayLevelInput.val(awayLevelValue);
+        awayLevelSlider.val(awayLevelValue);
+        
+        // Synchronize slider and input
+        awayLevelSlider.on('input', function() {
+          awayLevelInput.val($(this).val());
+        });
+        
+        awayLevelInput.on('input', function() {
+          let val = $(this).val();
+          if (val !== '') {
+            val = parseInt(val);
+            if (isNaN(val) || val < 0) {
+              $(this).val(0);
+              awayLevelSlider.val(0);
+            } else if (val > 100) {
+              $(this).val(100);
+              awayLevelSlider.val(100);
+            } else {
+              awayLevelSlider.val(val);
+            }
+          }
+        });
+        
+        const percentLabel = $('<span/>').text('%').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        // Delay label
+        const delayLabel = $('<span/>').text('Delay:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap',
+          marginLeft: '10px'
+        });
+        
+        // Delay input
+        const delayInput = $('<input type="number" id="node-input-awayDelay" min="0" max="999" step="1"/>').css({
+          width: '60px',
+          padding: '3px',
+          textAlign: 'right'
+        });
+        
+        // Set initial value for delay
+        const delayValue = node.awayDelay !== null && node.awayDelay !== undefined ? node.awayDelay : 0;
+        delayInput.val(delayValue);
+        
+        const secLabel = $('<span/>').text('sec').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        levelRow.append(awayLevelLabel)
+          .append(awayLevelSlider)
+          .append(awayLevelInput)
+          .append(percentLabel)
+          .append(delayLabel)
+          .append(delayInput)
+          .append(secLabel);
+        
+        $container.append(levelRow);
+      };
+      
+      const renderBrightnessSensor = function() {
+        let html = `
+          <label style="white-space: nowrap; margin-top: 20px;">
+            <i class="fa fa-sun-o"></i> Brightness limit
+          </label>
+          <div id="brightness-sensor-input"></div>
+        `;
+        $brightnessSensorContainer.html(html);
+        
+        const $container = $('#brightness-sensor-input');
+        
+        // Single row: Brightness sensor selector + Limit + Min/Max radio buttons
+        const sensorRow = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '5px',
+          border: '1px solid #ccc',
+          backgroundColor: '#fff'
+        });
+        
+        const initialValue = node.brightnessSensor && node.brightnessSensor.entity_id ? node.brightnessSensor.entity_id : '';
+        const selector = createEntitySelector(initialValue, 'sensor,input_number', false);
+        
+        // Set ID on search input for later reference
+        selector.searchInput.attr('id', 'brightness-sensor-search');
+        
+        // Limit label
+        const limitLabel = $('<span/>').text('Limit:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        // Limit input (without spinner arrows)
+        const limitInput = $('<input type="number" id="node-input-brightnessLimit" class="brightness-limit-input" min="0" max="100000" step="1"/>').css({
+          width: '60px',
+          padding: '3px',
+          textAlign: 'right'
+        });
+        
+        // Set initial value for limit
+        const limitValue = node.brightnessLimit !== null && node.brightnessLimit !== undefined ? node.brightnessLimit : '';
+        limitInput.val(limitValue);
+        
+        // Radio buttons container - stacked vertically
+        const radioContainer = $('<div/>').css({
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2px',
+          width: '50px'
+        });
+        
+        // Min radio button
+        const minRadioLabel = $('<label/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3px',
+          margin: 0,
+          whiteSpace: 'nowrap'
+        });
+        const minRadio = $('<input type="radio" name="brightnessMode" value="min" id="node-input-brightnessMode-min"/>').css({
+          width: 'auto',
+          margin: 0
+        });
+        if (node.brightnessMode === 'min') {
+          minRadio.prop('checked', true);
+        }
+        minRadioLabel.append(minRadio).append($('<span/>').text('Min').css({ fontSize: '11px' }));
+        
+        // Max radio button
+        const maxRadioLabel = $('<label/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3px',
+          margin: 0,
+          whiteSpace: 'nowrap'
+        });
+        const maxRadio = $('<input type="radio" name="brightnessMode" value="max" id="node-input-brightnessMode-max"/>').css({
+          width: 'auto',
+          margin: 0
+        });
+        if (!node.brightnessMode || node.brightnessMode === 'max') {
+          maxRadio.prop('checked', true);
+        }
+        maxRadioLabel.append(maxRadio).append($('<span/>').text('Max').css({ fontSize: '11px' }));
+        
+        radioContainer.append(maxRadioLabel).append(minRadioLabel);
+        
+        sensorRow.append(selector.wrapper)
+          .append(limitLabel)
+          .append(limitInput)
+          .append(radioContainer);
+        
+        $container.append(sensorRow);
+      };
+      
+      const addLevelRow = function($list, fromTime, level) {
+        const row = $('<li/>').css({
+          padding: '5px',
+          border: '1px solid #ccc',
+          marginBottom: '5px',
+          backgroundColor: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        });
+        
+        // From time input
+        const fromTimeWrapper = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px'
+        });
+        
+        const fromTimeLabel = $('<span/>').text('From time:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        const fromTimeInput = $('<input type="text" class="from-time-input keeper-ignore" placeholder="HH:MM" maxlength="5"/>').css({
+          width: '60px',
+          padding: '3px',
+          textAlign: 'center',
+          fontFamily: 'monospace'
+        });
+        
+        if (fromTime) {
+          fromTimeInput.val(fromTime);
+        }
+        
+        // Validate time format HH:MM
+        fromTimeInput.on('blur', function() {
+          let val = $(this).val().trim();
+          if (val === '') return;
+          
+          // Try to parse time
+          const match = val.match(/^(\d{1,2}):?(\d{2})$/);
+          if (match) {
+            let hours = parseInt(match[1]);
+            let minutes = parseInt(match[2]);
+            
+            if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+              $(this).val(String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0'));
+              $(this).css('border-color', '');
+              return;
+            }
+          }
+          
+          // Invalid format
+          $(this).css('border-color', 'red');
+          RED.notify('Invalid time format. Use HH:MM (00:00 to 23:59)', 'warning');
+        });
+        
+        fromTimeWrapper.append(fromTimeLabel).append(fromTimeInput);
+        
+        // Level input with slider
+        const levelWrapper = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          flex: '1'
+        });
+        
+        const levelLabel = $('<span/>').text('Level:').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap'
+        });
+        
+        const levelSlider = $('<input type="range" class="level-slider" min="0" max="100" step="1"/>').css({
+          flex: '1',
+          minWidth: '100px'
+        });
+        
+        const levelInput = $('<input type="number" class="level-input" min="0" max="100" step="1" placeholder=""/>').css({
+          width: '50px',
+          padding: '3px',
+          textAlign: 'right'
+        });
+        
+        // Set default value to 50 if level is not provided
+        const defaultLevel = (level !== undefined && level !== '') ? level : 50;
+        levelInput.val(defaultLevel);
+        levelSlider.val(defaultLevel);
+        
+        // Synchronize slider and input
+        levelSlider.on('input', function() {
+          const val = $(this).val();
+          levelInput.val(val);
+        });
+        
+        levelInput.on('input', function() {
+          let val = $(this).val();
+          if (val !== '') {
+            val = parseInt(val);
+            if (isNaN(val) || val < 0) {
+              $(this).val('');
+              levelSlider.val(0);
+            } else if (val > 100) {
+              $(this).val(100);
+              levelSlider.val(100);
+            } else {
+              const intVal = Math.floor(val);
+              $(this).val(intVal);
+              levelSlider.val(intVal);
+            }
+          } else {
+            levelSlider.val(0);
+          }
+        });
+        
+        const levelUnit = $('<span/>').text('%').css({
+          fontSize: '11px'
+        });
+        
+        levelWrapper.append(levelLabel).append(levelSlider).append(levelInput).append(levelUnit);
+        
+        const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Level"><i class="fa fa-trash"></i></button>');
+        
+        deleteButton.on('click', function(e) {
+          e.preventDefault();
+          if ($list.children().length > 1) {
+            row.remove();
+            updateDeleteButtons($list);
+          } else {
+            RED.notify('At least one level is required', 'warning');
+          }
+        });
+        
+        row.append(fromTimeWrapper).append(levelWrapper).append(deleteButton);
+        $list.append(row);
+      };
+      
+      const addEntityRow = function($list, entityId, filterPrefix, timeoutMinutes) {
+        const row = $('<li/>').css({
+          padding: '5px',
+          border: '1px solid #ccc',
+          marginBottom: '5px',
+          backgroundColor: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px'
+        });
+        
+        // Create entity selector
+        const selector = createEntitySelector(entityId, filterPrefix, false);
+        
+        // Add timeout input for triggers (null means it's a light)
+        let timeoutWrapper = null;
+        if (timeoutMinutes !== null) {
+          timeoutWrapper = $('<div/>').css({
+            display: 'flex',
+            alignItems: 'center',
+            gap: '3px',
+            minWidth: '120px'
+          });
+          
+          const timeoutLabel = $('<span/>').text('Timeout:').css({
+            fontSize: '11px',
+            whiteSpace: 'nowrap'
+          });
+          
+          const timeoutInput = $('<input type="number" class="timeout-input" min="0" max="999" step="1" placeholder=""/>').css({
+            width: '50px',
+            padding: '3px',
+            textAlign: 'right'
+          });
+          
+          const timeoutUnit = $('<span/>').text('min').css({
+            fontSize: '11px'
+          });
+          
+          if (timeoutMinutes !== undefined && timeoutMinutes !== '') {
+            timeoutInput.val(timeoutMinutes);
+          }
+          
+          // Validate input
+          timeoutInput.on('input', function() {
+            let val = $(this).val();
+            if (val !== '') {
+              val = parseInt(val);
+              if (isNaN(val) || val < 0) {
+                $(this).val('');
+              } else if (val > 999) {
+                $(this).val(999);
+              } else {
+                $(this).val(Math.floor(val));
+              }
+            }
+          });
+          
+          timeoutWrapper.append(timeoutLabel).append(timeoutInput).append(timeoutUnit);
+        }
+        
+        const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Entity"><i class="fa fa-trash"></i></button>').on('click', function(e) {
+          e.preventDefault();
+          row.remove();
+          updateDeleteButtons($list);
+        });
+        
+        row.append(selector.wrapper);
+        if (timeoutWrapper) {
+          row.append(timeoutWrapper);
+        }
+        row.append(deleteButton);
+        $list.append(row);
+      };
+      
+      // Function to update override controls
+      const updateOverrideControls = function() {
+        const $overrideEnabled = $('#node-input-overrideEnabled');
+        const $overrideType = $('input[name="overrideType"]');
+        const $overrideSlider = $('#override-level-slider');
+        const $overrideInput = $('#node-input-overrideLevel');
+        
+        const isEnabled = $overrideEnabled.prop('checked');
+        
+        // Enable/disable radio buttons and level controls
+        $overrideType.prop('disabled', !isEnabled);
+        
+        if (isEnabled) {
+          // If no radio button is selected, select default 'on'
+          let selectedType = $('input[name="overrideType"]:checked').val();
+          if (!selectedType) {
+            selectedType = 'on';
+            $(`input[name="overrideType"][value="${selectedType}"]`).prop('checked', true);
+          }
+          
+          const levelEnabled = selectedType === 'level';
+          $overrideSlider.prop('disabled', !levelEnabled);
+          $overrideInput.prop('disabled', !levelEnabled);
+        } else {
+          $overrideSlider.prop('disabled', true);
+          $overrideInput.prop('disabled', true);
+        }
+      };
+      
+      // Initialize on server change
+      $server.on("change", updateEntities);
+      
+      // Initialize override controls
+      $('#node-input-overrideEnabled').on('change', updateOverrideControls);
+      $('input[name="overrideType"]').on('change', updateOverrideControls);
+      
+      // Synchronize override slider and input
+      $('#override-level-slider').on('input', function() {
+        $('#node-input-overrideLevel').val($(this).val());
+      });
+      
+      $('#node-input-overrideLevel').on('input', function() {
+        let val = $(this).val();
+        if (val !== '') {
+          val = parseInt(val);
+          if (isNaN(val) || val < 0) {
+            $(this).val(0);
+            $('#override-level-slider').val(0);
+          } else if (val > 100) {
+            $(this).val(100);
+            $('#override-level-slider').val(100);
+          } else {
+            $('#override-level-slider').val(val);
+          }
+        }
+      });
+      
+      // Initialize context storage selector
+      $("#node-input-contextStorage").typedInput({
+        types: [
+          {
+            value: "storages",
+            options: RED.settings.context.stores.map((s) => ({ value: s, label: s })),
+          },
+        ],
+      });
+      
+      // Initialize on open
+      setTimeout(() => {
+        updateEntities();
+        
+        // Set UI fields from local variables (config values only, not runtime)
+        $('#node-input-overrideEnabled').prop('checked', uiOverrideEnabled);
+        $(`input[name="overrideType"][value="${uiOverrideType}"]`).prop('checked', true);
+        $('#override-level-slider').val(uiOverrideLevel);
+        $('#node-input-overrideLevel').val(uiOverrideLevel);
+        
+        updateOverrideControls();
+      }, 100);
+    },
+    oneditsave: function() {
+      // Save lights (now first)
+      const lights = [];
+      $("#lights-list li").each(function() {
+        const entityId = $(this).find('input[type="text"]').val().trim();
+        if (entityId) {
+          lights.push({ entity_id: entityId });
+        }
+      });
+      this.lights = lights;
+      
+      // Save light timeout
+      const lightTimeoutVal = $('#light-timeout-input').val();
+      this.lightTimeout = lightTimeoutVal !== '' ? parseInt(lightTimeoutVal) : 10;
+      
+      // Save triggers
+      const triggers = [];
+      $("#triggers-list li").each(function() {
+        const entityId = $(this).find('input[type="text"]').val().trim();
+        if (entityId) {
+          const trigger = { entity_id: entityId };
+          const timeoutVal = $(this).find('.timeout-input').val();
+          if (timeoutVal !== '' && timeoutVal !== undefined) {
+            trigger.timeoutMinutes = parseInt(timeoutVal);
+          }
+          triggers.push(trigger);
+        }
+      });
+      this.triggers = triggers;
+      
+      // Save night sensor
+      const nightSensorEntityId = $('#night-sensor-search').val().trim();
+      if (nightSensorEntityId) {
+        this.nightSensor = { entity_id: nightSensorEntityId };
+      } else {
+        this.nightSensor = null;
+      }
+      
+      // Save night level (level used when night sensor is on)
+      const nightLevelVal = $('#night-level-input').val();
+      this.nightLevel = nightLevelVal !== '' ? parseInt(nightLevelVal) : null;
+      
+      // Save levels
+      const levels = [];
+      $("#levels-list li").each(function() {
+        const fromTime = $(this).find('.from-time-input').val().trim();
+        const level = $(this).find('.level-input').val();
+        if (fromTime && level !== '') {
+          levels.push({ 
+            fromTime: fromTime,
+            level: parseInt(level)
+          });
+        }
+      });
+      this.levels = levels;
+      
+      // Save away sensor
+      const awaySensorEntityId = $('#away-sensor-search').val().trim();
+      if (awaySensorEntityId) {
+        this.awaySensor = { entity_id: awaySensorEntityId };
+      } else {
+        this.awaySensor = null;
+      }
+      
+      // Save brightness sensor
+      const brightnessSensorEntityId = $('#brightness-sensor-search').val().trim();
+      if (brightnessSensorEntityId) {
+        this.brightnessSensor = { entity_id: brightnessSensorEntityId };
+      } else {
+        this.brightnessSensor = null;
+      }
+      
+      // Save brightness limit
+      const brightnessLimitVal = $('#node-input-brightnessLimit').val();
+      this.brightnessLimit = brightnessLimitVal !== '' ? parseFloat(brightnessLimitVal) : null;
+      
+      // Save brightness mode (min or max)
+      this.brightnessMode = $('input[name="brightnessMode"]:checked').val() || 'max';
+      
+      // Calculate and save override from UI fields
+      const overrideEnabled = $('#node-input-overrideEnabled').prop('checked');
+      const selectedType = $('input[name="overrideType"]:checked').val();
+      const overrideLevel = parseInt($('#node-input-overrideLevel').val());
+      
+      // Save only override to config
+      if (!overrideEnabled) {
+        this.override = 'auto';
+      } else if (selectedType === 'off') {
+        this.override = 'off';
+      } else if (selectedType === 'on') {
+        this.override = 'on';
+      } else if (selectedType === 'level') {
+        this.override = overrideLevel;
+      }
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-light-saver">
+    <style>
+        /* Hide spinner arrows for level input fields */
+        #night-level-input::-webkit-inner-spin-button,
+        #night-level-input::-webkit-outer-spin-button,
+        #node-input-awayLevel::-webkit-inner-spin-button,
+        #node-input-awayLevel::-webkit-outer-spin-button,
+        #node-input-overrideLevel::-webkit-inner-spin-button,
+        #node-input-overrideLevel::-webkit-outer-spin-button,
+        #node-input-brightnessLimit::-webkit-inner-spin-button,
+        #node-input-brightnessLimit::-webkit-outer-spin-button,
+        .level-input::-webkit-inner-spin-button,
+        .level-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #night-level-input,
+        #node-input-awayLevel,
+        #node-input-overrideLevel,
+        #node-input-brightnessLimit,
+        .level-input {
+            -moz-appearance: textfield;
+        }
+    </style>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server" style="width: 70%">
+    </div>
+    <div class="form-row">
+        <div id="lights-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="light-timeout-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="triggers-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="night-sensor-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="away-sensor-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="brightness-sensor-container"></div>
+    </div>
+    <div class="form-row">
+        <div id="levels-container"></div>
+    </div>
+    <div class="form-row">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;">
+            <label style="width: auto; margin: 0 30px 0 0;">
+                <input type="checkbox" id="node-input-overrideEnabled" style="width: auto; vertical-align: middle;">
+                <span style="vertical-align: middle;">Override:</span>
+            </label>
+            <label style="width: 50px; margin: 0; display: flex; align-items: center; gap: 3px;">
+                <input type="radio" name="overrideType" value="off" style="width: auto; margin: 0;">
+                <span>Off</span>
+            </label>
+            <label style="width: 50px; margin: 0; display: flex; align-items: center; gap: 3px;">
+                <input type="radio" name="overrideType" value="on" style="width: auto; margin: 0;">
+                <span>On</span>
+            </label>
+            <label style="width: 60px; margin: 0; display: flex; align-items: center; gap: 3px;">
+                <input type="radio" name="overrideType" value="level" style="width: auto; margin: 0;">
+                <span>Level:</span>
+            </label>
+            <input type="range" id="override-level-slider" min="0" max="100" step="1" style="flex: 1; min-width: 100px; margin-left: 3px;" />
+            <input type="number" id="node-input-overrideLevel" min="0" max="100" step="1" style="width: 50px; padding: 3px; text-align: right;" />
+            <span style="font-size: 11px;">%</span>
+        </div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-contextStorage" style="width: 240px;"><i class="fa fa-archive"></i> Context storage</label>
+        <input type="text" id="node-input-contextStorage" style="width: 200px">
+    </div>
+    <div class="form-row">
+        <label style="width: auto;">
+            <input type="checkbox" id="node-input-debugLog" style="width: auto; vertical-align: middle;">
+            <span style="vertical-align: middle;">Debug log</span>
+        </label>
+        <div style="height: 15px;"></div>
+    </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-light-saver">
+  A node that automatically controls lights based on motion sensors with time-based brightness levels, night mode, and away mode features.
+
+  ### Configuration
+
+  - **Name**: Optional name for the node
+  - **Server**: Home Assistant server connection
+  - **Lights**: List of light entities to control (lights or switches)
+    - The node tracks both the commanded level and actual state for each light
+  - **Keep light on for**: Default timeout in minutes when no motion is detected on any trigger (1-999)
+  - **Triggers**: Motion sensors or binary sensors that trigger light activation
+    - Each trigger can have its own timeout override in minutes
+  - **Night sensor**: Optional binary sensor or input_boolean that indicates night mode
+    - **Invert**: Reverse the sensor logic (night mode when sensor is off/false)
+    - **Night level**: Brightness level (0-100%) to use in night mode
+    - **Delay**: Seconds to wait before applying night level when sensor activates (0-999)
+  - **Away sensor**: Optional binary sensor or input_boolean that indicates away mode
+    - **Invert**: Reverse the sensor logic (away mode when sensor is off/false)
+    - **Away level**: Brightness level (0-100%) to use in away mode
+    - **Delay**: Seconds to wait before applying away level when sensor activates (0-999)
+  - **Brightness limit**: Optional brightness sensor or input_number to control when lights can turn on
+    - **Sensor**: Entity that reports brightness (e.g., lux sensor, illuminance sensor)
+    - **Limit**: Numeric threshold value for brightness comparison
+    - **Min**: Lights only turn on when brightness is above the limit
+    - **Max**: Lights only turn on when brightness is below the limit
+  - **Light levels**: Time-based brightness levels throughout the day
+    - **From time**: Time when this level becomes active (HH:MM format, 24-hour)
+    - **Level**: Brightness percentage (0-100%)
+  - **Override**: Manual control to override automatic behavior
+    - **Off**: Turn all lights off and block automatic control
+    - **On**: Set lights to their normal automatic level
+    - **Level**: Set lights to a specific brightness (0-100%)
+    - **Auto**: Return to normal automatic operation
+    - Override persists across Node-RED restarts
+  - **Context storage**: Choose where to persist runtime state (default, file, etc.)
+  - **Debug log**: Enable detailed logging for troubleshooting
+
+  ### Behavior
+
+  The node monitors the configured trigger sensors and automatically controls lights:
+  - When motion is detected after a timeout, lights turn on to the appropriate level (if brightness limit allows)
+  - Brightness level priority: **Away sensor > Night sensor > Time-based levels**
+  - Lights stay on as long as any trigger sensor detects motion
+  - After all triggers are off for their respective timeout periods, lights turn off
+  - When away sensor activates, lights are set to away level after configured delay
+  - When night sensor activates, lights are set to night level after configured delay
+  - Both night and away sensors can be inverted to reverse their logic
+  - Override mode blocks all automatic behavior until returned to auto
+  - If brightness limit is configured, lights only turn on when brightness passes the threshold
+  - When brightness crosses threshold (lights allowed to be on) and motion was detected within timeout, lights turn on automatically
+
+  ### Level Priority
+
+  When multiple conditions are active, brightness is determined in this order:
+  1. **Override** (highest priority) - Manual control blocks all automatic behavior
+  2. **Away mode** - If away sensor is active and away level is set
+  3. **Night mode** - If night sensor is active and night level is set
+  4. **Time-based levels** - Based on current time matching configured levels
+
+  ### Light State Tracking
+
+  The node tracks the following for each light:
+  - **Set level**: The brightness level commanded by this node
+  - **Actual level**: The current brightness read from Home Assistant
+  - **Last changed**: Timestamp when the actual level last changed
+
+  ### Requirements
+
+  Requires the `node-red-contrib-home-assistant-websocket` package to be installed and configured.
+</script>

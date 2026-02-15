@@ -12,3 +12,4 @@ mostSavedStrategy_v2.js
 dist/
 deploy.sh
 *.cache
+*.tgz

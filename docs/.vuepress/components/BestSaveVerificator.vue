@@ -1,11 +1,19 @@
 <template>
   <textarea rows="5" cols="80" name="rawData" placeHolder="Paste data here" v-model="dataString"></textarea>
+  <div v-if="isProcessing" class="processing-indicator">
+    <div class="spinner"></div>
+    <span>Processing data...</span>
+  </div>
   <p>{{ message }}</p>
   <div class="config" v-if="message === '' && payload.version">
     <h3>Config:</h3>
-    <p>Max in sequence: {{ payload.config.maxHoursToSaveInSequence }}</p>
-    <p>Min on after max: {{ payload.config.minHoursOnAfterMaxSequenceSaved }}</p>
+    <p>Max minutes off: {{ payload.config.maxMinutesOff }}</p>
+    <p>Min minutes off: {{ payload.config.minMinutesOff }}</p>
+    <p>Recovery percentage: {{ payload.config.recoveryPercentage }}%</p>
+    <p>Max recovery minutes: {{ payload.config.recoveryMaxMinutes }}</p>
     <p>Minimum saving: {{ payload.config.minSaving }}</p>
+    <p>Output value for On: {{ payload.config.outputValueForOn }} ({{ payload.config.outputValueForOntype }})</p>
+    <p>Output value for Off: {{ payload.config.outputValueForOff }} ({{ payload.config.outputValueForOfftype }})</p>
     <p>
       Send when rescheduling:
       {{ payload.config.sendCurrentValueWhenRescheduling ? "Yes" : "No" }}
@@ -14,7 +22,7 @@
       If no schedule, output:
       {{ payload.config.outputIfNoSchedule ? "On" : "Off" }}
     </p>
-    <p>Context is saved to: {{ payload.config.contextStorage }}</p>
+    <p>Context storage: {{ payload.config.contextStorage }}</p>
     <h3>Meta data:</h3>
     <p>Node version: {{ payload.version }}</p>
     <p>Data timestamp: {{ payload.time }}</p>
@@ -25,14 +33,14 @@
     <table>
       <tr>
         <th>Date</th>
-        <th v-tooltip="'Number of hours for the day'">Hours</th>
-        <th v-tooltip="'Number of hours that are on'">Count on</th>
-        <th v-tooltip="'Number of hours that are off'">Count off</th>
+        <th v-tooltip="'Number of data points for the day'">Minutes</th>
+        <th v-tooltip="'Number of minutes that are on'">Count on</th>
+        <th v-tooltip="'Number of minutes that are off'">Count off</th>
         <th v-tooltip="'Average price for the day'">Avg price</th>
-        <th v-tooltip="'Number of hours that are turned off (saved)'">Count saved</th>
-        <th v-tooltip="'Sum saved per kWh for the hours that are saved'">Sum saved</th>
+        <th v-tooltip="'Number of minutes that are turned off (saved)'">Count saved</th>
+        <th v-tooltip="'Sum saved per kWh for the minutes that are saved'">Sum saved</th>
         <th v-tooltip="'Sum saved / count saved'">Avg saved 1</th>
-        <th v-tooltip="'Sum saved / Hours (whole day)'">Avg saved 2</th>
+        <th v-tooltip="'Sum saved / Minutes (whole day)'">Avg saved 2</th>
       </tr>
       <tr v-for="day in dayData" :key="day.date">
         <td>{{ day.date }}</td>
@@ -47,7 +55,7 @@
       </tr>
     </table>
 
-    <h3>Hours:</h3>
+    <h3>Minutes:</h3>
 
     <div>
       <input type="checkbox" id="showNegative" v-model="showNegative" />
@@ -61,64 +69,112 @@
     </div>
 
     <table>
-      <tr>
-        <th colspan="5">Input data</th>
-        <th class="sepcol"></th>
-        <th :colspan="differenceColumns.length">Saving if turned off x hours</th>
-        <th class="sepcol"></th>
-        <th :colspan="differenceColumns.length">Saving for sequence of x hours</th>
-      </tr>
-      <tr>
-        <th>Date</th>
-        <th>Hour</th>
-        <th>Price</th>
-        <th>On/Off</th>
-        <th>Saving</th>
-        <th class="sepcol"></th>
-        <th v-for="h in differenceColumns" :key="h">
-          {{ h }}
-        </th>
-        <th class="sepcol"></th>
-        <th v-for="h in differenceColumns" :key="h">
-          {{ h }}
-        </th>
-      </tr>
-      <tr v-for="(hour, i) in payload.hours" :key="hour.start">
-        <td>{{ DateTime.fromISO(hour.start).day }}</td>
+      <thead>
+        <tr>
+          <th colspan="6">Input data</th>
+          <th class="sepcol"></th>
+          <th :colspan="visibleDifferenceColumns.length">Saving if turned off x minutes</th>
+          <th class="sepcol"></th>
+          <th :colspan="visibleSequenceColumns.length">Saving for sequence of x minutes</th>
+        </tr>
+        <tr>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Count</th>
+          <th>Price</th>
+          <th>On/Off</th>
+          <th>Saving</th>
+          <th class="sepcol"></th>
+          <th v-for="col in visibleDifferenceColumns" :key="col.index">
+            {{ col.label }}
+          </th>
+          <th class="sepcol"></th>
+          <th v-for="col in visibleSequenceColumns" :key="col.index">
+            {{ col.label }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(minute, i) in payload.minutes" :key="minute.start">
+        <td>{{ DateTime.fromISO(minute.start).day }}</td>
         <td>
-          {{ DateTime.fromISO(hour.start).toFormat("HH:mm") }}
+          {{ DateTime.fromISO(minute.start).toFormat("HH:mm:ss") }}
         </td>
-        <td :class="priceClasses(i)">{{ hour.price }}</td>
-        <td>{{ hour.onOff ? "On" : "Off" }}</td>
-        <td>{{ hour.saving ?? "" }}</td>
+        <td>{{ minute.count }}</td>
+        <td :class="priceClasses(i)">{{ minute.price }}</td>
+        <td>{{ minute.onOff ? "On" : "Off" }}</td>
+        <td>{{ minute.saving ?? "" }}</td>
         <td class="sepcol"></td>
-        <td v-for="(h, j) in differenceColumns" :key="h" @click="showSavingSource(i, j)" :class="savingClasses(i, j)">
-          {{ showNegative || differencePerHour[i][j] > 0 ? differencePerHour[i][j] : "" }}
+        <td v-for="col in visibleDifferenceColumns" :key="col.index" @click="showSavingSource(i, col.index)" :class="savingClasses(i, col.index)">
+          {{ showNegative || differencePerMinute[i][col.index] > 0 ? differencePerMinute[i][col.index] : "" }}
         </td>
         <td class="sepcol"></td>
         <td
-          v-for="(h, j) in differenceColumns"
-          :key="h"
-          @click="showSequenceSource(i, j)"
-          :class="sequenceClasses(i, j)"
+          v-for="col in visibleSequenceColumns"
+          :key="col.index"
+          @click="showSequenceSource(i, col.index)"
+          :class="sequenceClasses(i, col.index)"
         >
           {{
-            showNegative || totalPerSequence[i][j] > 0
-              ? "" + (showSum ? totalPerSequence[i][j] : averagePerSequence[i][j])
+            showNegative || totalPerSequence[i][col.index] > 0
+              ? "" + (showSum ? totalPerSequence[i][col.index] : averagePerSequence[i][col.index])
               : ""
           }}
         </td>
       </tr>
+      </tbody>
+      <tfoot>
+        <tr v-if="visibleDifferenceColumns.length > 0 || visibleSequenceColumns.length > 0">
+          <td colspan="6"><strong>Column count:</strong></td>
+          <td class="sepcol"></td>
+          <td v-for="col in visibleDifferenceColumns" :key="col.index">
+            <strong>{{ col.count }}</strong>
+          </td>
+          <td class="sepcol"></td>
+          <td v-for="col in visibleSequenceColumns" :key="col.index">
+            <strong>{{ col.count }}</strong>
+          </td>
+        </tr>
+      </tfoot>
     </table>
+
+    <!-- Heatmap visualizations -->
+    <BestSaveDifferenceHeatmap 
+      :minutes="payload.minutes"
+      :differencePerMinute="differencePerMinute"
+      :differenceColumns="differenceColumns"
+      :showNegative="showNegative"
+      :maxColumns="parseInt(payload.config.maxMinutesOff) || 180"
+      v-if="payload.minutes && differencePerMinute.length > 0"
+    />
+
+    <BestSaveSequenceHeatmap 
+      :minutes="payload.minutes"
+      :totalPerSequence="totalPerSequence"
+      :averagePerSequence="averagePerSequence"
+      :differenceColumns="differenceColumns"
+      :showNegative="showNegative"
+      :showSum="showSum"
+      :maxColumns="parseInt(payload.config.maxMinutesOff) || 180"
+      :minSaving="parseFloat(payload.config.minSaving) || 0"
+      v-if="payload.minutes && totalPerSequence.length > 0"
+    />
+
+    <!-- Visual Chart -->
+    <BestSaveChart :payload="payload" v-if="payload.minutes && payload.minutes.length > 0" />
   </div>
 </template>
 
 <script setup>
 import { computed, reactive, ref, watch } from "vue";
 import { DateTime } from "luxon";
+import BestSaveDifferenceHeatmap from './BestSaveDifferenceHeatmap.vue';
+import BestSaveSequenceHeatmap from './BestSaveSequenceHeatmap.vue';
+import BestSaveChart from './BestSaveChart.vue';
 
 const message = ref("");
 const showNegative = ref(false);
+const isProcessing = ref(false);
 
 const show = ref("avg");
 const showSum = computed(() => show.value === "sum");
@@ -128,14 +184,25 @@ function roundPrice(value) {
 }
 
 const dataString = ref("");
-watch(dataString, (value) => {
-  convert(value);
-  calculatePotentialSavings();
-  highlightSequence.length = 0;
-  clickedSequence.row = null;
-  clickedSequence.col = null;
-  clickedSaving.row = null;
-  clickedSaving.col = null;
+watch(dataString, async (value) => {
+  if (!value) return;
+  
+  isProcessing.value = true;
+  
+  // Allow UI to update with spinner
+  await new Promise(resolve => setTimeout(resolve, 10));
+  
+  try {
+    convert(value);
+    calculatePotentialSavings();
+    highlightSequence.length = 0;
+    clickedSequence.row = null;
+    clickedSequence.col = null;
+    clickedSaving.row = null;
+    clickedSaving.col = null;
+  } finally {
+    isProcessing.value = false;
+  }
 });
 
 const payload = reactive({});
@@ -150,7 +217,7 @@ function convert(value) {
   }
 }
 
-const differencePerHour = reactive([]);
+const differencePerMinute = reactive([]);
 const differenceColumns = reactive([]);
 const totalPerSequence = reactive([]);
 const averagePerSequence = reactive([]);
@@ -158,31 +225,76 @@ const averagePerSequence = reactive([]);
 function calculatePotentialSavings() {
   console.log("calculatePotentialSavings");
   console.log({ roundPrice });
-  const hours = payload.hours;
+  const minutes = payload.minutes;
 
-  // Savings per hour
-  for (let i = 0; i < payload.config.maxHoursToSaveInSequence; i++) {
+  // Savings per minute block
+  // Use maxMinutesOff to determine how many columns to show (convert to number)
+  const maxColumns = parseInt(payload.config.maxMinutesOff) || 180;
+  
+  // Calculate total minutes across all blocks
+  const totalMinutes = minutes.reduce((sum, m) => sum + m.count, 0);
+  
+  // Create columns based on actual minute counts, not just array indices
+  const numColumns = Math.min(maxColumns, totalMinutes);
+  for (let i = 0; i < numColumns; i++) {
     differenceColumns[i] = i + 1;
   }
-  for (let i = 0; i < hours.length; i++) {
+  
+  // For each minute block, calculate savings
+  for (let i = 0; i < minutes.length; i++) {
     const row = reactive([]);
+    const currentBlock = minutes[i];
+    
     for (let j = 0; j < differenceColumns.length; j++) {
-      row[j] = i + j + 1 < hours.length ? roundPrice(hours[i].price - hours[i + j + 1].price) : null;
+      const minutesAhead = j + 1;
+      
+      // Find the block that contains the minute we're comparing to
+      let accumulatedMinutes = 0;
+      let targetBlock = null;
+      
+      for (let k = i; k < minutes.length; k++) {
+        accumulatedMinutes += minutes[k].count;
+        if (accumulatedMinutes > minutesAhead) {
+          targetBlock = minutes[k];
+          break;
+        }
+      }
+      
+      row[j] = targetBlock ? roundPrice(currentBlock.price - targetBlock.price) : null;
     }
-    differencePerHour[i] = row;
+    differencePerMinute[i] = row;
   }
 
   // Savings per sequence
-  for (let i = 0; i < hours.length; i++) {
+  // For each starting row, calculate the sum of savings for consecutive minutes
+  for (let i = 0; i < minutes.length; i++) {
     const tot = reactive([]);
     const avg = reactive([]);
+    
     for (let j = 0; j < differenceColumns.length; j++) {
+      const sequenceMinutes = j + 1; // Column j represents j+1 minutes
       tot[j] = 0;
-      for (let k = 0; k <= j; k++) {
-        const res = tot[j] + (i + k < hours.length ? differencePerHour[i + k][j - k] : 0);
-        tot[j] = roundPrice(res);
-        avg[j] = roundPrice(res / (j + 1));
+      let minutesCovered = 0;
+      let currentRow = i;
+      
+      // Sum up the savings for each minute in the sequence
+      for (let minute = 0; minute < sequenceMinutes && currentRow < minutes.length; minute++) {
+        // Get the saving for turning off this specific minute
+        if (differencePerMinute[currentRow] && differencePerMinute[currentRow][minute] !== null) {
+          tot[j] = roundPrice(tot[j] + differencePerMinute[currentRow][minute]);
+          minutesCovered++;
+        }
+        
+        // Move to next row when we've covered all minutes in current block
+        const currentBlock = minutes[currentRow];
+        if (minutesCovered >= currentBlock.count) {
+          currentRow++;
+          minutesCovered = 0;
+        }
       }
+      
+      avg[j] = sequenceMinutes > 0 ? roundPrice(tot[j] / sequenceMinutes) : 0;
+      
       totalPerSequence[i] = tot;
       averagePerSequence[i] = avg;
     }
@@ -191,27 +303,32 @@ function calculatePotentialSavings() {
 
 // Daily data
 const dayData = computed(() => {
-  const hours = payload.hours;
-  const dates = [...new Set(hours.map((h) => DateTime.fromISO(h.start).toISODate()))];
+  const minutes = payload.minutes;
+  const dates = [...new Set(minutes.map((m) => DateTime.fromISO(m.start).toISODate()))];
   const days = dates.map((d) => {
     return { date: d };
   });
   days.forEach((d) => {
-    const dayHours = hours.filter((h) => DateTime.fromISO(h.start).toISODate() === d.date);
-    d.countMinutes = dayHours.length;
-    d.countOn = dayHours.filter((h) => h.onOff).length;
-    d.countOff = dayHours.filter((h) => !h.onOff).length;
-    d.countSaved = dayHours.filter((h) => h.saving !== null).length;
-    d.avgPrice = roundPrice(
-      dayHours.reduce((prev, h) => {
-        return prev + h.price;
-      }, 0.0) / d.countMinutes
-    );
+    const dayMinutes = minutes.filter((m) => DateTime.fromISO(m.start).toISODate() === d.date);
+    
+    // Sum up all the minutes using the count property
+    d.countMinutes = dayMinutes.reduce((sum, m) => sum + m.count, 0);
+    d.countOn = dayMinutes.filter((m) => m.onOff).reduce((sum, m) => sum + m.count, 0);
+    d.countOff = dayMinutes.filter((m) => !m.onOff).reduce((sum, m) => sum + m.count, 0);
+    d.countSaved = dayMinutes.filter((m) => m.saving !== null).reduce((sum, m) => sum + m.count, 0);
+    
+    // Calculate average price weighted by count
+    const totalPrice = dayMinutes.reduce((prev, m) => {
+      return prev + (m.price * m.count);
+    }, 0.0);
+    d.avgPrice = roundPrice(totalPrice / d.countMinutes);
+    
+    // Calculate sum saved weighted by count
     d.sumSaved =
       d.countSaved > 0
         ? roundPrice(
-            dayHours.reduce((prev, h) => {
-              return prev + h.saving ?? 0;
+            dayMinutes.reduce((prev, m) => {
+              return prev + ((m.saving ?? 0) * m.count);
             }, 0)
           )
         : null;
@@ -219,6 +336,65 @@ const dayData = computed(() => {
     d.avgSaved2 = d.countSaved > 0 ? roundPrice(d.sumSaved / d.countMinutes) : null;
   });
   return days;
+});
+
+// Optimize columns by hiding duplicates
+function getVisibleColumns(dataArray) {
+  if (!dataArray || dataArray.length === 0 || !differenceColumns.length) {
+    return [];
+  }
+  
+  const visible = [];
+  let i = 0;
+  
+  while (i < differenceColumns.length) {
+    const startCol = i;
+    let count = 1;
+    
+    // Check if the next column has identical values to the current column across all rows
+    while (i + count < differenceColumns.length) {
+      let identical = true;
+      
+      // Compare column at (i + count - 1) with column at (i + count)
+      for (let row = 0; row < dataArray.length; row++) {
+        if (!dataArray[row]) {
+          identical = false;
+          break;
+        }
+        
+        const val1 = dataArray[row][i + count - 1];
+        const val2 = dataArray[row][i + count];
+        
+        // Handle null/undefined
+        if (val1 !== val2) {
+          identical = false;
+          break;
+        }
+      }
+      
+      if (!identical) break;
+      count++;
+    }
+    
+    // Add the first column of the group with its count
+    visible.push({
+      index: startCol,
+      label: count > 1 ? `${startCol + 1}-${startCol + count}` : `${startCol + 1}`,
+      count: count
+    });
+    
+    i += count;
+  }
+  
+  return visible;
+}
+
+const visibleDifferenceColumns = computed(() => {
+  return getVisibleColumns(differencePerMinute);
+});
+
+const visibleSequenceColumns = computed(() => {
+  return getVisibleColumns(showSum.value ? totalPerSequence : averagePerSequence);
 });
 
 // Event handlers
@@ -231,33 +407,65 @@ function showSequenceSource(row, col) {
   highlightSequence.length = 0;
   clickedSequence.row = sameCell ? null : row;
   clickedSequence.col = sameCell ? null : col;
-  for (let c = 0; c <= col && !sameCell; c++) {
-    highlightSequence.push({ row: row + c, col: col - c });
+  // Clear the other highlight state
+  clickedSaving.row = null;
+  clickedSaving.col = null;
+  
+  if (!sameCell) {
+    console.log(`Highlighting sequence at row ${row}, col ${col}:`);
+    for (let c = 0; c <= col; c++) {
+      const targetRow = row + c;
+      const targetCol = col - c;
+      // Only add if the row and column exist
+      if (targetRow < payload.minutes.length && targetCol >= 0 && targetCol < differenceColumns.length) {
+        highlightSequence.push({ row: targetRow, col: targetCol });
+        console.log(`  - Cell [${targetRow}][${targetCol}]`);
+      }
+    }
   }
 }
 
 // Show source for saving
 const clickedSaving = reactive({ row: null, col: null });
+
+// Helper function to find target row that is x minutes later
+function findTargetRow(startRow, minutesAhead) {
+  let accumulatedMinutes = 0;
+  for (let k = startRow; k < payload.minutes.length; k++) {
+    accumulatedMinutes += payload.minutes[k].count;
+    if (accumulatedMinutes > minutesAhead) {
+      return k;
+    }
+  }
+  return null;
+}
+
 function showSavingSource(row, col) {
   const sameCell = row === clickedSaving.row && col === clickedSaving.col;
   clickedSaving.row = sameCell ? null : row;
   clickedSaving.col = sameCell ? null : col;
+  // Clear the other highlight state
+  clickedSequence.row = null;
+  clickedSequence.col = null;
+  highlightSequence.length = 0;
 }
 
 // Styling functions
 
 function priceClasses(i) {
-  let hl =
-    clickedSaving.row === null ? false : clickedSaving.row === i || clickedSaving.row + clickedSaving.col === i - 1;
-  let res = hl ? "highlightSaving " : " ";
-  return res;
+  if (clickedSaving.row === null) return "";
+  
+  const targetRow = findTargetRow(clickedSaving.row, clickedSaving.col + 1);
+  const isHighlighted = clickedSaving.row === i || targetRow === i;
+  
+  return isHighlighted ? "highlightSaving " : " ";
 }
 
 function savingClasses(i, j) {
   const seq = highlightSequence.some((cell) => cell.row === i && cell.col === j);
   const sav = i === clickedSaving.row && j === clickedSaving.col;
   const res = "selectable ";
-  if (seq & sav) {
+  if (seq && sav) {
     return res + "highlightBoth";
   }
   if (seq) {
@@ -270,7 +478,18 @@ function savingClasses(i, j) {
 }
 
 function sequenceClasses(i, j) {
-  let res = clickedSequence.row === i && clickedSequence.col === j ? "highlightSequence " : " ";
+  // Check if this sequence cell is part of the highlighted sequence
+  const isInSequence = highlightSequence.some((cell) => cell.row === i && cell.col === j);
+  
+  let res = "";
+  if (clickedSequence.row === i && clickedSequence.col === j) {
+    res = "highlightSequence ";
+  } else if (isInSequence) {
+    res = "highlightSequence ";
+  } else {
+    res = " ";
+  }
+  
   if (averagePerSequence[i][j] < payload.config.minSaving) {
     res = res + "belowMin ";
   }
@@ -313,5 +532,30 @@ th {
 
 .sepcol {
   background-color: darkgray;
+}
+
+.processing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #e3f2fd;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-weight: 500;
+  color: #1976d2;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #bbdefb;
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>

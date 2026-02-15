@@ -64,6 +64,10 @@ export default defineUserConfig({
               text: "Grid tariff nodes",
               children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],
             },
+            {
+              text: "Light Saver",
+              children: ["/nodes/ps-light-saver.md"],
+            },
           ],
         },
         {
