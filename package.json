@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-power-saver",
-  "version": "5.0.1-beta.a",
+  "version": "5.0.1",
   "description": "A module for Node-RED that you can use to turn on and off a switch based on power prices",
   "main": "index.js",
   "scripts": {
@@ -47,27 +47,26 @@
     "url": "https://github.com/ottopaulsen/node-red-contrib-power-saver.git"
   },
   "devDependencies": {
-    "@vuepress/bundler-vite": "2.0.0-rc.19",
-    "@vuepress/plugin-google-analytics": "2.0.0-rc.66",
-    "@vuepress/plugin-register-components": "2.0.0-rc.66",
-    "@vuepress/plugin-search": "2.0.0-rc.66",
-    "@vuepress/theme-default": "2.0.0-rc.66",
-    "@vuepress/utils": "2.0.0-rc.19",
-    "chai": "^4.3.10",
-    "eslint": "9.17.0",
-    "expect": "29.7.0",
-    "mocha": "^11.0.1",
-    "node-red": "^4.0.8",
-    "node-red-node-test-helper": "0.3.4",
-    "sass-embedded": "^1.83.1",
-    "sass-loader": "^16.0.4",
-    "vuepress": "2.0.0-rc.19"
+    "@vuepress/bundler-vite": "2.0.0-rc.26",
+    "@vuepress/plugin-google-analytics": "2.0.0-rc.123",
+    "@vuepress/plugin-register-components": "2.0.0-rc.123",
+    "@vuepress/plugin-search": "2.0.0-rc.123",
+    "@vuepress/theme-default": "2.0.0-rc.123",
+    "@vuepress/utils": "2.0.0-rc.26",
+    "chai": "6.2.2",
+    "eslint": "10.0.0",
+    "expect": "30.2.0",
+    "mocha": "^11.7.5",
+    "node-red": "^4.1.5",
+    "node-red-node-test-helper": "0.3.6",
+    "sass-embedded": "^1.97.3",
+    "sass-loader": "^16.0.7",
+    "vuepress": "2.0.0-rc.26"
   },
   "dependencies": {
     "floating-vue": "5.2.2",
     "lodash.clonedeep": "4.5.0",
     "luxon": "3.5.0",
-    "nano-time": "1.0.0",
-    "node-fetch": "2.6.7"
+    "nano-time": "1.0.0"
   }
 }

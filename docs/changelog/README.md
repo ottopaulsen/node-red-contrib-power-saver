@@ -7,6 +7,11 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.0.1
+
+ - Update dependencies.
+ - Fix bug in Light Saver not always turning on lights.
+
 ## 5.0.0
 
  - Added new node Light Saver for advanced light control based on motion sensor.
