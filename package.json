@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-power-saver",
-  "version": "5.0.1-beta.d",
+  "version": "5.0.1-beta.e",
   "description": "A module for Node-RED that you can use to turn on and off a switch based on power prices",
   "main": "index.js",
   "scripts": {

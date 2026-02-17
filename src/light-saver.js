@@ -189,7 +189,7 @@ module.exports = function (RED) {
           debugLog('Applying night level to lights');
           const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
           if (level !== null) {
-            funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+            funcs.controlLights(nodeConfig, nodeConfig.lights, level, nodeWrapper, homeAssistant);
             node.status({ fill: "blue", shape: "dot", text: `Night mode: ${level}%` });
           } else {
             node.warn('Could not determine level for night mode');
@@ -210,7 +210,7 @@ module.exports = function (RED) {
         awayActivationTimer = setTimeout(() => {
           debugLog('Applying away level to lights');
           const level = nodeConfig.awaySensor.level !== null && nodeConfig.awaySensor.level !== undefined ? nodeConfig.awaySensor.level : 0;
-          funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+          funcs.controlLights(nodeConfig, nodeConfig.lights, level, nodeWrapper, homeAssistant);
           node.status({ fill: "yellow", shape: "dot", text: `Away mode: ${level}%` });
         }, nodeConfig.awaySensor.delay * 1000);
       }
@@ -397,24 +397,24 @@ module.exports = function (RED) {
         // Apply override actions immediately after config is sent
         if (payload.config.override !== undefined) {
           if (nodeConfig.override === 'off') {
-            funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+            funcs.turnOffAllLights(nodeConfig, nodeConfig.lights, nodeWrapper, homeAssistant);
             node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
             debugLog('Override: OFF - lights turned off');
           } else if (nodeConfig.override === 'on') {
             // Set lights to the appropriate automatic level and keep them there
             const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
             if (level !== null) {
-              funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+              funcs.controlLights(nodeConfig, nodeConfig.lights, level, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
               debugLog(`Override: ON - lights set to ${level}% (locked)`);
             } else {
               node.warn('Override ON: Could not determine level, using 100%');
-              funcs.controlLights(nodeConfig.lights, 100, nodeWrapper, homeAssistant);
+              funcs.controlLights(nodeConfig, nodeConfig.lights, 100, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: "Override: ON (100%)" });
               debugLog('Override: ON - lights set to 100% (fallback)');
             }
           } else if (typeof nodeConfig.override === 'number' && nodeConfig.override >= 0 && nodeConfig.override <= 100) {
-            funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
+            funcs.controlLights(nodeConfig, nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
             node.status({ fill: "green", shape: "dot", text: `Override: ${nodeConfig.override}%` });
             debugLog(`Override: ${nodeConfig.override}% - lights set to ${nodeConfig.override}%`);
           } else if (nodeConfig.override === 'auto') {
@@ -426,13 +426,13 @@ module.exports = function (RED) {
               debugLog('Triggers active, setting lights to appropriate level');
               const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
               if (level !== null) {
-                funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+                funcs.controlLights(nodeConfig, nodeConfig.lights, level, nodeWrapper, homeAssistant);
                 node.status({ fill: "green", shape: "dot", text: `AUTO: ${level}%` });
                 debugLog(`Lights set to ${level}% (auto mode with active triggers)`);
               }
             } else if (state.timedOut === true) {
               debugLog('Triggers timed out, turning lights off');
-              funcs.controlLights(nodeConfig.lights, 0, nodeWrapper, homeAssistant);
+              funcs.controlLights(nodeConfig, nodeConfig.lights, 0, nodeWrapper, homeAssistant);
               node.status({ fill: "yellow", shape: "ring", text: "AUTO: Timed out (off)" });
               debugLog('Lights turned off (auto mode with timed out triggers)');
             }
@@ -448,12 +448,12 @@ module.exports = function (RED) {
         debugLog(`Level input received: ${level}`);
         
         if (level === 'off') {
-          funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+          funcs.turnOffAllLights(nodeConfig, nodeConfig.lights, nodeWrapper, homeAssistant);
           debugLog('Level: OFF - lights turned off');
         } else if (level === 'on') {
           const currentLevel = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
           if (currentLevel !== null) {
-            funcs.controlLights(nodeConfig.lights, currentLevel, nodeWrapper, homeAssistant);
+            funcs.controlLights(nodeConfig, nodeConfig.lights, currentLevel, nodeWrapper, homeAssistant);
             debugLog(`Level: ON - lights set to ${currentLevel}%`);
           } else {
             node.warn('Level: ON - could not determine level');
@@ -463,15 +463,15 @@ module.exports = function (RED) {
           if (state.timedOut === false) {
             const currentLevel = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
             if (currentLevel !== null) {
-              funcs.controlLights(nodeConfig.lights, currentLevel, nodeWrapper, homeAssistant);
+              funcs.controlLights(nodeConfig, nodeConfig.lights, currentLevel, nodeWrapper, homeAssistant);
               debugLog(`Level: AUTO - lights set to ${currentLevel}% (triggers active)`);
             }
           } else {
-            funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+            funcs.turnOffAllLights(nodeConfig, nodeConfig.lights, nodeWrapper, homeAssistant);
             debugLog('Level: AUTO - lights turned off (timed out)');
           }
         } else if (typeof level === 'number' && level >= 0 && level <= 100) {
-          funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+          funcs.controlLights(nodeConfig, nodeConfig.lights, level, nodeWrapper, homeAssistant);
           debugLog(`Level: ${level}% - lights set to ${level}%`);
         } else {
           node.warn(`Invalid level value: ${level}`);
@@ -607,24 +607,24 @@ module.exports = function (RED) {
           if (nodeConfig.override !== 'auto') {
             debugLog(`Applying override from config: ${nodeConfig.override}`);
             if (nodeConfig.override === 'off') {
-              funcs.turnOffAllLights(nodeConfig.lights, nodeWrapper, homeAssistant);
+              funcs.turnOffAllLights(nodeConfig, nodeConfig.lights, nodeWrapper, homeAssistant);
               node.status({ fill: "red", shape: "dot", text: "Override: OFF" });
               debugLog('Override: OFF applied on startup');
             } else if (nodeConfig.override === 'on') {
               // Set lights to the appropriate automatic level and keep them there
               const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
               if (level !== null) {
-                funcs.controlLights(nodeConfig.lights, level, nodeWrapper, homeAssistant);
+                funcs.controlLights(nodeConfig, nodeConfig.lights, level, nodeWrapper, homeAssistant);
                 node.status({ fill: "green", shape: "dot", text: `Override: ON (${level}%)` });
                 debugLog(`Override: ON applied on startup - ${level}% (locked)`);
               } else {
                 node.warn('Override ON on startup: Could not determine level, using 100%');
-                funcs.controlLights(nodeConfig.lights, 100, nodeWrapper, homeAssistant);
+                funcs.controlLights(nodeConfig, nodeConfig.lights, 100, nodeWrapper, homeAssistant);
                 node.status({ fill: "green", shape: "dot", text: "Override: ON (100%)" });
                 debugLog('Override: ON applied on startup - 100% (fallback)');
               }
             } else if (typeof nodeConfig.override === 'number') {
-              funcs.controlLights(nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
+              funcs.controlLights(nodeConfig, nodeConfig.lights, nodeConfig.override, nodeWrapper, homeAssistant);
               node.status({ fill: "green", shape: "dot", text: `Override: ${nodeConfig.override}%` });
               debugLog(`Override: ${nodeConfig.override}% applied on startup`);
             }

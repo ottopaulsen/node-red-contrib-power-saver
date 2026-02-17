@@ -189,7 +189,7 @@ describe("light-saver-functions", function () {
 
   describe("findCurrentLevel", function () {
     it("should return night level when night sensor is on", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.night',
@@ -205,7 +205,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should fall through to time-based level when nightLevel is not set", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.night',
@@ -221,7 +221,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return time-based level when night sensor is off", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           state: 'off', 
           entity_id: 'binary_sensor.night',
@@ -242,7 +242,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should wrap to previous day if current time is before all levels", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: null,
         levels: [
           { fromTime: "06:00", level: 100 },
@@ -262,7 +262,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return null if no levels are defined", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: null,
         levels: []
       };
@@ -274,7 +274,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle midnight correctly", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: null,
         levels: [
           { fromTime: "00:00", level: 20 },
@@ -293,13 +293,15 @@ describe("light-saver-functions", function () {
   });
 
   describe("controlLights", function () {
+    const config = { debugLog: true };
+    
     it("should turn on lights with brightness percentage", function () {
       const lights = [
         { entity_id: 'light.living_room' },
         { entity_id: 'light.bedroom' }
       ];
 
-      funcs.controlLights(lights, 75, mockNode, mockHomeAssistant);
+      funcs.controlLights(config, lights, 75, mockNode, mockHomeAssistant);
 
       expect(mockWebsocket.send.callCount).to.equal(2);
       
@@ -313,7 +315,7 @@ describe("light-saver-functions", function () {
     it("should turn off lights when level is 0", function () {
       const lights = [{ entity_id: 'light.living_room' }];
 
-      funcs.controlLights(lights, 0, mockNode, mockHomeAssistant);
+      funcs.controlLights(config, lights, 0, mockNode, mockHomeAssistant);
 
       const call = mockWebsocket.send.getCall(0).args[0];
       expect(call.service).to.equal('turn_off');
@@ -323,7 +325,7 @@ describe("light-saver-functions", function () {
     it("should turn on switches without brightness", function () {
       const lights = [{ entity_id: 'switch.outlet' }];
 
-      funcs.controlLights(lights, 75, mockNode, mockHomeAssistant);
+      funcs.controlLights(config, lights, 75, mockNode, mockHomeAssistant);
 
       const call = mockWebsocket.send.getCall(0).args[0];
       expect(call.domain).to.equal('switch');
@@ -334,7 +336,7 @@ describe("light-saver-functions", function () {
     it("should turn off switches when level is 0", function () {
       const lights = [{ entity_id: 'switch.outlet' }];
 
-      funcs.controlLights(lights, 0, mockNode, mockHomeAssistant);
+      funcs.controlLights(config, lights, 0, mockNode, mockHomeAssistant);
 
       const call = mockWebsocket.send.getCall(0).args[0];
       expect(call.domain).to.equal('switch');
@@ -344,7 +346,7 @@ describe("light-saver-functions", function () {
     it("should warn if level is null", function () {
       const lights = [{ entity_id: 'light.living_room' }];
 
-      funcs.controlLights(lights, null, mockNode, mockHomeAssistant);
+      funcs.controlLights(config, lights, null, mockNode, mockHomeAssistant);
 
       expect(mockWebsocket.send.called).to.be.false;
       expect(mockNode.warn.calledWith('Cannot control lights: no valid level found')).to.be.true;
@@ -352,6 +354,8 @@ describe("light-saver-functions", function () {
   });
 
   describe("turnOffAllLights", function () {
+    const config = { debugLog: true };
+    
     it("should turn off all lights", function () {
       const lights = [
         { entity_id: 'light.living_room' },
@@ -359,7 +363,7 @@ describe("light-saver-functions", function () {
         { entity_id: 'light.bedroom' }
       ];
 
-      funcs.turnOffAllLights(lights, mockNode, mockHomeAssistant);
+      funcs.turnOffAllLights(config, lights, mockNode, mockHomeAssistant);
 
       expect(mockWebsocket.send.callCount).to.equal(3);
       
@@ -370,7 +374,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle empty lights array", function () {
-      funcs.turnOffAllLights([], mockNode, mockHomeAssistant);
+      funcs.turnOffAllLights(config, [], mockNode, mockHomeAssistant);
 
       expect(mockWebsocket.send.called).to.be.false;
     });
@@ -378,7 +382,8 @@ describe("light-saver-functions", function () {
 
   describe("checkTimeouts", function () {
     it("should not timeout if any trigger is on", function () {
-      const config = {
+      const config = { debugLog: true, 
+        debugLog: true,
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'on', lastChanged: '2026-01-29T15:20:00Z' },
           { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
@@ -396,7 +401,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should timeout if all triggers have been off longer than timeout", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }, // 30 minutes ago
           { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:10:00Z' }  // 20 minutes ago
@@ -414,7 +419,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should not timeout if one trigger hasn't reached timeout yet", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }, // 30 minutes ago (timed out)
           { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:25:00Z' }  // 5 minutes ago (NOT timed out)
@@ -431,7 +436,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should use trigger-specific timeout if set", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z', timeoutMinutes: 5 }, // 30 min ago, 5 min timeout = timed out
           { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:15:00Z', timeoutMinutes: 20 } // 15 min ago, 20 min timeout = NOT timed out yet
@@ -449,7 +454,8 @@ describe("light-saver-functions", function () {
     });
 
     it("should skip triggers without state or lastChanged", function () {
-      const config = {
+      const config = { debugLog: true, 
+        debugLog: true,
         triggers: [
           { entity_id: 'binary_sensor.motion1' }, // No state
           { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
@@ -473,7 +479,7 @@ describe("light-saver-functions", function () {
         'binary_sensor.motion2': { state: 'on', last_changed: '2026-01-29T15:20:00Z' }
       };
 
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1' }, // No state
           { entity_id: 'binary_sensor.motion2' }  // No state
@@ -501,7 +507,7 @@ describe("light-saver-functions", function () {
         'binary_sensor.motion2': { state: 'off', last_changed: '2026-01-29T15:10:00Z' }  // 20 min ago
       };
 
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1' },
           { entity_id: 'binary_sensor.motion2' }
@@ -523,7 +529,7 @@ describe("light-saver-functions", function () {
         'binary_sensor.motion2': { state: 'on', last_changed: '2026-01-29T15:20:00Z' }
       };
 
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1' },
           { entity_id: 'binary_sensor.motion2' }
@@ -548,7 +554,7 @@ describe("light-saver-functions", function () {
         'binary_sensor.motion2': { state: 'off', last_changed: '2026-01-29T15:27:00Z' }  // 3 min ago
       };
 
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1' },
           { entity_id: 'binary_sensor.motion2' }
@@ -569,7 +575,7 @@ describe("light-saver-functions", function () {
         'binary_sensor.night': { state: 'on', last_changed: '2026-01-29T20:00:00Z' }
       };
 
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'off' } // Already has state
         ],
@@ -588,7 +594,7 @@ describe("light-saver-functions", function () {
         'binary_sensor.motion1': { state: 'off', last_changed: '2026-01-29T15:00:00Z' }
       };
 
-      const config = {
+      const config = { debugLog: true, 
         triggers: [{ entity_id: 'binary_sensor.motion1' }],
         nightSensor: null
       };
@@ -603,7 +609,7 @@ describe("light-saver-functions", function () {
     it("should handle missing states gracefully", function () {
       mockWebsocket.states = {}; // No states available
 
-      const config = {
+      const config = { debugLog: true, 
         triggers: [{ entity_id: 'binary_sensor.motion1' }],
         nightSensor: null
       };
@@ -618,7 +624,7 @@ describe("light-saver-functions", function () {
 
   describe("handleStateChange", function () {
     it("should update trigger state", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
         ],
@@ -646,7 +652,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should activate lights when trigger turns on while timedOut", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
         ],
@@ -677,7 +683,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should not activate lights when trigger turns on if not timedOut", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [
           { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
         ],
@@ -704,7 +710,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should update night sensor state", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [{ entity_id: 'binary_sensor.motion1', state: 'off' }],
         lights: [],
         nightSensor: { 
@@ -734,7 +740,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle invalid events gracefully", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [{ entity_id: 'binary_sensor.motion1' }],
         lights: [],
         nightSensor: null,
@@ -750,7 +756,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should use night level when night sensor is on", function () {
-      const config = {
+      const config = { debugLog: true, 
         triggers: [{ entity_id: 'binary_sensor.motion1', state: 'off' }],
         lights: [{ entity_id: 'light.living_room' }],
         nightSensor: { 
@@ -781,7 +787,7 @@ describe("light-saver-functions", function () {
 
   describe("isNightMode", function () {
     it("should return true when night sensor is on and not inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.night',
@@ -794,7 +800,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when night sensor is off and not inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           state: 'off', 
           entity_id: 'binary_sensor.night',
@@ -807,7 +813,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when night sensor is on and inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.night',
@@ -820,7 +826,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when night sensor is off and inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           state: 'off', 
           entity_id: 'binary_sensor.night',
@@ -833,7 +839,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when night sensor is not configured", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: null
       };
 
@@ -842,7 +848,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when night sensor has no state", function () {
-      const config = {
+      const config = { debugLog: true, 
         nightSensor: { 
           entity_id: 'binary_sensor.night',
           invert: false
@@ -856,7 +862,7 @@ describe("light-saver-functions", function () {
 
   describe("isAwayMode", function () {
     it("should return true when away sensor is on and not inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.away',
@@ -869,7 +875,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when away sensor is off and not inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'off', 
           entity_id: 'binary_sensor.away',
@@ -882,7 +888,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when away sensor is on and inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.away',
@@ -895,7 +901,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when away sensor is off and inverted", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'off', 
           entity_id: 'binary_sensor.away',
@@ -908,7 +914,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when away sensor is not configured", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: null
       };
 
@@ -917,7 +923,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when away sensor has no state", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           entity_id: 'binary_sensor.away',
           invert: false
@@ -931,7 +937,7 @@ describe("light-saver-functions", function () {
 
   describe("isBrightnessAllowingLights", function () {
     it("should return true when no brightness sensor configured", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: null
       };
 
@@ -940,7 +946,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when brightness sensor has no limit", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '100',
@@ -954,7 +960,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when brightness sensor has no state yet", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: null,
@@ -968,7 +974,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true in max mode when brightness is below limit", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '30',
@@ -982,7 +988,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false in max mode when brightness is above limit", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '70',
@@ -996,7 +1002,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true in min mode when brightness is above limit", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '70',
@@ -1010,7 +1016,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false in min mode when brightness is below limit", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '30',
@@ -1024,7 +1030,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle brightness at exactly the limit in max mode", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '50',
@@ -1038,7 +1044,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle brightness at exactly the limit in min mode", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '50',
@@ -1052,7 +1058,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should default to max mode when mode not specified", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: '30',
@@ -1066,7 +1072,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true for invalid brightness value", function () {
-      const config = {
+      const config = { debugLog: true, 
         brightnessSensor: { 
           entity_id: 'sensor.brightness',
           state: 'invalid',
@@ -1082,7 +1088,7 @@ describe("light-saver-functions", function () {
 
   describe("findCurrentLevel with away mode", function () {
     it("should return away level when away sensor is on", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.away',
@@ -1105,7 +1111,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should prioritize away level over night level", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.away',
@@ -1128,7 +1134,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should fall through to time-based level when awayLevel is not set", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'on', 
           entity_id: 'binary_sensor.away',
@@ -1144,7 +1150,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should use away level with inverted sensor", function () {
-      const config = {
+      const config = { debugLog: true, 
         awaySensor: { 
           state: 'off', 
           entity_id: 'binary_sensor.away',
@@ -1163,7 +1169,7 @@ describe("light-saver-functions", function () {
 
   describe("findLevelConfig", function () {
     it("should return null if no levels defined", function () {
-      const config = {
+      const config = { debugLog: true, 
         levels: []
       };
 
@@ -1173,7 +1179,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return the level config for current time", function () {
-      const config = {
+      const config = { debugLog: true, 
         levels: [
           { fromTime: "05:00", level: 100, immediate: false },
           { fromTime: "12:00", level: 80, immediate: true }
@@ -1187,7 +1193,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return the latest level that started before current time", function () {
-      const config = {
+      const config = { debugLog: true, 
         levels: [
           { fromTime: "05:00", level: 100, immediate: false },
           { fromTime: "12:00", level: 80, immediate: false },
@@ -1202,7 +1208,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle undefined immediate flag", function () {
-      const config = {
+      const config = { debugLog: true, 
         levels: [
           { fromTime: "12:00", level: 75 }
         ]
@@ -1218,7 +1224,7 @@ describe("light-saver-functions", function () {
         now: () => new Date('2026-01-29T19:00:00Z')
       };
 
-      const config = {
+      const config = { debugLog: true, 
         levels: [
           { fromTime: "18:00", level: 50, immediate: true }
         ]
