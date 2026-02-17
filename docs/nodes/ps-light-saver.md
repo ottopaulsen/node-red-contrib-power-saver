@@ -82,7 +82,7 @@ Configuration example. See description below:
 | Brightness sensor      | Optional sensor or `input_number` that reports brightness (e.g., lux, illuminance). When configured with a limit, controls when lights are allowed to turn on based on ambient brightness.      |
 | Brightness limit       | Numeric threshold value for brightness comparison. Lights only turn on when brightness passes this threshold according to the selected mode.                                                    |
 | Min/Max mode           | **Max** (default): Lights turn on when brightness is below limit (darker conditions). **Min**: Lights turn on when brightness is above limit (brighter conditions).                            |
-| Light levels           | Time-based brightness levels throughout the day. Each entry specifies a time (HH:MM, 24-hour format) and a brightness level (0-100%). The level remains active until the next time entry. This is the level that the light will be turned on to when motion is detected after a timeout.    |
+| Light levels           | Time-based brightness levels throughout the day. Each entry specifies a time (HH:MM, 24-hour format), a brightness level (0-100%), and an optional "Immediate" flag. When "Immediate" is checked, the level is applied immediately when the time is reached (if motion was detected within the timeout period). When unchecked (default), the level is only applied when motion is detected.    |
 | Override               | Check to override automatic behavior and set the node out of play. Select if the light shall be off, on or have a specific level. See [Override](#override) section below for details.                                                                                            |
 | Context storage        | Choose where to persist runtime state across Node-RED restarts (default, file, etc.). Must match a context store configured in Node-RED's `settings.js` file.                                  |
 | Debug log              | Enable detailed logging to Node-RED's console for troubleshooting. Logs all sensor state changes, level calculations, and light commands.                                                      |
@@ -132,7 +132,7 @@ The following config values can be changed dynamically by sending messages to th
 | `nightSensor`                      | Object with `entity_id`, `level`, `delay`, `invert`      |
 | `awaySensor`                       | Object with `entity_id`, `level`, `delay`, `invert`      |
 | `brightnessSensor`                 | Object with `entity_id`, `limit`, `mode` (min or max)                 |
-| `levels`                           | Array of level objects with `fromTime` and `level`       |
+| `levels`                           | Array of level objects with `fromTime`, `level`, and `immediate` (boolean, optional)       |
 | `debugLog`                         | Legal values: `true`, `false`                            |
 | `override`                         | Legal values: `"on"`, `"off"`, `"auto"`, or number 0-100 |
 | `contextStorage`                   | String (name of context store)                           |
@@ -269,8 +269,8 @@ When the `sendConfig` command is received, the node sends configuration data:
         "invert": false
       },
       "levels": [
-        { "fromTime": "06:00", "level": 100 },
-        { "fromTime": "22:00", "level": 50 }
+        { "fromTime": "06:00", "level": 100, "immediate": false },
+        { "fromTime": "22:00", "level": 50, "immediate": true }
       ],
       "debugLog": false,
       "override": "auto"
@@ -375,6 +375,7 @@ If override is set to anything other than "auto", the override value takes compl
 The node continuously monitors all configured trigger sensors:
 - When any trigger turns on (detects motion), `timedOut` is set to `false`
 - If `timedOut` was `true` before the trigger activated, and brightness limit allows (if configured), lights turn on to the appropriate level
+- If `timedOut` is `false` (motion detected within timeout) and an immediate level is configured for the current time, that level is applied immediately
 - Each trigger has its own timeout period (or uses the default)
 - When all triggers have been off for their respective timeout periods, `timedOut` is set to `true` and lights turn off
 

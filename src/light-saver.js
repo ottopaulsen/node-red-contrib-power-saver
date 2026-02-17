@@ -103,7 +103,8 @@ module.exports = function (RED) {
     
     // Mutable state
     const state = {
-      timedOut: undefined // Tracks if all triggers are currently off
+      timedOut: undefined, // Tracks if all triggers are currently off
+      lastImmediateTime: null // Tracks the last fromTime when immediate level was applied
     };
     
     let timeoutCheckInterval = null; // Timer for checking timeouts every minute

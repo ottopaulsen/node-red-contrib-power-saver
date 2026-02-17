@@ -19,7 +19,7 @@
       brightnessSensor: { value: null },
       brightnessLimit: { value: null },
       brightnessMode: { value: 'max' },
-      levels: { value: [{ fromTime: "00:00", level: 100 }] },
+      levels: { value: [{ fromTime: "00:00", level: 100, immediate: false }] },
       override: { value: 'auto' },
       contextStorage: { value: "default", required: false },
       debugLog: { value: false }
@@ -502,11 +502,11 @@
         // Add existing levels
         if (node.levels && node.levels.length > 0) {
           node.levels.forEach(level => {
-            addLevelRow($list, level.fromTime || '', level.level !== undefined ? level.level : '');
+            addLevelRow($list, level.fromTime || '', level.level !== undefined ? level.level : '', level.immediate === true);
           });
         } else {
           // Add one default row
-          addLevelRow($list, '00:00', 100);
+          addLevelRow($list, '00:00', 100, false);
         }
         
         // Add button handler
@@ -756,7 +756,7 @@
         $container.append(sensorRow);
       };
       
-      const addLevelRow = function($list, fromTime, level) {
+      const addLevelRow = function($list, fromTime, level, immediate) {
         const row = $('<li/>').css({
           padding: '5px',
           border: '1px solid #ccc',
@@ -876,6 +876,32 @@
         
         levelWrapper.append(levelLabel).append(levelSlider).append(levelInput).append(levelUnit);
         
+        // Immediate checkbox
+        const immediateWrapper = $('<div/>').css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          width: '70px'
+        });
+        
+        const immediateCheckbox = $('<input type="checkbox" class="immediate-checkbox keeper-ignore"/>').css({
+          width: '16px',
+          height: '16px'
+        });
+        
+        // Set checkbox state if immediate was passed
+        if (immediate === true) {
+          immediateCheckbox.prop('checked', true);
+        }
+        
+        const immediateLabel = $('<label/>').text('Immediate').css({
+          fontSize: '11px',
+          whiteSpace: 'nowrap',
+          marginTop: '2px'
+        });
+        
+        immediateWrapper.append(immediateCheckbox).append(immediateLabel);
+        
         const deleteButton = $('<button type="button" class="editor-button editor-button-small" title="Delete Level"><i class="fa fa-trash"></i></button>');
         
         deleteButton.on('click', function(e) {
@@ -888,7 +914,7 @@
           }
         });
         
-        row.append(fromTimeWrapper).append(levelWrapper).append(deleteButton);
+        row.append(fromTimeWrapper).append(levelWrapper).append(immediateWrapper).append(deleteButton);
         $list.append(row);
       };
       
@@ -1094,10 +1120,12 @@
       $("#levels-list li").each(function() {
         const fromTime = $(this).find('.from-time-input').val().trim();
         const level = $(this).find('.level-input').val();
+        const immediate = $(this).find('.immediate-checkbox').prop('checked') === true;
         if (fromTime && level !== '') {
           levels.push({ 
             fromTime: fromTime,
-            level: parseInt(level)
+            level: parseInt(level),
+            immediate: immediate
           });
         }
       });
@@ -1262,6 +1290,7 @@
   - **Light levels**: Time-based brightness levels throughout the day
     - **From time**: Time when this level becomes active (HH:MM format, 24-hour)
     - **Level**: Brightness percentage (0-100%)
+    - **Immediate**: When checked, this level is applied immediately when the time is reached (if motion was detected within the timeout period). When unchecked (default), level is only applied when motion is detected.
   - **Override**: Manual control to override automatic behavior
     - **Off**: Turn all lights off and block automatic control
     - **On**: Set lights to their normal automatic level
@@ -1281,6 +1310,7 @@
   - When away sensor activates, lights are set to away level after configured delay
   - When night sensor activates, lights are set to night level after configured delay
   - Both night and away sensors can be inverted to reverse their logic
+  - **Immediate levels**: If a time-based level has "Immediate" checked and the scheduled time is reached while motion was detected within the timeout, that level is applied immediately without waiting for new motion
   - Override mode blocks all automatic behavior until returned to auto
   - If brightness limit is configured, lights only turn on when brightness passes the threshold
   - When brightness crosses threshold (lights allowed to be on) and motion was detected within timeout, lights turn on automatically

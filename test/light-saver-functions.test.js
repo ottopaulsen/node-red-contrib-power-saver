@@ -1160,4 +1160,73 @@ describe("light-saver-functions", function () {
       expect(mockNode.log.calledWith('Using away level: 5%')).to.be.true;
     });
   });
+
+  describe("findLevelConfig", function () {
+    it("should return null if no levels defined", function () {
+      const config = {
+        levels: []
+      };
+
+      const levelConfig = funcs.findLevelConfig(config, mockClock);
+
+      expect(levelConfig).to.be.null;
+    });
+
+    it("should return the level config for current time", function () {
+      const config = {
+        levels: [
+          { fromTime: "05:00", level: 100, immediate: false },
+          { fromTime: "12:00", level: 80, immediate: true }
+        ]
+      };
+
+      const levelConfig = funcs.findLevelConfig(config, mockClock);
+
+      // Clock is 15:30, so should match 12:00 level
+      expect(levelConfig).to.deep.equal({ fromTime: "12:00", level: 80, immediate: true });
+    });
+
+    it("should return the latest level that started before current time", function () {
+      const config = {
+        levels: [
+          { fromTime: "05:00", level: 100, immediate: false },
+          { fromTime: "12:00", level: 80, immediate: false },
+          { fromTime: "18:00", level: 50, immediate: true }
+        ]
+      };
+
+      const levelConfig = funcs.findLevelConfig(config, mockClock);
+
+      // Clock is 15:30, so latest before current time is 12:00
+      expect(levelConfig).to.deep.equal({ fromTime: "12:00", level: 80, immediate: false });
+    });
+
+    it("should handle undefined immediate flag", function () {
+      const config = {
+        levels: [
+          { fromTime: "12:00", level: 75 }
+        ]
+      };
+
+      const levelConfig = funcs.findLevelConfig(config, mockClock);
+
+      expect(levelConfig).to.deep.equal({ fromTime: "12:00", level: 75 });
+    });
+
+    it("should work with custom clock", function () {
+      const customClock = {
+        now: () => new Date('2026-01-29T19:00:00Z')
+      };
+
+      const config = {
+        levels: [
+          { fromTime: "18:00", level: 50, immediate: true }
+        ]
+      };
+
+      const levelConfig = funcs.findLevelConfig(config, customClock);
+
+      expect(levelConfig).to.deep.equal({ fromTime: "18:00", level: 50, immediate: true });
+    });
+  });
 });

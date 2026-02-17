@@ -165,6 +165,7 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
       }
     }
     
+    
     // Update timedOut status: if any trigger is on, timedOut = false
     if (newState.state === 'on') {
       state.timedOut = false;
@@ -259,6 +260,43 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
   }
   
   node.warn(`Received state change for ${entityId} but not found in triggers, nightSensor, awaySensor, or brightnessSensor`);
+}
+
+/**
+ * Find the level config object for the current time
+ * @param {object} config - Configuration object with levels
+ * @param {object} clock - Clock abstraction for getting current time (for testing)
+ * @returns {object|null} The level config object or null if not found
+ */
+function findLevelConfig(config, clock = null) {
+  const now = clock ? clock.now() : new Date();
+  
+  if (!config.levels || config.levels.length === 0) {
+    return null;
+  }
+  
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+  
+  // Sort levels by fromTime
+  const sortedLevels = config.levels.slice().sort((a, b) => {
+    const [aHour, aMin] = a.fromTime.split(':').map(Number);
+    const [bHour, bMin] = b.fromTime.split(':').map(Number);
+    const aMinutes = aHour * 60 + aMin;
+    const bMinutes = bHour * 60 + bMin;
+    return aMinutes - bMinutes;
+  });
+  
+  // Find the latest level that started before current time
+  for (let i = sortedLevels.length - 1; i >= 0; i--) {
+    const [hour, min] = sortedLevels[i].fromTime.split(':').map(Number);
+    const levelTime = hour * 60 + min;
+    
+    if (levelTime <= currentTime) {
+      return sortedLevels[i];
+    }
+  }
+  
+  return null;
 }
 
 /**
@@ -474,6 +512,23 @@ function checkTimeouts(config, state, node, homeAssistant, clock = null) {
     state.timedOut = true;
     node.status({ fill: "yellow", shape: "ring", text: "Timed out - lights off" });
   }
+  
+  // Check for immediate levels when motion is detected (timedOut = false)
+  if (!state.timedOut && !allTimedOut) {
+    const levelConfig = findLevelConfig(config, clock);
+    // Only apply immediate level if this is a NEW immediate period (fromTime changed)
+    if (levelConfig && levelConfig.immediate === true && levelConfig.fromTime !== state.lastImmediateTime && isBrightnessAllowingLights(config)) {
+      const currentLevel = findCurrentLevel(config, node, clock);
+      if (currentLevel !== null) {
+        node.log(`Immediate level ${currentLevel}% found for time ${levelConfig.fromTime}, applying...`);
+        controlLights(config.lights, currentLevel, node, homeAssistant);
+        state.lastImmediateTime = levelConfig.fromTime; // Mark this immediate period as applied
+      }
+    }
+  } else if (state.timedOut) {
+    // Reset lastImmediateTime when timeout occurs (next immediate period will apply)
+    state.lastImmediateTime = null;
+  }
 }
 
 /**
@@ -622,6 +677,7 @@ module.exports = {
   isBrightnessAllowingLights,
   handleStateChange,
   findCurrentLevel,
+  findLevelConfig,
   controlLights,
   turnOffAllLights,
   checkTimeouts,
