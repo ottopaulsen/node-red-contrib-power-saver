@@ -7,6 +7,11 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.1.0
+
+ - Add immediate flag to levels to make the change to happen immediately, unless timed out.
+ - Remove some logging.
+
 ## 5.0.1
 
  - Update dependencies.

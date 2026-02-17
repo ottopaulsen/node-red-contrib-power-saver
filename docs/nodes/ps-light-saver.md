@@ -30,8 +30,9 @@ Here are some of the main ideas:
 * You can configure different default levels on different times of the day.
 * You can have separate night levels or away levels that override the standard time of day levels.
 * If motion remains, the lights will not change automatically, so for example if you set the desired level manually,
-it will remain as long as there is motion inside the configured timeout. Exception:
+it will remain as long as there is motion inside the configured timeout. Exceptions:
 * If you use the brightness sensor, lights may turn on automatically when it gets dark, even if there is constant motion.
+* If you check Immediate on the level, the leel is set on the given time if there has been motion within the timeout period.
 
 The node works fine without any input or output, but you can use input to control or configure it, and you can get interesting information on the output.
 
@@ -58,11 +59,39 @@ You need at least one sensor to trigger the light, normally a motion sensor, but
 
 Litghts and sensors are selected from Home Assistant. 
 
-Configuration example. See description below:
+Configuration example. See description below.
+
+Set node name, select the Home Assistant server, select entitues for lights and the timeeout for which light is turned off if no motion:
 
 ![Light Saver Config](../images/light-saver-config-1.png)
 
+Select motion triggers and optionally a timeout per trigger:
+
 ![Light Saver Config](../images/light-saver-config-2.png)
+
+You may set a shoreter timeout on a trigger so that the light is turned off sooner if no other sensors are triggered.
+
+Optionally select night sensor and night level, away sensor and away level, and brightness sensor and brightness limit:
+
+
+![Light Saver Config](../images/light-saver-config-3.png)
+
+If you check invert on the night sensor, night is on if the sensor is off. Same with away sensor. If you select Max (default) for brightness limit, the light goes on if the brightness is under the limit. If you select Min the light goes on if the brightness is over the limit.
+
+Set levels for different parts of the day:
+
+![Light Saver Config](../images/light-saver-config-4.png)
+
+The level you set is valid from that time untuil the next time.This goes around the clock, so the level set from 18:00 is valid until 05:00 the next morning.
+
+If you check override, the light will remain on the set value indefinitely. 
+
+Some config is stored in context. You may select context storage here.
+
+If you check the debug flag, extensice logging is written to the Node-RED log.
+
+### Detailed config description
+
 
 | Value                  | Description                                                                                                                                                                                    |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -82,7 +111,7 @@ Configuration example. See description below:
 | Brightness sensor      | Optional sensor or `input_number` that reports brightness (e.g., lux, illuminance). When configured with a limit, controls when lights are allowed to turn on based on ambient brightness.      |
 | Brightness limit       | Numeric threshold value for brightness comparison. Lights only turn on when brightness passes this threshold according to the selected mode.                                                    |
 | Min/Max mode           | **Max** (default): Lights turn on when brightness is below limit (darker conditions). **Min**: Lights turn on when brightness is above limit (brighter conditions).                            |
-| Light levels           | Time-based brightness levels throughout the day. Each entry specifies a time (HH:MM, 24-hour format), a brightness level (0-100%), and an optional "Immediate" flag. When "Immediate" is checked, the level is applied immediately when the time is reached (if motion was detected within the timeout period). When unchecked (default), the level is only applied when motion is detected.    |
+| Light levels           | Time-based brightness levels throughout the day. Each entry specifies a time (HH:MM, 24-hour format), a brightness level (0-100%), and an optional "Immediate" flag. The brightness level is used if the light is turned on by motion after the given time (before the next). When "Immediate" is checked, the level is applied immediately when the time is reached (if motion was detected within the timeout period). When unchecked (default), the level is only applied when motion is detected.   |
 | Override               | Check to override automatic behavior and set the node out of play. Select if the light shall be off, on or have a specific level. See [Override](#override) section below for details.                                                                                            |
 | Context storage        | Choose where to persist runtime state across Node-RED restarts (default, file, etc.). Must match a context store configured in Node-RED's `settings.js` file.                                  |
 | Debug log              | Enable detailed logging to Node-RED's console for troubleshooting. Logs all sensor state changes, level calculations, and light commands.                                                      |
