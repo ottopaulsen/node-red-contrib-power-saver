@@ -55,10 +55,10 @@ function mergeSchedules(node, logicFunction) {
   });
 
   // Sort keys on start time
-  const sortedHours = Object.keys(transposed).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
+  const sortedMinutes = Object.keys(transposed).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
 
   // Merge
-  const mergedHours = sortedHours.map((start) => {
+  const mergedMinutes = sortedMinutes.map((start) => {
     const sources = transposed[start];
     const onOff =
       logicFunction === "OR"
@@ -69,7 +69,7 @@ function mergeSchedules(node, logicFunction) {
     const res = { start, onOff, sources, price, saving };
     return res;
   });
-  return mergedHours;
+  return mergedMinutes;
 }
 
 function mergerShallSendSchedule(msg, commands) {
