@@ -7,6 +7,11 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.1.1
+
+ - Fix count in minutes array out from schedule merger.
+ - Fix typo in price receiver status.
+
 ## 5.1.0
 
  - Add immediate flag to levels to make the change to happen immediately, unless timed out.

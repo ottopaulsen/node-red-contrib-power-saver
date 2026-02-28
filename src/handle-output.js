@@ -123,30 +123,30 @@ function collapseMinutes(minutes) {
 
   const result = [];
   let currentValue = minutes[0];
-  let count = 1;
   let startIndex = 0;
 
   for (let i = 1; i < minutes.length; i++) {
-    if (itemsEqual(minutes[i], currentValue)) {
-      count++;
-    } else {
+    if (!itemsEqual(minutes[i], currentValue)) {
+      const groupStartMs = new Date(currentValue.start).getTime();
+      const nextStartMs = new Date(minutes[i].start).getTime();
+      const count = Math.round((nextStartMs - groupStartMs) / 60000);
       result.push({ ...currentValue, count, startIndex });
       currentValue = minutes[i];
-      count = 1;
       startIndex = i;
     }
   }
 
-  result.push({ ...currentValue, count, startIndex });
-
+  const lastRecord = minutes[minutes.length - 1];
+  const lastCount = lastRecord.end
+    ? Math.round((new Date(lastRecord.end).getTime() - new Date(currentValue.start).getTime()) / 60000)
+    : null;
+  result.push({ ...currentValue, count: lastCount, startIndex });
   return result;
-
-
-
 }
 
 module.exports = {
   handleOutput,
   shallSendOutput,
   strategyShallSendSchedule,
+  collapseMinutes,
 };
