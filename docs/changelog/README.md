@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.1.3
+
+ - Fix light saver bug adjusting light when not timed out.
+
 ## 5.1.2
 
  - Fix bug 231 Correct use of historical data.

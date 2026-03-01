@@ -201,6 +201,10 @@ module.exports = function (RED) {
 
         // Set lights to night level after delay
         nightActivationTimer = setTimeout(() => {
+          if (state.timedOut || !funcs.isNightMode(nodeConfig)) {
+            debugLog("Skipping night level change: lights are off or night mode no longer active");
+            return;
+          }
           debugLog("Applying night level to lights");
           const level = funcs.findCurrentLevel(nodeConfig, nodeWrapper);
           if (level !== null) {
@@ -223,6 +227,10 @@ module.exports = function (RED) {
 
         // Set lights to away level after delay
         awayActivationTimer = setTimeout(() => {
+          if (state.timedOut || !funcs.isAwayMode(nodeConfig)) {
+            debugLog("Skipping away level change: lights are off or away mode no longer active");
+            return;
+          }
           debugLog("Applying away level to lights");
           const level =
             nodeConfig.awaySensor.level !== null && nodeConfig.awaySensor.level !== undefined
