@@ -82,7 +82,8 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
     onOff: onOff[i],
     saving: savings[i],
   }));
-  const schedule = makeSchedule(onOff, startTimes, endTime);
+  const fullSchedule = makeSchedule(onOff, startTimes, endTime);
+  const schedule = trimScheduleToStart(fullSchedule, priceData[0].start);
   addLastSwitchIfNoSchedule(schedule, minutes, config);
 
   plan = {
@@ -156,6 +157,19 @@ function loadDataJustBefore(node, dateDayBefore) {
     schedule: [...dataDayBefore.schedule],
     minutes: [...dataDayBefore.minutes],
   };
+}
+
+function trimScheduleToStart(schedule, startTime) {
+  const startDT = DateTime.fromISO(startTime);
+  const idx = schedule.findIndex((e) => DateTime.fromISO(e.time) >= startDT);
+  if (idx === -1) return schedule;
+  const trimmed = schedule.slice(idx);
+  if (DateTime.fromISO(trimmed[0].time) > startDT) {
+    const initialState = (idx > 0 ? schedule[idx - 1] : schedule[0]).value;
+    const countMinutes = DateTime.fromISO(trimmed[0].time).diff(startDT, "minutes").minutes;
+    trimmed.unshift({ time: startDT.toISO(), value: initialState, countMinutes });
+  }
+  return trimmed;
 }
 
 function deleteSavedScheduleBefore(node, day, checkDays = 0) {

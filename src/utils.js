@@ -215,7 +215,7 @@ function loadDayData(node, date) {
   // Load saved schedule for the date (YYYY-MM-DD)
   // Return null if not found
   const key = date.toISODate();
-  const saved = node.context().get(key);
+  const saved = node.context().get(key, node.contextStorage);
   const res = saved ?? {
     schedule: [],
     minutes: [],

@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.1.2
+
+ - Fix bug 231 Correct use of historical data.
+
 ## 5.1.1
 
  - Fix count in minutes array out from schedule merger.
