@@ -1,7 +1,6 @@
 # Exclude documentation and non-essential files from npm package
 docs/
 test/
-examples/
 .github/
 public/
 coverage/

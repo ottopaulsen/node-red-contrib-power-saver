@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.1.5
+
+ - Include examples that where excluded before.
+
 ## 5.1.4
 
  - Add and improve examples.
