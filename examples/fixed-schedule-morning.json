@@ -1,160 +1,138 @@
 [
-    {
-        "id": "fs01a2b3c4d5e6f7",
-        "type": "inject",
-        "z": "fs01tab01tab01t1",
-        "name": "Refresh prices (every hour)",
-        "props": [
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "3600",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "1",
-        "topic": "",
-        "payload": "{viewer{homes{currentSubscription{priceInfo(resolution:QUARTER_HOURLY){today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
-        "payloadType": "str",
-        "x": 140,
-        "y": 80,
-        "wires": [
-            [
-                "fs02a2b3c4d5e6f7"
-            ]
-        ]
+  {
+    "id": "fs01a2b3c4d5e6f7",
+    "type": "inject",
+    "z": "fs01tab01tab01t1",
+    "name": "Refresh prices (every hour)",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "3600",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "{viewer{homes{currentSubscription{priceInfo(resolution:QUARTER_HOURLY){today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
+    "payloadType": "str",
+    "x": 140,
+    "y": 80,
+    "wires": [["fs02a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "fs02a2b3c4d5e6f7",
+    "type": "tibber-query",
+    "z": "fs01tab01tab01t1",
+    "name": "Get Tibber prices",
+    "active": true,
+    "apiEndpointRef": "fs0btibberapi01",
+    "x": 360,
+    "y": 80,
+    "wires": [["fs03a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "fs03a2b3c4d5e6f7",
+    "type": "ps-receive-price",
+    "z": "fs01tab01tab01t1",
+    "name": "Price Receiver",
+    "x": 170,
+    "y": 160,
+    "wires": [["fs04a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "fs04a2b3c4d5e6f7",
+    "type": "ps-strategy-fixed-schedule",
+    "z": "fs01tab01tab01t1",
+    "name": "Morning On 06-08",
+    "periods": [
+      {
+        "start": "06",
+        "value": true
+      },
+      {
+        "start": "08",
+        "value": false
+      }
+    ],
+    "days": {
+      "Mon": true,
+      "Tue": true,
+      "Wed": true,
+      "Thu": true,
+      "Fri": true,
+      "Sat": true,
+      "Sun": true
     },
-    {
-        "id": "fs02a2b3c4d5e6f7",
-        "type": "tibber-query",
-        "z": "fs01tab01tab01t1",
-        "name": "Get Tibber prices",
-        "active": true,
-        "apiEndpointRef": "fs0btibberapi01",
-        "x": 360,
-        "y": 80,
-        "wires": [
-            [
-                "fs03a2b3c4d5e6f7"
-            ]
-        ]
-    },
-    {
-        "id": "fs03a2b3c4d5e6f7",
-        "type": "ps-receive-price",
-        "z": "fs01tab01tab01t1",
-        "name": "Price Receiver",
-        "x": 170,
-        "y": 160,
-        "wires": [
-            [
-                "fs04a2b3c4d5e6f7"
-            ]
-        ]
-    },
-    {
-        "id": "fs04a2b3c4d5e6f7",
-        "type": "ps-strategy-fixed-schedule",
-        "z": "fs01tab01tab01t1",
-        "name": "Morning On 06-08",
-        "periods": [
-            {
-                "start": "06",
-                "value": true
-            },
-            {
-                "start": "08",
-                "value": false
-            }
-        ],
-        "days": {
-            "Mon": true,
-            "Tue": true,
-            "Wed": true,
-            "Thu": true,
-            "Fri": true,
-            "Sat": true,
-            "Sun": true
-        },
-        "validFrom": "",
-        "validTo": "",
-        "sendCurrentValueWhenRescheduling": true,
-        "outputValueForOn": true,
-        "outputValueForOff": false,
-        "outputValueForOntype": "bool",
-        "outputValueForOfftype": "bool",
-        "outputIfNoSchedule": "false",
-        "contextStorage": "default",
-        "x": 390,
-        "y": 160,
-        "wires": [
-            [
-                "fs05a2b3c4d5e6f7"
-            ],
-            [
-                "fs06a2b3c4d5e6f7"
-            ],
-            [
-                "fs07a2b3c4d5e6f7"
-            ]
-        ]
-    },
-    {
-        "id": "fs05a2b3c4d5e6f7",
-        "type": "debug",
-        "z": "fs01tab01tab01t1",
-        "name": "Turn ON",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 650,
-        "y": 100,
-        "wires": []
-    },
-    {
-        "id": "fs06a2b3c4d5e6f7",
-        "type": "debug",
-        "z": "fs01tab01tab01t1",
-        "name": "Turn OFF",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 650,
-        "y": 160,
-        "wires": []
-    },
-    {
-        "id": "fs07a2b3c4d5e6f7",
-        "type": "debug",
-        "z": "fs01tab01tab01t1",
-        "name": "Fixed Schedule",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 650,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "fs0btibberapi01",
-        "type": "tibber-api-endpoint",
-        "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
-        "queryUrl": "https://api.tibber.com/v1-beta/gql",
-        "name": "Tibber API"
-    }
+    "validFrom": "",
+    "validTo": "",
+    "sendCurrentValueWhenRescheduling": true,
+    "outputValueForOn": true,
+    "outputValueForOff": false,
+    "outputValueForOntype": "bool",
+    "outputValueForOfftype": "bool",
+    "outputIfNoSchedule": "false",
+    "contextStorage": "default",
+    "x": 390,
+    "y": 160,
+    "wires": [["fs05a2b3c4d5e6f7"], ["fs06a2b3c4d5e6f7"], ["fs07a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "fs05a2b3c4d5e6f7",
+    "type": "debug",
+    "z": "fs01tab01tab01t1",
+    "name": "Turn ON",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 650,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "fs06a2b3c4d5e6f7",
+    "type": "debug",
+    "z": "fs01tab01tab01t1",
+    "name": "Turn OFF",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 650,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "fs07a2b3c4d5e6f7",
+    "type": "debug",
+    "z": "fs01tab01tab01t1",
+    "name": "Fixed Schedule",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 650,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "fs0btibberapi01",
+    "type": "tibber-api-endpoint",
+    "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
+    "queryUrl": "https://api.tibber.com/v1-beta/gql",
+    "name": "Tibber API"
+  }
 ]

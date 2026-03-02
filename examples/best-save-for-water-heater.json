@@ -1,144 +1,122 @@
 [
-    {
-        "id": "4f11b5ae.4cc22c",
-        "type": "inject",
-        "z": "d938c47f.3398f8",
-        "name": "Refresh",
-        "props": [
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "3600",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "1",
-        "topic": "",
-        "payload": "{viewer{homes{currentSubscription{priceInfo(resolution:QUARTER_HOURLY){today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
-        "payloadType": "str",
-        "x": 120,
-        "y": 40,
-        "wires": [
-            [
-                "ab2d599a.077738"
-            ]
-        ]
-    },
-    {
-        "id": "ab2d599a.077738",
-        "type": "tibber-query",
-        "z": "d938c47f.3398f8",
-        "name": "Get Tibber prices",
-        "active": true,
-        "apiEndpointRef": "b70ec5d0.6f8f08",
-        "x": 310,
-        "y": 40,
-        "wires": [
-            [
-                "0ef929fde193cf4d"
-            ]
-        ]
-    },
-    {
-        "id": "0ef929fde193cf4d",
-        "type": "ps-receive-price",
-        "z": "d938c47f.3398f8",
-        "name": "Price Receiver",
-        "x": 140,
-        "y": 100,
-        "wires": [
-            [
-                "5b6be1568744c6cf"
-            ]
-        ]
-    },
-    {
-        "id": "5b6be1568744c6cf",
-        "type": "ps-strategy-best-save",
-        "z": "d938c47f.3398f8",
-        "name": "Best Save",
-        "minSaving": 0.01,
-        "sendCurrentValueWhenRescheduling": true,
-        "outputIfNoSchedule": "true",
-        "x": 410,
-        "y": 140,
-        "wires": [
-            [
-                "5e485ff7.db156"
-            ],
-            [
-                "9c978d1c.ee76"
-            ],
-            [
-                "aa4f06692a2fe46b"
-            ]
-        ],
-        "maxMinutesOff": 180,
-        "minMinutesOff": 60,
-        "recoveryPercentage": 50,
-        "recoveryMaxMinutes": 120,
-        "outputValueForOn": true,
-        "outputValueForOff": false,
-        "outputValueForOntype": "bool",
-        "outputValueForOfftype": "bool",
-        "contextStorage": "default"
-    },
-    {
-        "id": "5e485ff7.db156",
-        "type": "debug",
-        "z": "d938c47f.3398f8",
-        "name": "Turn on VVB",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 710,
-        "y": 40,
-        "wires": []
-    },
-    {
-        "id": "9c978d1c.ee76",
-        "type": "debug",
-        "z": "d938c47f.3398f8",
-        "name": "Turn off VVB",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 710,
-        "y": 160,
-        "wires": []
-    },
-    {
-        "id": "aa4f06692a2fe46b",
-        "type": "debug",
-        "z": "d938c47f.3398f8",
-        "name": "Best Save Schedule",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 740,
-        "y": 280,
-        "wires": []
-    },
-    {
-        "id": "b70ec5d0.6f8f08",
-        "type": "tibber-api-endpoint",
-        "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
-        "queryUrl": "https://api.tibber.com/v1-beta/gql",
-        "name": "Tibber API"
-    }
+  {
+    "id": "4f11b5ae.4cc22c",
+    "type": "inject",
+    "z": "d938c47f.3398f8",
+    "name": "Refresh",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "3600",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "{viewer{homes{currentSubscription{priceInfo(resolution:QUARTER_HOURLY){today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
+    "payloadType": "str",
+    "x": 120,
+    "y": 40,
+    "wires": [["ab2d599a.077738"]]
+  },
+  {
+    "id": "ab2d599a.077738",
+    "type": "tibber-query",
+    "z": "d938c47f.3398f8",
+    "name": "Get Tibber prices",
+    "active": true,
+    "apiEndpointRef": "b70ec5d0.6f8f08",
+    "x": 310,
+    "y": 40,
+    "wires": [["0ef929fde193cf4d"]]
+  },
+  {
+    "id": "0ef929fde193cf4d",
+    "type": "ps-receive-price",
+    "z": "d938c47f.3398f8",
+    "name": "Price Receiver",
+    "x": 140,
+    "y": 100,
+    "wires": [["5b6be1568744c6cf"]]
+  },
+  {
+    "id": "5b6be1568744c6cf",
+    "type": "ps-strategy-best-save",
+    "z": "d938c47f.3398f8",
+    "name": "Best Save",
+    "minSaving": 0.01,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputIfNoSchedule": "true",
+    "x": 410,
+    "y": 140,
+    "wires": [["5e485ff7.db156"], ["9c978d1c.ee76"], ["aa4f06692a2fe46b"]],
+    "maxMinutesOff": 180,
+    "minMinutesOff": 60,
+    "recoveryPercentage": 50,
+    "recoveryMaxMinutes": 120,
+    "outputValueForOn": true,
+    "outputValueForOff": false,
+    "outputValueForOntype": "bool",
+    "outputValueForOfftype": "bool",
+    "contextStorage": "default"
+  },
+  {
+    "id": "5e485ff7.db156",
+    "type": "debug",
+    "z": "d938c47f.3398f8",
+    "name": "Turn on VVB",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 710,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "9c978d1c.ee76",
+    "type": "debug",
+    "z": "d938c47f.3398f8",
+    "name": "Turn off VVB",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 710,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "aa4f06692a2fe46b",
+    "type": "debug",
+    "z": "d938c47f.3398f8",
+    "name": "Best Save Schedule",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 740,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "b70ec5d0.6f8f08",
+    "type": "tibber-api-endpoint",
+    "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
+    "queryUrl": "https://api.tibber.com/v1-beta/gql",
+    "name": "Tibber API"
+  }
 ]
