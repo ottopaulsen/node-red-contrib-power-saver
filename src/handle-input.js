@@ -58,15 +58,16 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   const priceDatePerMinute = priceDataWithDayBefore.flatMap((d, i) => {
     const res = [];
     const start = DateTime.fromISO(d.start);
-    const end = DateTime.fromISO(d.end ?? priceDataWithDayBefore[i + 1].start)
-    if(!end) {
+    const end = DateTime.fromISO(d.end ?? priceDataWithDayBefore[i + 1].start);
+    if (!end) {
       console.error("End time is missing for price data entry", d);
-      return res
+      return res;
     }
-    let minute = start
-    while (minute < end) {
-      res.push({ start: minute.toISO(), value: d.value });
-      minute = minute.plus({ minutes: 1 });
+    const zone = start.zone;
+    const startMs = start.toMillis();
+    const endMs = end.toMillis();
+    for (let ms = startMs; ms < endMs; ms += 60000) {
+      res.push({ start: DateTime.fromMillis(ms, { zone }).toISO(), value: d.value });
     }
     return res;
   });

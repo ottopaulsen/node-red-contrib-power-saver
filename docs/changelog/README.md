@@ -7,6 +7,12 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.1.4
+
+ - Add and improve examples.
+ - Update dependencies.
+ - Improve performance of best save node.
+
 ## 5.1.3
 
  - Fix light saver bug adjusting light when not timed out.
