@@ -1,0 +1,214 @@
+[
+    {
+        "id": "sm01a2b3c4d5e6f7",
+        "type": "inject",
+        "z": "sm01tab01tab01t1",
+        "name": "Refresh prices (every hour)",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "3600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "payload": "{viewer{homes{currentSubscription{priceInfo(resolution:QUARTER_HOURLY){today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
+        "payloadType": "str",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "sm02a2b3c4d5e6f7"
+            ]
+        ]
+    },
+    {
+        "id": "sm02a2b3c4d5e6f7",
+        "type": "tibber-query",
+        "z": "sm01tab01tab01t1",
+        "name": "Get Tibber prices",
+        "active": true,
+        "apiEndpointRef": "sm0btibberapi01",
+        "x": 360,
+        "y": 80,
+        "wires": [
+            [
+                "sm03a2b3c4d5e6f7"
+            ]
+        ]
+    },
+    {
+        "id": "sm03a2b3c4d5e6f7",
+        "type": "ps-receive-price",
+        "z": "sm01tab01tab01t1",
+        "name": "Price Receiver",
+        "x": 170,
+        "y": 180,
+        "wires": [
+            [
+                "sm04a2b3c4d5e6f7",
+                "sm05a2b3c4d5e6f7"
+            ]
+        ]
+    },
+    {
+        "id": "sm04a2b3c4d5e6f7",
+        "type": "ps-strategy-lowest-price",
+        "z": "sm01tab01tab01t1",
+        "name": "4 Cheapest Hours",
+        "fromHour": "00",
+        "fromMinute": "00",
+        "toHour": "00",
+        "toMinute": "00",
+        "minutesOn": "240",
+        "maxPrice": null,
+        "doNotSplit": "false",
+        "sendCurrentValueWhenRescheduling": true,
+        "outputValueForOn": true,
+        "outputValueForOff": false,
+        "outputValueForOntype": "bool",
+        "outputValueForOfftype": "bool",
+        "outputIfNoSchedule": "false",
+        "outputOutsidePeriod": "false",
+        "contextStorage": "default",
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [],
+            [],
+            [
+                "sm06a2b3c4d5e6f7"
+            ]
+        ]
+    },
+    {
+        "id": "sm05a2b3c4d5e6f7",
+        "type": "ps-strategy-fixed-schedule",
+        "z": "sm01tab01tab01t1",
+        "name": "Morning On 06-08",
+        "periods": [
+            {
+                "start": "06",
+                "value": true
+            },
+            {
+                "start": "08",
+                "value": false
+            }
+        ],
+        "days": {
+            "Mon": true,
+            "Tue": true,
+            "Wed": true,
+            "Thu": true,
+            "Fri": true,
+            "Sat": true,
+            "Sun": true
+        },
+        "validFrom": "",
+        "validTo": "",
+        "sendCurrentValueWhenRescheduling": true,
+        "outputValueForOn": true,
+        "outputValueForOff": false,
+        "outputValueForOntype": "bool",
+        "outputValueForOfftype": "bool",
+        "outputIfNoSchedule": "false",
+        "contextStorage": "default",
+        "x": 390,
+        "y": 220,
+        "wires": [
+            [],
+            [],
+            [
+                "sm06a2b3c4d5e6f7"
+            ]
+        ]
+    },
+    {
+        "id": "sm06a2b3c4d5e6f7",
+        "type": "ps-schedule-merger",
+        "z": "sm01tab01tab01t1",
+        "name": "Merge (OR)",
+        "logicFunction": "OR",
+        "schedulingDelay": 2000,
+        "sendCurrentValueWhenRescheduling": true,
+        "outputValueForOn": true,
+        "outputValueForOff": false,
+        "outputValueForOntype": "bool",
+        "outputValueForOfftype": "bool",
+        "outputIfNoSchedule": "false",
+        "x": 620,
+        "y": 180,
+        "wires": [
+            [
+                "sm07a2b3c4d5e6f7"
+            ],
+            [
+                "sm08a2b3c4d5e6f7"
+            ],
+            [
+                "sm09a2b3c4d5e6f7"
+            ]
+        ]
+    },
+    {
+        "id": "sm07a2b3c4d5e6f7",
+        "type": "debug",
+        "z": "sm01tab01tab01t1",
+        "name": "Turn ON",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "sm08a2b3c4d5e6f7",
+        "type": "debug",
+        "z": "sm01tab01tab01t1",
+        "name": "Turn OFF",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "sm09a2b3c4d5e6f7",
+        "type": "debug",
+        "z": "sm01tab01tab01t1",
+        "name": "Merged Schedule",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "sm0btibberapi01",
+        "type": "tibber-api-endpoint",
+        "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
+        "queryUrl": "https://api.tibber.com/v1-beta/gql",
+        "name": "Tibber API"
+    }
+]
