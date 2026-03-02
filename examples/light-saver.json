@@ -1,0 +1,162 @@
+[
+  {
+    "id": "ls01a2b3c4d5e6f7",
+    "type": "inject",
+    "z": "ls01tab01tab01t1",
+    "name": "Get config & state",
+    "props": [
+      {
+        "p": "payload",
+        "vt": "json"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"commands\":{\"sendConfig\":true,\"sendState\":true}}",
+    "payloadType": "json",
+    "x": 150,
+    "y": 80,
+    "wires": [["ls03a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "ls02a2b3c4d5e6f7",
+    "type": "inject",
+    "z": "ls01tab01tab01t1",
+    "name": "Override: off",
+    "props": [
+      {
+        "p": "payload",
+        "vt": "json"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"config\":{\"override\":\"off\"}}",
+    "payloadType": "json",
+    "x": 150,
+    "y": 140,
+    "wires": [["ls03a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "ls0aa2b3c4d5e6f7",
+    "type": "inject",
+    "z": "ls01tab01tab01t1",
+    "name": "Override: auto",
+    "props": [
+      {
+        "p": "payload",
+        "vt": "json"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"config\":{\"override\":\"auto\"}}",
+    "payloadType": "json",
+    "x": 150,
+    "y": 200,
+    "wires": [["ls03a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "ls03a2b3c4d5e6f7",
+    "type": "ps-light-saver",
+    "z": "ls01tab01tab01t1",
+    "name": "Living Room Light",
+    "server": "ls0cserver0000001",
+    "lights": [
+      {
+        "entity_id": "light.living_room"
+      }
+    ],
+    "lightTimeout": 15,
+    "triggers": [
+      {
+        "entity_id": "binary_sensor.motion_living_room"
+      },
+      {
+        "entity_id": "binary_sensor.motion_hallway",
+        "timeoutMinutes": 2
+      }
+    ],
+    "nightSensor": {
+      "entity_id": "input_boolean.night_mode"
+    },
+    "nightLevel": 20,
+    "nightDelay": 0,
+    "invertNightSensor": false,
+    "awaySensor": null,
+    "awayLevel": null,
+    "awayDelay": 0,
+    "invertAwaySensor": false,
+    "brightnessSensor": null,
+    "brightnessLimit": null,
+    "brightnessMode": "max",
+    "levels": [
+      {
+        "fromTime": "06:00",
+        "level": 100,
+        "immediate": false
+      },
+      {
+        "fromTime": "22:00",
+        "level": 60,
+        "immediate": true
+      }
+    ],
+    "override": "auto",
+    "contextStorage": "default",
+    "debugLog": false,
+    "x": 390,
+    "y": 140,
+    "wires": [["ls04a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "ls04a2b3c4d5e6f7",
+    "type": "debug",
+    "z": "ls01tab01tab01t1",
+    "name": "Light Saver Output",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 620,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "ls0cserver0000001",
+    "type": "server",
+    "name": "Home Assistant",
+    "version": 5,
+    "addon": true,
+    "rejectUnauthorizedCerts": true,
+    "ha_boolean": "y|yes|true|on|home|open",
+    "connectionDelay": true,
+    "cacheJson": true,
+    "heartbeat": false,
+    "heartbeatInterval": 30,
+    "areaSelector": "friendlyName",
+    "deviceSelector": "friendlyName",
+    "entitySelector": "friendlyName",
+    "statusSeparator": ": ",
+    "statusYear": "hidden",
+    "statusMonth": "short",
+    "statusDay": "numeric",
+    "statusHour": "numeric",
+    "statusMinute": "numeric",
+    "statusSecond": "hidden",
+    "enableGlobalContextStore": false
+  }
+]
