@@ -87,7 +87,7 @@ function calculate(
   recoveryMaxMinutes,
   minSaving,
   lastValueDayBefore = undefined,
-  lastCountDayBefore = 0
+  lastCountDayBefore = 0,
 ) {
   const dayBefore = fillArray(lastValueDayBefore, lastCountDayBefore);
   const last = values.length - 1;
@@ -127,12 +127,26 @@ function calculate(
     // Fast check: skip if any minute in this range is already turned off
     let alreadyTaken = false;
     for (let c = 0; c < count; c++) {
-      if (!onOff[minute + c]) { alreadyTaken = true; break; }
+      if (!onOff[minute + c]) {
+        alreadyTaken = true;
+        break;
+      }
     }
-    if (alreadyTaken) { savingsList.pop(); continue; }
+    if (alreadyTaken) {
+      savingsList.pop();
+      continue;
+    }
     // Apply the off-period
     for (let c = 0; c < count; c++) onOff[minute + c] = false;
-    if ( isOnOffSequencesOk( dayBefore.length > 0 ? [...dayBefore, ...onOff] : onOff, maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes ) ) {
+    if (
+      isOnOffSequencesOk(
+        dayBefore.length > 0 ? [...dayBefore, ...onOff] : onOff,
+        maxMinutesOff,
+        minMinutesOff,
+        recoveryPercentage,
+        recoveryMaxMinutes,
+      )
+    ) {
       savingsList = savingsList.filter((s) => s.minute < minute || s.minute >= minute + count);
     } else {
       // Roll back: only the minutes we changed (all were true before alreadyTaken check)
