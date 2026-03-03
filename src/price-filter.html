@@ -1,0 +1,72 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ps-price-filter", {
+    category: "Power Saver",
+    color: "#FFCC66",
+    defaults: {
+      name: { value: "Price Filter" },
+      turn: { value: "off", required: true },
+      condition: { value: "over", required: true },
+      limit: { value: 0, required: true, validate: RED.validators.number() },
+    },
+    inputs: 1,
+    outputs: 3,
+    icon: "font-awesome/fa-filter",
+    label: function () {
+      return this.name || "Price Filter";
+    },
+    outputLabels: ["on", "off", "schedule"],
+    oneditprepare: function () {
+      $("#node-input-turn").typedInput({
+        types: [
+          {
+            value: "turn",
+            options: [
+              { value: "on", label: "On" },
+              { value: "off", label: "Off" },
+            ],
+          },
+        ],
+      });
+      $("#node-input-condition").typedInput({
+        types: [
+          {
+            value: "condition",
+            options: [
+              { value: "over", label: "Over" },
+              { value: "under", label: "Under" },
+            ],
+          },
+        ],
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="ps-price-filter">
+  <div class="form-row">
+    <label for="node-input-name" style="width: 200px"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" style="width: 240px" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-turn" style="width: 200px">Turn</label>
+    <input type="text" id="node-input-turn" style="width: 100px" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-condition" style="width: 200px">If price is</label>
+    <input type="text" id="node-input-condition" style="width: 100px" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-limit" style="width: 200px">Limit</label>
+    <input type="text" id="node-input-limit" placeholder="e.g. 0.50" style="width: 100px" />
+  </div>
+</script>
+
+<script type="text/markdown" data-help-name="ps-price-filter">
+  Force the schedule on or off for minutes where the price is over or under a configured limit.
+
+  Connect the output 3 (schedule) of a strategy node (Lowest Price, Best Save or Schedule Merger)
+  to this node's input. The price filter will modify those minutes where the price condition is
+  met and produce a new schedule on its three outputs.
+
+  Please read more in the [node documentation](https://powersaver.no/nodes/ps-price-filter)
+</script>

@@ -1,4 +1,3 @@
-
 # ps-light-saver
 
 ![ps-light-saver](../images/node-ps-light-saver.png)
@@ -14,8 +13,6 @@ You should regard this node as experimental, as it is brand new and has not been
 The documentation may not be accurate on all details, and may even contain errors.
 :::
 
-
-
 ## Description
 
 This is a powerful node to control lights based on motion sensors or other binary sensors.
@@ -25,14 +22,14 @@ You can control lights manually without feeling disturbed by the node.
 
 Here are some of the main ideas:
 
-* Lights are turned on when there is motion, and off when there is a long enough period without motion.
-* You do not have to enter the middle of the room before light goes on. The light shall be on before you enter the room.
-* You can configure different default levels on different times of the day.
-* You can have separate night levels or away levels that override the standard time of day levels.
-* If motion remains, the lights will not change automatically, so for example if you set the desired level manually,
-it will remain as long as there is motion inside the configured timeout. Exceptions:
-* If you use the brightness sensor, lights may turn on automatically when it gets dark, even if there is constant motion.
-* If you check Immediate on the level, the leel is set on the given time if there has been motion within the timeout period.
+- Lights are turned on when there is motion, and off when there is a long enough period without motion.
+- You do not have to enter the middle of the room before light goes on. The light shall be on before you enter the room.
+- You can configure different default levels on different times of the day.
+- You can have separate night levels or away levels that override the standard time of day levels.
+- If motion remains, the lights will not change automatically, so for example if you set the desired level manually,
+  it will remain as long as there is motion inside the configured timeout. Exceptions:
+- If you use the brightness sensor, lights may turn on automatically when it gets dark, even if there is constant motion.
+- If you check Immediate on the level, the leel is set on the given time if there has been motion within the timeout period.
 
 The node works fine without any input or output, but you can use input to control or configure it, and you can get interesting information on the output.
 
@@ -50,14 +47,13 @@ The away sensor works exactly the same way as the night sensor, and it overrides
 
 You may set a brightness limit, using a brightness sensor (luminance etc.), so lights are only turned on if it is dark. This is specially useful for outdoor lights.
 
-
 ## Configuration
 
 You normally configure one node for each light, but if you have multiple lights that shall be controlled exactlhy the same way, you can add multiple lights to each node.
 
 You need at least one sensor to trigger the light, normally a motion sensor, but you may use other sensors too, for example a door lock to turn on the light when you open the door. Often it is convenient to control one light with multiple sensors. You may turn on the light in the bathroom when there is motion in the hall outside so that the light is on when you enter the bathroom. You can set a short timeout on this sensor so that if you do not enter the bathroom and trigger the sensor inside, the light will turn off sooner.
 
-Litghts and sensors are selected from Home Assistant. 
+Litghts and sensors are selected from Home Assistant.
 
 Configuration example. See description below.
 
@@ -73,7 +69,6 @@ You may set a shoreter timeout on a trigger so that the light is turned off soon
 
 Optionally select night sensor and night level, away sensor and away level, and brightness sensor and brightness limit:
 
-
 ![Light Saver Config](../images/light-saver-config-3.png)
 
 If you check invert on the night sensor, night is on if the sensor is off. Same with away sensor. If you select Max (default) for brightness limit, the light goes on if the brightness is under the limit. If you select Min the light goes on if the brightness is over the limit.
@@ -84,7 +79,7 @@ Set levels for different parts of the day:
 
 The level you set is valid from that time untuil the next time.This goes around the clock, so the level set from 18:00 is valid until 05:00 the next morning.
 
-If you check override, the light will remain on the set value indefinitely. 
+If you check override, the light will remain on the set value indefinitely.
 
 Some config is stored in context. You may select context storage here.
 
@@ -92,35 +87,32 @@ If you check the debug flag, extensice logging is written to the Node-RED log.
 
 ### Detailed config description
 
-
-| Value                  | Description                                                                                                                                                                                    |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Name                   | Optional name for the node                                                                                                                                                                     |
-| Server                 | Home Assistant server connection (requires `node-red-contrib-home-assistant-websocket` to be installed and configured)                                                                          |
-| Lights                 | List of light entities or switches to control. Normally you control one light with each node, but you can add multiple lights if they shall be controlled the exact same way.                 |
-| Keep light on for      | Default timeout in minutes (1-999) to keep lights on when no motion is detected on any trigger. This can be overridden per trigger.                                                            |
-| Triggers               | List of motion sensors or binary sensors that trigger light activation. Each trigger can have its own timeout override in minutes, allowing different sensors to have different timeout periods. |
-| Night sensor           | Optional binary sensor or `input_boolean` that indicates night mode. When active (and night level is set), all lights use the night level instead of time-based levels.                        |
-| Night sensor invert    | Reverse the night sensor logic. When checked, night mode is active when the sensor is off/false instead of on/true.                                                                            |
-| Night level            | Brightness level (0-100%) to use when night sensor is active. Leave empty to disable night level (time-based levels will be used instead).                                                     |
-| Night delay            | Seconds to wait (0-999) before applying night level when night sensor activates. This way you can keep the light on for some time while you find your bedroom.       |
-| Away sensor            | Optional binary sensor or `input_boolean` that indicates away mode. When active (and away level is set), all lights use the away level instead of night or time-based levels.                  |
-| Away sensor invert     | Reverse the away sensor logic. When checked, away mode is active when the sensor is off/false instead of on/true.                                                                              |
-| Away level             | Brightness level (0-100%) to use when away sensor is active. Leave empty to disable away level (night or time-based levels will be used instead).                                              |
-| Away delay             | Seconds to wait (0-999) before applying away level when away sensor activates. This way you can keep the light on while you are getting out.   |
-| Brightness sensor      | Optional sensor or `input_number` that reports brightness (e.g., lux, illuminance). When configured with a limit, controls when lights are allowed to turn on based on ambient brightness.      |
-| Brightness limit       | Numeric threshold value for brightness comparison. Lights only turn on when brightness passes this threshold according to the selected mode.                                                    |
-| Min/Max mode           | **Max** (default): Lights turn on when brightness is below limit (darker conditions). **Min**: Lights turn on when brightness is above limit (brighter conditions).                            |
-| Light levels           | Time-based brightness levels throughout the day. Each entry specifies a time (HH:MM, 24-hour format), a brightness level (0-100%), and an optional "Immediate" flag. The brightness level is used if the light is turned on by motion after the given time (before the next). When "Immediate" is checked, the level is applied immediately when the time is reached (if motion was detected within the timeout period). When unchecked (default), the level is only applied when motion is detected.   |
-| Override               | Check to override automatic behavior and set the node out of play. Select if the light shall be off, on or have a specific level. See [Override](#override) section below for details.                                                                                            |
-| Context storage        | Choose where to persist runtime state across Node-RED restarts (default, file, etc.). Must match a context store configured in Node-RED's `settings.js` file.                                  |
-| Debug log              | Enable detailed logging to Node-RED's console for troubleshooting. Logs all sensor state changes, level calculations, and light commands.                                                      |
-
+| Value               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Name                | Optional name for the node                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Server              | Home Assistant server connection (requires `node-red-contrib-home-assistant-websocket` to be installed and configured)                                                                                                                                                                                                                                                                                                                                                                                |
+| Lights              | List of light entities or switches to control. Normally you control one light with each node, but you can add multiple lights if they shall be controlled the exact same way.                                                                                                                                                                                                                                                                                                                         |
+| Keep light on for   | Default timeout in minutes (1-999) to keep lights on when no motion is detected on any trigger. This can be overridden per trigger.                                                                                                                                                                                                                                                                                                                                                                   |
+| Triggers            | List of motion sensors or binary sensors that trigger light activation. Each trigger can have its own timeout override in minutes, allowing different sensors to have different timeout periods.                                                                                                                                                                                                                                                                                                      |
+| Night sensor        | Optional binary sensor or `input_boolean` that indicates night mode. When active (and night level is set), all lights use the night level instead of time-based levels.                                                                                                                                                                                                                                                                                                                               |
+| Night sensor invert | Reverse the night sensor logic. When checked, night mode is active when the sensor is off/false instead of on/true.                                                                                                                                                                                                                                                                                                                                                                                   |
+| Night level         | Brightness level (0-100%) to use when night sensor is active. Leave empty to disable night level (time-based levels will be used instead).                                                                                                                                                                                                                                                                                                                                                            |
+| Night delay         | Seconds to wait (0-999) before applying night level when night sensor activates. This way you can keep the light on for some time while you find your bedroom.                                                                                                                                                                                                                                                                                                                                        |
+| Away sensor         | Optional binary sensor or `input_boolean` that indicates away mode. When active (and away level is set), all lights use the away level instead of night or time-based levels.                                                                                                                                                                                                                                                                                                                         |
+| Away sensor invert  | Reverse the away sensor logic. When checked, away mode is active when the sensor is off/false instead of on/true.                                                                                                                                                                                                                                                                                                                                                                                     |
+| Away level          | Brightness level (0-100%) to use when away sensor is active. Leave empty to disable away level (night or time-based levels will be used instead).                                                                                                                                                                                                                                                                                                                                                     |
+| Away delay          | Seconds to wait (0-999) before applying away level when away sensor activates. This way you can keep the light on while you are getting out.                                                                                                                                                                                                                                                                                                                                                          |
+| Brightness sensor   | Optional sensor or `input_number` that reports brightness (e.g., lux, illuminance). When configured with a limit, controls when lights are allowed to turn on based on ambient brightness.                                                                                                                                                                                                                                                                                                            |
+| Brightness limit    | Numeric threshold value for brightness comparison. Lights only turn on when brightness passes this threshold according to the selected mode.                                                                                                                                                                                                                                                                                                                                                          |
+| Min/Max mode        | **Max** (default): Lights turn on when brightness is below limit (darker conditions). **Min**: Lights turn on when brightness is above limit (brighter conditions).                                                                                                                                                                                                                                                                                                                                   |
+| Light levels        | Time-based brightness levels throughout the day. Each entry specifies a time (HH:MM, 24-hour format), a brightness level (0-100%), and an optional "Immediate" flag. The brightness level is used if the light is turned on by motion after the given time (before the next). When "Immediate" is checked, the level is applied immediately when the time is reached (if motion was detected within the timeout period). When unchecked (default), the level is only applied when motion is detected. |
+| Override            | Check to override automatic behavior and set the node out of play. Select if the light shall be off, on or have a specific level. See [Override](#override) section below for details.                                                                                                                                                                                                                                                                                                                |
+| Context storage     | Choose where to persist runtime state across Node-RED restarts (default, file, etc.). Must match a context store configured in Node-RED's `settings.js` file.                                                                                                                                                                                                                                                                                                                                         |
+| Debug log           | Enable detailed logging to Node-RED's console for troubleshooting. Logs all sensor state changes, level calculations, and light commands.                                                                                                                                                                                                                                                                                                                                                             |
 
 ::: tip Level and switches
 Switches or lights that can only turn on or off will be switched off if the level is 0 and on if the level is anything else.
 :::
-
 
 ### Override
 
@@ -129,12 +121,12 @@ You can force the light to be off, on or at a specific level. If you select on, 
 
 You can also override by using dynamic config (see below). Then the following values can be useds:
 
-| Override Mode          | Behavior                                                                                                                                                                                       |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **off**                | The lights are turned off immediately. The node will not respond to motion or sensor changes until override is changed.                                                                        |
-| **on**                 | Lights are set to their appropriate automatic level (based on away/night/time-based priority). The node will not respond to motion or sensor changes until override is changed.                                                |
-| **\<level>**     | A number from 0 to 100 (%). Lights are set to the specified brightness level immediately. The node will not change the level automatically until override is changed.                                                      |
-| **auto**    | Same as unchecked in the edit dialog. Normal automatic operation. The node responds to motion and applies levels based on away mode, night mode, or time-based configuration.                                                        |
+| Override Mode | Behavior                                                                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **off**       | The lights are turned off immediately. The node will not respond to motion or sensor changes until override is changed.                                                         |
+| **on**        | Lights are set to their appropriate automatic level (based on away/night/time-based priority). The node will not respond to motion or sensor changes until override is changed. |
+| **\<level>**  | A number from 0 to 100 (%). Lights are set to the specified brightness level immediately. The node will not change the level automatically until override is changed.           |
+| **auto**      | Same as unchecked in the edit dialog. Normal automatic operation. The node responds to motion and applies levels based on away mode, night mode, or time-based configuration.   |
 
 ::: tip Persistence
 If you select `file` as context storage, override sent as dynamic config is saved acrtoss Node-RED restarts. Else the setting in the flow is applied after restart.
@@ -144,7 +136,6 @@ If you select `file` as context storage, override sent as dynamic config is save
 When override is set to "Off", "On", or a specific level, the node will not respond to motion sensor changes or time-of-day changes. You must return to "Auto" mode for normal operation.
 :::
 
-
 ## Input
 
 The node works fine without any input. It is reading state directly from home assistant for all normal operation. You can however use input for dynamic configuration.
@@ -153,19 +144,18 @@ The node works fine without any input. It is reading state directly from home as
 
 The following config values can be changed dynamically by sending messages to the node's input:
 
-| Name                               | Description                                              |
-| ---------------------------------- | -------------------------------------------------------- |
-| `triggers`                         | Array of trigger objects with `entity_id` and `timeoutMinutes` |
-| `lights`                           | Array of light objects with `entity_id`                  |
-| `lightTimeout`                     | Number (minutes), default timeout for lights            |
-| `nightSensor`                      | Object with `entity_id`, `level`, `delay`, `invert`      |
-| `awaySensor`                       | Object with `entity_id`, `level`, `delay`, `invert`      |
-| `brightnessSensor`                 | Object with `entity_id`, `limit`, `mode` (min or max)                 |
-| `levels`                           | Array of level objects with `fromTime`, `level`, and `immediate` (boolean, optional)       |
-| `debugLog`                         | Legal values: `true`, `false`                            |
-| `override`                         | Legal values: `"on"`, `"off"`, `"auto"`, or number 0-100 |
-| `contextStorage`                   | String (name of context store)                           |
-
+| Name               | Description                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| `triggers`         | Array of trigger objects with `entity_id` and `timeoutMinutes`                       |
+| `lights`           | Array of light objects with `entity_id`                                              |
+| `lightTimeout`     | Number (minutes), default timeout for lights                                         |
+| `nightSensor`      | Object with `entity_id`, `level`, `delay`, `invert`                                  |
+| `awaySensor`       | Object with `entity_id`, `level`, `delay`, `invert`                                  |
+| `brightnessSensor` | Object with `entity_id`, `limit`, `mode` (min or max)                                |
+| `levels`           | Array of level objects with `fromTime`, `level`, and `immediate` (boolean, optional) |
+| `debugLog`         | Legal values: `true`, `false`                                                        |
+| `override`         | Legal values: `"on"`, `"off"`, `"auto"`, or number 0-100                             |
+| `contextStorage`   | String (name of context store)                                                       |
 
 Example:
 
@@ -183,17 +173,16 @@ Example:
 }
 ```
 
-
 ### Dynamic commands
 
 You can send dynamic commands to this node via its input.
 
 The Light Saver node supports the following commands:
 
-| Command                | Description                                                                                                                                                                                    |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sendConfig`           | Request the node to send its current configuration to the output. Only configuration data is included (entity IDs, timeouts, levels, etc.), no runtime state.                                  |
-| `sendState`            | Request the node to send its current runtime state to the output. Includes trigger states, light states, sensor states, and timedOut status.                                                  |
+| Command      | Description                                                                                                                                                   |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sendConfig` | Request the node to send its current configuration to the output. Only configuration data is included (entity IDs, timeouts, levels, etc.), no runtime state. |
+| `sendState`  | Request the node to send its current runtime state to the output. Includes trigger states, light states, sensor states, and timedOut status.                  |
 
 Both commands can be sent together in the same message, and the response will contain both `config` and `state` in the output payload.
 
@@ -210,20 +199,18 @@ Example:
 }
 ```
 
-
-
 ### Level Control
 
 You can also send the light level as input. This is similar to override except it will only last until the timeout is reached.
 
 Send a message with `msg.payload.level` to temporarily control light levels:
 
-| Level Value            | Behavior                                                                                                                                                                                       |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"on"`                 | Turn lights on to the appropriate automatic level (based on current away/night/time-based configuration)                                                                                       |
-| `"off"`                | Turn lights off                                                                                                                                                                                |
-| `"auto"`               | Check timeout status and apply appropriate level if not timed out                                                                                                                             |
-| \<level>     | A number from 0 to 100 (%). Lights are set to the specified brightness level.     |
+| Level Value | Behavior                                                                                                 |
+| ----------- | -------------------------------------------------------------------------------------------------------- |
+| `"on"`      | Turn lights on to the appropriate automatic level (based on current away/night/time-based configuration) |
+| `"off"`     | Turn lights off                                                                                          |
+| `"auto"`    | Check timeout status and apply appropriate level if not timed out                                        |
+| \<level>    | A number from 0 to 100 (%). Lights are set to the specified brightness level.                            |
 
 ::: tip Level vs Override
 The `level` input is temporary and respects motion timeouts. After the configured timeout period with no motion, lights will turn off as normal. This is different from `override`, which persists until manually changed and does not respond to motion or timeouts.
@@ -238,9 +225,6 @@ Example:
   }
 }
 ```
-
-
-
 
 ## Output
 
@@ -369,39 +353,44 @@ Both config and state can be requested in a single command and will be sent in o
 ```json
 {
   "payload": {
-    "config": { /* ... */ },
-    "state": { /* ... */ }
+    "config": {
+      /* ... */
+    },
+    "state": {
+      /* ... */
+    }
   }
 }
 ```
-
 
 ## Context Storage
 
 The node saves the following data to context storage:
 
-| Data                   | Description                                                                                                                                                                                    |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `override`             | The current override setting, persisted across restarts                                                                                                                                        |
-| Configuration          | Current node configuration (if changed dynamically)                                                                                                                                            |
-| Trigger states         | Last known state and timestamp for each trigger sensor                                                                                                                                         |
-| Light states           | Set level, actual level, and last changed timestamp for each light                                                                                                                             |
-| Sensor states          | Last known state and timestamp for night and away sensors                                                                                                                                      |
+| Data           | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `override`     | The current override setting, persisted across restarts            |
+| Configuration  | Current node configuration (if changed dynamically)                |
+| Trigger states | Last known state and timestamp for each trigger sensor             |
+| Light states   | Set level, actual level, and last changed timestamp for each light |
+| Sensor states  | Last known state and timestamp for night and away sensors          |
 
 ::: tip File Storage
 If you configure the node to use `file` context storage, the state will persist even if Node-RED crashes or the system is rebooted. This ensures lights maintain their state and override settings across restarts.
 :::
-
 
 ## Algorithm
 
 The Light Saver node follows this decision flow:
 
 ### 1. Override Check
+
 If override is set to anything other than "auto", the override value takes complete precedence and blocks all other automatic behavior.
 
 ### 2. Trigger Monitoring
+
 The node continuously monitors all configured trigger sensors:
+
 - When any trigger turns on (detects motion), `timedOut` is set to `false`
 - If `timedOut` was `true` before the trigger activated, and brightness limit allows (if configured), lights turn on to the appropriate level
 - If `timedOut` is `false` (motion detected within timeout) and an immediate level is configured for the current time, that level is applied immediately
@@ -409,7 +398,9 @@ The node continuously monitors all configured trigger sensors:
 - When all triggers have been off for their respective timeout periods, `timedOut` is set to `true` and lights turn off
 
 ### 3. Brightness Limit Check
+
 If a brightness sensor is configured with a limit:
+
 - When lights would normally turn on due to motion, the brightness is checked first
 - **Max mode** (default): Lights only turn on if brightness is below the limit (darker conditions)
 - **Min mode**: Lights only turn on if brightness is above the limit (brighter conditions)
@@ -418,6 +409,7 @@ If a brightness sensor is configured with a limit:
 - Brightness checks do not affect lights that are already on
 
 ### 4. Level Priority
+
 When determining what brightness level to use, the node applies this priority order:
 
 1. **Override** (if not "auto") - Blocks all automatic control
@@ -426,10 +418,13 @@ When determining what brightness level to use, the node applies this priority or
 4. **Time-based levels** - Based on current time matching the configured level schedule
 
 ### 4. Sensor Delays
+
 When night or away sensors activate, the node waits for the configured delay period before applying the level. This let you keep light on for some time after the sensor is activated. The delay is canceled if the sensor deactivates before the delay expires.
 
 ### 5. Light State Tracking
+
 The node subscribes to Home Assistant state change events for all configured lights and tracks:
+
 - **Set level**: The brightness the node commanded
 - **Actual level**: The current brightness reported by Home Assistant
 - **Last changed**: When the actual level last changed

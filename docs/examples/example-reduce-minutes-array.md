@@ -1,6 +1,7 @@
 # Reduce minutes array
 
 If you want to reduce number of entries in the minutes array on output 3, you can send it through a function node with the following code:
+
 ```
 const minutes = []
 let previousHour = ""
@@ -20,4 +21,5 @@ msg.payload.minutes = minutes
 
 return msg;
 ```
+
 It will remove all entries that are equal to the one before, but still send at least one per hour.

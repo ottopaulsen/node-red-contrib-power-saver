@@ -1,77 +1,76 @@
 {
-  
-"schedule": [
-  {
-    "time": "2021-06-20T01:00:00.000+02:00",
-    "value": false,
-    "countMinutes": 2
-  },
-  {
-    "time": "2021-06-20T01:02:00.000+02:00",
-    "value": true,
-    "countMinutes": 6
-  },
-  {
-    "time": "2021-06-20T01:08:00.000+02:00",
-    "value": false,
-    "countMinutes": 3
-  },
-  {
-    "time": "2021-06-20T01:11:00.000+02:00",
-    "value": true,
-    "countMinutes": 7
-  },
-  {
-    "time": "2021-06-20T01:18:00.000+02:00",
-    "value": false,
-    "countMinutes": 2
-  },
-  {
-    "time": "2021-06-20T01:20:00.000+02:00",
-    "value": true,
-    "countMinutes": 2
-  },
-  {
-    "time": "2021-06-20T01:22:00.000+02:00",
-    "value": false,
-    "countMinutes": 3
-  },
-  {
-    "time": "2021-06-20T01:25:00.000+02:00",
-    "value": true,
-    "countMinutes": 8
-  },
-  {
-    "time": "2021-06-20T01:33:00.000+02:00",
-    "value": false,
-    "countMinutes": 3
-  },
-  {
-    "time": "2021-06-20T01:36:00.000+02:00",
-    "value": true,
-    "countMinutes": 4
-  },
-  {
-    "time": "2021-06-20T01:40:00.000+02:00",
-    "value": false,
-    "countMinutes": 3
-  },
-  {
-    "time": "2021-06-20T01:43:00.000+02:00",
-    "value": true,
-    "countMinutes": 3
-  },
-  {
-    "time": "2021-06-20T01:46:00.000+02:00",
-    "value": false,
-    "countMinutes": 1
-  },
-  {
-    "time": "2021-06-20T01:47:00.000+02:00",
-    "value": true,
-    "countMinutes": 1
-  }
-],
+  "schedule": [
+    {
+      "time": "2021-06-20T01:00:00.000+02:00",
+      "value": false,
+      "countMinutes": 2
+    },
+    {
+      "time": "2021-06-20T01:02:00.000+02:00",
+      "value": true,
+      "countMinutes": 6
+    },
+    {
+      "time": "2021-06-20T01:08:00.000+02:00",
+      "value": false,
+      "countMinutes": 3
+    },
+    {
+      "time": "2021-06-20T01:11:00.000+02:00",
+      "value": true,
+      "countMinutes": 7
+    },
+    {
+      "time": "2021-06-20T01:18:00.000+02:00",
+      "value": false,
+      "countMinutes": 2
+    },
+    {
+      "time": "2021-06-20T01:20:00.000+02:00",
+      "value": true,
+      "countMinutes": 2
+    },
+    {
+      "time": "2021-06-20T01:22:00.000+02:00",
+      "value": false,
+      "countMinutes": 3
+    },
+    {
+      "time": "2021-06-20T01:25:00.000+02:00",
+      "value": true,
+      "countMinutes": 8
+    },
+    {
+      "time": "2021-06-20T01:33:00.000+02:00",
+      "value": false,
+      "countMinutes": 3
+    },
+    {
+      "time": "2021-06-20T01:36:00.000+02:00",
+      "value": true,
+      "countMinutes": 4
+    },
+    {
+      "time": "2021-06-20T01:40:00.000+02:00",
+      "value": false,
+      "countMinutes": 3
+    },
+    {
+      "time": "2021-06-20T01:43:00.000+02:00",
+      "value": true,
+      "countMinutes": 3
+    },
+    {
+      "time": "2021-06-20T01:46:00.000+02:00",
+      "value": false,
+      "countMinutes": 1
+    },
+    {
+      "time": "2021-06-20T01:47:00.000+02:00",
+      "value": true,
+      "countMinutes": 1
+    }
+  ],
   "minutes": [
     {
       "price": 0.2494,

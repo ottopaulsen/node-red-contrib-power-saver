@@ -9,8 +9,6 @@ This applies to the following nodes:
 - Schedule Merger
 - Light Saver
 
-
-
 Dynamic config is sent on the input as a message with a payload containing a `config` object and optionally a `name`.
 Example:
 
@@ -36,8 +34,6 @@ The `name` is the exact same value as you set as name in the nodes config.
 
 ###
 
-
-
 ## Output values
 
 Valid values for `outputValueForOntype` and `outputValueForOfftype` are `bool`, `num` and `str` and must correspond
@@ -49,8 +45,6 @@ The config sent like this will be valid until a new config is sent the same way,
 When a config is sent like this, and without price data, the schedule will be replanned based on the last previously received price data. If no price data has been received, no scheduling is done.
 
 However, you can send config and price data in the same message. Then both will be used.
-
-
 
 ## Override
 
@@ -77,8 +71,6 @@ Legal values for override are:
 | `"off"`  | The node will only send output `off`                                                     |
 | `"auto"` | The node will work according to the schedule. This is the standard and the default mode. |
 
-
-
 ## Config saved in context
 
 The nodes config is saved in the nodes context.
@@ -87,5 +79,3 @@ It is the config that is saved in context that is used when calculating.
 When Node-RED starts or the flow is redeployed, the config defined in the node replaces the saved config and will be used when planning.
 
 ###
-
-

@@ -8,8 +8,6 @@ sidebar: "auto"
 
 This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.
 
-
-
 The solution can be used to control switches or other entities in a smart home system, and for example turn on when the price is low, and turn off when the price is high.
 There are different ways to calculate what minutes to turn on and off, and these are implemented as **strategy nodes**. Each strategy node can be configured to fit different purposes.
 
@@ -20,8 +18,6 @@ Tibber and Nord Pool are only available in the nordics, so if you live outside t
 :::
 
 Grid tariff is normally not part of the electricity price, so if this varies by time, it must be added before sent to the strategy nodes for calculation. This can be done by putting a `ps-xxx-add-tariff` node between the price receiver and the strategy.
-
-
 
 The strategy nodes have 3 outputs. Output 1 is used to "turn on", output 2 is used to "turn off", and on output 3, the calculated schedule and some other information is sent. You can use this to make graphs, or just send it to a debug node to view it.
 
@@ -37,8 +33,6 @@ The node collection fits very well with Home Assistant (HA), as Node-RED is freq
 
 ###
 
-
-
 ## Getting started
 
 ### Installation
@@ -50,8 +44,6 @@ May also be installed via npm:
 `npm install node-red-contrib-power-saver`
 
 Make sure that you upgrade now and then to get the latest version. See [changelog](../changelog/README.md) for changes.
-
-
 
 ### Get price data
 
@@ -126,8 +118,6 @@ Please note that the parameter to `priceInfo` in the queries, `(resolution: QUAR
 
 See more details in the [documentation](../nodes/ps-receive-price#tibber-input) for the `ps-receive-price` node.
 
-
-
 Se documentation for [node-red-contrib-tibber-api](https://flows.nodered.org/node/node-red-contrib-tibber-api) for details about the Tibber query.
 
 ::: tip Tibber query
@@ -151,8 +141,6 @@ I have not yet examined the Nord Pool API for quarterly hour prices, so this may
 
 ###
 
-
-
 ### Add grid tariff
 
 When also the grid tariff changes by time, it must be added to the electricity price in order to get the calculations right.
@@ -174,8 +162,6 @@ If the grid tariff is the same the whole day, you can skip this step i the flow.
 Adding grid tariff has not yet been tested or developed for quarter hourly prices.
 This may not work.
 :::
-
-
 
 ### Calculate and run schedule
 
@@ -199,8 +185,6 @@ Choose the lowest price strategy if you need the power to be on for a certain ti
 
 Choose the heat capacitor strategy for controlling for example room heating, where you can turn the heat a little down when electricity is expensive, and a little up when it is cheap, using trading principles (only that you know up front when the prices will change).
 :::
-
-
 
 ### Use schedule signals
 
@@ -227,8 +211,6 @@ There are many ways you can use the output:
 
 ###
 
-
-
 ### Display schedule
 
 **Output 3** can be used to print or display the calculated schedule. If you just want to see it, send it to a debug node. You can also use it to display the result as graphs in HA.
@@ -253,8 +235,6 @@ There are more details and more information in the documentation for each [node]
 
 ###
 
-
-
 ## Migration from v4 to v5
 
 Version 5 has been developed to support quarter hourly prices. Actually it will just as well suport price per minute, but that is not relevant. However, the schedules can now be set with minute resolution instead of hourly resolution as before.
@@ -270,7 +250,6 @@ Many features have not been properly tested, so be prepared that things may not 
 You should open all your Best Save and Lowest Price nodes and note the settings
 so you can convert them to corresponding settings in v5.
 :::
-
 
 ### Upgrade Best Save
 
@@ -292,7 +271,6 @@ The same way, `To time` has been replaced with `To hour` and `To minute`.
 `Hours on` has been replaced with `Minutes on`. Multiply the old value with 60 to get the same setting.
 
 The other settings are as before.
-
 
 ## Disclaimer
 

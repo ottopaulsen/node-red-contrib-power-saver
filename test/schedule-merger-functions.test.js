@@ -76,11 +76,11 @@ describe("schedule-merger-functions", () => {
 describe("collapseMinutes", () => {
   it("uses start timestamps to compute count", () => {
     const minutes = [
-      { price: 1.0, onOff: true,  saving: null, start: "2024-01-01T00:00:00Z" },
-      { price: 1.0, onOff: true,  saving: null, start: "2024-01-01T00:30:00Z" },
-      { price: 1.0, onOff: true,  saving: null, start: "2024-01-01T01:00:00Z" },
-      { price: 2.0, onOff: false, saving: 0.1,  start: "2024-01-01T01:30:00Z" },
-      { price: 2.0, onOff: false, saving: 0.1,  start: "2024-01-01T02:00:00Z", end: "2024-01-01T02:30:00Z" },
+      { price: 1.0, onOff: true, saving: null, start: "2024-01-01T00:00:00Z" },
+      { price: 1.0, onOff: true, saving: null, start: "2024-01-01T00:30:00Z" },
+      { price: 1.0, onOff: true, saving: null, start: "2024-01-01T01:00:00Z" },
+      { price: 2.0, onOff: false, saving: 0.1, start: "2024-01-01T01:30:00Z" },
+      { price: 2.0, onOff: false, saving: 0.1, start: "2024-01-01T02:00:00Z", end: "2024-01-01T02:30:00Z" },
     ];
     const result = collapseMinutes(minutes);
     expect(result).to.have.length(2);
@@ -96,8 +96,8 @@ describe("collapseMinutes", () => {
 
   it("sets count to null for last group when no end time is present", () => {
     const minutes = [
-      { price: 1.0, onOff: true,  saving: null, start: "2024-01-01T00:00:00Z" },
-      { price: 2.0, onOff: false, saving: 0.5,  start: "2024-01-01T01:00:00Z" },
+      { price: 1.0, onOff: true, saving: null, start: "2024-01-01T00:00:00Z" },
+      { price: 2.0, onOff: false, saving: 0.5, start: "2024-01-01T01:00:00Z" },
     ];
     const result = collapseMinutes(minutes);
     expect(result).to.have.length(2);
@@ -107,9 +107,9 @@ describe("collapseMinutes", () => {
 
   it("handles single-record groups with non-uniform intervals", () => {
     const minutes = [
-      { price: 1.0, onOff: true,  saving: null, start: "2024-01-01T00:00:00Z" },
-      { price: 2.0, onOff: false, saving: 0.5,  start: "2024-01-01T01:00:00Z" },
-      { price: 1.0, onOff: true,  saving: null, start: "2024-01-01T02:00:00Z", end: "2024-01-01T03:00:00Z" },
+      { price: 1.0, onOff: true, saving: null, start: "2024-01-01T00:00:00Z" },
+      { price: 2.0, onOff: false, saving: 0.5, start: "2024-01-01T01:00:00Z" },
+      { price: 1.0, onOff: true, saving: null, start: "2024-01-01T02:00:00Z", end: "2024-01-01T03:00:00Z" },
     ];
     const result = collapseMinutes(minutes);
     expect(result).to.have.length(3);

@@ -46,7 +46,7 @@ function doPlanning(node, priceData) {
     node.minMinutesOff,
     node.recoveryPercentage,
     node.recoveryMaxMinutes,
-    node.minSaving
+    node.minSaving,
   );
   return onOff;
 }

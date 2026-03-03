@@ -114,9 +114,6 @@ function collapseMinutes(minutes) {
     return a.price === b.price && a.onOff === b.onOff && a.saving === b.saving;
   }
 
-
-
-
   if (!Array.isArray(minutes) || minutes.length === 0) {
     return [];
   }

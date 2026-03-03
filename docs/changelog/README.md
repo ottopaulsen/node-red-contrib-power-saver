@@ -9,75 +9,75 @@ List the most significant changes.
 
 ## 5.1.5
 
- - Include examples that where excluded before.
+- Include examples that where excluded before.
 
 ## 5.1.4
 
- - Add and improve examples.
- - Update dependencies.
- - Improve performance of best save node.
+- Add and improve examples.
+- Update dependencies.
+- Improve performance of best save node.
 
 ## 5.1.3
 
- - Fix light saver bug adjusting light when not timed out.
+- Fix light saver bug adjusting light when not timed out.
 
 ## 5.1.2
 
- - Fix bug 231 Correct use of historical data.
+- Fix bug 231 Correct use of historical data.
 
 ## 5.1.1
 
- - Fix count in minutes array out from schedule merger.
- - Fix typo in price receiver status.
+- Fix count in minutes array out from schedule merger.
+- Fix typo in price receiver status.
 
 ## 5.1.0
 
- - Add immediate flag to levels to make the change to happen immediately, unless timed out.
- - Remove some logging.
+- Add immediate flag to levels to make the change to happen immediately, unless timed out.
+- Remove some logging.
 
 ## 5.0.1
 
- - Update dependencies.
- - Fix bug in Light Saver not always turning on lights.
+- Update dependencies.
+- Fix bug in Light Saver not always turning on lights.
 
 ## 5.0.0
 
- - Added new node Light Saver for advanced light control based on motion sensor.
- - Minute reesolution as released in previous beta-versions.
- - Update layout of edit dialogs.
+- Added new node Light Saver for advanced light control based on motion sensor.
+- Minute reesolution as released in previous beta-versions.
+- Update layout of edit dialogs.
 
 ## 5.0.0.beta.7
 
- - Fix the general add tariff node so it handles periods that are not exact hours
- - Update doc for strategy input format
+- Fix the general add tariff node so it handles periods that are not exact hours
+- Update doc for strategy input format
 
 ## 5.0.0.beta.6
 
- - Best Save Performance improvement
+- Best Save Performance improvement
 
 ## 5.0.0.beta.5
 
- - Fix Lowest Price so on-periods are not split up if they can go together
- - Collapse minutes array on output 3 (NB! BREAKING CHANGE)
- - Remove log line "Switching off in x milliseconds"
+- Fix Lowest Price so on-periods are not split up if they can go together
+- Collapse minutes array on output 3 (NB! BREAKING CHANGE)
+- Remove log line "Switching off in x milliseconds"
 
 ## 5.0.0.beta.4
 
- - Fix bug on recovery time when recoveryMaxMinutes is not set
+- Fix bug on recovery time when recoveryMaxMinutes is not set
 
 ## 5.0.0.beta.3
 
- - Implement minute support in Heat Capacitor
- - Fix bug so recoveryPercentage is used properly
+- Implement minute support in Heat Capacitor
+- Fix bug so recoveryPercentage is used properly
 
 ## 5.0.0.beta.2
 
- - Fix bug in Min minutes off
+- Fix bug in Min minutes off
 
 ## 5.0.0 beta.1
 
- - Fix bug `dataDayBefore.minutes is not iterable`
- - Update example for Lovelace Visualization. That example also has a function node that reduces the number of entries in the minutes array, that can be useful other places too.
+- Fix bug `dataDayBefore.minutes is not iterable`
+- Update example for Lovelace Visualization. That example also has a function node that reduces the number of entries in the minutes array, that can be useful other places too.
 
 Please note that if you have nodes using the hours array on output 3, you need to change those to use the minutes array.
 
@@ -94,50 +94,45 @@ You should expect to find bugs. Please report using github issues. Please also r
 Not all features are adapted to the 15 minutes price intervals and to the changes done in this version.
 :::
 
- - Supports 15 minutes price intervals.
- - Can schedule periods down to minute resolution.
+- Supports 15 minutes price intervals.
+- Can schedule periods down to minute resolution.
 
 ## 4.2.5
 
- - Changes to Capacity part of grid tariff example, Update sensors node: Adding filter so onoy sensors that has a value are set, to avoid error message.
- - Changes to Capacity part of grid tariff example, Reduction Actions node: Use `action` in stead of the deprecated `domain` and `service` to perform actions.
- - Fix favicon in doc.
- - Remove v2 doc.
-
+- Changes to Capacity part of grid tariff example, Update sensors node: Adding filter so onoy sensors that has a value are set, to avoid error message.
+- Changes to Capacity part of grid tariff example, Reduction Actions node: Use `action` in stead of the deprecated `domain` and `service` to perform actions.
+- Fix favicon in doc.
+- Remove v2 doc.
 
 ## 4.2.4
 
- - Update dependencies
+- Update dependencies
 
 ## 4.2.3
 
- -  Update dependencies
+- Update dependencies
 
 ## 4.2.2
 
- - Remove ads from doc.
- - Remove console.log msg from node.
+- Remove ads from doc.
+- Remove console.log msg from node.
 
 ## 4.2.1
 
- - Bugfix version 4.2.0. Change was not effective.
+- Bugfix version 4.2.0. Change was not effective.
 
 ## 4.2.0
 
- - Format time on node status with HH:MM format. No AM/PM any more.
- - Remove warning for `No schedule` in debug output.
-
- 
+- Format time on node status with HH:MM format. No AM/PM any more.
+- Remove warning for `No schedule` in debug output.
 
 ## 4.1.5
 
- - Fixed bug based on [this issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues/184). Now correctly uses the value for `outputOutsidePeriod` when the planning period spans midnight, and there is no data available before midnight. In this case, the period from midnight to end time cannot be planned, so `outputIfNoSchedule` will be used until end time, and `outputOutsidePeriod` will be used from then. See the issue for more details.
+- Fixed bug based on [this issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues/184). Now correctly uses the value for `outputOutsidePeriod` when the planning period spans midnight, and there is no data available before midnight. In this case, the period from midnight to end time cannot be planned, so `outputIfNoSchedule` will be used until end time, and `outputOutsidePeriod` will be used from then. See the issue for more details.
 
 ## 4.1.4
 
 - Update dependencies.
-
-
 
 ## 4.1.3
 
@@ -152,8 +147,6 @@ Not all features are adapted to the 15 minutes price intervals and to the change
 
 - Update dependencies
 
-
-
 ## 4.1.0
 
 - Fix bug with override function. It did not override longer than until next scheduled change. Now it overrides until set to auto again.
@@ -166,8 +159,6 @@ This is a major rewrite of some of the central code, in order to lay ground for 
 There are a couple of new nodes that open for many interesting use cases.
 A rewrite like this may lead to changes in behavior, intended or not.
 There are some breaking changes, but most users should not be affected by them.
-
-
 
 ### New features
 
@@ -189,8 +180,6 @@ There are some breaking changes, but most users should not be affected by them.
 - The `sentOnCommand` output has been removed.
 - Some bug-fixes may be regarded as breaking.
 - There may be some changes to what data that is stored in the context.
-
-
 
 ### Bug fixes
 
@@ -261,8 +250,6 @@ There are some breaking changes, but most users should not be affected by them.
 
 - Update github actions to deploy automatically to the npm library.
 
-
-
 ## 3.5.0
 
 - Select what context storage to store data in the node configuration.
@@ -309,8 +296,6 @@ There are some breaking changes, but most users should not be affected by them.
 - Fix node status so it says "No price data" when there is no price data available.
 - Added an FAQ section to the doc.
 
-
-
 ## 3.2.3
 
 - Remove unused imports
@@ -356,8 +341,6 @@ There are some breaking changes, but most users should not be affected by them.
 - Fix bug in Lowest Price node when period goes over midnight.
 - Fix documentation - lots of pages were failing.
 
-
-
 ## 3.0.7
 
 - Fix Nord Pool current state node input.
@@ -400,8 +383,6 @@ There are some breaking changes, but most users should not be affected by them.
 - New documentation.
 - Change node category to Power Saver.
 
-
-
 ## 2.1.0
 
 - Accept config as input, making it possible to dynamically change config
@@ -419,8 +400,6 @@ There are some breaking changes, but most users should not be affected by them.
 ## 2.0.3
 
 - Bugfix
-
-
 
 ## 2.0.2
 
@@ -441,4 +420,3 @@ There are some breaking changes, but most users should not be affected by them.
 ## 1.0.9
 
 - Fix bug in saving last hour of the day.
-

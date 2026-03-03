@@ -50,7 +50,7 @@ describe("ps-strategy-lowest-price node", function () {
         delete testData1.priceData[3][attr];
         n1.receive({ payload: testData1 });
         n1.warn.should.be.calledWithExactly(
-          "Malformed entries in priceData. All entries must contain start and value."
+          "Malformed entries in priceData. All entries must contain start and value.",
         );
       });
 

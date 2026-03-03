@@ -147,35 +147,35 @@ module.exports = {
       onOff: true,
       price: 0.3214,
       saving: 0.0123,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T02:00:00.000+02:00",
       onOff: false,
       price: 0.3323,
       saving: 0.0121,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T03:00:00.000+02:00",
       onOff: false,
       price: 0.2805,
       saving: 0.0143,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T04:00:00.000+02:00",
       onOff: true,
       price: 0.3109,
       saving: 0.0255,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T05:00:00.000+02:00",
       onOff: true,
       price: 0.2494,
       saving: 0.0395,
-      count: 1
+      count: 1,
     },
   ],
 
@@ -185,21 +185,21 @@ module.exports = {
       onOff: false,
       price: 0.3323,
       saving: 0.0121,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T01:00:00.000+02:00",
       onOff: true,
       price: 0.2805,
       saving: 0.0143,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T02:00:00.000+02:00",
       onOff: false,
       price: 0.3109,
       saving: 0.0255,
-      count: 1
+      count: 1,
     },
   ],
 
@@ -209,56 +209,56 @@ module.exports = {
       onOff: true,
       price: 0.2494,
       saving: 0.0395,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T01:00:00.000+02:00",
       onOff: true,
       price: 0.3214,
       saving: 0.0123,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T02:00:00.000+02:00",
       onOff: false,
       price: 0.3323,
       saving: 0.0121,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T03:00:00.000+02:00",
       onOff: false,
       price: 0.2805,
       saving: 0.0143,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T04:00:00.000+02:00",
       onOff: false,
       price: 0.3109,
       saving: 0.0255,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T05:00:00.000+02:00",
       onOff: true,
       price: 0.2494,
       saving: 0.0395,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T06:00:00.000+02:00",
       onOff: true,
       price: 0.2494,
       saving: 0.0395,
-      count: 1
+      count: 1,
     },
     {
       start: "2021-06-20T07:00:00.000+02:00",
       onOff: false,
       price: 0.2494,
       saving: 0.0395,
-      count: 1
+      count: 1,
     },
   ],
 };

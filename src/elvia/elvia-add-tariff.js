@@ -15,7 +15,7 @@ module.exports = function (RED) {
       const prices = msg.payload.priceData;
       if (!prices) {
         node.warn(
-          "No price data received on input. Did you use the ps-receive-price node or convert to correct format otherwise?"
+          "No price data received on input. Did you use the ps-receive-price node or convert to correct format otherwise?",
         );
         return;
       }
