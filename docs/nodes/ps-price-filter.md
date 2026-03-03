@@ -18,7 +18,7 @@ This is useful when you want to force a device **off** if electricity is too exp
 | Name        | Optional name for this node.                                                                                                                                             |
 | Turn        | Whether to force the switch **On** or **Off** when the price condition is met.                                                                                           |
 | If price is | The direction of the comparison: **Over** or **Under** the configured limit.                                                                                             |
-| Limit       | The price threshold. Minutes with a price strictly above (Over) or strictly below (Under) this value trigger the filter. The price unit matches the price data received. |
+| Limit       | The price threshold. Minutes with a price above (Over) or below (Under) this value trigger the filter. The price unit matches the price data received. |
 
 The output values (value for on, value for off, behaviour if no schedule, etc.) are inherited from the upstream strategy node and are not configured here.
 
@@ -30,13 +30,21 @@ The input must be **output 3** (the schedule output) from one of the following s
 - ps-strategy-best-save
 - ps-schedule-merger
 
-## Outputs
+## Output
 
-| Output | Description                                                       |
-| ------ | ----------------------------------------------------------------- |
-| 1      | The configured "on" value, sent when the current period is on.    |
-| 2      | The configured "off" value, sent when the current period is off.  |
-| 3      | The full schedule payload with the filtered minutes and schedule. |
+There are three outputs. You use only those you need for your purpose.
+
+### Output 1
+
+A payload with the value set in config, default `true`, is sent to output 1 whenever the power / switch shall be turned on.
+
+### Output 2
+
+A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
+
+### Output 3
+
+When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
 ## How it works
 
@@ -49,12 +57,9 @@ Minutes with a `null` price are left unchanged.
 
 ## Usage ideas
 
-### Cut off a water heater when prices are very high
+### Cut off heating cables if very expensive
 
-Use a Lowest Price node to run a water heater during the cheapest hours. Then add a Price Filter (Turn: Off, If price is: Over, Limit: 1.00) after it to make sure the heater is never on during extremely expensive periods, even if they were included in the cheapest hours selection.
-
-### Force heating on during very cheap periods
-
-Use a Best Save node as the primary strategy for a heat pump. Add a Price Filter (Turn: On, If price is: Under, Limit: 0.05) to guarantee the heat pump is always on when electricity is almost free.
+If you are controlling for example heating cables with the Lowest Price node,
+you can use this to make sure you never turn on the heating cable if the price is extremely high.
 
 <VippsPlakat/>

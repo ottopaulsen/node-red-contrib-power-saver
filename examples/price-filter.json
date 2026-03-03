@@ -1,12 +1,5 @@
 [
   {
-    "id": "pf01tab01tab01t1",
-    "type": "tab",
-    "label": "Price Filter Example",
-    "disabled": false,
-    "info": "Example: Lowest Price strategy with a Price Filter that forces the switch off when the price is over a configured limit."
-  },
-  {
     "id": "pf01a2b3c4d5e6f7",
     "type": "inject",
     "z": "pf01tab01tab01t1",
@@ -23,7 +16,7 @@
     "topic": "",
     "payload": "{viewer{homes{currentSubscription{priceInfo(resolution:QUARTER_HOURLY){today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
     "payloadType": "str",
-    "x": 140,
+    "x": 180,
     "y": 80,
     "wires": [["pf02a2b3c4d5e6f7"]]
   },
@@ -34,7 +27,7 @@
     "name": "Get Tibber prices",
     "active": true,
     "apiEndpointRef": "pf0btibberapi01",
-    "x": 360,
+    "x": 430,
     "y": 80,
     "wires": [["pf03a2b3c4d5e6f7"]]
   },
@@ -52,22 +45,20 @@
     "type": "ps-strategy-lowest-price",
     "z": "pf01tab01tab01t1",
     "name": "4 Cheapest Hours",
-    "doNotSplit": "false",
-    "sendCurrentValueWhenRescheduling": true,
-    "outputIfNoSchedule": "false",
-    "outputOutsidePeriod": "false",
     "fromHour": "00",
     "fromMinute": "00",
     "toHour": "00",
     "toMinute": "00",
-    "maxHoursToSaveInSequence": "0",
-    "minHoursOnAfterMaxSequenceSaved": "0",
-    "minSaving": "0",
-    "hoursToSave": "4",
-    "outputValueForOn": true,
-    "outputValueForOff": false,
+    "minutesOn": "240",
+    "maxPrice": "",
+    "doNotSplit": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputValueForOn": "true",
+    "outputValueForOff": "false",
     "outputValueForOntype": "bool",
     "outputValueForOfftype": "bool",
+    "outputIfNoSchedule": "false",
+    "outputOutsidePeriod": "false",
     "contextStorage": "default",
     "x": 390,
     "y": 180,
@@ -133,8 +124,16 @@
   {
     "id": "pf0btibberapi01",
     "type": "tibber-api-endpoint",
-    "feedUrl": "wss://api.tibber.com/v1-beta/gql/subscriptions",
     "queryUrl": "https://api.tibber.com/v1-beta/gql",
     "name": "Tibber API"
+  },
+  {
+    "id": "cd9babd81a9c291a",
+    "type": "global-config",
+    "env": [],
+    "modules": {
+      "node-red-contrib-tibber-api": "6.4.1",
+      "node-red-contrib-power-saver": "5.1.5"
+    }
   }
 ]
