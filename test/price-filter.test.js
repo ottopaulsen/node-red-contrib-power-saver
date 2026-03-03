@@ -8,11 +8,11 @@ helper.init(require.resolve("node-red"));
 
 // Five hourly entries starting at 2021-06-20T00:00:00+02:00
 const BASE_MINUTES = [
-  { start: "2021-06-20T00:00:00.000+02:00", onOff: true,  price: 0.20, saving: null },
-  { start: "2021-06-20T01:00:00.000+02:00", onOff: true,  price: 0.35, saving: null },
-  { start: "2021-06-20T02:00:00.000+02:00", onOff: false, price: 0.40, saving: null },
-  { start: "2021-06-20T03:00:00.000+02:00", onOff: true,  price: 0.25, saving: null },
-  { start: "2021-06-20T04:00:00.000+02:00", onOff: true,  price: 0.30, saving: null },
+  { start: "2021-06-20T00:00:00.000+02:00", onOff: true, price: 0.2, saving: null },
+  { start: "2021-06-20T01:00:00.000+02:00", onOff: true, price: 0.35, saving: null },
+  { start: "2021-06-20T02:00:00.000+02:00", onOff: false, price: 0.4, saving: null },
+  { start: "2021-06-20T03:00:00.000+02:00", onOff: true, price: 0.25, saving: null },
+  { start: "2021-06-20T04:00:00.000+02:00", onOff: true, price: 0.3, saving: null },
 ];
 
 const BASE_CONFIG = {
@@ -64,7 +64,9 @@ describe("ps-price-filter node", function () {
   });
 
   it("should be loaded", function (done) {
-    const flow = [{ id: "n1", type: "ps-price-filter", name: "test filter", turn: "off", condition: "over", limit: 0.3 }];
+    const flow = [
+      { id: "n1", type: "ps-price-filter", name: "test filter", turn: "off", condition: "over", limit: 0.3 },
+    ];
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       expect(n1).to.have.property("name", "test filter");
@@ -75,17 +77,17 @@ describe("ps-price-filter node", function () {
   it("should force off minutes with price over limit", function (done) {
     // turn=off, condition=over, limit=0.30 → minutes with price > 0.30 become off
     // prices: 0.20(on), 0.35(on→off), 0.40(off), 0.25(on), 0.30(on, not strictly over)
-    const flow = makeFlow("off", "over", 0.30);
+    const flow = makeFlow("off", "over", 0.3);
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       const n4 = helper.getNode("n4");
       n4.on("input", function (msg) {
         const minutes = msg.payload.minutes;
-        expect(minutes[0].onOff).to.equal(true,  "0.20 should stay on");
+        expect(minutes[0].onOff).to.equal(true, "0.20 should stay on");
         expect(minutes[1].onOff).to.equal(false, "0.35 should be forced off");
         expect(minutes[2].onOff).to.equal(false, "0.40 should be forced off (was already off)");
-        expect(minutes[3].onOff).to.equal(true,  "0.25 should stay on");
-        expect(minutes[4].onOff).to.equal(true,  "0.30 (= limit, not over) should stay on");
+        expect(minutes[3].onOff).to.equal(true, "0.25 should stay on");
+        expect(minutes[4].onOff).to.equal(true, "0.30 (= limit, not over) should stay on");
         done();
       });
       n1.receive({ payload: makePayload(BASE_MINUTES) });
@@ -95,17 +97,17 @@ describe("ps-price-filter node", function () {
   it("should force on minutes with price under limit", function (done) {
     // turn=on, condition=under, limit=0.30 → minutes with price < 0.30 become on
     // prices: 0.20(on), 0.35(on), 0.40(off), 0.25(on), 0.30(on, not strictly under)
-    const flow = makeFlow("on", "under", 0.30);
+    const flow = makeFlow("on", "under", 0.3);
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       const n4 = helper.getNode("n4");
       n4.on("input", function (msg) {
         const minutes = msg.payload.minutes;
-        expect(minutes[0].onOff).to.equal(true,  "0.20 < 0.30 → forced on (was already on)");
-        expect(minutes[1].onOff).to.equal(true,  "0.35 not under 0.30 → unchanged (on)");
+        expect(minutes[0].onOff).to.equal(true, "0.20 < 0.30 → forced on (was already on)");
+        expect(minutes[1].onOff).to.equal(true, "0.35 not under 0.30 → unchanged (on)");
         expect(minutes[2].onOff).to.equal(false, "0.40 not under 0.30 → unchanged (off)");
-        expect(minutes[3].onOff).to.equal(true,  "0.25 < 0.30 → forced on (was already on)");
-        expect(minutes[4].onOff).to.equal(true,  "0.30 == limit (not strictly under) → unchanged (on)");
+        expect(minutes[3].onOff).to.equal(true, "0.25 < 0.30 → forced on (was already on)");
+        expect(minutes[4].onOff).to.equal(true, "0.30 == limit (not strictly under) → unchanged (on)");
         done();
       });
       n1.receive({ payload: makePayload(BASE_MINUTES) });
@@ -114,7 +116,7 @@ describe("ps-price-filter node", function () {
 
   it("should not change minutes with price exactly at limit", function (done) {
     // Strictly > and < so exactly equal to limit must not be changed
-    const flow = makeFlow("off", "over", 0.30);
+    const flow = makeFlow("off", "over", 0.3);
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       const n4 = helper.getNode("n4");
@@ -129,16 +131,16 @@ describe("ps-price-filter node", function () {
 
   it("should not change minutes with null price", function (done) {
     const minutesWithNull = [
-      { start: "2021-06-20T00:00:00.000+02:00", onOff: true,  price: null,  saving: null },
-      { start: "2021-06-20T01:00:00.000+02:00", onOff: false, price: null,  saving: null },
-      { start: "2021-06-20T02:00:00.000+02:00", onOff: true,  price: 0.40, saving: null },
+      { start: "2021-06-20T00:00:00.000+02:00", onOff: true, price: null, saving: null },
+      { start: "2021-06-20T01:00:00.000+02:00", onOff: false, price: null, saving: null },
+      { start: "2021-06-20T02:00:00.000+02:00", onOff: true, price: 0.4, saving: null },
     ];
-    const flow = makeFlow("off", "over", 0.10); // limit so low everything with a price would be forced off
+    const flow = makeFlow("off", "over", 0.1); // limit so low everything with a price would be forced off
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       const n4 = helper.getNode("n4");
       n4.on("input", function (msg) {
-        expect(msg.payload.minutes[0].onOff).to.equal(true,  "null price stays unchanged");
+        expect(msg.payload.minutes[0].onOff).to.equal(true, "null price stays unchanged");
         expect(msg.payload.minutes[1].onOff).to.equal(false, "null price stays unchanged");
         expect(msg.payload.minutes[2].onOff).to.equal(false, "0.40 > 0.10 forced off");
         done();
@@ -208,7 +210,7 @@ describe("ps-price-filter node", function () {
     // turn=off, condition=over, limit=0.30
     // Minutes: true(0.20), true→false(0.35), false(0.40), true(0.25), true(0.30)
     // Expected schedule changes: H0=on, H1=off, H3=on
-    const flow = makeFlow("off", "over", 0.30);
+    const flow = makeFlow("off", "over", 0.3);
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       const n4 = helper.getNode("n4");
@@ -225,12 +227,14 @@ describe("ps-price-filter node", function () {
   });
 
   it("should ignore messages without a minutes array", function (done) {
-    const flow = makeFlow("off", "over", 0.30);
+    const flow = makeFlow("off", "over", 0.3);
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       const n4 = helper.getNode("n4");
       let received = false;
-      n4.on("input", function () { received = true; });
+      n4.on("input", function () {
+        received = true;
+      });
       n1.receive({ payload: { priceData: [], source: "not a schedule" } });
       setTimeout(() => {
         expect(received).to.equal(false, "should not send output when no minutes array");
@@ -240,7 +244,7 @@ describe("ps-price-filter node", function () {
   });
 
   it("should not mutate the incoming message payload", function (done) {
-    const flow = makeFlow("off", "over", 0.30);
+    const flow = makeFlow("off", "over", 0.3);
     helper.load(priceFilter, flow, function () {
       const n1 = helper.getNode("n1");
       const n4 = helper.getNode("n4");
@@ -249,7 +253,7 @@ describe("ps-price-filter node", function () {
       n4.on("input", function () {
         expect(originalPayload.minutes[1].onOff).to.equal(
           originalOnOff1,
-          "original msg.payload.minutes should not be mutated"
+          "original msg.payload.minutes should not be mutated",
         );
         done();
       });

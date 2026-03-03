@@ -35,13 +35,14 @@ It would be very nice to get more examples into the documentation. If you have m
 
 ## Bug reports
 
-If you find a bug, please describe it thoroughly and make a [GitHub issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues). 
+If you find a bug, please describe it thoroughly and make a [GitHub issue](https://github.com/ottopaulsen/node-red-contrib-power-saver/issues).
 
 ::: tip Bug reports for strategy nodes
 If the bug is related to a strategy node, please provide:
-* The full input
-* The full output from output 3
-:::
+
+- The full input
+- The full output from output 3
+  :::
 
 If you have problems with the Best Save node, you can try the [Best Save Viewer](../faq/best-save-viewer.md) to see if it makes more sense.
 
@@ -58,5 +59,3 @@ Heat Capacitor developer: [Arne Klaveness](https://github.com/TomTorger)
 Example contributors: [Stefan](https://github.com/oakhill87/node-red-contrib-power-saver), [Kim Storøy](https://www.facebook.com/kim.storoy)
 
 ###
-
-

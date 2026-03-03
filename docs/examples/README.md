@@ -1,4 +1,3 @@
-
 # Examples
 
 [Nord Pool and `current state` node in HA](./example-nordpool-current-state)
@@ -24,5 +23,3 @@
 [Output schedule to a sensor entity](./example-next-schedule-entity.md) (by Stefan)
 
 ###
-
-

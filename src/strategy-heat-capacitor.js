@@ -99,7 +99,7 @@ module.exports = function (RED) {
           node.boostTempHeat,
           node.boostTempCool,
           node.maxTempAdjustment,
-          node.minSavings
+          node.minSavings,
         );
 
         if (msg.payload.hasOwnProperty("time")) {
@@ -150,6 +150,6 @@ function mergePriceData(priceDataA, priceDataB) {
   });
 
   return Array.from(mergedEntries.values()).sort(
-    (a, b) => DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis()
+    (a, b) => DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis(),
   );
 }

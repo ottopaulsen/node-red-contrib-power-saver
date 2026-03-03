@@ -87,7 +87,7 @@ describe("send config as input", () => {
   });
   it.skip("should accept config and price-data together", function (done) {
     // TODO (otto): Fix this test by rewriting using new input
-    this.timeout(30000)
+    this.timeout(30000);
     const flow = makeFlow(3, 2);
     let pass = 1;
     helper.load(bestSave, flow, function () {
@@ -117,7 +117,7 @@ describe("send config as input", () => {
   });
   it.skip("can override", function (done) {
     // TODO (otto): Fix this test
-    this.timeout(30000)
+    this.timeout(30000);
     const flow = makeFlow(3, 2, false);
     const time = prices.priceData[0].start;
     helper.load(bestSave, flow, function () {

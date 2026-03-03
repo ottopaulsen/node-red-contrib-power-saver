@@ -23,7 +23,7 @@ function strategyOnInput(node, msg, doPlanning, calcSavings) {
         commands,
         currentOutput,
         plannedOutputNow,
-        node.sendCurrentValueWhenRescheduling
+        node.sendCurrentValueWhenRescheduling,
       ),
       sendSchedule: strategyShallSendSchedule(msg, commands),
       runSchedule: commands.replan !== false && config.override === "auto",

@@ -443,7 +443,7 @@ currentHour.setMinutes(0);
 currentHour.setSeconds(0);
 
 // Remove too old records from buffer
-const maxAgeMs = (ESTIMATION_TIME_MINUTES * 60 * 1000) + DELAY_TIME_MS_ALLOWED;
+const maxAgeMs = ESTIMATION_TIME_MINUTES * 60 * 1000 + DELAY_TIME_MS_ALLOWED;
 let oldest = buffer[0];
 while (timeMs - oldest.timeMs > maxAgeMs) {
   buffer.splice(0, 1);
@@ -670,7 +670,7 @@ if (isNull(hourEstimate)) {
 
 const currentStep = STEPS.reduceRight(
   (prev, val) => (val > currentMonthlyMaxAverage ? val : prev),
-  STEPS[STEPS.length - 1]
+  STEPS[STEPS.length - 1],
 );
 
 // Set currentHourRanking
@@ -790,18 +790,20 @@ const sensors = [
   { id: "sensor.ps_cap_consumption_now", value: "averageConsumptionNow", uom: "kW" },
 ];
 
-sensors.filter(s => s.value != null).forEach((sensor) => {
-  const payload = {
-    protocol: "http",
-    method: "post",
-    path: "/api/states/" + sensor.id,
-    data: {
-      state: msg.payload[sensor.value],
-      attributes: { unit_of_measurement: sensor.uom },
-    },
-  };
-  node.send({ payload });
-});
+sensors
+  .filter((s) => s.value != null)
+  .forEach((sensor) => {
+    const payload = {
+      protocol: "http",
+      method: "post",
+      path: "/api/states/" + sensor.id,
+      data: {
+        state: msg.payload[sensor.value],
+        attributes: { unit_of_measurement: sensor.uom },
+      },
+    };
+    node.send({ payload });
+  });
 ```
 
   </CodeGroupItem>
@@ -1148,7 +1150,7 @@ actions
     (a) =>
       a.actionTaken &&
       a.savedConsumption + BUFFER_TO_RESET <= increasePossible &&
-      Date.now() - a.actionTime > a.minTimeOffSec * 1000
+      Date.now() - a.actionTime > a.minTimeOffSec * 1000,
   )
   .forEach((a) => resetAction(a));
 ```

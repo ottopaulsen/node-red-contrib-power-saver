@@ -1,4 +1,3 @@
-
 name: Publish to npmjs
 on:
   release:
@@ -14,11 +13,11 @@ jobs:
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
-          node-version: '24.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24.x"
+          registry-url: "https://registry.npmjs.org"
       - uses: szenius/set-timezone@v1.0
         with:
           timezoneLinux: "Europe/Oslo"
       - run: npm ci
-      - run: 'npm run test'
+      - run: "npm run test"
       - run: npm publish --provenance

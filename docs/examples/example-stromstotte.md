@@ -19,13 +19,13 @@ To take the governmental support into the calculation, insert a Function node af
 And use the following code in the function node:
 
 ```js
-const LIMIT = 0.875
-const OVER_LIMIT_SHARE = 0.1
+const LIMIT = 0.875;
+const OVER_LIMIT_SHARE = 0.1;
 
 msg.payload.priceData.forEach((hour) => {
-    if (hour.value > LIMIT) {
-        hour.value = LIMIT + (hour.value - LIMIT) * OVER_LIMIT_SHARE
-    }
-})
+  if (hour.value > LIMIT) {
+    hour.value = LIMIT + (hour.value - LIMIT) * OVER_LIMIT_SHARE;
+  }
+});
 return msg;
 ```

@@ -131,7 +131,7 @@ describe("ps-strategy-heat-capacitor-functions", () => {
       boostTempHeat,
       boostTempCool,
       buy_pattern.length,
-      sell_pattern.length
+      sell_pattern.length,
     );
     expect(my_schedule.temperatures[my_schedule.temperatures.length - 1]).to.equal(-maxTempAdjustment);
   });

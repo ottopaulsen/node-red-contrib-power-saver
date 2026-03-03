@@ -2,42 +2,46 @@
   <div class="sequence-heatmap">
     <h3>Savings for Sequence (Heatmap)</h3>
     <p class="explanation">
-      Each colored cell shows the {{ showSum ? 'total' : 'average' }} saving per kWh for a sequence starting at that time.
-      Click a cell to see which values were used in the calculation.
+      Each colored cell shows the {{ showSum ? "total" : "average" }} saving per kWh for a sequence starting at that
+      time. Click a cell to see which values were used in the calculation.
     </p>
 
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto">
       <svg :width="svgWidth" :height="svgHeight" class="heatmap-svg">
         <!-- Rows -->
         <g v-for="(minute, i) in minutes" :key="'row-' + i">
           <!-- Row label -->
-          <text :x="5"
-                :y="i * cellHeight + cellHeight / 2 + 4"
-                class="row-label">
+          <text :x="5" :y="i * cellHeight + cellHeight / 2 + 4" class="row-label">
             {{ DateTime.fromISO(minute.start).toFormat("MM-dd HH:mm") }}
           </text>
 
           <!-- Heatmap cells -->
-          <rect v-for="(col, j) in visibleColumns" 
-                :key="'cell-' + i + '-' + j"
-                :x="labelWidth + j * cellWidth"
-                :y="i * cellHeight"
-                :width="cellWidth"
-                :height="cellHeight"
-                :fill="getCellColor(i, j)"
-                :stroke="getCellStroke(i, j)"
-                :stroke-width="getCellStrokeWidth(i, j)"
-                @click="handleCellClick(i, j)"
-                class="heatmap-cell"
+          <rect
+            v-for="(col, j) in visibleColumns"
+            :key="'cell-' + i + '-' + j"
+            :x="labelWidth + j * cellWidth"
+            :y="i * cellHeight"
+            :width="cellWidth"
+            :height="cellHeight"
+            :fill="getCellColor(i, j)"
+            :stroke="getCellStroke(i, j)"
+            :stroke-width="getCellStrokeWidth(i, j)"
+            @click="handleCellClick(i, j)"
+            class="heatmap-cell"
           />
         </g>
 
         <!-- Horizontal grid lines only (between rows) -->
-        <line v-for="i in minutes.length + 1" :key="'h-line-' + i"
-              :x1="labelWidth" :y1="(i - 1) * cellHeight"
-              :x2="labelWidth + visibleColumns.length * cellWidth" 
-              :y2="(i - 1) * cellHeight"
-              stroke="#ddd" stroke-width="0.5" />
+        <line
+          v-for="i in minutes.length + 1"
+          :key="'h-line-' + i"
+          :x1="labelWidth"
+          :y1="(i - 1) * cellHeight"
+          :x2="labelWidth + visibleColumns.length * cellWidth"
+          :y2="(i - 1) * cellHeight"
+          stroke="#ddd"
+          stroke-width="0.5"
+        />
       </svg>
     </div>
 
@@ -45,34 +49,55 @@
       <h4>Cell Details</h4>
       <div class="detail-grid">
         <div class="detail-item"><span class="label">Row:</span> {{ clickedCell.row + 1 }}</div>
-        <div class="detail-item"><span class="label">Column:</span> {{ clickedCell.col + 1 }} (sequence of {{ clickedCell.col + 1 }} minutes)</div>
-        <div class="detail-item"><span class="label">Date:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("yyyy-MM-dd") }}</div>
-        <div class="detail-item"><span class="label">Time:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("HH:mm") }}</div>
+        <div class="detail-item">
+          <span class="label">Column:</span> {{ clickedCell.col + 1 }} (sequence of {{ clickedCell.col + 1 }} minutes)
+        </div>
+        <div class="detail-item">
+          <span class="label">Date:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("yyyy-MM-dd") }}
+        </div>
+        <div class="detail-item">
+          <span class="label">Time:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("HH:mm") }}
+        </div>
         <div class="detail-item"><span class="label">Count:</span> {{ minutes[clickedCell.row].count }} minutes</div>
         <div class="detail-item"><span class="label">Price:</span> {{ minutes[clickedCell.row].price }}</div>
-        <div class="detail-item"><span class="label">On/Off:</span> {{ minutes[clickedCell.row].onOff ? 'On' : 'Off' }}</div>
-        <div class="detail-item"><span class="label">Saving:</span> {{ minutes[clickedCell.row].saving ?? 'N/A' }}</div>
-        <div class="detail-item"><span class="label">Value:</span> {{ getCellValue(clickedCell.row, clickedCell.col) }}</div>
-        <div class="detail-item full-width"><span class="label">Period Start:</span> Row {{ periodInfo.start + 1 }} ({{ DateTime.fromISO(minutes[periodInfo.start].start).toFormat("MM-dd HH:mm") }})</div>
-        <div class="detail-item full-width"><span class="label">Period End:</span> Row {{ periodInfo.end + 1 }} ({{ DateTime.fromISO(minutes[periodInfo.end].start).toFormat("MM-dd HH:mm") }})</div>
+        <div class="detail-item">
+          <span class="label">On/Off:</span> {{ minutes[clickedCell.row].onOff ? "On" : "Off" }}
+        </div>
+        <div class="detail-item"><span class="label">Saving:</span> {{ minutes[clickedCell.row].saving ?? "N/A" }}</div>
+        <div class="detail-item">
+          <span class="label">Value:</span> {{ getCellValue(clickedCell.row, clickedCell.col) }}
+        </div>
+        <div class="detail-item full-width">
+          <span class="label">Period Start:</span> Row {{ periodInfo.start + 1 }} ({{
+            DateTime.fromISO(minutes[periodInfo.start].start).toFormat("MM-dd HH:mm")
+          }})
+        </div>
+        <div class="detail-item full-width">
+          <span class="label">Period End:</span> Row {{ periodInfo.end + 1 }} ({{
+            DateTime.fromISO(minutes[periodInfo.end].start).toFormat("MM-dd HH:mm")
+          }})
+        </div>
       </div>
       <div class="calculation">
-        <strong>What this value means:</strong><br>
-        This shows the {{ showSum ? 'total saving' : 'average saving per kWh' }} for a sequence of 
-        <strong>{{ clickedCell.col + 1 }} minutes</strong> 
-        starting at {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("MM-dd HH:mm") }}.<br><br>
-        <strong>How it's calculated:</strong><br>
-        This sequence value is built by summing multiple "Savings if turned off" values from the first heatmap.<br>
-        Starting at row {{ clickedCell.row + 1 }}, it uses:<br>
-        <ul style="margin: 8px 0; padding-left: 20px;">
+        <strong>What this value means:</strong><br />
+        This shows the {{ showSum ? "total saving" : "average saving per kWh" }} for a sequence of
+        <strong>{{ clickedCell.col + 1 }} minutes</strong>
+        starting at {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("MM-dd HH:mm") }}.<br /><br />
+        <strong>How it's calculated:</strong><br />
+        This sequence value is built by summing multiple "Savings if turned off" values from the first heatmap.<br />
+        Starting at row {{ clickedCell.row + 1 }}, it uses:<br />
+        <ul style="margin: 8px 0; padding-left: 20px">
           <li v-for="idx in getSequenceCells(clickedCell.row, clickedCell.col)" :key="`${idx.row}-${idx.col}`">
-            Row {{ idx.row + 1 }}, Column {{ idx.col + 1 }} 
-            (save {{ idx.col + 1 }} min{{ idx.col > 0 ? 's' : '' }} starting at {{ DateTime.fromISO(minutes[idx.row].start).toFormat("MM-dd HH:mm") }})
+            Row {{ idx.row + 1 }}, Column {{ idx.col + 1 }} (save {{ idx.col + 1 }} min{{
+              idx.col > 0 ? "s" : ""
+            }}
+            starting at {{ DateTime.fromISO(minutes[idx.row].start).toFormat("MM-dd HH:mm") }})
           </li>
         </ul>
-        {{ showSum ? 'Sum of these values' : 'Average of these values' }}: <strong>{{ getCellValue(clickedCell.row, clickedCell.col) }}</strong>
+        {{ showSum ? "Sum of these values" : "Average of these values" }}:
+        <strong>{{ getCellValue(clickedCell.row, clickedCell.col) }}</strong>
       </div>
-      <div class="sequence-cells" style="display: none;">
+      <div class="sequence-cells" style="display: none">
         <strong>This sequence uses these cells from the "Savings if turned off" heatmap:</strong>
         <span v-for="idx in getSequenceCells(clickedCell.row, clickedCell.col)" :key="`${idx.row}-${idx.col}`">
           Row {{ idx.row + 1 }}, Col {{ idx.col + 1 }}
@@ -83,42 +108,42 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue';
-import { DateTime } from 'luxon';
+import { computed, reactive, ref } from "vue";
+import { DateTime } from "luxon";
 
 const props = defineProps({
   minutes: {
     type: Array,
-    required: true
+    required: true,
   },
   totalPerSequence: {
     type: Array,
-    required: true
+    required: true,
   },
   averagePerSequence: {
     type: Array,
-    required: true
+    required: true,
   },
   differenceColumns: {
     type: Array,
-    required: true
+    required: true,
   },
   showNegative: {
     type: Boolean,
-    default: false
+    default: false,
   },
   showSum: {
     type: Boolean,
-    default: false
+    default: false,
   },
   maxColumns: {
     type: Number,
-    required: true
+    required: true,
   },
   minSaving: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
 const clickedCell = reactive({ row: null, col: null });
@@ -162,7 +187,7 @@ const currentData = computed(() => {
 const valueStats = computed(() => {
   let min = 0;
   let max = 0;
-  
+
   for (let i = 0; i < currentData.value.length; i++) {
     for (let j = 0; j < props.maxColumns; j++) {
       const val = currentData.value[i]?.[j];
@@ -172,7 +197,7 @@ const valueStats = computed(() => {
       }
     }
   }
-  
+
   return { min, max };
 });
 
@@ -181,48 +206,48 @@ const periodInfo = computed(() => {
   if (clickedCell.row === null || clickedCell.col === null) {
     return { start: 0, end: 0 };
   }
-  
+
   const currentValue = currentData.value[clickedCell.row]?.[clickedCell.col];
   if (currentValue === null || currentValue === undefined) {
     return { start: clickedCell.row, end: clickedCell.row };
   }
-  
+
   let start = clickedCell.row;
   let end = clickedCell.row;
-  
+
   // Find start - go backward while values match
   while (start > 0 && currentData.value[start - 1]?.[clickedCell.col] === currentValue) {
     start--;
   }
-  
+
   // Find end - go forward while values match
   while (end < props.minutes.length - 1 && currentData.value[end + 1]?.[clickedCell.col] === currentValue) {
     end++;
   }
-  
+
   return { start, end };
 });
 
 function getCellValue(row, col) {
   const val = currentData.value[row]?.[col];
-  return val !== null && val !== undefined ? val.toFixed(4) : 'N/A';
+  return val !== null && val !== undefined ? val.toFixed(4) : "N/A";
 }
 
 function getCellColor(row, col) {
   const val = currentData.value[row]?.[col];
-  
+
   if (val === null || val === undefined) {
-    return 'white';
+    return "white";
   }
-  
+
   // Check if below threshold (for average view)
   const isBelowThreshold = !props.showSum && val < props.minSaving;
-  
+
   if (val > 0) {
     // Blue gradient for positive values (or red tint if below threshold)
     const intensity = val / valueStats.value.max;
-    const lightness = 90 - (intensity * 60); // 90% to 30%
-    
+    const lightness = 90 - intensity * 60; // 90% to 30%
+
     if (isBelowThreshold) {
       return `hsl(0, 100%, ${lightness}%)`;
     } else {
@@ -231,33 +256,33 @@ function getCellColor(row, col) {
   } else if (val < 0 && props.showNegative) {
     // Red gradient for negative values
     const intensity = Math.abs(val) / Math.abs(valueStats.value.min);
-    const lightness = 90 - (intensity * 60); // 90% to 30%
+    const lightness = 90 - intensity * 60; // 90% to 30%
     return `hsl(0, 100%, ${lightness}%)`;
   }
-  
-  return 'white';
+
+  return "white";
 }
 
 function getCellStroke(row, col) {
   const val = currentData.value[row]?.[col];
   const isBelowThreshold = !props.showSum && val < props.minSaving && val > 0;
-  
+
   if (clickedCell.row === row && clickedCell.col === col) {
-    return '#000';
+    return "#000";
   }
   if (highlightedCells.value.has(`${row},${col}`)) {
-    return '#ff6b00';
+    return "#ff6b00";
   }
   if (isBelowThreshold) {
-    return '#c0392b';
+    return "#c0392b";
   }
-  return 'none';
+  return "none";
 }
 
 function getCellStrokeWidth(row, col) {
   const val = currentData.value[row]?.[col];
   const isBelowThreshold = !props.showSum && val < props.minSaving && val > 0;
-  
+
   if (clickedCell.row === row && clickedCell.col === col) {
     return 3;
   }
@@ -272,16 +297,16 @@ function getCellStrokeWidth(row, col) {
 
 function getCellClass(row, col) {
   const classes = [];
-  
+
   if (highlightedCells.value.has(`${row},${col}`)) {
-    classes.push('highlighted');
+    classes.push("highlighted");
   }
-  
+
   if (clickedCell.row === row && clickedCell.col === col) {
-    classes.push('clicked');
+    classes.push("clicked");
   }
-  
-  return classes.join(' ');
+
+  return classes.join(" ");
 }
 
 function getSequenceCells(row, col) {
@@ -297,11 +322,11 @@ function getSequenceCells(row, col) {
 function handleCellClick(row, col) {
   clickedCell.row = row;
   clickedCell.col = col;
-  
+
   // Highlight all cells in the sequence
   highlightedCells.value = new Set();
   const cells = getSequenceCells(row, col);
-  cells.forEach(cell => {
+  cells.forEach((cell) => {
     highlightedCells.value.add(`${cell.row},${cell.col}`);
   });
 }

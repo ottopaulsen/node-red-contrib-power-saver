@@ -3,7 +3,7 @@ import { path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { searchPlugin } from "@vuepress/plugin-search";
 import { googleAnalyticsPlugin } from "@vuepress/plugin-google-analytics";
-import { viteBundler } from "@vuepress/bundler-vite"
+import { viteBundler } from "@vuepress/bundler-vite";
 import { defaultTheme } from "@vuepress/theme-default";
 import { defineUserConfig } from "vuepress";
 
@@ -14,11 +14,11 @@ export default defineUserConfig({
       css: {
         preprocessorOptions: {
           scss: {
-            api: "modern-compiler"
-          }
-        }
-      }
-    }
+            api: "modern-compiler",
+          },
+        },
+      },
+    },
   }),
   description: "A Node-RED node collection to save money on hourly changing power prices",
   head: [
@@ -59,7 +59,10 @@ export default defineUserConfig({
                 "/nodes/ps-strategy-fixed-schedule.md",
               ],
             },
-            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md", "/nodes/ps-schedule-merger.md", "/nodes/ps-price-filter.md"] },
+            {
+              text: "Utility nodes",
+              children: ["/nodes/ps-receive-price.md", "/nodes/ps-schedule-merger.md", "/nodes/ps-price-filter.md"],
+            },
             {
               text: "Grid tariff nodes",
               children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],
@@ -96,5 +99,5 @@ export default defineUserConfig({
       "/changelog/": [{ text: "Changelog", children: ["/changelog/README.md"] }],
     },
   }),
-  title: "PowerSaver"
+  title: "PowerSaver",
 });

@@ -11,8 +11,6 @@ Node to add a value, for example a variable grid tariff, to the price before it 
 
 ###
 
-
-
 ## Description
 
 This node is useful if there is an addition to the electricity price that varies over the day or the week, as it might be for the grid tariff.
@@ -26,8 +24,6 @@ When using two nodes in series to support for example different rates for weeken
 make sure each day is handled by only one node, else both nodes will add to the price.
 :::
 
-
-
 Here is how this node is normally used:
 
 ![general flow](../images/add-tariff-flow.png)
@@ -37,8 +33,6 @@ If there is one price now, and another price from a specific date, you can use t
 :::
 
 ## Configuration
-
-
 
 ### Add and delete periods
 
@@ -52,8 +46,6 @@ For each period, select the time of the day the value is valid from, and enter t
 Be careful to use the correct unit when entering the price here. If the price is `28 øre` enter `0.28`.
 If the price is `36 cents` enter `0.36`.
 :::
-
-
 
 ### Days
 
@@ -76,8 +68,6 @@ If this is empty, the config is valid until forever.
 
 ###
 
-
-
 ## Input
 
 The input is the [common strategy input format](./strategy-input.md)
@@ -89,5 +79,3 @@ The output is the [common strategy input format](./strategy-input.md)
 If there is a config property in the input payload, it is passed on to the output payload.
 
 ###
-
-

@@ -25,11 +25,7 @@
     "payloadType": "str",
     "x": 140,
     "y": 80,
-    "wires": [
-      [
-        "pf02a2b3c4d5e6f7"
-      ]
-    ]
+    "wires": [["pf02a2b3c4d5e6f7"]]
   },
   {
     "id": "pf02a2b3c4d5e6f7",
@@ -40,11 +36,7 @@
     "apiEndpointRef": "pf0btibberapi01",
     "x": 360,
     "y": 80,
-    "wires": [
-      [
-        "pf03a2b3c4d5e6f7"
-      ]
-    ]
+    "wires": [["pf03a2b3c4d5e6f7"]]
   },
   {
     "id": "pf03a2b3c4d5e6f7",
@@ -53,11 +45,7 @@
     "name": "Price Receiver",
     "x": 170,
     "y": 180,
-    "wires": [
-      [
-        "pf04a2b3c4d5e6f7"
-      ]
-    ]
+    "wires": [["pf04a2b3c4d5e6f7"]]
   },
   {
     "id": "pf04a2b3c4d5e6f7",
@@ -83,13 +71,7 @@
     "contextStorage": "default",
     "x": 390,
     "y": 180,
-    "wires": [
-      [],
-      [],
-      [
-        "pf05a2b3c4d5e6f7"
-      ]
-    ]
+    "wires": [[], [], ["pf05a2b3c4d5e6f7"]]
   },
   {
     "id": "pf05a2b3c4d5e6f7",
@@ -101,17 +83,7 @@
     "limit": 1,
     "x": 630,
     "y": 180,
-    "wires": [
-      [
-        "pf06a2b3c4d5e6f7"
-      ],
-      [
-        "pf07a2b3c4d5e6f7"
-      ],
-      [
-        "pf08a2b3c4d5e6f7"
-      ]
-    ]
+    "wires": [["pf06a2b3c4d5e6f7"], ["pf07a2b3c4d5e6f7"], ["pf08a2b3c4d5e6f7"]]
   },
   {
     "id": "pf06a2b3c4d5e6f7",

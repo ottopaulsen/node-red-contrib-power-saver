@@ -8,8 +8,6 @@ next: ./ps-strategy-lowest-price.md
 
 Strategy node to postpone power consumption until the price is lower.
 
-
-
 ## Description
 
 This strategy turns off power if money can be saved by postponing the consumption, that is if the price is lower later. The idea is that the power you are not using when the switch is turned off, will be used immediately when the switch is turned on (during the first period). This would fit well for turning off a water heater or another thermostat controlled heater.
@@ -20,20 +18,18 @@ Be aware that the norwegian [FHI](https://www.fhi.no/nettpub/legionellaveiledere
 
 The picture at the bottom of the page, under [Integration with MagicMirror](#integration-with-magicmirror), illustrates this by the purple strokes, taking the price from the top of the price curve to the level of the first period after the save-period.
 
-
-
 ## Configuration
 
 ![Best Save Config](../images/best-save-config.png)
 
 | Value                  |                                                                                                                                                                                                |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Max minutes off        | Maximum time (minutes) to turn off in a sequence  | 
-| Min minutes off        | Minimum time (minutes) to turn off in a sequence  | 
-| Recovery time %        | After having turned off, the power must be turned on minimum this % of the time it was off |
-| Max recovery time      | Recovery time does not have to be more then this number of minutes |
+| Max minutes off        | Maximum time (minutes) to turn off in a sequence                                                                                                                                               |
+| Min minutes off        | Minimum time (minutes) to turn off in a sequence                                                                                                                                               |
+| Recovery time %        | After having turned off, the power must be turned on minimum this % of the time it was off                                                                                                     |
+| Max recovery time      | Recovery time does not have to be more then this number of minutes                                                                                                                             |
 | Min saving             | Minimum amount to save per kWh in order to bother turning it off. It is recommended to have some amount here, e.g. 2 cents / 2 øre. No point in saving 0.001, is it?                           |
-| Output value for on    | Set what value to send to output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
+| Output value for on    | Set what value to send to output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.       |
 | Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
 | Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
 | If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last time there is price data for.           |
@@ -44,8 +40,6 @@ The term revovery is used to set things right after having turned off. For examp
 :::
 
 ###
-
-
 
 ### Dynamic config
 
@@ -69,8 +63,6 @@ The following config values can be changed dynamically:
 
 See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
-
-
 ### Dynamic commands
 
 You can send dynamic commands to this node, for example to make it resend output.
@@ -89,8 +81,6 @@ When a payload with `priceData` is received, this is saved to the nodes context 
 The source is saved as `lastSource`. If config- or command-messages are received without price data,
 the data saved in context is used for replanning.
 
-
-
 ## Output
 
 There are three outputs. You use only those you need for your purpose.
@@ -103,15 +93,11 @@ A payload with the value set in config, default `true`, is sent to output 1 when
 
 A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
 
-
-
 ### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
 ###
-
-
 
 Example of output:
 
@@ -135,41 +121,41 @@ Example of output:
     }
   ],
   "minutes": [
-  {
-    "start": "2025-09-30T00:00:00.000+02:00",
-    "price": 0.2129,
-    "onOff": false,
-    "saving": 0.0631,
-    "count": 15
-  },
-  {
-    "start": "2025-09-30T00:15:00.000+02:00",
-    "price": 0.2127,
-    "onOff": false,
-    "saving": 0.0633,
-    "count": 15
-  },
-  {
-    "start": "2025-09-30T00:30:00.000+02:00",
-    "price": 0.2231,
-    "onOff": false,
-    "saving": 0.0529,
-    "count": 15
-  },
-  {
-    "start": "2025-09-30T00:45:00.000+02:00",
-    "price": 0.2235,
-    "onOff": false,
-    "saving": 0.0533,
-    "count": 15
-  },
-  {
-    "start": "2025-09-30T01:00:00.000+02:00",
-    "price": 0.2760,
-    "onOff": true,
-    "saving": null,
-    "count": 1380
-  }, // ...
+    {
+      "start": "2025-09-30T00:00:00.000+02:00",
+      "price": 0.2129,
+      "onOff": false,
+      "saving": 0.0631,
+      "count": 15
+    },
+    {
+      "start": "2025-09-30T00:15:00.000+02:00",
+      "price": 0.2127,
+      "onOff": false,
+      "saving": 0.0633,
+      "count": 15
+    },
+    {
+      "start": "2025-09-30T00:30:00.000+02:00",
+      "price": 0.2231,
+      "onOff": false,
+      "saving": 0.0529,
+      "count": 15
+    },
+    {
+      "start": "2025-09-30T00:45:00.000+02:00",
+      "price": 0.2235,
+      "onOff": false,
+      "saving": 0.0533,
+      "count": 15
+    },
+    {
+      "start": "2025-09-30T01:00:00.000+02:00",
+      "price": 0.276,
+      "onOff": true,
+      "saving": null,
+      "count": 1380
+    } // ...
   ],
   "source": "Nord Pool",
   "config": {
@@ -195,8 +181,6 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `minutes` array shows values per minute containing the price (received as input), whether that minute is on or off, the start time of the minute and the amount per kWh that is saved on minutes that are turned off, compared to the next recovery period.
 
-
-
 ### Output saved in context
 
 The `schedule` and the `minutes` arrays from Output 3 are both saved to the nodes context in an object with key `lastPlan`. This may be used in the plan for the next day, for example if an off-period at the end of one day continues into the next day. In that case, the `saving` values for the last minutes in the day have to be recalculated, since the next minute on is changed when the new day is calculated.
@@ -204,8 +188,6 @@ The `schedule` and the `minutes` arrays from Output 3 are both saved to the node
 You can see the saved data if you select the node in Node-RED, and view "Context data", and refresh the Node context.
 
 ###
-
-
 
 ## Algorithm
 
@@ -221,8 +203,6 @@ The calculation that decides what minutes to turn off works as follows:
 
 I say "in most cases", because there is a chance that a group of two or more sequences combined can give a better plan than a single sequence preceeding those two, but where the selection of the one sequence causes the group to be discarded. If anyone encounters this situation, I would be happy to receive the price data set, and try to improve the algorithm even further.
 
-
-
 ## Data used for calculation
 
 Normally data is received for one or two whole days, and all this data is used to do the calculation. In addition, if the node has run before, so there is historical data, the last period on or off before the period data is received for, is considered in the calculation, so that the rules in the configuration are followed also between days.
@@ -236,8 +216,6 @@ If there is only one context storage defined, this is normally `memory`. In that
 It is common to have two different context storages defined, `memory` and `file`, but there may be more.
 It is also common to have a `default` context storage defined, and often this points to either `memory` or `file`.
 However, the configuration can be different from this.
-
-
 
 You can find this configuration in the `settings.js` file for Node-RED, usually in the node-red config folder.
 In Home Assistant, this is normally `/config/node-red/settings.js`.
@@ -257,8 +235,6 @@ Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/con
 
 The data that is saved is the config, the last used prices and the last calculated schedule.
 
-
-
 When Node-RED restarts, the config is reset to what is defined in the node config, so by default,
 nothing is read from the context storage after a restart. However, if you send a `replan` command to the
 nodes input, a plan is recalculated, using the last received prices. One way to do this is to use an `inject` node,
@@ -275,8 +251,6 @@ and set `msg.payload` to the following JSON value:
 This is an alternative to fetching new prices and send as input.
 
 ###
-
-
 
 ## Integration with MagicMirror
 
@@ -297,5 +271,3 @@ The MagicMirror integration has not been prepared for quarterly hour prices.
 If you like to analyze the data output by the node, take a look at the [Best Save Viewer](../faq/best-save-viewer.md).
 
 ###
-
-

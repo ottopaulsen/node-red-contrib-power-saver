@@ -32,7 +32,8 @@ module.exports = function (RED) {
       // Inherit output-related settings from the upstream node's config so the scheduler
       // and switch outputs behave consistently with the preceding strategy node.
       node.outputValueForOn = incomingConfig.outputValueForOn !== undefined ? incomingConfig.outputValueForOn : true;
-      node.outputValueForOff = incomingConfig.outputValueForOff !== undefined ? incomingConfig.outputValueForOff : false;
+      node.outputValueForOff =
+        incomingConfig.outputValueForOff !== undefined ? incomingConfig.outputValueForOff : false;
       node.outputIfNoSchedule =
         incomingConfig.outputIfNoSchedule !== undefined ? booleanConfig(incomingConfig.outputIfNoSchedule) : true;
       node.override = incomingConfig.override || "auto";
@@ -48,8 +49,7 @@ module.exports = function (RED) {
       minutes.forEach((m) => {
         if (m.price == null) return;
         const triggered =
-          (node.condition === "over" && m.price > node.limit) ||
-          (node.condition === "under" && m.price < node.limit);
+          (node.condition === "over" && m.price > node.limit) || (node.condition === "under" && m.price < node.limit);
         if (triggered) {
           m.onOff = forcedValue;
         }
@@ -81,7 +81,13 @@ module.exports = function (RED) {
           : node.override === "on";
 
       const outputCommands = {
-        sendOutput: mergerShallSendOutput(msg, commands, currentOutput, plannedOutputNow, node.sendCurrentValueWhenRescheduling),
+        sendOutput: mergerShallSendOutput(
+          msg,
+          commands,
+          currentOutput,
+          plannedOutputNow,
+          node.sendCurrentValueWhenRescheduling,
+        ),
         sendSchedule: mergerShallSendSchedule(msg, commands),
         runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
       };

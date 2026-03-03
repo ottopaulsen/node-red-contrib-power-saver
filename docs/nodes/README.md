@@ -1,11 +1,8 @@
-
 # Nodes
 
 Here is an overview of the nodes, and links to detailed descriptions for eah of them.
 
 ###
-
-
 
 ## Strategy nodes
 
@@ -37,8 +34,6 @@ A strategy for setting a fixed daily or weekly schedule.
 
 ###
 
-
-
 ## Utility nodes
 
 ### [ps-receive-price](./ps-receive-price)
@@ -53,8 +48,6 @@ Node to convert different types of input data to the format used by the strategy
 
 Node to combine multiple schedules into one schedule.
 
-
-
 ## Grid tariff nodes
 
 ### [ps-general-add-tariff](./ps-general-add-tariff)
@@ -68,8 +61,6 @@ Node to add a variable grid tariff (or any value) to the prices before sending t
 ![ps-elvia-add-tariff](../images/node-ps-elvia-add-tariff.png)
 
 Node to add Elvia grid tariff to the prices before sending them to the strategy nodes.
-
-
 
 ## Other nodes
 
@@ -90,5 +81,3 @@ Use this to get the Elvia grid tariff for a selected tariff type.
 A node for advanced light control based on motion.
 
 ###
-
-

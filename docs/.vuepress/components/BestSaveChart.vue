@@ -1,7 +1,7 @@
 <template>
   <div class="best-save-chart" v-if="hasData">
     <h3>Visual Timeline</h3>
-    
+
     <div class="chart-controls">
       <label>
         <input type="checkbox" v-model="showPrice" />
@@ -27,8 +27,8 @@
     <svg :width="chartWidth" :height="chartHeight" class="timeline-chart">
       <!-- Background grid -->
       <g class="grid">
-        <line 
-          v-for="i in gridLines" 
+        <line
+          v-for="i in gridLines"
           :key="'grid-' + i"
           :x1="timeToX(i * 60)"
           :y1="margin.top"
@@ -80,12 +80,7 @@
 
       <!-- Price line (drawn after savings so it's on top) -->
       <g v-if="showPrice" class="price-line">
-        <polyline
-          :points="priceLinePoints"
-          fill="none"
-          stroke="#2c3e50"
-          stroke-width="2"
-        />
+        <polyline :points="priceLinePoints" fill="none" stroke="#2c3e50" stroke-width="2" />
       </g>
 
       <!-- X-axis time labels -->
@@ -118,23 +113,10 @@
       </g>
 
       <!-- Axis labels -->
-      <text 
-        :x="chartWidth / 2" 
-        :y="chartHeight - 5" 
-        text-anchor="middle"
-        font-size="12"
-        font-weight="bold"
-      >
+      <text :x="chartWidth / 2" :y="chartHeight - 5" text-anchor="middle" font-size="12" font-weight="bold">
         Time (hours)
       </text>
-      <text 
-        :x="15" 
-        :y="margin.top - 10" 
-        font-size="12"
-        font-weight="bold"
-      >
-        Price
-      </text>
+      <text :x="15" :y="margin.top - 10" font-size="12" font-weight="bold">Price</text>
     </svg>
 
     <!-- Statistics summary -->
@@ -198,7 +180,7 @@
             <td>{{ formatTime(period.time) }}</td>
             <td>{{ period.countMinutes }} minutes</td>
             <td :class="period.value ? 'on-text' : 'off-text'">
-              {{ period.value ? 'ON' : 'OFF' }}
+              {{ period.value ? "ON" : "OFF" }}
             </td>
           </tr>
         </tbody>
@@ -208,14 +190,14 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { DateTime } from 'luxon';
+import { computed, ref } from "vue";
+import { DateTime } from "luxon";
 
 const props = defineProps({
   payload: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const showPrice = ref(true);
@@ -238,12 +220,12 @@ const totalMinutes = computed(() => {
 
 const totalOnMinutes = computed(() => {
   if (!hasData.value) return 0;
-  return props.payload.minutes.filter(m => m.onOff).reduce((sum, m) => sum + m.count, 0);
+  return props.payload.minutes.filter((m) => m.onOff).reduce((sum, m) => sum + m.count, 0);
 });
 
 const totalOffMinutes = computed(() => {
   if (!hasData.value) return 0;
-  return props.payload.minutes.filter(m => !m.onOff).reduce((sum, m) => sum + m.count, 0);
+  return props.payload.minutes.filter((m) => !m.onOff).reduce((sum, m) => sum + m.count, 0);
 });
 
 const onPercentage = computed(() => {
@@ -257,33 +239,33 @@ const offPercentage = computed(() => {
 });
 
 const avgSavingsPerKwh = computed(() => {
-  if (!hasData.value) return '0.00';
-  const offBlocks = props.payload.minutes.filter(m => !m.onOff && m.saving !== null);
-  if (offBlocks.length === 0) return '0.00';
-  
+  if (!hasData.value) return "0.00";
+  const offBlocks = props.payload.minutes.filter((m) => !m.onOff && m.saving !== null);
+  if (offBlocks.length === 0) return "0.00";
+
   const totalWeighted = offBlocks.reduce((total, m) => {
-    return total + (m.saving * m.count);
+    return total + m.saving * m.count;
   }, 0);
   const totalOffMinutes = offBlocks.reduce((total, m) => total + m.count, 0);
-  
-  return totalOffMinutes > 0 ? (totalWeighted / totalOffMinutes).toFixed(4) : '0.00';
+
+  return totalOffMinutes > 0 ? (totalWeighted / totalOffMinutes).toFixed(4) : "0.00";
 });
 
 // Calculate average saving per kWh for each OFF sequence
 const offSequenceSavings = computed(() => {
   if (!hasData.value) return [];
-  
+
   const sequences = [];
   let i = 0;
-  
+
   while (i < props.payload.minutes.length) {
     const block = props.payload.minutes[i];
-    
+
     if (!block.onOff) {
       let totalMinutes = 0;
       let weightedSavings = 0;
       let sequenceStart = i;
-      
+
       // Accumulate consecutive OFF blocks
       while (i < props.payload.minutes.length && !props.payload.minutes[i].onOff) {
         const offBlock = props.payload.minutes[i];
@@ -291,25 +273,25 @@ const offSequenceSavings = computed(() => {
         weightedSavings += (offBlock.saving ?? 0) * offBlock.count;
         i++;
       }
-      
+
       const avgSaving = totalMinutes > 0 ? weightedSavings / totalMinutes : 0;
-      
+
       sequences.push({
         startIndex: sequenceStart,
         durationMinutes: totalMinutes,
-        avgSavingPerKwh: avgSaving.toFixed(4)
+        avgSavingPerKwh: avgSaving.toFixed(4),
       });
     } else {
       i++;
     }
   }
-  
+
   return sequences;
 });
 
 const avgPrice = computed(() => {
-  if (!hasData.value) return '0.00';
-  const totalPrice = props.payload.minutes.reduce((sum, m) => sum + (m.price * m.count), 0);
+  if (!hasData.value) return "0.00";
+  const totalPrice = props.payload.minutes.reduce((sum, m) => sum + m.price * m.count, 0);
   return (totalPrice / totalMinutes.value).toFixed(4);
 });
 
@@ -318,13 +300,13 @@ const schedule = computed(() => props.payload.schedule || []);
 // Expand blocks into time-based coordinates
 const expandedBlocks = computed(() => {
   if (!hasData.value) return [];
-  
+
   let currentMinute = 0;
   return props.payload.minutes.map((block, index) => {
     const startMinute = currentMinute;
     const endMinute = currentMinute + block.count;
     currentMinute = endMinute;
-    
+
     return {
       x: timeToX(startMinute),
       width: timeToX(endMinute) - timeToX(startMinute),
@@ -333,7 +315,7 @@ const expandedBlocks = computed(() => {
       price: block.price,
       startMinute,
       endMinute,
-      index
+      index,
     };
   });
 });
@@ -341,12 +323,12 @@ const expandedBlocks = computed(() => {
 // Calculate recovery periods
 const recoveryPeriods = computed(() => {
   if (!hasData.value || !props.payload.config) return [];
-  
+
   const recoveryPercentage = parseInt(props.payload.config.recoveryPercentage) || 50;
   const recoveryMaxMinutes = parseInt(props.payload.config.recoveryMaxMinutes) || 120;
-  
+
   const periods = [];
-  
+
   // First, build an array with cumulative minute positions
   const blockPositions = [];
   let cumulativeMinute = 0;
@@ -354,50 +336,47 @@ const recoveryPeriods = computed(() => {
     blockPositions.push({
       startMinute: cumulativeMinute,
       endMinute: cumulativeMinute + props.payload.minutes[i].count,
-      block: props.payload.minutes[i]
+      block: props.payload.minutes[i],
     });
     cumulativeMinute += props.payload.minutes[i].count;
   }
-  
+
   // Find consecutive OFF sequences and calculate recovery for each
   let i = 0;
   while (i < blockPositions.length) {
     const position = blockPositions[i];
-    
+
     // If this is the start of an OFF sequence, accumulate all consecutive OFF blocks
     if (!position.block.onOff) {
       let totalOffDuration = 0;
       let offSequenceEnd = i;
-      
+
       // Sum up all consecutive OFF blocks
       while (offSequenceEnd < blockPositions.length && !blockPositions[offSequenceEnd].block.onOff) {
         totalOffDuration += blockPositions[offSequenceEnd].block.count;
         offSequenceEnd++;
       }
-      
+
       // Calculate recovery based on TOTAL consecutive OFF time
-      const recoveryDuration = Math.min(
-        Math.round(totalOffDuration * recoveryPercentage / 100),
-        recoveryMaxMinutes
-      );
-      
+      const recoveryDuration = Math.min(Math.round((totalOffDuration * recoveryPercentage) / 100), recoveryMaxMinutes);
+
       if (recoveryDuration > 0) {
         let remainingRecovery = recoveryDuration;
-        
+
         // Apply recovery to subsequent ON blocks
         for (let j = offSequenceEnd; j < blockPositions.length && remainingRecovery > 0; j++) {
           const futurePosition = blockPositions[j];
-          
+
           if (futurePosition.block.onOff) {
             // This is an ON block, include it in recovery
             const recoveryInThisBlock = Math.min(remainingRecovery, futurePosition.block.count);
-            
+
             periods.push({
               x: timeToX(futurePosition.startMinute),
               width: timeToX(futurePosition.startMinute + recoveryInThisBlock) - timeToX(futurePosition.startMinute),
-              duration: recoveryInThisBlock
+              duration: recoveryInThisBlock,
             });
-            
+
             remainingRecovery -= recoveryInThisBlock;
           } else {
             // Hit another OFF block, stop recovery
@@ -405,26 +384,26 @@ const recoveryPeriods = computed(() => {
           }
         }
       }
-      
+
       // Skip to the end of this OFF sequence
       i = offSequenceEnd;
     } else {
       i++;
     }
   }
-  
+
   return periods;
 });
 
 // Savings visualization: shaded area during OFF period showing savings
 const savingsVisualization = computed(() => {
   if (!hasData.value || !props.payload.config) return [];
-  
+
   const recoveryPercentage = parseInt(props.payload.config.recoveryPercentage) || 50;
   const recoveryMaxMinutes = parseInt(props.payload.config.recoveryMaxMinutes) || 120;
-  
+
   const visualizations = [];
-  
+
   // Build position map
   const blockPositions = [];
   let cumulativeMinute = 0;
@@ -432,45 +411,42 @@ const savingsVisualization = computed(() => {
     blockPositions.push({
       startMinute: cumulativeMinute,
       endMinute: cumulativeMinute + props.payload.minutes[i].count,
-      block: props.payload.minutes[i]
+      block: props.payload.minutes[i],
     });
     cumulativeMinute += props.payload.minutes[i].count;
   }
-  
+
   // Find consecutive OFF sequences
   let i = 0;
   while (i < blockPositions.length) {
     const position = blockPositions[i];
-    
+
     if (!position.block.onOff) {
       let totalOffDuration = 0;
       let offSequenceEnd = i;
       let offSequenceStart = i;
-      
+
       // Sum up all consecutive OFF blocks
       while (offSequenceEnd < blockPositions.length && !blockPositions[offSequenceEnd].block.onOff) {
         totalOffDuration += blockPositions[offSequenceEnd].block.count;
         offSequenceEnd++;
       }
-      
+
       // Calculate recovery duration based on TOTAL consecutive OFF time
-      const recoveryDuration = Math.min(
-        Math.round(totalOffDuration * recoveryPercentage / 100),
-        recoveryMaxMinutes
-      );
-      
+      const recoveryDuration = Math.min(Math.round((totalOffDuration * recoveryPercentage) / 100), recoveryMaxMinutes);
+
       if (recoveryDuration > 0) {
         // Calculate average price during recovery period
         let recoveryMinutesAccumulated = 0;
         let weightedPriceSum = 0;
-        
+
         for (let j = offSequenceEnd; j < blockPositions.length && recoveryMinutesAccumulated < recoveryDuration; j++) {
           const futurePosition = blockPositions[j];
-          
+
           if (futurePosition.block.onOff) {
             const minutesInRecovery = Math.min(
               recoveryDuration - recoveryMinutesAccumulated,
-              futurePosition.block.count
+              futurePosition.block.count,
             );
             weightedPriceSum += futurePosition.block.price * minutesInRecovery;
             recoveryMinutesAccumulated += minutesInRecovery;
@@ -478,88 +454,86 @@ const savingsVisualization = computed(() => {
             break;
           }
         }
-        
-        const avgRecoveryPrice = recoveryMinutesAccumulated > 0 
-          ? weightedPriceSum / recoveryMinutesAccumulated 
-          : null;
-        
+
+        const avgRecoveryPrice = recoveryMinutesAccumulated > 0 ? weightedPriceSum / recoveryMinutesAccumulated : null;
+
         if (avgRecoveryPrice !== null) {
           // Build the shaded area polygon over the OFF period
           // Top edge: step function following price curve during OFF
           // Bottom edge: average recovery price (horizontal line)
           const points = [];
-          
+
           // Add top edge points (step function for price curve during OFF period)
           for (let j = offSequenceStart; j < offSequenceEnd; j++) {
             const offPosition = blockPositions[j];
             const startX = timeToX(offPosition.startMinute);
             const endX = timeToX(offPosition.endMinute);
             const priceY = priceToY(offPosition.block.price);
-            
+
             // Create flat horizontal line for this block
             points.push(`${startX},${priceY}`);
             points.push(`${endX},${priceY}`);
           }
-          
+
           // Add bottom edge points (average recovery price - horizontal line, in reverse)
           const avgRecoveryY = priceToY(avgRecoveryPrice);
           const offEndX = timeToX(blockPositions[offSequenceEnd - 1].endMinute);
           const offStartX = timeToX(blockPositions[offSequenceStart].startMinute);
-          
+
           points.push(`${offEndX},${avgRecoveryY}`);
           points.push(`${offStartX},${avgRecoveryY}`);
-          
+
           visualizations.push({
-            areaPoints: points.join(' ')
+            areaPoints: points.join(" "),
           });
         }
       }
-      
+
       i = offSequenceEnd;
     } else {
       i++;
     }
   }
-  
+
   return visualizations;
 });
 
 // Price data points - create step function
 const pricePoints = computed(() => {
   if (!hasData.value) return [];
-  
+
   const points = [];
   let currentMinute = 0;
-  
+
   for (let i = 0; i < props.payload.minutes.length; i++) {
     const block = props.payload.minutes[i];
     const startX = timeToX(currentMinute);
     const endX = timeToX(currentMinute + block.count);
     const y = priceToY(block.price);
-    
+
     // Add start and end points for flat line
     points.push({ x: startX, y: y, price: block.price });
     points.push({ x: endX, y: y, price: block.price });
-    
+
     currentMinute += block.count;
   }
-  
+
   return points;
 });
 
 const priceLinePoints = computed(() => {
-  return pricePoints.value.map(p => `${p.x},${p.y}`).join(' ');
+  return pricePoints.value.map((p) => `${p.x},${p.y}`).join(" ");
 });
 
 // Price range for Y-axis
 const minPrice = computed(() => {
   if (!hasData.value) return 0;
-  return Math.min(...props.payload.minutes.map(m => m.price));
+  return Math.min(...props.payload.minutes.map((m) => m.price));
 });
 
 const maxPrice = computed(() => {
   if (!hasData.value) return 1;
-  return Math.max(...props.payload.minutes.map(m => m.price));
+  return Math.max(...props.payload.minutes.map((m) => m.price));
 });
 
 const priceTicks = computed(() => {
@@ -567,7 +541,7 @@ const priceTicks = computed(() => {
   const max = maxPrice.value;
   const range = max - min;
   const step = range / 5;
-  return [min, min + step, min + 2*step, min + 3*step, min + 4*step, max];
+  return [min, min + step, min + 2 * step, min + 3 * step, min + 4 * step, max];
 });
 
 // Calculate appropriate grid lines (every few hours)
@@ -603,15 +577,15 @@ function priceToY(price) {
   const priceRange = maxPrice.value - minPrice.value;
   if (priceRange === 0) return margin.top + plotHeight / 2;
   const normalized = (price - minPrice.value) / priceRange;
-  return margin.top + plotHeight - (normalized * plotHeight);
+  return margin.top + plotHeight - normalized * plotHeight;
 }
 
 function formatHour(hour) {
-  return hour.toString().padStart(2, '0') + ':00';
+  return hour.toString().padStart(2, "0") + ":00";
 }
 
 function formatTime(timeStr) {
-  return DateTime.fromISO(timeStr).toFormat('yyyy-MM-dd HH:mm');
+  return DateTime.fromISO(timeStr).toFormat("yyyy-MM-dd HH:mm");
 }
 </script>
 
@@ -700,7 +674,7 @@ function formatTime(timeStr) {
   fill: rgba(255, 152, 0, 0.4);
   stroke: #ff9800;
   stroke-width: 2;
-  stroke-dasharray: 4,4;
+  stroke-dasharray: 4, 4;
 }
 
 .stats-summary {

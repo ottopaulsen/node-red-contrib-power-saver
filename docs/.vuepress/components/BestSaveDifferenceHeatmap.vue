@@ -2,42 +2,46 @@
   <div class="savings-heatmap">
     <h3>Savings if Turned Off (Heatmap)</h3>
     <p class="explanation">
-      Each colored cell shows the potential saving per kWh if turned off for that number of minutes.
-      Click a cell to see which values were used in the calculation.
+      Each colored cell shows the potential saving per kWh if turned off for that number of minutes. Click a cell to see
+      which values were used in the calculation.
     </p>
 
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto">
       <svg :width="svgWidth" :height="svgHeight" class="heatmap-svg">
         <!-- Rows -->
         <g v-for="(minute, i) in minutes" :key="'row-' + i">
           <!-- Row label -->
-          <text :x="5"
-                :y="i * cellHeight + cellHeight / 2 + 4"
-                class="row-label">
+          <text :x="5" :y="i * cellHeight + cellHeight / 2 + 4" class="row-label">
             {{ DateTime.fromISO(minute.start).toFormat("MM-dd HH:mm") }}
           </text>
 
           <!-- Heatmap cells -->
-          <rect v-for="(col, j) in visibleColumns" 
-                :key="'cell-' + i + '-' + j"
-                :x="labelWidth + j * cellWidth"
-                :y="i * cellHeight"
-                :width="cellWidth"
-                :height="cellHeight"
-                :fill="getCellColor(i, j)"
-                :stroke="getCellStroke(i, j)"
-                :stroke-width="getCellStrokeWidth(i, j)"
-                @click="handleCellClick(i, j)"
-                class="heatmap-cell"
+          <rect
+            v-for="(col, j) in visibleColumns"
+            :key="'cell-' + i + '-' + j"
+            :x="labelWidth + j * cellWidth"
+            :y="i * cellHeight"
+            :width="cellWidth"
+            :height="cellHeight"
+            :fill="getCellColor(i, j)"
+            :stroke="getCellStroke(i, j)"
+            :stroke-width="getCellStrokeWidth(i, j)"
+            @click="handleCellClick(i, j)"
+            class="heatmap-cell"
           />
         </g>
 
         <!-- Horizontal grid lines only (between rows) -->
-        <line v-for="i in minutes.length + 1" :key="'h-line-' + i"
-              :x1="labelWidth" :y1="(i - 1) * cellHeight"
-              :x2="labelWidth + visibleColumns.length * cellWidth" 
-              :y2="(i - 1) * cellHeight"
-              stroke="#ddd" stroke-width="0.5" />
+        <line
+          v-for="i in minutes.length + 1"
+          :key="'h-line-' + i"
+          :x1="labelWidth"
+          :y1="(i - 1) * cellHeight"
+          :x2="labelWidth + visibleColumns.length * cellWidth"
+          :y2="(i - 1) * cellHeight"
+          stroke="#ddd"
+          stroke-width="0.5"
+        />
       </svg>
     </div>
 
@@ -45,29 +49,51 @@
       <h4>Cell Details</h4>
       <div class="detail-grid">
         <div class="detail-item"><span class="label">Row:</span> {{ clickedCell.row + 1 }}</div>
-        <div class="detail-item"><span class="label">Column:</span> {{ clickedCell.col + 1 }} (turn off for {{ clickedCell.col + 1 }} minutes)</div>
-        <div class="detail-item"><span class="label">Date:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("yyyy-MM-dd") }}</div>
-        <div class="detail-item"><span class="label">Time:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("HH:mm") }}</div>
+        <div class="detail-item">
+          <span class="label">Column:</span> {{ clickedCell.col + 1 }} (turn off for {{ clickedCell.col + 1 }} minutes)
+        </div>
+        <div class="detail-item">
+          <span class="label">Date:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("yyyy-MM-dd") }}
+        </div>
+        <div class="detail-item">
+          <span class="label">Time:</span> {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("HH:mm") }}
+        </div>
         <div class="detail-item"><span class="label">Count:</span> {{ minutes[clickedCell.row].count }} minutes</div>
         <div class="detail-item"><span class="label">Price:</span> {{ minutes[clickedCell.row].price }}</div>
-        <div class="detail-item"><span class="label">On/Off:</span> {{ minutes[clickedCell.row].onOff ? 'On' : 'Off' }}</div>
-        <div class="detail-item"><span class="label">Saving:</span> {{ minutes[clickedCell.row].saving ?? 'N/A' }}</div>
-        <div class="detail-item"><span class="label">Value:</span> {{ getCellValue(clickedCell.row, clickedCell.col) }}</div>
-        <div class="detail-item full-width"><span class="label">Period Start:</span> Row {{ periodInfo.start + 1 }} ({{ DateTime.fromISO(minutes[periodInfo.start].start).toFormat("MM-dd HH:mm") }})</div>
-        <div class="detail-item full-width"><span class="label">Period End:</span> Row {{ periodInfo.end + 1 }} ({{ DateTime.fromISO(minutes[periodInfo.end].start).toFormat("MM-dd HH:mm") }})</div>
+        <div class="detail-item">
+          <span class="label">On/Off:</span> {{ minutes[clickedCell.row].onOff ? "On" : "Off" }}
+        </div>
+        <div class="detail-item"><span class="label">Saving:</span> {{ minutes[clickedCell.row].saving ?? "N/A" }}</div>
+        <div class="detail-item">
+          <span class="label">Value:</span> {{ getCellValue(clickedCell.row, clickedCell.col) }}
+        </div>
+        <div class="detail-item full-width">
+          <span class="label">Period Start:</span> Row {{ periodInfo.start + 1 }} ({{
+            DateTime.fromISO(minutes[periodInfo.start].start).toFormat("MM-dd HH:mm")
+          }})
+        </div>
+        <div class="detail-item full-width">
+          <span class="label">Period End:</span> Row {{ periodInfo.end + 1 }} ({{
+            DateTime.fromISO(minutes[periodInfo.end].start).toFormat("MM-dd HH:mm")
+          }})
+        </div>
       </div>
       <div class="calculation">
-        <strong>What this value means:</strong><br>
-        This shows the saving per kWh if you turn off the power for <strong>{{ clickedCell.col + 1 }} minutes</strong> 
-        starting at {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("MM-dd HH:mm") }}.<br><br>
-        <strong>Calculation:</strong><br>
-        Price at row {{ clickedCell.row + 1 }} at {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("MM-dd HH:mm") }}: 
-        <strong>{{ minutes[clickedCell.row].price }}</strong><br>
-        <span style="margin-left: 20px;">minus</span><br>
+        <strong>What this value means:</strong><br />
+        This shows the saving per kWh if you turn off the power for
+        <strong>{{ clickedCell.col + 1 }} minutes</strong> starting at
+        {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("MM-dd HH:mm") }}.<br /><br />
+        <strong>Calculation:</strong><br />
+        Price at row {{ clickedCell.row + 1 }} at
+        {{ DateTime.fromISO(minutes[clickedCell.row].start).toFormat("MM-dd HH:mm") }}:
+        <strong>{{ minutes[clickedCell.row].price }}</strong
+        ><br />
+        <span style="margin-left: 20px">minus</span><br />
         <template v-if="getTargetRow() !== null">
-          Price at row {{ getTargetRow() + 1 }} at {{ getTargetTime() }} (valid {{ clickedCell.col + 1 }} minutes later): 
-          <strong>{{ getTargetPrice() }}</strong><br>
-          <span style="margin-left: 20px;">=</span><br>
+          Price at row {{ getTargetRow() + 1 }} at {{ getTargetTime() }} (valid {{ clickedCell.col + 1 }} minutes
+          later): <strong>{{ getTargetPrice() }}</strong
+          ><br />
+          <span style="margin-left: 20px">=</span><br />
           Saving per kWh: <strong>{{ getCellValue(clickedCell.row, clickedCell.col) }}</strong>
         </template>
         <template v-else>
@@ -79,30 +105,30 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue';
-import { DateTime } from 'luxon';
+import { computed, reactive, ref } from "vue";
+import { DateTime } from "luxon";
 
 const props = defineProps({
   minutes: {
     type: Array,
-    required: true
+    required: true,
   },
   differencePerMinute: {
     type: Array,
-    required: true
+    required: true,
   },
   differenceColumns: {
     type: Array,
-    required: true
+    required: true,
   },
   showNegative: {
     type: Boolean,
-    default: false
+    default: false,
   },
   maxColumns: {
     type: Number,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const clickedCell = reactive({ row: null, col: null });
@@ -141,7 +167,7 @@ const svgHeight = computed(() => {
 const valueStats = computed(() => {
   let min = 0;
   let max = 0;
-  
+
   for (let i = 0; i < props.differencePerMinute.length; i++) {
     for (let j = 0; j < props.maxColumns; j++) {
       const val = props.differencePerMinute[i]?.[j];
@@ -151,7 +177,7 @@ const valueStats = computed(() => {
       }
     }
   }
-  
+
   return { min, max };
 });
 
@@ -160,37 +186,37 @@ const periodInfo = computed(() => {
   if (clickedCell.row === null || clickedCell.col === null) {
     return { start: 0, end: 0 };
   }
-  
+
   const currentValue = props.differencePerMinute[clickedCell.row]?.[clickedCell.col];
   if (currentValue === null || currentValue === undefined) {
     return { start: clickedCell.row, end: clickedCell.row };
   }
-  
+
   let start = clickedCell.row;
   let end = clickedCell.row;
-  
+
   // Find start - go backward while values match
   while (start > 0 && props.differencePerMinute[start - 1]?.[clickedCell.col] === currentValue) {
     start--;
   }
-  
+
   // Find end - go forward while values match
   while (end < props.minutes.length - 1 && props.differencePerMinute[end + 1]?.[clickedCell.col] === currentValue) {
     end++;
   }
-  
+
   return { start, end };
 });
 
 function getCellValue(row, col) {
   const val = props.differencePerMinute[row]?.[col];
-  return val !== null && val !== undefined ? val.toFixed(4) : 'N/A';
+  return val !== null && val !== undefined ? val.toFixed(4) : "N/A";
 }
 
 function getTargetRow() {
   const minutesAhead = clickedCell.col + 1;
   let accumulatedMinutes = 0;
-  
+
   for (let k = clickedCell.row; k < props.minutes.length; k++) {
     accumulatedMinutes += props.minutes[k].count;
     if (accumulatedMinutes > minutesAhead) {
@@ -205,7 +231,7 @@ function getTargetPrice() {
   if (targetRow !== null && targetRow < props.minutes.length) {
     return props.minutes[targetRow].price;
   }
-  return 'N/A';
+  return "N/A";
 }
 
 function getTargetTime() {
@@ -213,39 +239,39 @@ function getTargetTime() {
   if (targetRow !== null && targetRow < props.minutes.length) {
     return DateTime.fromISO(props.minutes[targetRow].start).toFormat("MM-dd HH:mm");
   }
-  return 'N/A';
+  return "N/A";
 }
 
 function getCellColor(row, col) {
   const val = props.differencePerMinute[row]?.[col];
-  
+
   if (val === null || val === undefined) {
-    return 'white';
+    return "white";
   }
-  
+
   if (val > 0) {
     // Blue gradient for positive values
     const intensity = val / valueStats.value.max;
-    const lightness = 90 - (intensity * 60); // 90% to 30%
+    const lightness = 90 - intensity * 60; // 90% to 30%
     return `hsl(210, 100%, ${lightness}%)`;
   } else if (val < 0 && props.showNegative) {
     // Red gradient for negative values
     const intensity = Math.abs(val) / Math.abs(valueStats.value.min);
-    const lightness = 90 - (intensity * 60); // 90% to 30%
+    const lightness = 90 - intensity * 60; // 90% to 30%
     return `hsl(0, 100%, ${lightness}%)`;
   }
-  
-  return 'white';
+
+  return "white";
 }
 
 function getCellStroke(row, col) {
   if (clickedCell.row === row && clickedCell.col === col) {
-    return '#000';
+    return "#000";
   }
   if (highlightedCells.value.has(`${row},${col}`)) {
-    return '#ff6b00';
+    return "#ff6b00";
   }
-  return 'none';
+  return "none";
 }
 
 function getCellStrokeWidth(row, col) {
@@ -261,11 +287,11 @@ function getCellStrokeWidth(row, col) {
 function handleCellClick(row, col) {
   clickedCell.row = row;
   clickedCell.col = col;
-  
+
   // Highlight the source cell
   highlightedCells.value = new Set();
   highlightedCells.value.add(`${row},${col}`);
-  
+
   // Highlight the cell being compared to (row + col + 1)
   const targetRow = row + col + 1;
   if (targetRow < props.minutes.length) {

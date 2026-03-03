@@ -56,11 +56,10 @@ function doPlanning(node, priceData) {
   const from = fromHour * 60 + fromMinute;
   const to = toHour * 60 + toMinute;
 
-
   const periodStatus = [];
   const startIndexes = [];
   const endIndexes = [];
-  let currentStatus = from < (to === 0 && to !== from ? (24 * 60) : to) ? "Outside" : "StartMissing";
+  let currentStatus = from < (to === 0 && to !== from ? 24 * 60 : to) ? "Outside" : "StartMissing";
   let hour;
   let minute;
   startTimes.forEach((st, i) => {
@@ -81,7 +80,7 @@ function doPlanning(node, priceData) {
     }
     periodStatus[i] = currentStatus;
   });
-  if (currentStatus === "Inside" && minute !== (to === 0 ? (23 * 60 + 59) : to - 1)) {
+  if (currentStatus === "Inside" && minute !== (to === 0 ? 23 * 60 + 59 : to - 1)) {
     // Last period incomplete
     let i = periodStatus.length - 1;
     do {
@@ -92,7 +91,7 @@ function doPlanning(node, priceData) {
     } while (periodStatus[i] === "Inside" && minute !== from);
     startIndexes.splice(startIndexes.length - 1, 1);
   }
-  if (minute === (to === 0 ? (23 * 60 + 59) : to - 1)) {
+  if (minute === (to === 0 ? 23 * 60 + 59 : to - 1)) {
     endIndexes.push(startTimes.length - 1);
   }
 

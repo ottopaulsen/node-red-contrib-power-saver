@@ -25,8 +25,8 @@ describe("ps-light-saver node", function () {
           triggers: [{ entity_id: "binary_sensor.motion1" }],
           lights: [{ entity_id: "light.living_room" }],
           lightTimeout: 10,
-          levels: [{ fromTime: "00:00", level: 100 }]
-        }
+          levels: [{ fromTime: "00:00", level: 100 }],
+        },
       ];
 
       helper.load([lightSaver], flow, function () {
@@ -44,8 +44,8 @@ describe("ps-light-saver node", function () {
           type: "ps-light-saver",
           name: "No Server",
           triggers: [{ entity_id: "binary_sensor.motion1" }],
-          lights: [{ entity_id: "light.living_room" }]
-        }
+          lights: [{ entity_id: "light.living_room" }],
+        },
       ];
 
       helper.load([lightSaver], flow, function () {
@@ -62,23 +62,17 @@ describe("ps-light-saver node", function () {
           id: "n1",
           type: "ps-light-saver",
           name: "Full Config",
-          triggers: [
-            { entity_id: "binary_sensor.motion1", timeoutMinutes: 5 },
-            { entity_id: "binary_sensor.motion2" }
-          ],
-          lights: [
-            { entity_id: "light.living_room" },
-            { entity_id: "switch.outlet" }
-          ],
+          triggers: [{ entity_id: "binary_sensor.motion1", timeoutMinutes: 5 }, { entity_id: "binary_sensor.motion2" }],
+          lights: [{ entity_id: "light.living_room" }, { entity_id: "switch.outlet" }],
           lightTimeout: 15,
           nightSensor: { entity_id: "binary_sensor.night" },
           nightLevel: 25,
           levels: [
             { fromTime: "00:00", level: 20 },
             { fromTime: "06:00", level: 100 },
-            { fromTime: "22:00", level: 50 }
-          ]
-        }
+            { fromTime: "22:00", level: 50 },
+          ],
+        },
       ];
 
       helper.load([lightSaver], flow, function () {
@@ -100,8 +94,8 @@ describe("ps-light-saver node", function () {
           triggers: [],
           lights: [{ entity_id: "light.living_room" }],
           lightTimeout: 10,
-          levels: [{ fromTime: "00:00", level: 100 }]
-        }
+          levels: [{ fromTime: "00:00", level: 100 }],
+        },
       ];
 
       helper.load([lightSaver], flow, function () {
@@ -120,8 +114,8 @@ describe("ps-light-saver node", function () {
           triggers: [{ entity_id: "binary_sensor.motion1" }],
           lights: [],
           lightTimeout: 10,
-          levels: [{ fromTime: "00:00", level: 100 }]
-        }
+          levels: [{ fromTime: "00:00", level: 100 }],
+        },
       ];
 
       helper.load([lightSaver], flow, function () {
@@ -138,8 +132,8 @@ describe("ps-light-saver node", function () {
           type: "ps-light-saver",
           name: "Defaults",
           triggers: [{ entity_id: "binary_sensor.motion1" }],
-          lights: [{ entity_id: "light.living_room" }]
-        }
+          lights: [{ entity_id: "light.living_room" }],
+        },
       ];
 
       helper.load([lightSaver], flow, function () {
@@ -155,4 +149,3 @@ describe("ps-light-saver node", function () {
     // into a separate testable function
   });
 });
-

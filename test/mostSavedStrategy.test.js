@@ -26,7 +26,6 @@ describe("mostSavedStrategy", () => {
     const onOff = [true, true, false, false, false, true, true, false];
     expect(isOnOffSequencesOk(onOff, 3, 3, 100, null)).to.equal(false);
     expect(isOnOffSequencesOk(onOff, 3, 3, 100, "")).to.equal(false);
-
   });
 
   it("evaluates a long onOff sequence correct", () => {
@@ -50,7 +49,6 @@ describe("mostSavedStrategy", () => {
     });
 
     expect(isOnOffSequencesOk(minutes, 75, 15, 85)).to.equal(false);
-
   });
 
   it("saves correct hours", () => {

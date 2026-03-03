@@ -13,12 +13,12 @@ This is useful when you want to force a device **off** if electricity is too exp
 
 ## Configuration
 
-| Value        | Description                                                                                           |
-| ------------ | ----------------------------------------------------------------------------------------------------- |
-| Name         | Optional name for this node.                                                                          |
-| Turn         | Whether to force the switch **On** or **Off** when the price condition is met.                        |
-| If price is  | The direction of the comparison: **Over** or **Under** the configured limit.                          |
-| Limit        | The price threshold. Minutes with a price strictly above (Over) or strictly below (Under) this value trigger the filter. The price unit matches the price data received. |
+| Value       | Description                                                                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Name        | Optional name for this node.                                                                                                                                             |
+| Turn        | Whether to force the switch **On** or **Off** when the price condition is met.                                                                                           |
+| If price is | The direction of the comparison: **Over** or **Under** the configured limit.                                                                                             |
+| Limit       | The price threshold. Minutes with a price strictly above (Over) or strictly below (Under) this value trigger the filter. The price unit matches the price data received. |
 
 The output values (value for on, value for off, behaviour if no schedule, etc.) are inherited from the upstream strategy node and are not configured here.
 
@@ -32,11 +32,11 @@ The input must be **output 3** (the schedule output) from one of the following s
 
 ## Outputs
 
-| Output | Description                                                         |
-| ------ | ------------------------------------------------------------------- |
-| 1      | The configured "on" value, sent when the current period is on.      |
-| 2      | The configured "off" value, sent when the current period is off.    |
-| 3      | The full schedule payload with the filtered minutes and schedule.   |
+| Output | Description                                                       |
+| ------ | ----------------------------------------------------------------- |
+| 1      | The configured "on" value, sent when the current period is on.    |
+| 2      | The configured "off" value, sent when the current period is off.  |
+| 3      | The full schedule payload with the filtered minutes and schedule. |
 
 ## How it works
 

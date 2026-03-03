@@ -21,7 +21,12 @@ describe("ps-strategy-best-save bug-232", function () {
   });
 
   it.skip("find bug", function (done) {
-    const flow = makeFlow(output.config.maxMinutesOff, output.config.minMinutesOff, output.config.recoveryPercentage  , output.config.recoveryMaxMinutes);
+    const flow = makeFlow(
+      output.config.maxMinutesOff,
+      output.config.minMinutesOff,
+      output.config.recoveryPercentage,
+      output.config.recoveryMaxMinutes,
+    );
     flow[0].minSaving = output.config.minSaving;
     flow[0].outputIfNoSchedule = output.config.outputIfNoSchedule;
     const expected = cloneDeep(output);
@@ -39,7 +44,7 @@ describe("ps-strategy-best-save bug-232", function () {
           done();
         }, 900);
       });
-      n1.receive({ payload: makePayload()})
+      n1.receive({ payload: makePayload() });
     });
   });
 });
