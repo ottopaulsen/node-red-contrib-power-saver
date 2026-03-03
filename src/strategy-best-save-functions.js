@@ -124,18 +124,19 @@ function calculate(
   // Find the best possible sequences
   while (savingsList.length > 0) {
     const { minute, count } = savingsList[savingsList.length - 1];
-    const onOffCopy = [...onOff];
+    // Fast check: skip if any minute in this range is already turned off
     let alreadyTaken = false;
     for (let c = 0; c < count; c++) {
-      if (!onOff[minute + c]) {
-        alreadyTaken = true;
-      }
-      onOff[minute + c] = false;
+      if (!onOff[minute + c]) { alreadyTaken = true; break; }
     }
-    if ( isOnOffSequencesOk( [...dayBefore, ...onOff], maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes ) && !alreadyTaken ) {
+    if (alreadyTaken) { savingsList.pop(); continue; }
+    // Apply the off-period
+    for (let c = 0; c < count; c++) onOff[minute + c] = false;
+    if ( isOnOffSequencesOk( dayBefore.length > 0 ? [...dayBefore, ...onOff] : onOff, maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes ) ) {
       savingsList = savingsList.filter((s) => s.minute < minute || s.minute >= minute + count);
     } else {
-      onOff = [...onOffCopy];
+      // Roll back: only the minutes we changed (all were true before alreadyTaken check)
+      for (let c = 0; c < count; c++) onOff[minute + c] = true;
       savingsList.pop();
     }
   }

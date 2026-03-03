@@ -32,7 +32,8 @@
       "ps-elvia-tariff-types": "src/elvia/elvia-tariff-types.js",
       "ps-elvia-tariff": "src/elvia/elvia-tariff.js",
       "ps-elvia-add-tariff": "src/elvia/elvia-add-tariff.js",
-      "ps-general-add-tariff": "src/general-add-tariff.js"
+      "ps-general-add-tariff": "src/general-add-tariff.js",
+      "ps-price-filter": "src/price-filter.js"
     },
     "version": ">=2.2.0"
   },

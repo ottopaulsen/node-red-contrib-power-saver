@@ -59,7 +59,7 @@ export default defineUserConfig({
                 "/nodes/ps-strategy-fixed-schedule.md",
               ],
             },
-            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md", "/nodes/ps-schedule-merger.md"] },
+            { text: "Utility nodes", children: ["/nodes/ps-receive-price.md", "/nodes/ps-schedule-merger.md", "/nodes/ps-price-filter.md"] },
             {
               text: "Grid tariff nodes",
               children: ["/nodes/ps-general-add-tariff.md", "/nodes/ps-elvia-add-tariff.md"],

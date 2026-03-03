@@ -1,6 +1,6 @@
 ---
 prev: ./ps-receive-price.md
-next: ./ps-general-add-tariff.md
+next: ./ps-price-filter.md
 ---
 
 # ps-schedule-merger

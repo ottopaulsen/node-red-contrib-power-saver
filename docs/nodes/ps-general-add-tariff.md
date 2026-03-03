@@ -1,5 +1,5 @@
 ---
-prev: ./ps-schedule-merger.md
+prev: ./ps-price-filter.md
 next: ./ps-elvia-add-tariff.md
 ---
 
