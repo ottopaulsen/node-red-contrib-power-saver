@@ -5,6 +5,8 @@ next: ./ps-general-add-tariff.md
 
 # ps-price-filter
 
+![ps-price-filter](../images/node-ps-price-filter.png)
+
 ## Description
 
 The Price Filter node forces the schedule on or off for any minutes where the price meets a configured condition (over or under a limit). Connect the **schedule output** (output 3) of a strategy node — [Lowest Price](./ps-strategy-lowest-price.md), [Best Save](./ps-strategy-best-save.md) or [Schedule Merger](./ps-schedule-merger.md) — to this node's input. The filter will apply the configured rule to each minute's price and produce a new schedule on all three outputs, just like any other strategy node.
