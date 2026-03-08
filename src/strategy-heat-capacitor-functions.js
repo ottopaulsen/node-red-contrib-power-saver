@@ -8,7 +8,7 @@ function buildMinutePriceVector(priceData) {
   }
 
   const sorted = [...priceData].sort(
-    (a, b) => DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis()
+    (a, b) => DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis(),
   );
 
   const minutePrices = [];
@@ -155,7 +155,7 @@ function calculateSchedule(
   boostTempHeat,
   boostTempCool,
   buyDuration,
-  sellDuration
+  sellDuration,
 ) {
   const arrayLength = buyPrices.length;
   const schedule = {
@@ -259,7 +259,7 @@ function runBuySellAlgorithm(
   boostTempHeat,
   boostTempCool,
   maxTempAdjustment,
-  minSavings
+  minSavings,
 ) {
   const { minutePrices, startDate } = buildMinutePriceVector(priceData);
 
@@ -291,7 +291,7 @@ function runBuySellAlgorithm(
     boostTempHeat,
     boostTempCool,
     buyDuration,
-    sellDuration
+    sellDuration,
   );
 
   return schedule;

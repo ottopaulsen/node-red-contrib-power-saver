@@ -1,0 +1,139 @@
+[
+  {
+    "id": "pf01a2b3c4d5e6f7",
+    "type": "inject",
+    "z": "pf01tab01tab01t1",
+    "name": "Refresh prices (every hour)",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "3600",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "{viewer{homes{currentSubscription{priceInfo(resolution:QUARTER_HOURLY){today{totalstartsAt}tomorrow{totalstartsAt}}}}}}",
+    "payloadType": "str",
+    "x": 180,
+    "y": 80,
+    "wires": [["pf02a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "pf02a2b3c4d5e6f7",
+    "type": "tibber-query",
+    "z": "pf01tab01tab01t1",
+    "name": "Get Tibber prices",
+    "active": true,
+    "apiEndpointRef": "pf0btibberapi01",
+    "x": 430,
+    "y": 80,
+    "wires": [["pf03a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "pf03a2b3c4d5e6f7",
+    "type": "ps-receive-price",
+    "z": "pf01tab01tab01t1",
+    "name": "Price Receiver",
+    "x": 170,
+    "y": 180,
+    "wires": [["pf04a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "pf04a2b3c4d5e6f7",
+    "type": "ps-strategy-lowest-price",
+    "z": "pf01tab01tab01t1",
+    "name": "4 Cheapest Hours",
+    "fromHour": "00",
+    "fromMinute": "00",
+    "toHour": "00",
+    "toMinute": "00",
+    "minutesOn": "240",
+    "maxPrice": "",
+    "doNotSplit": false,
+    "sendCurrentValueWhenRescheduling": true,
+    "outputValueForOn": "true",
+    "outputValueForOff": "false",
+    "outputValueForOntype": "bool",
+    "outputValueForOfftype": "bool",
+    "outputIfNoSchedule": "false",
+    "outputOutsidePeriod": "false",
+    "contextStorage": "default",
+    "x": 390,
+    "y": 180,
+    "wires": [[], [], ["pf05a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "pf05a2b3c4d5e6f7",
+    "type": "ps-price-filter",
+    "z": "pf01tab01tab01t1",
+    "name": "No heating above 1.00",
+    "turn": "off",
+    "condition": "over",
+    "limit": 1,
+    "x": 630,
+    "y": 180,
+    "wires": [["pf06a2b3c4d5e6f7"], ["pf07a2b3c4d5e6f7"], ["pf08a2b3c4d5e6f7"]]
+  },
+  {
+    "id": "pf06a2b3c4d5e6f7",
+    "type": "debug",
+    "z": "pf01tab01tab01t1",
+    "name": "Turn ON",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 860,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "pf07a2b3c4d5e6f7",
+    "type": "debug",
+    "z": "pf01tab01tab01t1",
+    "name": "Turn OFF",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 860,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "pf08a2b3c4d5e6f7",
+    "type": "debug",
+    "z": "pf01tab01tab01t1",
+    "name": "Filtered Schedule",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 870,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "pf0btibberapi01",
+    "type": "tibber-api-endpoint",
+    "queryUrl": "https://api.tibber.com/v1-beta/gql",
+    "name": "Tibber API"
+  },
+  {
+    "id": "cd9babd81a9c291a",
+    "type": "global-config",
+    "env": [],
+    "modules": {
+      "node-red-contrib-tibber-api": "6.4.1",
+      "node-red-contrib-power-saver": "5.1.5"
+    }
+  }
+]

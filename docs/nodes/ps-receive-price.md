@@ -7,8 +7,6 @@ next: ./ps-schedule-merger.md
 
 ![ps-receive-price](../images/node-ps-receive-price.png)
 
-
-
 ## Description
 
 The `ps-receive-price` node is used to convert prices from Tibber or Nord Pool to the format used by the strategy nodes. It takes its input directly from the output of the following nodes (see details below):
@@ -19,14 +17,11 @@ The `ps-receive-price` node is used to convert prices from Tibber or Nord Pool t
 
 Output can be sent directly to the strategy nodes (for example `strategy-best-save` or `strategy-lowest-price`), or it can be sent via another node to add grid tariff or other additional costs before the calculation is done.
 
-
 ## Configuration
 
 There is no configuration except from node name.
 
 ###
-
-
 
 ## Input
 
@@ -54,8 +49,6 @@ If you are a Tibber customer, you can use the `tibber-query` node from the [`nod
   }
 }
 ```
-
-
 
 Send the result from the `tibber-query` node with the query above directly to the `ps-receive-price` node. Make sure it is refreshed when new prices are ready. Prices for the next day are normally ready at 13:00, but refreshing every hour can be a good idea.
 
@@ -91,8 +84,6 @@ Go to the [Tibber Developer pages](https://developer.tibber.com/), sign in, and 
 }
 ```
 
-
-
 Then copy the `id` of the house you want to use prices for. It may look like this:
 
 ```
@@ -127,8 +118,6 @@ This is the query you shall put in the `tibber-query` node.
 
 ###
 
-
-
 ### Nord Pool input
 
 This is especially designed to work for Home Assistant (HA), and the [Nord Pool custom component](https://github.com/custom-components/nordpool). The Nord Pool component provides a _sensor_ that gives price per hour for today and tomorrow (after 13:00). Send the output from this sensor directly to the `ps-receive-price` node. Make sure this is done whenever the node is updated, as well as when the system starts up.
@@ -142,8 +131,6 @@ When using the `current state` node, configure the output properties to set `msg
 [See example with Nord Pool and `current state` node](../examples/example-nordpool-current-state.md)
 
 [See example with Nord Pool and `events: state` node](../examples/example-nordpool-events-state.md)
-
-
 
 ### Other input
 
@@ -164,12 +151,8 @@ If you cannot use any of the two above (Tibber or Nord Pool), create the input t
 }
 ```
 
-
-
 ## Output
 
 The output is the [common strategy input format](./strategy-input.md), so it can be sent directly to the strategy nodes, or via any `ps-xxx-add-tariff` node.
 
 ###
-
-

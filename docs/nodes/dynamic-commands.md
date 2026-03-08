@@ -1,4 +1,3 @@
-
 # Dynamic commands
 
 You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.
@@ -9,8 +8,6 @@ This applies to the following nodes:
 - Schedule Merger
 
 Commands can be sent together with config or price data. You can command multiple commands in one message, but then put them all in the same commands-object.
-
-
 
 ## Commands
 
@@ -44,8 +41,6 @@ When you do this, the current schedule is actually recalculated based on the las
 
 ###
 
-
-
 ### reset
 
 You can reset data the node has saved in context by sending this message:
@@ -69,8 +64,6 @@ This operation cannot be undone.
 However, it is normally not a big loss, as you can just feed the node with new price data and start from scratch.
 :::
 
-
-
 ### replan
 
 By sending this command, you can have the node read the last received prices from the context storage,
@@ -88,5 +81,3 @@ If the context storage is `file` you can use this to create a new schedule after
 instead of fetching prices again.
 
 ###
-
-

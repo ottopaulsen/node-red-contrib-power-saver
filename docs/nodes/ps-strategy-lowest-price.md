@@ -9,13 +9,9 @@ next: ./ps-strategy-heat-capacitor.md
 
 Strategy node to turn on power the times when the price is lowest during a given period, and turn off the other times.
 
-
-
 ## Description
 
 The node can work on a specific period during a 24 hour period. Inside this period, you can decide how much time that shall be on. The rest of the period will be off. Outside the period, you can select that the output shall be either on or off. You can also decide that the time on shall be consecutive (one continuous period) or spread around in multiple on-periods.
-
-
 
 ## Configuration
 
@@ -23,25 +19,23 @@ The node can work on a specific period during a 24 hour period. Inside this peri
 
 | Value                  | Description                                                                                                                                                                                    |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| From hour              | Hour of the start time of the selected period.      |
-| From minute              | Minutes of the start time of the selected period.      |
-| To hour              | Hour of the end time of the selected period.      |
-| To minute              | Minutes of the end time of the selected period.      |
-| Minutes on               | The number of minutes that shall be turned on.    |
+| From hour              | Hour of the start time of the selected period.                                                                                                                                                 |
+| From minute            | Minutes of the start time of the selected period.                                                                                                                                              |
+| To hour                | Hour of the end time of the selected period.                                                                                                                                                   |
+| To minute              | Minutes of the end time of the selected period.                                                                                                                                                |
+| Minutes on             | The number of minutes that shall be turned on.                                                                                                                                                 |
 | Max price              | If set, does not turn on if price is over this limit. See below.                                                                                                                               |
 | Consecutive on-period  | Check this if you need the on-period to be consecutive.                                                                                                                                        |
 | Output value for on    | Set what value to output on output 1 in order to turn on. Default is `boolean true`. You can also select a `number`, for example `1`, or a `string`, for example `on`, or any other value.     |
 | Output value for off   | Set what value to output on output 2 in order to turn off. Default is `boolean false`. You can also select a `number`, for example `0`, or a `string`, for example `off`, or any other value.  |
 | Send when rescheduling | Check this to make sure on or off output is sent immediately after rescheduling. If unchecked, the output is sent only if it has not been sent before, or is different from the current value. |
-| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last period there is price data for.           |
+| If no schedule, send   | What to do if there is no valid schedule any more (turn on or off). This value will be sent also before there is any valid schedule, or after the last period there is price data for.         |
 | Context storage        | Select context storage to save data to, if more than one is configured in the Node-RED `settings.js` file.                                                                                     |
 
 Set the period you want to use by setting start time (From hour and From minute) and end time (To hour and To minute). If you want to use a period of 24 hours, set the same start time and end time. The time you select is significant in the way that it decides which 24 hours that are considered when finding the periods with lowest price.
 
 ::: tip Example with Consecutive On-Period
 One example to need a consecutive on-period can be if you want to control the washing machine. Let's say it needs 3 hours, and you want it to run between 22:00 and 06:00. Set `From hour = 22`, `From minute = 00`, `To hour = 06`, `To minute = 00`, `Minutes on = 180` and check the `Consecutive On-Period` flag. This will turn on the cheapest 3-hour period (180 minutes) from 22:00 to 06:00.
-
-
 
 NB! It is not recommended to run the washing machine when you are sleeping or away.
 :::
@@ -74,8 +68,6 @@ If you leave `Max price` blank, it has no effect.
 
 ###
 
-
-
 ### Dynamic config
 
 The following config values can be changed dynamically:
@@ -102,8 +94,6 @@ The following config values can be changed dynamically:
 
 See [Dynamic Config](./dynamic-config.md) for details and how to send dynamic config.
 
-
-
 ### Dynamic commands
 
 You can send dynamic commands to this node, for example to make it resend output.
@@ -125,57 +115,53 @@ A payload with the value set in config, default `true`, is sent to output 1 when
 
 A payload with the value set in config, default `false` is sent to output 2 whenever the power / switch shall be turned off.
 
-
-
 ### Output 3
 
 When a valid input is received, and the schedule is recalculated, the resulting schedule, as well as some other information, is sent to output 3. You can use this to see the plan and verify that it meets your expectations. You can also use it to display the schedule in any way you like.
 
 ###
 
-
-
 Example of output:
 
 ```json
 {
   "schedule": [
-  {
-    "time": "2025-10-07T00:00:00.000+02:00",
-    "value": false,
-    "countMinutes": 420
-  },
-  {
-    "time": "2025-10-07T07:00:00.000+02:00",
-    "value": true,
-    "countMinutes": 300
-  },
-  {
-    "time": "2025-10-07T12:00:00.000+02:00",
-    "value": false,
-    "countMinutes": 1200
-  },
-  {
-    "time": "2025-10-08T08:00:00.000+02:00",
-    "value": true,
-    "countMinutes": 60
-  },
-  {
-    "time": "2025-10-08T09:00:00.000+02:00",
-    "value": false,
-    "countMinutes": 480
-  },
-  {
-    "time": "2025-10-08T17:00:00.000+02:00",
-    "value": true,
-    "countMinutes": 240
-  },
-  {
-    "time": "2025-10-08T21:00:00.000+02:00",
-    "value": false,
-    "countMinutes": 180
-  }
-],
+    {
+      "time": "2025-10-07T00:00:00.000+02:00",
+      "value": false,
+      "countMinutes": 420
+    },
+    {
+      "time": "2025-10-07T07:00:00.000+02:00",
+      "value": true,
+      "countMinutes": 300
+    },
+    {
+      "time": "2025-10-07T12:00:00.000+02:00",
+      "value": false,
+      "countMinutes": 1200
+    },
+    {
+      "time": "2025-10-08T08:00:00.000+02:00",
+      "value": true,
+      "countMinutes": 60
+    },
+    {
+      "time": "2025-10-08T09:00:00.000+02:00",
+      "value": false,
+      "countMinutes": 480
+    },
+    {
+      "time": "2025-10-08T17:00:00.000+02:00",
+      "value": true,
+      "countMinutes": 240
+    },
+    {
+      "time": "2025-10-08T21:00:00.000+02:00",
+      "value": false,
+      "countMinutes": 180
+    }
+  ],
   "minutes": [
     {
       "start": "2025-10-07T00:00:00.000+02:00",
@@ -227,8 +213,6 @@ Example of output:
 
 The `schedule` array shows every time the switch is turned on or off. The `minutes` array shows values per minute containing the price (received as input), whether that minute is on or off, the start time of the minute and the amount per kWh that is saved on minutes that are turned off, compared to the next minute that is on.
 
-
-
 ## Restarts and saved context
 
 The config, last received prices and the last calculated schedule are saved to the nodes context.
@@ -251,8 +235,6 @@ contextStorage: {
 }
 ```
 
-
-
 By default, this node saves context to the `default` context storage. In the example above, this is memory.
 Then it is not preserved over a restart.
 Please read the [Node-RED documentation](https://nodered.org/docs/user-guide/context) for more details about this.
@@ -274,8 +256,6 @@ and set `msg.payload` to the following JSON value:
 
 This is an alternative to fetching new prices and send as input.
 
-
-
 ## Tips & tricks
 
 ### Multiple nodes works together
@@ -284,8 +264,6 @@ You can use multiple nodes simultanously, for different periods, for example if 
 combine the output from them into one schedule using the Schedule Merger node:
 
 ![Combine two lowest price nodes](../images/combine-two-lowest-price.png)
-
-
 
 ### Highest price
 
@@ -296,5 +274,3 @@ If you want to find the `x` minutes with the highest prices, do as follows:
 3. Use **Output 2** to get a signal when you have the periods with the highest prices.
 
 ###
-
-

@@ -23,13 +23,12 @@ Then paste it here and see the result below:
 
 ###
 
-
-
 ## Explanation
 
 ### Config
 
 This is the configuration you have used in the Best Save node:
+
 - **Max minutes off**: Maximum number of consecutive minutes the output can be off
 - **Min minutes off**: Minimum number of minutes to remain off once turned off
 - **Recovery percentage**: Percentage of the actual minutes off that must be "on" before allowing another off sequence
@@ -43,6 +42,7 @@ This is the configuration you have used in the Best Save node:
 ### Meta data
 
 Other information about the calculation:
+
 - **Node version**: The version of the node that generated the data
 - **Data timestamp**: Time the data was handled by the Best Save node
 - **Price source**: Where the price data comes from (e.g., Tibber, Nordpool)
@@ -55,7 +55,7 @@ The statistics include total minutes, minutes on/off, average price, and savings
 
 ### Minutes
 
-Here is your data represented in time blocks, as well as potential savings calculated by the tool. 
+Here is your data represented in time blocks, as well as potential savings calculated by the tool.
 
 **Note**: The data is aggregated into blocks where consecutive minutes with the same price are grouped together. Each row shows the start time, the number of minutes in that block (Count), and the price for that period.
 
@@ -64,6 +64,7 @@ Negative numbers are hidden by default, but you can select to show them using th
 #### Input data
 
 This is the time-series data used as input:
+
 - **Date/Time**: When the block starts
 - **Count**: How many consecutive minutes this block represents
 - **Price**: The price per kWh for this period
@@ -72,8 +73,8 @@ This is the time-series data used as input:
 
 #### Saving if turned off x minutes
 
-These columns show how much you will save per kWh by turning off for `x` minutes starting at that time block. 
-The value is the difference between the price at that time and the price `x` minutes later. 
+These columns show how much you will save per kWh by turning off for `x` minutes starting at that time block.
+The value is the difference between the price at that time and the price `x` minutes later.
 
 Click on a cell to highlight the cells used in the calculation.
 
@@ -81,7 +82,7 @@ Click on a cell to highlight the cells used in the calculation.
 
 #### Saving for sequence of x minutes
 
-These columns show how much you can save per kWh on average by turning off a sequence of `x` minutes starting at that time block. 
+These columns show how much you can save per kWh on average by turning off a sequence of `x` minutes starting at that time block.
 
 Click on a cell to highlight the cells used in the calculation.
 
@@ -93,8 +94,6 @@ Above the table you can select to see the **average per minute** or the **sum fo
 **Column optimization**: Like the previous section, duplicate columns are collapsed to reduce clutter.
 
 ###
-
-
 
 ## Something seems wrong
 

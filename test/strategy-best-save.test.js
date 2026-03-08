@@ -52,7 +52,7 @@ describe("ps-strategy-best-save node", function () {
         delete testData1.priceData[3][attr];
         n1.receive({ payload: testData1 });
         n1.warn.should.be.calledWithExactly(
-          "Malformed entries in priceData. All entries must contain start and value."
+          "Malformed entries in priceData. All entries must contain start and value.",
         );
       });
 
@@ -154,7 +154,7 @@ describe("ps-strategy-best-save node", function () {
           //   done();
           // }, 900);
         }
-        done()
+        done();
       });
       n3.on("input", function (msg) {
         countOn++;

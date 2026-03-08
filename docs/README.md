@@ -36,7 +36,12 @@ footerHtml: true
 ---
 
 ::: tip New Light Saver node
-A brand new [node](/nodes/ps-light-saver.html#ps-light-saver) gives you powerful control of smart lights. Have lights turn on before you enter the room. Keep them on as long as there os motion. Turn them off quickly if you did not enter the room. Set different default levels at different times of day. Keep off at night. Keep your manual adjustments until you leave. Try it out!
+A new [node](/nodes/ps-light-saver.html#ps-light-saver) gives you powerful control of smart lights. Have lights turn on before you enter the room. Keep them on as long as there is motion. Turn them off quickly if you did not enter the room. Set different default levels at different times of day. Keep off at night. Keep your manual adjustments until you leave. Try it out!
+:::
+
+::: tip New Price Filter node
+A new [node](/nodes/ps-price-filter.html#ps-price-filter) let you override the result of a strategy node based on price.
+You can force on or off if the price is over or under a specified limit you decide.
 :::
 
 This is a collection of nodes for the popular [Node-RED](https://nodered.org/) that you can use to save money on variable electricity prices. Node-RED is a widely used low-code programming tool that can be used together with many smart home solutions to create automations.

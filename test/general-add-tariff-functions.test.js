@@ -23,10 +23,12 @@ describe("general-add-tariff-functions", () => {
         start,
         value: 10,
       };
-      if(i === values.length -1) {
-        res.end = DateTime.fromISO(config.validFrom).plus({ hours: i +1 }).toISO();
+      if (i === values.length - 1) {
+        res.end = DateTime.fromISO(config.validFrom)
+          .plus({ hours: i + 1 })
+          .toISO();
       }
-      return res
+      return res;
     });
     const expected = values.map((v, i) => {
       const start = DateTime.fromISO(config.validFrom).plus({ hours: i }).toISO();
@@ -35,7 +37,7 @@ describe("general-add-tariff-functions", () => {
         value: v,
       };
     });
-    expected[expected.length -1].end = "2021-12-02T00:00:00.000+01:00";
+    expected[expected.length - 1].end = "2021-12-02T00:00:00.000+01:00";
     const result = addTariffToPrices(console, config, prices);
     expect(result).to.eql(expected);
   });

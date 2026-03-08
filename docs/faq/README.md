@@ -50,5 +50,3 @@ Another alternative is to reduce the minimum saving from 0.05 to 0.001. Then the
 Be aware that the norwegian [FHI](https://www.fhi.no/nettpub/legionellaveilederen/) recommends that the temperature in the water heater is at least 70°C to avoid growth of legionella. At this temperature, legionalla bacteria die quickly.
 
 ###
-
-

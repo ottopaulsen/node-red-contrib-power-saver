@@ -69,7 +69,14 @@ function equalSchedule(expected, actual) {
     ["time", "value"].forEach((key) => {
       if (s[key] != actual[i][key]) {
         console.log(
-          "Different schedule values for " + key + " at index " + i + ": Expected " + s[key] + ", got " + actual[i][key]
+          "Different schedule values for " +
+            key +
+            " at index " +
+            i +
+            ": Expected " +
+            s[key] +
+            ", got " +
+            actual[i][key],
         );
         res = false;
       }
@@ -88,7 +95,7 @@ function equalMinutes(expected, actual, properties = ["price", "onOff", "start",
     properties.forEach((key) => {
       if (s[key] != actual[i][key]) {
         console.log(
-          "Different minute values for " + key + " at index " + i + ": Expected " + s[key] + ", got " + actual[i][key]
+          "Different minute values for " + key + " at index " + i + ": Expected " + s[key] + ", got " + actual[i][key],
         );
         res = false;
       }

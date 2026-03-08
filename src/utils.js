@@ -30,7 +30,7 @@ function sortedIndex(valueArr) {
   const sortedCollapsed = sortCollapsed(withNeighbours);
   const res = [];
   sortedCollapsed.forEach((group) => {
-    const start = group.internalOrder === "asc" ? 0 : group.count - 1;;
+    const start = group.internalOrder === "asc" ? 0 : group.count - 1;
     const end = group.internalOrder === "asc" ? group.count : -1;
     const step = group.internalOrder === "asc" ? 1 : -1;
     for (let j = start; j !== end; j += step) {
@@ -39,7 +39,6 @@ function sortedIndex(valueArr) {
   });
   return res;
 }
-
 
 /**
  * The valueArr contains values.
@@ -151,7 +150,7 @@ function sortCollapsed(collapsedArr) {
     item.internalOrder =
       item.after === null ? "desc" : item.before === null ? "asc" : item.after > item.before ? "desc" : "asc";
   });
-  return sorted
+  return sorted;
 }
 
 /**
@@ -290,7 +289,7 @@ function makeSchedule(onOff, startTimes, endTime, initial = null) {
     }
     prevRecord.countMinutes = DateTime.fromISO(i + 1 < startTimes.length ? startTimes[i + 1] : endTime).diff(
       DateTime.fromISO(prevRecord.time),
-      "minutes"
+      "minutes",
     ).minutes;
   }
   return res;
@@ -315,7 +314,7 @@ function makeScheduleFromMinutes(minutes, initial = null) {
     minutes.map((h) => h.onOff),
     minutes.map((h) => h.start),
     minutes[minutes.length - 1].end,
-    initial
+    initial,
   );
 }
 

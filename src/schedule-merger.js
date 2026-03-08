@@ -96,7 +96,7 @@ module.exports = function (RED) {
               commands,
               currentOutput,
               plannedOutputNow,
-              node.sendCurrentValueWhenRescheduling
+              node.sendCurrentValueWhenRescheduling,
             ),
             sendSchedule: mergerShallSendSchedule(msg, commands),
             runSchedule: commands.runSchedule || (commands.runSchedule !== false && msgHasSchedule(msg)),
@@ -104,7 +104,7 @@ module.exports = function (RED) {
 
           handleOutput(node, config, plan, outputCommands, planFromTime);
         },
-        commands.replan || msg.payload.config ? 0 : node.schedulingDelay
+        commands.replan || msg.payload.config ? 0 : node.schedulingDelay,
       );
     });
   }

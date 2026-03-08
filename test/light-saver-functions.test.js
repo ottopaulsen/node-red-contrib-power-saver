@@ -14,34 +14,34 @@ describe("light-saver-functions", function () {
       log: sinon.stub(),
       warn: sinon.stub(),
       error: sinon.stub(),
-      status: sinon.stub()
+      status: sinon.stub(),
     };
 
     // Create mock Home Assistant
     mockWebsocket = {
       send: sinon.stub(),
-      states: {}
+      states: {},
     };
 
     mockHomeAssistant = {
-      websocket: mockWebsocket
+      websocket: mockWebsocket,
     };
 
     // Create mock clock
     mockClock = {
-      now: () => new Date('2026-01-29T15:30:00Z')
+      now: () => new Date("2026-01-29T15:30:00Z"),
     };
   });
 
   describe("parseUTCTimestamp", function () {
     it("should add Z suffix if missing", function () {
-      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35');
-      expect(result.toISOString()).to.equal('2026-01-29T21:53:35.000Z');
+      const result = funcs.parseUTCTimestamp("2026-01-29T21:53:35");
+      expect(result.toISOString()).to.equal("2026-01-29T21:53:35.000Z");
     });
 
     it("should not add Z suffix if already present", function () {
-      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35Z');
-      expect(result.toISOString()).to.equal('2026-01-29T21:53:35.000Z');
+      const result = funcs.parseUTCTimestamp("2026-01-29T21:53:35Z");
+      expect(result.toISOString()).to.equal("2026-01-29T21:53:35.000Z");
     });
 
     it("should return null for null input", function () {
@@ -55,50 +55,50 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle timestamp with +00:00 offset", function () {
-      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35+00:00');
-      expect(result.toISOString()).to.equal('2026-01-29T21:53:35.000Z');
+      const result = funcs.parseUTCTimestamp("2026-01-29T21:53:35+00:00");
+      expect(result.toISOString()).to.equal("2026-01-29T21:53:35.000Z");
     });
 
     it("should handle timestamp with positive offset", function () {
-      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35+05:30');
+      const result = funcs.parseUTCTimestamp("2026-01-29T21:53:35+05:30");
       // +05:30 means 5.5 hours ahead, so UTC should be 5.5 hours earlier
-      expect(result.toISOString()).to.equal('2026-01-29T16:23:35.000Z');
+      expect(result.toISOString()).to.equal("2026-01-29T16:23:35.000Z");
     });
 
     it("should handle timestamp with negative offset", function () {
-      const result = funcs.parseUTCTimestamp('2026-01-29T21:53:35-05:00');
+      const result = funcs.parseUTCTimestamp("2026-01-29T21:53:35-05:00");
       // -05:00 means 5 hours behind, so UTC should be 5 hours later
-      expect(result.toISOString()).to.equal('2026-01-30T02:53:35.000Z');
+      expect(result.toISOString()).to.equal("2026-01-30T02:53:35.000Z");
     });
   });
 
   describe("extractBrightnessLevel", function () {
     it("should return 0 for off state", function () {
-      const stateObj = { state: 'off' };
+      const stateObj = { state: "off" };
       const result = funcs.extractBrightnessLevel(stateObj);
       expect(result).to.equal(0);
     });
 
     it("should return 100 for on state without brightness", function () {
-      const stateObj = { state: 'on', attributes: {} };
+      const stateObj = { state: "on", attributes: {} };
       const result = funcs.extractBrightnessLevel(stateObj);
       expect(result).to.equal(100);
     });
 
     it("should convert brightness from 0-255 to 0-100", function () {
-      const stateObj = { state: 'on', attributes: { brightness: 128 } };
+      const stateObj = { state: "on", attributes: { brightness: 128 } };
       const result = funcs.extractBrightnessLevel(stateObj);
       expect(result).to.equal(50);
     });
 
     it("should handle brightness 255 as 100%", function () {
-      const stateObj = { state: 'on', attributes: { brightness: 255 } };
+      const stateObj = { state: "on", attributes: { brightness: 255 } };
       const result = funcs.extractBrightnessLevel(stateObj);
       expect(result).to.equal(100);
     });
 
     it("should handle brightness 0 as 0%", function () {
-      const stateObj = { state: 'on', attributes: { brightness: 0 } };
+      const stateObj = { state: "on", attributes: { brightness: 0 } };
       const result = funcs.extractBrightnessLevel(stateObj);
       expect(result).to.equal(0);
     });
@@ -109,7 +109,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should return null for unknown state", function () {
-      const stateObj = { state: 'unavailable' };
+      const stateObj = { state: "unavailable" };
       const result = funcs.extractBrightnessLevel(stateObj);
       expect(result).to.be.null;
     });
@@ -127,25 +127,25 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when sensor is 'on' and not inverted", function () {
-      const sensor = { state: 'on' };
+      const sensor = { state: "on" };
       const result = funcs.isSensorActive(sensor, false);
       expect(result).to.be.true;
     });
 
     it("should return false when sensor is 'off' and not inverted", function () {
-      const sensor = { state: 'off' };
+      const sensor = { state: "off" };
       const result = funcs.isSensorActive(sensor, false);
       expect(result).to.be.false;
     });
 
     it("should return false when sensor is 'on' and inverted", function () {
-      const sensor = { state: 'on' };
+      const sensor = { state: "on" };
       const result = funcs.isSensorActive(sensor, true);
       expect(result).to.be.false;
     });
 
     it("should return true when sensor is 'off' and inverted", function () {
-      const sensor = { state: 'off' };
+      const sensor = { state: "off" };
       const result = funcs.isSensorActive(sensor, true);
       expect(result).to.be.true;
     });
@@ -157,7 +157,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle string 'true' state", function () {
-      const sensor = { state: 'true' };
+      const sensor = { state: "true" };
       const result = funcs.isSensorActive(sensor, false);
       expect(result).to.be.true;
     });
@@ -175,13 +175,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle string 'false' state without invert", function () {
-      const sensor = { state: 'false' };
+      const sensor = { state: "false" };
       const result = funcs.isSensorActive(sensor, false);
       expect(result).to.be.false;
     });
 
     it("should handle string 'false' state with invert", function () {
-      const sensor = { state: 'false' };
+      const sensor = { state: "false" };
       const result = funcs.isSensorActive(sensor, true);
       expect(result).to.be.true;
     });
@@ -189,29 +189,31 @@ describe("light-saver-functions", function () {
 
   describe("findCurrentLevel", function () {
     it("should return night level when night sensor is on", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.night',
-          level: 25
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          state: "on",
+          entity_id: "binary_sensor.night",
+          level: 25,
         },
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, mockClock);
 
       expect(level).to.equal(25);
-      expect(mockNode.log.calledWith('Using night level: 25%')).to.be.true;
+      expect(mockNode.log.calledWith("Using night level: 25%")).to.be.true;
     });
 
     it("should fall through to time-based level when nightLevel is not set", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.night',
-          level: null
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          state: "on",
+          entity_id: "binary_sensor.night",
+          level: null,
         },
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, mockClock);
@@ -221,18 +223,19 @@ describe("light-saver-functions", function () {
     });
 
     it("should return time-based level when night sensor is off", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          state: 'off', 
-          entity_id: 'binary_sensor.night',
-          level: 25
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          state: "off",
+          entity_id: "binary_sensor.night",
+          level: 25,
         },
         levels: [
           { fromTime: "00:00", level: 20 },
           { fromTime: "06:00", level: 100 },
           { fromTime: "14:00", level: 75 }, // This should be selected (15:30 is after 14:00)
-          { fromTime: "22:00", level: 50 }
-        ]
+          { fromTime: "22:00", level: 50 },
+        ],
       };
 
       // Clock is set to 15:30
@@ -242,17 +245,18 @@ describe("light-saver-functions", function () {
     });
 
     it("should wrap to previous day if current time is before all levels", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         nightSensor: null,
         levels: [
           { fromTime: "06:00", level: 100 },
-          { fromTime: "22:00", level: 50 }
-        ]
+          { fromTime: "22:00", level: 50 },
+        ],
       };
 
       // Set clock to 03:00 (before all levels)
       const earlyClock = {
-        now: () => new Date('2026-01-29T03:00:00Z')
+        now: () => new Date("2026-01-29T03:00:00Z"),
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, earlyClock);
@@ -262,28 +266,26 @@ describe("light-saver-functions", function () {
     });
 
     it("should return null if no levels are defined", function () {
-      const config = { debugLog: true, 
-        nightSensor: null,
-        levels: []
-      };
+      const config = { debugLog: true, nightSensor: null, levels: [] };
 
       const level = funcs.findCurrentLevel(config, mockNode, mockClock);
 
       expect(level).to.be.null;
-      expect(mockNode.warn.calledWith('No levels defined')).to.be.true;
+      expect(mockNode.warn.calledWith("No levels defined")).to.be.true;
     });
 
     it("should handle midnight correctly", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         nightSensor: null,
         levels: [
           { fromTime: "00:00", level: 20 },
-          { fromTime: "06:00", level: 100 }
-        ]
+          { fromTime: "06:00", level: 100 },
+        ],
       };
 
       const midnightClock = {
-        now: () => new Date('2026-01-29T00:00:00Z')
+        now: () => new Date("2026-01-29T00:00:00Z"),
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, midnightClock);
@@ -294,82 +296,79 @@ describe("light-saver-functions", function () {
 
   describe("controlLights", function () {
     const config = { debugLog: true };
-    
+
     it("should turn on lights with brightness percentage", function () {
-      const lights = [
-        { entity_id: 'light.living_room' },
-        { entity_id: 'light.bedroom' }
-      ];
+      const lights = [{ entity_id: "light.living_room" }, { entity_id: "light.bedroom" }];
 
       funcs.controlLights(config, lights, 75, mockNode, mockHomeAssistant);
 
       expect(mockWebsocket.send.callCount).to.equal(2);
-      
+
       const firstCall = mockWebsocket.send.getCall(0).args[0];
-      expect(firstCall.domain).to.equal('light');
-      expect(firstCall.service).to.equal('turn_on');
-      expect(firstCall.service_data.entity_id).to.equal('light.living_room');
+      expect(firstCall.domain).to.equal("light");
+      expect(firstCall.service).to.equal("turn_on");
+      expect(firstCall.service_data.entity_id).to.equal("light.living_room");
       expect(firstCall.service_data.brightness_pct).to.equal(75);
     });
 
     it("should turn off lights when level is 0", function () {
-      const lights = [{ entity_id: 'light.living_room' }];
+      const lights = [{ entity_id: "light.living_room" }];
 
       funcs.controlLights(config, lights, 0, mockNode, mockHomeAssistant);
 
       const call = mockWebsocket.send.getCall(0).args[0];
-      expect(call.service).to.equal('turn_off');
-      expect(call.service_data).to.not.have.property('brightness_pct');
+      expect(call.service).to.equal("turn_off");
+      expect(call.service_data).to.not.have.property("brightness_pct");
     });
 
     it("should turn on switches without brightness", function () {
-      const lights = [{ entity_id: 'switch.outlet' }];
+      const lights = [{ entity_id: "switch.outlet" }];
 
       funcs.controlLights(config, lights, 75, mockNode, mockHomeAssistant);
 
       const call = mockWebsocket.send.getCall(0).args[0];
-      expect(call.domain).to.equal('switch');
-      expect(call.service).to.equal('turn_on');
-      expect(call.service_data).to.not.have.property('brightness_pct');
+      expect(call.domain).to.equal("switch");
+      expect(call.service).to.equal("turn_on");
+      expect(call.service_data).to.not.have.property("brightness_pct");
     });
 
     it("should turn off switches when level is 0", function () {
-      const lights = [{ entity_id: 'switch.outlet' }];
+      const lights = [{ entity_id: "switch.outlet" }];
 
       funcs.controlLights(config, lights, 0, mockNode, mockHomeAssistant);
 
       const call = mockWebsocket.send.getCall(0).args[0];
-      expect(call.domain).to.equal('switch');
-      expect(call.service).to.equal('turn_off');
+      expect(call.domain).to.equal("switch");
+      expect(call.service).to.equal("turn_off");
     });
 
     it("should warn if level is null", function () {
-      const lights = [{ entity_id: 'light.living_room' }];
+      const lights = [{ entity_id: "light.living_room" }];
 
       funcs.controlLights(config, lights, null, mockNode, mockHomeAssistant);
 
       expect(mockWebsocket.send.called).to.be.false;
-      expect(mockNode.warn.calledWith('Cannot control lights: no valid level found')).to.be.true;
+      expect(mockNode.warn.calledWith("Cannot control lights: no valid level found")).to.be.true;
     });
   });
 
   describe("turnOffAllLights", function () {
     const config = { debugLog: true };
-    
+
     it("should turn off all lights", function () {
       const lights = [
-        { entity_id: 'light.living_room' },
-        { entity_id: 'switch.outlet' },
-        { entity_id: 'light.bedroom' }
+        { entity_id: "light.living_room" },
+        { entity_id: "switch.outlet" },
+        { entity_id: "light.bedroom" },
       ];
 
       funcs.turnOffAllLights(config, lights, mockNode, mockHomeAssistant);
 
       expect(mockWebsocket.send.callCount).to.equal(3);
-      
-      mockWebsocket.send.getCalls().forEach(call => {
+
+      mockWebsocket.send.getCalls().forEach((call) => {
         const args = call.args[0];
-        expect(args.service).to.equal('turn_off');
+        expect(args.service).to.equal("turn_off");
       });
     });
 
@@ -382,14 +381,15 @@ describe("light-saver-functions", function () {
 
   describe("checkTimeouts", function () {
     it("should not timeout if any trigger is on", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         debugLog: true,
         triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'on', lastChanged: '2026-01-29T15:20:00Z' },
-          { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
+          { entity_id: "binary_sensor.motion1", state: "on", lastChanged: "2026-01-29T15:20:00Z" },
+          { entity_id: "binary_sensor.motion2", state: "off", lastChanged: "2026-01-29T15:00:00Z" },
         ],
-        lights: [{ entity_id: 'light.living_room' }],
-        lightTimeout: 10
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10,
       };
       const state = { timedOut: false };
 
@@ -397,17 +397,18 @@ describe("light-saver-functions", function () {
 
       expect(mockWebsocket.send.called).to.be.false;
       expect(state.timedOut).to.be.false;
-      expect(mockNode.log.calledWith('At least one trigger is on, no timeout check needed')).to.be.true;
+      expect(mockNode.log.calledWith("At least one trigger is on, no timeout check needed")).to.be.true;
     });
 
     it("should timeout if all triggers have been off longer than timeout", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }, // 30 minutes ago
-          { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:10:00Z' }  // 20 minutes ago
+          { entity_id: "binary_sensor.motion1", state: "off", lastChanged: "2026-01-29T15:00:00Z" }, // 30 minutes ago
+          { entity_id: "binary_sensor.motion2", state: "off", lastChanged: "2026-01-29T15:10:00Z" }, // 20 minutes ago
         ],
-        lights: [{ entity_id: 'light.living_room' }],
-        lightTimeout: 10 // 10 minutes
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10, // 10 minutes
       };
       const state = { timedOut: false };
 
@@ -419,13 +420,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should not timeout if one trigger hasn't reached timeout yet", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }, // 30 minutes ago (timed out)
-          { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:25:00Z' }  // 5 minutes ago (NOT timed out)
+          { entity_id: "binary_sensor.motion1", state: "off", lastChanged: "2026-01-29T15:00:00Z" }, // 30 minutes ago (timed out)
+          { entity_id: "binary_sensor.motion2", state: "off", lastChanged: "2026-01-29T15:25:00Z" }, // 5 minutes ago (NOT timed out)
         ],
-        lights: [{ entity_id: 'light.living_room' }],
-        lightTimeout: 10 // 10 minutes
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10, // 10 minutes
       };
       const state = { timedOut: false };
 
@@ -436,13 +438,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should use trigger-specific timeout if set", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z', timeoutMinutes: 5 }, // 30 min ago, 5 min timeout = timed out
-          { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:15:00Z', timeoutMinutes: 20 } // 15 min ago, 20 min timeout = NOT timed out yet
+          { entity_id: "binary_sensor.motion1", state: "off", lastChanged: "2026-01-29T15:00:00Z", timeoutMinutes: 5 }, // 30 min ago, 5 min timeout = timed out
+          { entity_id: "binary_sensor.motion2", state: "off", lastChanged: "2026-01-29T15:15:00Z", timeoutMinutes: 20 }, // 15 min ago, 20 min timeout = NOT timed out yet
         ],
-        lights: [{ entity_id: 'light.living_room' }],
-        lightTimeout: 10
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10,
       };
       const state = { timedOut: false };
 
@@ -454,66 +457,66 @@ describe("light-saver-functions", function () {
     });
 
     it("should skip triggers without state or lastChanged", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         debugLog: true,
         triggers: [
-          { entity_id: 'binary_sensor.motion1' }, // No state
-          { entity_id: 'binary_sensor.motion2', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
+          { entity_id: "binary_sensor.motion1" }, // No state
+          { entity_id: "binary_sensor.motion2", state: "off", lastChanged: "2026-01-29T15:00:00Z" },
         ],
-        lights: [{ entity_id: 'light.living_room' }],
-        lightTimeout: 10
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10,
       };
       const state = { timedOut: false };
 
       funcs.checkTimeouts(config, state, mockNode, mockHomeAssistant, mockClock);
 
       expect(state.timedOut).to.be.false;
-      expect(mockNode.log.calledWith('Trigger binary_sensor.motion1 has no state/lastChanged, skipping')).to.be.true;
+      expect(mockNode.log.calledWith("Trigger binary_sensor.motion1 has no state/lastChanged, skipping")).to.be.true;
     });
   });
 
   describe("fetchMissingStates", function () {
     it("should fetch states for triggers without state", function () {
       mockWebsocket.states = {
-        'binary_sensor.motion1': { state: 'off', last_changed: '2026-01-29T15:00:00Z' },
-        'binary_sensor.motion2': { state: 'on', last_changed: '2026-01-29T15:20:00Z' }
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:00:00Z" },
+        "binary_sensor.motion2": { state: "on", last_changed: "2026-01-29T15:20:00Z" },
       };
 
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         triggers: [
-          { entity_id: 'binary_sensor.motion1' }, // No state
-          { entity_id: 'binary_sensor.motion2' }  // No state
+          { entity_id: "binary_sensor.motion1" }, // No state
+          { entity_id: "binary_sensor.motion2" }, // No state
         ],
-        nightSensor: null
+        nightSensor: null,
       };
       const state = { timedOut: undefined };
 
       funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant);
 
-      expect(config.triggers[0].state).to.equal('off');
-      expect(config.triggers[0].lastChanged).to.equal('2026-01-29T15:00:00Z');
-      expect(config.triggers[1].state).to.equal('on');
-      expect(config.triggers[1].lastChanged).to.equal('2026-01-29T15:20:00Z');
+      expect(config.triggers[0].state).to.equal("off");
+      expect(config.triggers[0].lastChanged).to.equal("2026-01-29T15:00:00Z");
+      expect(config.triggers[1].state).to.equal("on");
+      expect(config.triggers[1].lastChanged).to.equal("2026-01-29T15:20:00Z");
     });
 
     it("should set initial timedOut to true if all triggers have actually timed out", function () {
       // Set clock to 15:30
       const testClock = {
-        now: () => new Date('2026-01-29T15:30:00Z')
-      };
-      
-      mockWebsocket.states = {
-        'binary_sensor.motion1': { state: 'off', last_changed: '2026-01-29T15:00:00Z' }, // 30 min ago
-        'binary_sensor.motion2': { state: 'off', last_changed: '2026-01-29T15:10:00Z' }  // 20 min ago
+        now: () => new Date("2026-01-29T15:30:00Z"),
       };
 
-      const config = { debugLog: true, 
-        triggers: [
-          { entity_id: 'binary_sensor.motion1' },
-          { entity_id: 'binary_sensor.motion2' }
-        ],
+      mockWebsocket.states = {
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:00:00Z" }, // 30 min ago
+        "binary_sensor.motion2": { state: "off", last_changed: "2026-01-29T15:10:00Z" }, // 20 min ago
+      };
+
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1" }, { entity_id: "binary_sensor.motion2" }],
         lightTimeout: 10, // 10 minute timeout
-        nightSensor: null
+        nightSensor: null,
       };
       const state = { timedOut: undefined };
 
@@ -525,16 +528,14 @@ describe("light-saver-functions", function () {
 
     it("should set initial timedOut to false if any trigger is on", function () {
       mockWebsocket.states = {
-        'binary_sensor.motion1': { state: 'off', last_changed: '2026-01-29T15:00:00Z' },
-        'binary_sensor.motion2': { state: 'on', last_changed: '2026-01-29T15:20:00Z' }
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:00:00Z" },
+        "binary_sensor.motion2": { state: "on", last_changed: "2026-01-29T15:20:00Z" },
       };
 
-      const config = { debugLog: true, 
-        triggers: [
-          { entity_id: 'binary_sensor.motion1' },
-          { entity_id: 'binary_sensor.motion2' }
-        ],
-        nightSensor: null
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1" }, { entity_id: "binary_sensor.motion2" }],
+        nightSensor: null,
       };
       const state = { timedOut: undefined };
 
@@ -546,21 +547,19 @@ describe("light-saver-functions", function () {
     it("should set initial timedOut to false if triggers are off but within timeout period", function () {
       // Set clock to 15:30
       const testClock = {
-        now: () => new Date('2026-01-29T15:30:00Z')
-      };
-      
-      mockWebsocket.states = {
-        'binary_sensor.motion1': { state: 'off', last_changed: '2026-01-29T15:25:00Z' }, // 5 min ago
-        'binary_sensor.motion2': { state: 'off', last_changed: '2026-01-29T15:27:00Z' }  // 3 min ago
+        now: () => new Date("2026-01-29T15:30:00Z"),
       };
 
-      const config = { debugLog: true, 
-        triggers: [
-          { entity_id: 'binary_sensor.motion1' },
-          { entity_id: 'binary_sensor.motion2' }
-        ],
+      mockWebsocket.states = {
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:25:00Z" }, // 5 min ago
+        "binary_sensor.motion2": { state: "off", last_changed: "2026-01-29T15:27:00Z" }, // 3 min ago
+      };
+
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1" }, { entity_id: "binary_sensor.motion2" }],
         lightTimeout: 10, // 10 minute timeout
-        nightSensor: null
+        nightSensor: null,
       };
       const state = { timedOut: undefined };
 
@@ -572,32 +571,30 @@ describe("light-saver-functions", function () {
 
     it("should fetch night sensor state", function () {
       mockWebsocket.states = {
-        'binary_sensor.night': { state: 'on', last_changed: '2026-01-29T20:00:00Z' }
+        "binary_sensor.night": { state: "on", last_changed: "2026-01-29T20:00:00Z" },
       };
 
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'off' } // Already has state
+          { entity_id: "binary_sensor.motion1", state: "off" }, // Already has state
         ],
-        nightSensor: { entity_id: 'binary_sensor.night' } // No state
+        nightSensor: { entity_id: "binary_sensor.night" }, // No state
       };
       const state = { timedOut: undefined };
 
       funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant);
 
-      expect(config.nightSensor.state).to.equal('on');
-      expect(config.nightSensor.lastChanged).to.equal('2026-01-29T20:00:00Z');
+      expect(config.nightSensor.state).to.equal("on");
+      expect(config.nightSensor.lastChanged).to.equal("2026-01-29T20:00:00Z");
     });
 
     it("should not set initial timedOut if already set", function () {
       mockWebsocket.states = {
-        'binary_sensor.motion1': { state: 'off', last_changed: '2026-01-29T15:00:00Z' }
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:00:00Z" },
       };
 
-      const config = { debugLog: true, 
-        triggers: [{ entity_id: 'binary_sensor.motion1' }],
-        nightSensor: null
-      };
+      const config = { debugLog: true, triggers: [{ entity_id: "binary_sensor.motion1" }], nightSensor: null };
       const state = { timedOut: true }; // Already set
 
       const result = funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant);
@@ -609,98 +606,92 @@ describe("light-saver-functions", function () {
     it("should handle missing states gracefully", function () {
       mockWebsocket.states = {}; // No states available
 
-      const config = { debugLog: true, 
-        triggers: [{ entity_id: 'binary_sensor.motion1' }],
-        nightSensor: null
-      };
+      const config = { debugLog: true, triggers: [{ entity_id: "binary_sensor.motion1" }], nightSensor: null };
       const state = { timedOut: undefined };
 
       funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant);
 
       expect(config.triggers[0].state).to.be.undefined;
-      expect(mockNode.warn.calledWith('State not found for binary_sensor.motion1')).to.be.true;
+      expect(mockNode.warn.calledWith("State not found for binary_sensor.motion1")).to.be.true;
     });
   });
 
   describe("handleStateChange", function () {
     it("should update trigger state", function () {
-      const config = { debugLog: true, 
-        triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
-        ],
-        lights: [{ entity_id: 'light.living_room' }],
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "off", lastChanged: "2026-01-29T15:00:00Z" }],
+        lights: [{ entity_id: "light.living_room" }],
         nightSensor: null,
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
       const state = { timedOut: false };
 
       const event = {
         event: {
-          entity_id: 'binary_sensor.motion1',
+          entity_id: "binary_sensor.motion1",
           new_state: {
-            state: 'on',
-            entity_id: 'binary_sensor.motion1'
-          }
-        }
+            state: "on",
+            entity_id: "binary_sensor.motion1",
+          },
+        },
       };
 
       funcs.handleStateChange(event, config, state, mockNode, mockHomeAssistant, mockClock);
 
-      expect(config.triggers[0].state).to.equal('on');
+      expect(config.triggers[0].state).to.equal("on");
       expect(state.timedOut).to.be.false;
       expect(mockNode.status.called).to.be.true;
     });
 
     it("should activate lights when trigger turns on while timedOut", function () {
-      const config = { debugLog: true, 
-        triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
-        ],
-        lights: [{ entity_id: 'light.living_room' }],
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "off", lastChanged: "2026-01-29T15:00:00Z" }],
+        lights: [{ entity_id: "light.living_room" }],
         nightSensor: null,
-        levels: [{ fromTime: "00:00", level: 80 }]
+        levels: [{ fromTime: "00:00", level: 80 }],
       };
       const state = { timedOut: true };
 
       const event = {
         event: {
-          entity_id: 'binary_sensor.motion1',
+          entity_id: "binary_sensor.motion1",
           new_state: {
-            state: 'on',
-            entity_id: 'binary_sensor.motion1'
-          }
-        }
+            state: "on",
+            entity_id: "binary_sensor.motion1",
+          },
+        },
       };
 
       funcs.handleStateChange(event, config, state, mockNode, mockHomeAssistant, mockClock);
 
       expect(state.timedOut).to.be.false;
       expect(mockWebsocket.send.called).to.be.true;
-      
+
       const call = mockWebsocket.send.getCall(0).args[0];
-      expect(call.service).to.equal('turn_on');
+      expect(call.service).to.equal("turn_on");
       expect(call.service_data.brightness_pct).to.equal(80);
     });
 
     it("should not activate lights when trigger turns on if not timedOut", function () {
-      const config = { debugLog: true, 
-        triggers: [
-          { entity_id: 'binary_sensor.motion1', state: 'off', lastChanged: '2026-01-29T15:00:00Z' }
-        ],
-        lights: [{ entity_id: 'light.living_room' }],
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "off", lastChanged: "2026-01-29T15:00:00Z" }],
+        lights: [{ entity_id: "light.living_room" }],
         nightSensor: null,
-        levels: [{ fromTime: "00:00", level: 80 }]
+        levels: [{ fromTime: "00:00", level: 80 }],
       };
       const state = { timedOut: false };
 
       const event = {
         event: {
-          entity_id: 'binary_sensor.motion1',
+          entity_id: "binary_sensor.motion1",
           new_state: {
-            state: 'on',
-            entity_id: 'binary_sensor.motion1'
-          }
-        }
+            state: "on",
+            entity_id: "binary_sensor.motion1",
+          },
+        },
       };
 
       funcs.handleStateChange(event, config, state, mockNode, mockHomeAssistant, mockClock);
@@ -710,41 +701,43 @@ describe("light-saver-functions", function () {
     });
 
     it("should update night sensor state", function () {
-      const config = { debugLog: true, 
-        triggers: [{ entity_id: 'binary_sensor.motion1', state: 'off' }],
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "off" }],
         lights: [],
-        nightSensor: { 
-          entity_id: 'binary_sensor.night', 
-          state: 'off', 
-          lastChanged: '2026-01-29T15:00:00Z',
-          level: 25
+        nightSensor: {
+          entity_id: "binary_sensor.night",
+          state: "off",
+          lastChanged: "2026-01-29T15:00:00Z",
+          level: 25,
         },
-        levels: []
+        levels: [],
       };
       const state = { timedOut: false };
 
       const event = {
         event: {
-          entity_id: 'binary_sensor.night',
+          entity_id: "binary_sensor.night",
           new_state: {
-            state: 'on',
-            entity_id: 'binary_sensor.night'
-          }
-        }
+            state: "on",
+            entity_id: "binary_sensor.night",
+          },
+        },
       };
 
       funcs.handleStateChange(event, config, state, mockNode, mockHomeAssistant, mockClock);
 
-      expect(config.nightSensor.state).to.equal('on');
+      expect(config.nightSensor.state).to.equal("on");
       expect(mockNode.status.called).to.be.true;
     });
 
     it("should handle invalid events gracefully", function () {
-      const config = { debugLog: true, 
-        triggers: [{ entity_id: 'binary_sensor.motion1' }],
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1" }],
         lights: [],
         nightSensor: null,
-        levels: []
+        levels: [],
       };
       const state = { timedOut: false };
 
@@ -756,26 +749,27 @@ describe("light-saver-functions", function () {
     });
 
     it("should use night level when night sensor is on", function () {
-      const config = { debugLog: true, 
-        triggers: [{ entity_id: 'binary_sensor.motion1', state: 'off' }],
-        lights: [{ entity_id: 'light.living_room' }],
-        nightSensor: { 
-          entity_id: 'binary_sensor.night', 
-          state: 'on',
-          level: 30
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "off" }],
+        lights: [{ entity_id: "light.living_room" }],
+        nightSensor: {
+          entity_id: "binary_sensor.night",
+          state: "on",
+          level: 30,
         },
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
       const state = { timedOut: true };
 
       const event = {
         event: {
-          entity_id: 'binary_sensor.motion1',
+          entity_id: "binary_sensor.motion1",
           new_state: {
-            state: 'on',
-            entity_id: 'binary_sensor.motion1'
-          }
-        }
+            state: "on",
+            entity_id: "binary_sensor.motion1",
+          },
+        },
       };
 
       funcs.handleStateChange(event, config, state, mockNode, mockHomeAssistant, mockClock);
@@ -787,12 +781,13 @@ describe("light-saver-functions", function () {
 
   describe("isNightMode", function () {
     it("should return true when night sensor is on and not inverted", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.night',
-          invert: false
-        }
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          state: "on",
+          entity_id: "binary_sensor.night",
+          invert: false,
+        },
       };
 
       const result = funcs.isNightMode(config);
@@ -800,12 +795,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when night sensor is off and not inverted", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          state: 'off', 
-          entity_id: 'binary_sensor.night',
-          invert: false
-        }
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          state: "off",
+          entity_id: "binary_sensor.night",
+          invert: false,
+        },
       };
 
       const result = funcs.isNightMode(config);
@@ -813,12 +809,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when night sensor is on and inverted", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.night',
-          invert: true
-        }
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          state: "on",
+          entity_id: "binary_sensor.night",
+          invert: true,
+        },
       };
 
       const result = funcs.isNightMode(config);
@@ -826,12 +823,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when night sensor is off and inverted", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          state: 'off', 
-          entity_id: 'binary_sensor.night',
-          invert: true
-        }
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          state: "off",
+          entity_id: "binary_sensor.night",
+          invert: true,
+        },
       };
 
       const result = funcs.isNightMode(config);
@@ -839,20 +837,19 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when night sensor is not configured", function () {
-      const config = { debugLog: true, 
-        nightSensor: null
-      };
+      const config = { debugLog: true, nightSensor: null };
 
       const result = funcs.isNightMode(config);
       expect(result).to.be.false;
     });
 
     it("should return false when night sensor has no state", function () {
-      const config = { debugLog: true, 
-        nightSensor: { 
-          entity_id: 'binary_sensor.night',
-          invert: false
-        }
+      const config = {
+        debugLog: true,
+        nightSensor: {
+          entity_id: "binary_sensor.night",
+          invert: false,
+        },
       };
 
       const result = funcs.isNightMode(config);
@@ -862,12 +859,13 @@ describe("light-saver-functions", function () {
 
   describe("isAwayMode", function () {
     it("should return true when away sensor is on and not inverted", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.away',
-          invert: false
-        }
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "on",
+          entity_id: "binary_sensor.away",
+          invert: false,
+        },
       };
 
       const result = funcs.isAwayMode(config);
@@ -875,12 +873,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when away sensor is off and not inverted", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'off', 
-          entity_id: 'binary_sensor.away',
-          invert: false
-        }
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "off",
+          entity_id: "binary_sensor.away",
+          invert: false,
+        },
       };
 
       const result = funcs.isAwayMode(config);
@@ -888,12 +887,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when away sensor is on and inverted", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.away',
-          invert: true
-        }
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "on",
+          entity_id: "binary_sensor.away",
+          invert: true,
+        },
       };
 
       const result = funcs.isAwayMode(config);
@@ -901,12 +901,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when away sensor is off and inverted", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'off', 
-          entity_id: 'binary_sensor.away',
-          invert: true
-        }
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "off",
+          entity_id: "binary_sensor.away",
+          invert: true,
+        },
       };
 
       const result = funcs.isAwayMode(config);
@@ -914,20 +915,19 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false when away sensor is not configured", function () {
-      const config = { debugLog: true, 
-        awaySensor: null
-      };
+      const config = { debugLog: true, awaySensor: null };
 
       const result = funcs.isAwayMode(config);
       expect(result).to.be.false;
     });
 
     it("should return false when away sensor has no state", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          entity_id: 'binary_sensor.away',
-          invert: false
-        }
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          entity_id: "binary_sensor.away",
+          invert: false,
+        },
       };
 
       const result = funcs.isAwayMode(config);
@@ -937,22 +937,21 @@ describe("light-saver-functions", function () {
 
   describe("isBrightnessAllowingLights", function () {
     it("should return true when no brightness sensor configured", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: null
-      };
+      const config = { debugLog: true, brightnessSensor: null };
 
       const result = funcs.isBrightnessAllowingLights(config);
       expect(result).to.be.true;
     });
 
     it("should return true when brightness sensor has no limit", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '100',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "100",
           limit: null,
-          mode: 'max'
-        }
+          mode: "max",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -960,13 +959,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true when brightness sensor has no state yet", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
           state: null,
           limit: 50,
-          mode: 'max'
-        }
+          mode: "max",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -974,13 +974,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true in max mode when brightness is below limit", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '30',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "30",
           limit: 50,
-          mode: 'max'
-        }
+          mode: "max",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -988,13 +989,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false in max mode when brightness is above limit", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '70',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "70",
           limit: 50,
-          mode: 'max'
-        }
+          mode: "max",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -1002,13 +1004,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true in min mode when brightness is above limit", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '70',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "70",
           limit: 50,
-          mode: 'min'
-        }
+          mode: "min",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -1016,13 +1019,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should return false in min mode when brightness is below limit", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '30',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "30",
           limit: 50,
-          mode: 'min'
-        }
+          mode: "min",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -1030,13 +1034,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle brightness at exactly the limit in max mode", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '50',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "50",
           limit: 50,
-          mode: 'max'
-        }
+          mode: "max",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -1044,13 +1049,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle brightness at exactly the limit in min mode", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '50',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "50",
           limit: 50,
-          mode: 'min'
-        }
+          mode: "min",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -1058,13 +1064,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should default to max mode when mode not specified", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: '30',
-          limit: 50
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "30",
+          limit: 50,
           // mode not specified
-        }
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -1072,13 +1079,14 @@ describe("light-saver-functions", function () {
     });
 
     it("should return true for invalid brightness value", function () {
-      const config = { debugLog: true, 
-        brightnessSensor: { 
-          entity_id: 'sensor.brightness',
-          state: 'invalid',
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.brightness",
+          state: "invalid",
           limit: 50,
-          mode: 'max'
-        }
+          mode: "max",
+        },
       };
 
       const result = funcs.isBrightnessAllowingLights(config);
@@ -1088,60 +1096,63 @@ describe("light-saver-functions", function () {
 
   describe("findCurrentLevel with away mode", function () {
     it("should return away level when away sensor is on", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.away',
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "on",
+          entity_id: "binary_sensor.away",
           level: 10,
-          invert: false
+          invert: false,
         },
-        nightSensor: { 
-          state: 'off', 
-          entity_id: 'binary_sensor.night',
+        nightSensor: {
+          state: "off",
+          entity_id: "binary_sensor.night",
           level: 25,
-          invert: false
+          invert: false,
         },
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, mockClock);
 
       expect(level).to.equal(10);
-      expect(mockNode.log.calledWith('Using away level: 10%')).to.be.true;
+      expect(mockNode.log.calledWith("Using away level: 10%")).to.be.true;
     });
 
     it("should prioritize away level over night level", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.away',
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "on",
+          entity_id: "binary_sensor.away",
           level: 10,
-          invert: false
+          invert: false,
         },
-        nightSensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.night',
+        nightSensor: {
+          state: "on",
+          entity_id: "binary_sensor.night",
           level: 25,
-          invert: false
+          invert: false,
         },
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, mockClock);
 
       expect(level).to.equal(10);
-      expect(mockNode.log.calledWith('Using away level: 10%')).to.be.true;
+      expect(mockNode.log.calledWith("Using away level: 10%")).to.be.true;
     });
 
     it("should fall through to time-based level when awayLevel is not set", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'on', 
-          entity_id: 'binary_sensor.away',
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "on",
+          entity_id: "binary_sensor.away",
           level: null,
-          invert: false
+          invert: false,
         },
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, mockClock);
@@ -1150,28 +1161,27 @@ describe("light-saver-functions", function () {
     });
 
     it("should use away level with inverted sensor", function () {
-      const config = { debugLog: true, 
-        awaySensor: { 
-          state: 'off', 
-          entity_id: 'binary_sensor.away',
+      const config = {
+        debugLog: true,
+        awaySensor: {
+          state: "off",
+          entity_id: "binary_sensor.away",
           level: 5,
-          invert: true
+          invert: true,
         },
-        levels: [{ fromTime: "00:00", level: 100 }]
+        levels: [{ fromTime: "00:00", level: 100 }],
       };
 
       const level = funcs.findCurrentLevel(config, mockNode, mockClock);
 
       expect(level).to.equal(5);
-      expect(mockNode.log.calledWith('Using away level: 5%')).to.be.true;
+      expect(mockNode.log.calledWith("Using away level: 5%")).to.be.true;
     });
   });
 
   describe("findLevelConfig", function () {
     it("should return null if no levels defined", function () {
-      const config = { debugLog: true, 
-        levels: []
-      };
+      const config = { debugLog: true, levels: [] };
 
       const levelConfig = funcs.findLevelConfig(config, mockClock);
 
@@ -1179,11 +1189,12 @@ describe("light-saver-functions", function () {
     });
 
     it("should return the level config for current time", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         levels: [
           { fromTime: "05:00", level: 100, immediate: false },
-          { fromTime: "12:00", level: 80, immediate: true }
-        ]
+          { fromTime: "12:00", level: 80, immediate: true },
+        ],
       };
 
       const levelConfig = funcs.findLevelConfig(config, mockClock);
@@ -1193,12 +1204,13 @@ describe("light-saver-functions", function () {
     });
 
     it("should return the latest level that started before current time", function () {
-      const config = { debugLog: true, 
+      const config = {
+        debugLog: true,
         levels: [
           { fromTime: "05:00", level: 100, immediate: false },
           { fromTime: "12:00", level: 80, immediate: false },
-          { fromTime: "18:00", level: 50, immediate: true }
-        ]
+          { fromTime: "18:00", level: 50, immediate: true },
+        ],
       };
 
       const levelConfig = funcs.findLevelConfig(config, mockClock);
@@ -1208,11 +1220,7 @@ describe("light-saver-functions", function () {
     });
 
     it("should handle undefined immediate flag", function () {
-      const config = { debugLog: true, 
-        levels: [
-          { fromTime: "12:00", level: 75 }
-        ]
-      };
+      const config = { debugLog: true, levels: [{ fromTime: "12:00", level: 75 }] };
 
       const levelConfig = funcs.findLevelConfig(config, mockClock);
 
@@ -1221,14 +1229,10 @@ describe("light-saver-functions", function () {
 
     it("should work with custom clock", function () {
       const customClock = {
-        now: () => new Date('2026-01-29T19:00:00Z')
+        now: () => new Date("2026-01-29T19:00:00Z"),
       };
 
-      const config = { debugLog: true, 
-        levels: [
-          { fromTime: "18:00", level: 50, immediate: true }
-        ]
-      };
+      const config = { debugLog: true, levels: [{ fromTime: "18:00", level: 50, immediate: true }] };
 
       const levelConfig = funcs.findLevelConfig(config, customClock);
 

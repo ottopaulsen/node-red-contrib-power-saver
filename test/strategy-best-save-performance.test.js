@@ -23,10 +23,10 @@ describe("ps-strategy-best-save performance", function () {
 
   it("short intervals should be quick", function (done) {
     this.timeout(500);
-    const maxMinutesOff = 6
-    const minMinutesOff = 6
-    const recoveryPercentage = 20
-    const recoveryMaxMinutes = 180
+    const maxMinutesOff = 6;
+    const minMinutesOff = 6;
+    const recoveryPercentage = 20;
+    const recoveryMaxMinutes = 180;
     const flow = makeFlow(maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes);
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
@@ -41,10 +41,10 @@ describe("ps-strategy-best-save performance", function () {
 
   it("medium intervals should be quick enough", function (done) {
     this.timeout(4000);
-    const maxMinutesOff = 300
-    const minMinutesOff = 60
-    const recoveryPercentage = 20
-    const recoveryMaxMinutes = 180
+    const maxMinutesOff = 300;
+    const minMinutesOff = 60;
+    const recoveryPercentage = 20;
+    const recoveryMaxMinutes = 180;
     const flow = makeFlow(maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes);
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
@@ -59,10 +59,10 @@ describe("ps-strategy-best-save performance", function () {
 
   it("long intervals should be fairly quick", function (done) {
     this.timeout(10000);
-    const maxMinutesOff = 840
-    const minMinutesOff = 60
-    const recoveryPercentage = 20
-    const recoveryMaxMinutes = 180
+    const maxMinutesOff = 840;
+    const minMinutesOff = 60;
+    const recoveryPercentage = 20;
+    const recoveryMaxMinutes = 180;
     const flow = makeFlow(maxMinutesOff, minMinutesOff, recoveryPercentage, recoveryMaxMinutes);
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
@@ -74,6 +74,4 @@ describe("ps-strategy-best-save performance", function () {
       n1.receive({ payload });
     });
   });
-
-
 });

@@ -68,13 +68,13 @@ function addTariffToPrices(node, config, prices) {
     if (p.start.substring(0, 10) >= validFrom && p.start.substring(0, 10) <= validTo && config.days[day]) {
       p.sum = roundPrice(p.value + p.add);
     } else {
-      p.sum = p.value
+      p.sum = p.value;
     }
   });
 
-  const result = sortedPeriods.map(p => ({start: p.start, value: p.sum}))
+  const result = sortedPeriods.map((p) => ({ start: p.start, value: p.sum }));
 
-    // Set end on last period
+  // Set end on last period
   result[result.length - 1].end = lastEnd;
 
   return result;

@@ -74,7 +74,6 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   const startTimes = priceDatePerMinute.map((d) => d.start);
   const prices = priceDatePerMinute.map((d) => d.value);
 
-
   const onOff = doPlanning(node, priceDatePerMinute);
   const savings = calcSavings(prices, onOff);
   const minutes = startTimes.map((v, i) => ({
