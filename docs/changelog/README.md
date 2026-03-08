@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.2.0
+
+ - Add new node ps-price-filter.
+
 ## 5.1.5
 
 - Include examples that where excluded before.
