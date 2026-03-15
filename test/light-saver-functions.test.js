@@ -474,6 +474,22 @@ describe("light-saver-functions", function () {
       expect(state.timedOut).to.be.false;
       expect(mockNode.log.calledWith("Trigger binary_sensor.motion1 has no state/lastChanged, skipping")).to.be.true;
     });
+
+    it("should not reapply an immediate level when the current immediate period was already active", function () {
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "off", lastChanged: "2026-01-29T15:25:00Z" }],
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10,
+        levels: [{ fromTime: "15:00", level: 35, immediate: true }],
+      };
+      const state = { timedOut: false, lastImmediateTime: "15:00" };
+
+      funcs.checkTimeouts(config, state, mockNode, mockHomeAssistant, mockClock);
+
+      expect(mockWebsocket.send.called).to.be.false;
+      expect(state.lastImmediateTime).to.equal("15:00");
+    });
   });
 
   describe("fetchMissingStates", function () {
@@ -613,6 +629,33 @@ describe("light-saver-functions", function () {
 
       expect(config.triggers[0].state).to.be.undefined;
       expect(mockNode.warn.calledWith("State not found for binary_sensor.motion1")).to.be.true;
+    });
+
+    it("should preserve manual light state at startup when triggers are still within timeout", function () {
+      const testClock = {
+        now: () => new Date("2026-01-29T15:30:00Z"),
+      };
+
+      mockWebsocket.states = {
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:25:00Z" },
+      };
+
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1" }],
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10,
+        levels: [{ fromTime: "15:00", level: 35, immediate: true }],
+        nightSensor: null,
+      };
+      const state = { timedOut: undefined, lastImmediateTime: null };
+
+      const result = funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant, testClock);
+
+      expect(result).to.be.true;
+      expect(state.timedOut).to.be.false;
+      expect(state.lastImmediateTime).to.equal("15:00");
+      expect(mockWebsocket.send.called).to.be.false;
     });
   });
 
