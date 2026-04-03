@@ -249,7 +249,6 @@ function handleStateChange(event, config, state, node, homeAssistant, clock = nu
   // Check if it's the brightness sensor
   if (config.brightnessSensor && config.brightnessSensor.entity_id === entityId) {
     const wasBrightnessAllowing = isBrightnessAllowingLights(config); // Check before update
-    const oldBrightness = config.brightnessSensor.state;
     config.brightnessSensor.lastChanged = timestamp;
     config.brightnessSensor.state = newState.state;
 

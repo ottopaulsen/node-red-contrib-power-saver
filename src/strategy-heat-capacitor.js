@@ -27,21 +27,21 @@ module.exports = function (RED) {
 
     this.on("input", function (msg) {
       if (!validateInput(node, msg)) return;
-      if (!msg.hasOwnProperty("payload")) return;
+      if (!("payload" in msg)) return;
 
-      if (msg.payload.hasOwnProperty("commands")) {
+      if ("commands" in msg.payload) {
         //Commands override input
-        if (node.hasOwnProperty("schedule")) {
+        if ("schedule" in node) {
           //Do not execute if schedule is missing
-          if (msg.payload.hasOwnProperty("time")) {
+          if ("time" in msg.payload) {
             node.dT = findTemp(msg.payload.time, node.schedule);
           } else {
             node.dT = findTemp(DateTime.now(), node.schedule);
           }
           node.T = node.setpoint + node.dT;
-          if (msg.payload.commands.hasOwnProperty("sendSchedule")) {
+          if ("sendSchedule" in msg.payload.commands) {
             // Send output if schedule exists
-            if (node.hasOwnProperty("schedule") && msg.payload.commands.sendSchedule == true) {
+            if ("schedule" in node && msg.payload.commands.sendSchedule == true) {
               node.send([
                 null,
                 null,
@@ -50,7 +50,7 @@ module.exports = function (RED) {
               ]);
             }
           }
-          if (msg.payload.commands.hasOwnProperty("sendOutput") && msg.payload.commands.sendOutput == true) {
+          if ("sendOutput" in msg.payload.commands && msg.payload.commands.sendOutput == true) {
             // Send output if schedule exists
             node.send([
               { payload: node.T, topic: "setpoint", time: node.schedule.time, version: version },
@@ -63,22 +63,22 @@ module.exports = function (RED) {
         return;
       }
       // Using msg.payload.config to change specific properties
-      if (msg.payload.hasOwnProperty("config")) {
-        if (msg.payload.config.hasOwnProperty("timeHeat1C")) node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
-        if (msg.payload.config.hasOwnProperty("timeCool1C")) node.timeCool1C = Number(msg.payload.config.timeCool1C);
-        if (msg.payload.config.hasOwnProperty("setpoint")) node.setpoint = Number(msg.payload.config.setpoint);
-        if (msg.payload.config.hasOwnProperty("maxTempAdjustment"))
+      if ("config" in msg.payload) {
+        if ("timeHeat1C" in msg.payload.config) node.timeHeat1C = Number(msg.payload.config.timeHeat1C);
+        if ("timeCool1C" in msg.payload.config) node.timeCool1C = Number(msg.payload.config.timeCool1C);
+        if ("setpoint" in msg.payload.config) node.setpoint = Number(msg.payload.config.setpoint);
+        if ("maxTempAdjustment" in msg.payload.config)
           node.maxTempAdjustment = Number(msg.payload.config.maxTempAdjustment);
-        if (msg.payload.config.hasOwnProperty("boostTempHeat"))
+        if ("boostTempHeat" in msg.payload.config)
           node.boostTempHeat = Number(msg.payload.config.boostTempHeat);
-        if (msg.payload.config.hasOwnProperty("boostTempCool"))
+        if ("boostTempCool" in msg.payload.config)
           node.boostTempCool = Number(msg.payload.config.boostTempCool);
-        if (msg.payload.config.hasOwnProperty("minSavings")) node.minSavings = Number(msg.payload.config.minSavings);
+        if ("minSavings" in msg.payload.config) node.minSavings = Number(msg.payload.config.minSavings);
       }
 
       //merge pricedata to escape some midnight issues. Store max 72 hour history
-      if (msg.payload.hasOwnProperty("priceData")) {
-        if (node.hasOwnProperty("priceData")) {
+      if ("priceData" in msg.payload) {
+        if ("priceData" in node) {
           node.priceData = mergePriceData(node.priceData, msg.payload.priceData);
         } else {
           node.priceData = msg.payload.priceData;
@@ -90,7 +90,7 @@ module.exports = function (RED) {
         }
       }
 
-      if (node.hasOwnProperty("priceData")) {
+      if ("priceData" in node) {
         node.schedule = runBuySellAlgorithm(
           node.priceData,
           node.timeHeat1C,
@@ -102,7 +102,7 @@ module.exports = function (RED) {
           node.minSavings,
         );
 
-        if (msg.payload.hasOwnProperty("time")) {
+        if ("time" in msg.payload) {
           node.dT = findTemp(msg.payload.time, node.schedule);
         } else {
           node.dT = findTemp(DateTime.now(), node.schedule);

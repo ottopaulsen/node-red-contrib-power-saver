@@ -73,7 +73,6 @@ function runSchedule(node, schedule, time, currentSent = false) {
     const entry = remainingSchedule[0];
     const nextTime = DateTime.fromISO(entry.time);
     const wait = nextTime - time;
-    const onOff = entry.value ? "on" : "off";
     const statusMessage = `${remainingSchedule.length} changes - ${
       remainingSchedule[0].value ? "on" : "off"
     } at ${nextTime.toFormat("HH:mm")}`;

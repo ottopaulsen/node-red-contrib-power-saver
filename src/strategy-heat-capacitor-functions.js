@@ -1,6 +1,6 @@
 "use strict";
 const { DateTime } = require("luxon");
-const { roundPrice, getDiffToNextOn } = require("./utils");
+const { roundPrice } = require("./utils");
 
 function buildMinutePriceVector(priceData) {
   if (!priceData || priceData.length === 0) {

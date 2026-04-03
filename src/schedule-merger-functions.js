@@ -7,7 +7,7 @@ function msgHasSchedule(msg) {
   return msg.payload.minutes?.length > 0;
 }
 
-function validateSchedule(msg) {
+function validateSchedule() {
   return "";
 }
 

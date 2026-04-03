@@ -22,7 +22,7 @@ module.exports = function (RED) {
     let runtimeOverride = null;
     try {
       runtimeOverride = node.context().get("override", node.contextStorage);
-    } catch (err) {
+    } catch {
       // Context storage might not be available (e.g., in tests)
     }
 
@@ -89,7 +89,7 @@ module.exports = function (RED) {
       try {
         node.context().set("override", nodeConfig.override, node.contextStorage);
         debugLog(`Override saved to context storage: ${nodeConfig.override}`);
-      } catch (err) {
+      } catch {
         // Silently fail if context storage not available
       }
     };
@@ -298,7 +298,7 @@ module.exports = function (RED) {
 
     // Function to fetch current states from Home Assistant
     const fetchMissingStates = function () {
-      const initialTimedOutWasSet = funcs.fetchMissingStates(nodeConfig, state, nodeWrapper, homeAssistant);
+      funcs.fetchMissingStates(nodeConfig, state, nodeWrapper, homeAssistant);
 
       // Fetch initial light states
       try {

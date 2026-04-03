@@ -5,7 +5,7 @@ function booleanConfig(value) {
   return value === "true" || value === true;
 }
 
-function calcNullSavings(values, _) {
+function calcNullSavings(values) {
   return values.map(() => null);
 }
 
@@ -322,7 +322,7 @@ function fillArray(value, count) {
   if (value === undefined || count <= 0) {
     return [];
   }
-  res = [];
+  let res = [];
   for (let i = 0; i < count; i++) {
     res.push(value);
   }

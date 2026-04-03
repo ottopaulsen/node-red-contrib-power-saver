@@ -3,7 +3,6 @@ const {
   calcNullSavings,
   fixOutputValues,
   fixPeriods,
-  getSavings,
   saveOriginalConfig,
 } = require("./utils");
 const { strategyOnInput } = require("./strategy-functions");

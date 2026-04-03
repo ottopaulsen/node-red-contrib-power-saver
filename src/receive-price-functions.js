@@ -1,5 +1,4 @@
 const { addEndToLast, validationFailure } = require("./utils");
-const { DateTime } = require("luxon");
 
 function getPriceData(node, msg) {
   const isConfigMsg = !!msg?.payload?.config;
@@ -12,7 +11,7 @@ function getPriceData(node, msg) {
     return null;
   }
 
-  priceData = [...input.today, ...input.tomorrow];
+  const priceData = [...input.today, ...input.tomorrow];
 
   addEndToLast(priceData);
 

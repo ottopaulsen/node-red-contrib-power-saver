@@ -119,7 +119,7 @@ function calculate(
   }
 
   savingsList.sort((b, a) => (b.saving === a.saving ? a.count - b.count : b.saving - a.saving));
-  let onOff = values.map((v) => true); // Start with all on
+  let onOff = values.map(() => true); // Start with all on
 
   // Find the best possible sequences
   while (savingsList.length > 0) {

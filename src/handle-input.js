@@ -86,7 +86,7 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   const schedule = trimScheduleToStart(fullSchedule, priceData[0].start);
   addLastSwitchIfNoSchedule(schedule, minutes, config);
 
-  plan = {
+  const plan = {
     minutes,
     schedule,
     source,
@@ -174,7 +174,7 @@ function trimScheduleToStart(schedule, startTime) {
 
 function deleteSavedScheduleBefore(node, day, checkDays = 0) {
   let date = day;
-  let data = null;
+  let data;
   let count = 0;
   do {
     date = date.plus({ days: -1 });
