@@ -27,9 +27,3 @@ jobs:
         run: npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Refresh Node-RED Library
-        run: |
-          curl -X POST https://flows.nodered.org/add/node \
-            -H "Content-Type: application/json" \
-            -d '{"id":"node-red-contrib-power-saver"}'
