@@ -13,6 +13,7 @@ List the most significant changes.
  - Let light-saver brightness sensor setting accept negative values (so sun elevation can be used).
  - Doc updates.
  - Add AGENTS.md instructions for copilot.
+ - Fix so light is not changed on deployment of Node-RED.
 
 ## 5.2.0
 
