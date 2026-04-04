@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.2.2
+
+ - No change. Just testing workflow update.
+
 ## 5.2.1
 
  - Update eslint settings and fix findings.
