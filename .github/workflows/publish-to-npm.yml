@@ -1,7 +1,7 @@
 name: Publish to npmjs
 on:
   release:
-    types: [created]
+    types: [published]
 permissions:
   id-token: write
   contents: read
@@ -10,14 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Setup .npmrc file to publish to npm
+      
       - uses: actions/setup-node@v4
         with:
           node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
-      - uses: szenius/set-timezone@v1.0
+          
+      - uses: szenius/set-timezone@v2.0
         with:
           timezoneLinux: "Europe/Oslo"
+          
       - run: npm ci
       - run: "npm run test"
-      - run: npm publish --provenance
+      
+      - name: Publish to npm
+        run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Refresh Node-RED Library
+        run: |
+          curl -X POST https://flows.nodered.org/add/node \
+            -H "Content-Type: application/json" \
+            -d '{"id":"node-red-contrib-power-saver"}'
