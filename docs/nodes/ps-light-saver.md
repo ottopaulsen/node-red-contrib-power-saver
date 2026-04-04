@@ -2,15 +2,11 @@
 
 ![ps-light-saver](../images/node-ps-light-saver.png)
 
-Node to automatically control lights based on motion sensors.
+Node to automatically control lights based on motion or other binary sensors.
 
 ::: warning Home Assistant
 This node can only be used with Home Assistant.
-:::
-
-::: warning Experimental
-You should regard this node as experimental, as it is brand new and has not been tested for many different conditions.
-The documentation may not be accurate on all details, and may even contain errors.
+It does not require any input or output to work, only configuration.
 :::
 
 ## Description
@@ -23,13 +19,14 @@ You can control lights manually without feeling disturbed by the node.
 Here are some of the main ideas:
 
 - Lights are turned on when there is motion, and off when there is a long enough period without motion.
-- You do not have to enter the middle of the room before light goes on. The light shall be on before you enter the room.
+- You do not have to enter the middle of the room before light goes on. The light shall be on before you enter the room (because it is turned on when there is motion just outside the room).
 - You can configure different default levels on different times of the day.
 - You can have separate night levels or away levels that override the standard time of day levels.
+- You may use a brightness sensor or sun elevation to turn on light only when it is dark.
 - If motion remains, the lights will not change automatically, so for example if you set the desired level manually,
   it will remain as long as there is motion inside the configured timeout. Exceptions:
 - If you use the brightness sensor, lights may turn on automatically when it gets dark, even if there is constant motion.
-- If you check Immediate on the level, the leel is set on the given time if there has been motion within the timeout period.
+- If you check Immediate on the level, the level is set on the given time if there has been motion within the timeout period.
 
 The node works fine without any input or output, but you can use input to control or configure it, and you can get interesting information on the output.
 
@@ -112,6 +109,13 @@ If you check the debug flag, extensice logging is written to the Node-RED log.
 
 ::: tip Level and switches
 Switches or lights that can only turn on or off will be switched off if the level is 0 and on if the level is anything else.
+:::
+
+::: tip No brightness sensor?
+The brightness sensor can be used so lights are only turned on if it is dark.
+If you don't have a brightness sensor, in some cases it can be useful to use the sun elevation.
+If you are using the Sun integration, make sure the sun elevation sensor `sensor.sun_solar_elevation` is enabled.
+Then you can use this sensor instead. You may use negative values for when the sun is below the horizon.
 :::
 
 ### Override

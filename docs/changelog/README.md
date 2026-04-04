@@ -7,6 +7,13 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.2.1
+
+ - Update eslint settings and fix findings.
+ - Let light-saver brightness sensor setting accept negative values (so sun elevation can be used).
+ - Doc updates.
+ - Add AGENTS.md instructions for copilot.
+
 ## 5.2.0
 
  - Add new node ps-price-filter.

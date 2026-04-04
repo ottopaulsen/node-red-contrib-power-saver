@@ -1092,6 +1092,66 @@ describe("light-saver-functions", function () {
       const result = funcs.isBrightnessAllowingLights(config);
       expect(result).to.be.true; // Fail-open
     });
+
+    it("should support negative limit (e.g. solar elevation) in max mode - below limit", function () {
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.sun_solar_elevation",
+          state: "-5",
+          limit: -3,
+          mode: "max",
+        },
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true; // -5 < -3, lights allowed
+    });
+
+    it("should support negative limit (e.g. solar elevation) in max mode - above limit", function () {
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.sun_solar_elevation",
+          state: "2",
+          limit: -3,
+          mode: "max",
+        },
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.false; // 2 > -3, lights not allowed
+    });
+
+    it("should support negative limit (e.g. solar elevation) in min mode - above limit", function () {
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.sun_solar_elevation",
+          state: "2",
+          limit: -3,
+          mode: "min",
+        },
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.true; // 2 > -3, lights allowed
+    });
+
+    it("should support negative limit (e.g. solar elevation) in min mode - below limit", function () {
+      const config = {
+        debugLog: true,
+        brightnessSensor: {
+          entity_id: "sensor.sun_solar_elevation",
+          state: "-5",
+          limit: -3,
+          mode: "min",
+        },
+      };
+
+      const result = funcs.isBrightnessAllowingLights(config);
+      expect(result).to.be.false; // -5 < -3, lights not allowed
+    });
   });
 
   describe("findCurrentLevel with away mode", function () {
