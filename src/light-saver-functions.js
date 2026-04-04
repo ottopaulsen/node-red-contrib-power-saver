@@ -714,14 +714,16 @@ function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
       `Initial timedOut set to ${state.timedOut} (all triggers actually timed out: ${allTimedOut})`,
     );
 
-    // If motion is detected at startup (timedOut is false), turn lights on
     if (!allTimedOut) {
-      debugLog(config, node, "Motion detected at startup, turning lights on");
-      const level = findCurrentLevel(config, node, clock);
-      if (level !== null && isBrightnessAllowingLights(config)) {
-        controlLights(config, config.lights, level, node, homeAssistant);
-        debugLog(config, node, `Lights turned on to ${level}% at startup (motion detected)`);
-      }
+      const levelConfig = findLevelConfig(config, clock);
+      state.lastImmediateTime = levelConfig && levelConfig.immediate === true ? levelConfig.fromTime : null;
+      debugLog(
+        config,
+        node,
+        `Startup preserved current light state while motion is still active${state.lastImmediateTime ? ` (immediate period ${state.lastImmediateTime} already active)` : ""}`,
+      );
+    } else {
+      state.lastImmediateTime = null;
     }
 
     return true; // Indicates that initial timedOut was set
