@@ -1,22 +1,9 @@
 <template>
   <div class="box">
-    <div v-if="paypal" class="left">
-      <form action="https://www.paypal.com/donate" method="post" target="_blank">
-        <input type="hidden" name="business" value="5K5SRZU27TAC8" />
-        <input type="hidden" name="no_recurring" value="0" />
-        <input type="hidden" name="item_name" value="One of my hobbies is creating software for smart homes" />
-        <input type="hidden" name="currency_code" value="NOK" />
-        <input
-          type="image"
-          src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
-          border="0"
-          name="submit"
-          title="PayPal - The safer, easier way to pay online!"
-          alt="Donate with PayPal button"
-        />
-      </form>
-    </div>
     <div v-if="vipps" class="right vipps-box">
+      <span style="margin-right: 10px;">
+        Support PowerSaver development: 
+      </span>
       <span>
         <img src="../../images/vipps-smiling-rgb-orange-pos.png" height="30" />
       </span>
