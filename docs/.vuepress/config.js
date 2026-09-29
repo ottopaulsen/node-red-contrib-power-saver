@@ -35,7 +35,11 @@ export default defineUserConfig({
   lang: "en-US",
   plugins: [
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
-    searchPlugin({}),
+    searchPlugin({
+      // Index the `tags` frontmatter as well as titles and headers, so pages
+      // can be found by words that do not literally appear in their headings.
+      getExtraFields: (page) => page.frontmatter.tags ?? [],
+    }),
     googleAnalyticsPlugin({
       id: "G-Z2QNNCDQZG",
     }),

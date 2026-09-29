@@ -1,5 +1,25 @@
 ---
 sidebar: "auto"
+tags:
+  - guide
+  - getting started
+  - introduction
+  - install
+  - installation
+  - setup
+  - tutorial
+  - how to
+  - first steps
+  - beginner
+  - migration
+  - migrate
+  - v4 to v5
+  - upgrade
+  - breaking changes
+  - strategy nodes
+  - disclaimer
+  - Node-RED
+  - Home Assistant
 ---
 
 # Guide

@@ -1,6 +1,25 @@
 ---
 prev: ./ps-strategy-best-save.md
 next: ./ps-strategy-heat-capacitor.md
+tags:
+  - ps-strategy-lowest-price
+  - lowest price
+  - cheapest hours
+  - cheapest time
+  - cheap electricity
+  - strategy
+  - period
+  - hours on
+  - consecutive
+  - spread
+  - highest price
+  - invert
+  - most expensive
+  - schedule
+  - car charging
+  - EV charging
+  - dynamic config
+  - dynamic commands
 ---
 
 # ps-strategy-lowest-price

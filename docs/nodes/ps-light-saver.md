@@ -1,3 +1,29 @@
+---
+tags:
+  - ps-light-saver
+  - light saver
+  - light control
+  - lights
+  - lighting
+  - motion sensor
+  - motion detection
+  - presence
+  - binary sensor
+  - brightness
+  - brightness limit
+  - lux
+  - luminance
+  - night light
+  - away light
+  - timeout
+  - turn off lights
+  - turn on lights
+  - dimming
+  - light level
+  - override
+  - Home Assistant
+---
+
 # ps-light-saver
 
 ![ps-light-saver](../images/node-ps-light-saver.png)

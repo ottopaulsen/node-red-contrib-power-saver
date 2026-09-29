@@ -1,3 +1,16 @@
+---
+tags:
+  - dynamic commands
+  - commands
+  - send command
+  - payload commands
+  - runtime control
+  - control node
+  - best save
+  - lowest price
+  - fixed schedule
+---
+
 # Dynamic commands
 
 You can dynamically send some commands to the node via its input, by using a `commands` object in the payload as described below.

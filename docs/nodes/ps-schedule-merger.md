@@ -1,6 +1,15 @@
 ---
 prev: ./ps-receive-price.md
 next: ./ps-price-filter.md
+tags:
+  - ps-schedule-merger
+  - schedule merger
+  - merge schedules
+  - combine schedules
+  - multiple strategies
+  - multiple nodes
+  - timeout
+  - resulting schedule
 ---
 
 # ps-schedule-merger

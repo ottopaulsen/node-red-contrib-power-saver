@@ -1,6 +1,17 @@
 ---
 prev: ./ps-strategy-heat-capacitor
 next: ./ps-receive-price.md
+tags:
+  - ps-strategy-fixed-schedule
+  - fixed schedule
+  - static schedule
+  - time schedule
+  - daily schedule
+  - turn on every morning
+  - combine strategies
+  - schedule merger
+  - dynamic config
+  - dynamic commands
 ---
 
 # ps-strategy-fixed-schedule

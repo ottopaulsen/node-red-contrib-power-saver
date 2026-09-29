@@ -1,6 +1,16 @@
 ---
 sidebar: "auto"
 sidebarDepth: 1
+tags:
+  - changelog
+  - change log
+  - release notes
+  - version history
+  - what's new
+  - new version
+  - updates
+  - breaking changes
+  - releases
 ---
 
 # Change Log
@@ -11,6 +21,7 @@ List the most significant changes.
 
  - Update dependencies.
    Requires node version >= 22.9.0, hence the major version change.
+ - Update search rags in doc.
 
 ## 5.2.3
 

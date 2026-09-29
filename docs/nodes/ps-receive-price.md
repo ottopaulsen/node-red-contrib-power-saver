@@ -1,6 +1,21 @@
 ---
 prev: ./ps-strategy-heat-capacitor.md
 next: ./ps-schedule-merger.md
+tags:
+  - ps-receive-price
+  - receive price
+  - price input
+  - prices
+  - Tibber
+  - tibber-query
+  - Nord Pool
+  - Nordpool
+  - current state
+  - events state
+  - Home Assistant
+  - price format
+  - convert prices
+  - priceData
 ---
 
 # ps-receive-price

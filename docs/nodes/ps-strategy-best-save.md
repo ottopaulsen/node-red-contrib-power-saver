@@ -1,5 +1,29 @@
 ---
 next: ./ps-strategy-lowest-price.md
+tags:
+  - ps-strategy-best-save
+  - best save
+  - strategy
+  - postpone consumption
+  - move consumption
+  - water heater
+  - boiler
+  - hot water tank
+  - varmtvannsbereder
+  - thermostat
+  - heater
+  - save money
+  - savings
+  - max hours off
+  - min saving
+  - schedule
+  - algorithm
+  - Legionella
+  - 70 degrees
+  - dynamic config
+  - dynamic commands
+  - context
+  - restart
 ---
 
 # ps-strategy-best-save

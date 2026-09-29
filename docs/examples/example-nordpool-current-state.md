@@ -1,3 +1,19 @@
+---
+tags:
+  - Nord Pool
+  - Nordpool
+  - current state node
+  - Home Assistant
+  - water heater
+  - switch
+  - call service
+  - debug node
+  - inject node
+  - best save
+  - example
+  - flow
+---
+
 # Nord Pool and current state node
 
 ## Description

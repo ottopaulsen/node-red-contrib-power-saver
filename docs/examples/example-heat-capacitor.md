@@ -1,3 +1,17 @@
+---
+tags:
+  - heat capacitor example
+  - heat capacitor
+  - thermal mass
+  - climate entity
+  - setpoint
+  - cabin
+  - house
+  - heating
+  - example
+  - flow
+---
+
 # Simple heat capacitor strategy flow
 
 ## Description

@@ -1,3 +1,17 @@
+---
+tags:
+  - strategy input
+  - input format
+  - priceData
+  - price data
+  - payload
+  - price array
+  - start time
+  - value
+  - JSON format
+  - input message
+---
+
 # Strategy input format
 
 The common input for strategy nodes is a payload with a `priceData` array containing an object for each period. Each object has a `value` which is the price, and a `start` which is the start time for the period. The last item in the array must also have an end property saying how long the vqlue lasts.

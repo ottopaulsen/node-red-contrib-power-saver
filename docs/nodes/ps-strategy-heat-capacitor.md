@@ -1,6 +1,24 @@
 ---
 prev: ./ps-strategy-lowest-price.md
 next: ./ps-strategy-fixed-schedule.md
+tags:
+  - ps-strategy-heat-capacitor
+  - heat capacitor
+  - thermal mass
+  - climate entity
+  - setpoint
+  - temperature
+  - temperature adjustment
+  - heating
+  - cooling
+  - boost
+  - delta T
+  - time +1C
+  - min savings
+  - house
+  - cabin
+  - heat pump
+  - experimental
 ---
 
 # ps-strategy-heat-capacitor

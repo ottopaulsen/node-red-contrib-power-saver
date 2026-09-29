@@ -1,5 +1,16 @@
 ---
 prev: ./ps-general-add-tariff.md
+tags:
+  - ps-elvia-add-tariff
+  - Elvia
+  - grid tariff
+  - nettleie
+  - API key
+  - subscription key
+  - Norway
+  - grid company
+  - tariff types
+  - ps-elvia-config
 ---
 
 # ps-elvia-add-tariff

@@ -2,6 +2,18 @@
 sidebar:
   - /faq/README.md
   - /faq/best-save-viewer.md
+tags:
+  - FAQ
+  - frequently asked questions
+  - help
+  - troubleshooting
+  - questions
+  - why
+  - contribute
+  - Legionella
+  - water heater
+  - best save schedule
+  - most expensive hours
 ---
 
 # FAQ

@@ -1,3 +1,16 @@
+---
+tags:
+  - dynamic config
+  - dynamic configuration
+  - change config
+  - config message
+  - runtime config
+  - override
+  - context
+  - output values
+  - configure at runtime
+---
+
 # Dynamic config
 
 It is possible to change config dynamically by sending a config message to the node.

@@ -1,6 +1,20 @@
 ---
 prev: ./ps-schedule-merger.md
 next: ./ps-general-add-tariff.md
+tags:
+  - ps-price-filter
+  - price filter
+  - price limit
+  - force on
+  - force off
+  - too expensive
+  - cheap price
+  - threshold
+  - over limit
+  - under limit
+  - filter schedule
+  - maximum price
+  - minimum price
 ---
 
 # ps-price-filter

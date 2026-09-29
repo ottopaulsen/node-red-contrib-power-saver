@@ -1,3 +1,16 @@
+---
+tags:
+  - strømstøtte
+  - stromstotte
+  - electricity support
+  - government support
+  - subsidy
+  - Norway
+  - price compensation
+  - støtte
+  - example
+---
+
 # Strømstøtte
 
 ::: tip Strømstøtte = Norwegian governental support

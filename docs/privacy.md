@@ -1,3 +1,17 @@
+---
+tags:
+  - privacy
+  - privacy policy
+  - Google Adsense
+  - adsense
+  - cookies
+  - advertisement
+  - ads
+  - data collection
+  - personal data
+  - GDPR
+---
+
 # Privacy Policy
 
 We use Google Adsense to display advertisements on our website.

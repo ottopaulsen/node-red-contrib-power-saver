@@ -1,3 +1,19 @@
+---
+tags:
+  - cascade temperature control
+  - cascade control
+  - temperature control
+  - climate entity
+  - setpoint
+  - room temperature
+  - temperature sensor
+  - electric heater
+  - accuracy
+  - responsiveness
+  - example
+  - flow
+---
+
 # Cascade temperature control
 
 ## Description

@@ -1,3 +1,24 @@
+---
+tags:
+  - nodes
+  - node overview
+  - node list
+  - all nodes
+  - strategy nodes
+  - utility nodes
+  - grid tariff nodes
+  - ps-strategy-best-save
+  - ps-strategy-lowest-price
+  - ps-strategy-heat-capacitor
+  - ps-strategy-fixed-schedule
+  - ps-receive-price
+  - ps-schedule-merger
+  - ps-price-filter
+  - ps-light-saver
+  - ps-general-add-tariff
+  - ps-elvia-add-tariff
+---
+
 # Nodes
 
 Here is an overview of the nodes, and links to detailed descriptions for eah of them.

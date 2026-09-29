@@ -1,3 +1,14 @@
+---
+tags:
+  - examples
+  - example flows
+  - flows
+  - sample flows
+  - user provided examples
+  - import flow
+  - getting started examples
+---
+
 # Examples
 
 [Nord Pool and `current state` node in HA](./example-nordpool-current-state)

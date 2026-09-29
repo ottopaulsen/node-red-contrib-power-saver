@@ -1,3 +1,14 @@
+---
+tags:
+  - reduce minutes array
+  - minutes array
+  - output 3
+  - function node
+  - reduce entries
+  - shorten array
+  - example
+---
+
 # Reduce minutes array
 
 If you want to reduce number of entries in the minutes array on output 3, you can send it through a function node with the following code:

@@ -1,6 +1,17 @@
 ---
 prev: ./ps-price-filter.md
 next: ./ps-elvia-add-tariff.md
+tags:
+  - ps-general-add-tariff
+  - add tariff
+  - grid tariff
+  - network tariff
+  - nettleie
+  - day and night tariff
+  - price addition
+  - time of use
+  - surcharge
+  - extra cost
 ---
 
 # ps-general-add-tariff

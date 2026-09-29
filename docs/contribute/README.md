@@ -1,5 +1,21 @@
 ---
 sidebar: "auto"
+tags:
+  - contribute
+  - contributing
+  - donate
+  - donation
+  - support
+  - sponsor
+  - bug report
+  - report a bug
+  - issue
+  - ideas
+  - feature request
+  - contributors
+  - development
+  - pull request
+  - help out
 ---
 
 # Contribute

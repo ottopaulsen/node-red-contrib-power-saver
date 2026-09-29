@@ -1,3 +1,17 @@
+---
+tags:
+  - Nord Pool
+  - Nordpool
+  - events state node
+  - Home Assistant
+  - lowest price
+  - cheapest hours
+  - switch
+  - call service
+  - example
+  - flow
+---
+
 # Nord Pool and events: state node
 
 ## Description

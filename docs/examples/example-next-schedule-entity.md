@@ -1,3 +1,16 @@
+---
+tags:
+  - next schedule
+  - schedule to sensor
+  - sensor entity
+  - output to entity
+  - Node-RED Companion
+  - hass-node-red
+  - Home Assistant entity
+  - example
+  - flow
+---
+
 # Output schedule to a sensor entity
 
 This example was contributed by [Stefan](https://github.com/oakhill87)

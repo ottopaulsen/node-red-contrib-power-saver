@@ -1,3 +1,16 @@
+---
+tags:
+  - Tibber
+  - MQTT
+  - switch
+  - best save
+  - Magic Mirror
+  - publish
+  - broker
+  - example
+  - flow
+---
+
 # Tibber, a switch and MQTT
 
 ## Description

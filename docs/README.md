@@ -33,6 +33,25 @@ features:
 footer: Created by Otto Paulsen and contributors
 
 footerHtml: true
+tags:
+  - power saver
+  - node-red-contrib-power-saver
+  - electricity price
+  - power price
+  - spot price
+  - energy price
+  - save money
+  - saving
+  - energy saving
+  - smart home
+  - home automation
+  - Node-RED
+  - Home Assistant
+  - Tibber
+  - Nord Pool
+  - scheduling
+  - strøm
+  - strømpris
 ---
 
 ::: tip New Light Saver node

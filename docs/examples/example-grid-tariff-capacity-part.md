@@ -1,3 +1,19 @@
+---
+tags:
+  - grid tariff
+  - capacity part
+  - kapasitetsledd
+  - nettleie
+  - Norway
+  - monthly fee
+  - peak
+  - peak load
+  - capacity limit
+  - avoid peaks
+  - example
+  - flow
+---
+
 # Capacity part of grid tariff
 
 ## Introduction
