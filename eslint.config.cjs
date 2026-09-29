@@ -13,4 +13,14 @@ module.exports = [
       },
     },
   },
+  {
+    // Mocha injects describe/it/before/beforeEach/after/afterEach into the
+    // test files, so without these they all report as no-undef.
+    files: ["test/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...globals.mocha,
+      },
+    },
+  },
 ];

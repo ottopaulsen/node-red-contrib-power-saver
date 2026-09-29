@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-power-saver",
-  "version": "5.2.3",
+  "version": "6.0.0",
   "description": "A module for Node-RED that you can use to turn on and off a switch based on power prices",
   "main": "index.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "version": ">=2.2.0"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=22.9.0"
   },
   "prettier": {
     "printWidth": 120
@@ -56,19 +56,19 @@
     "@vuepress/theme-default": "2.0.0-rc.123",
     "@vuepress/utils": "2.0.0-rc.26",
     "chai": "6.2.2",
-    "eslint": "10.0.0",
-    "expect": "30.2.0",
+    "eslint": "10.11.0",
+    "expect": "30.5.2",
     "globals": "^17.4.0",
-    "mocha": "^11.7.5",
-    "node-red": "^4.1.5",
+    "mocha": "^12.0.2",
+    "node-red": "^5.0.7",
     "node-red-node-test-helper": "0.3.6",
     "prettier": "^3.8.1",
     "sass-embedded": "^1.97.3",
-    "sass-loader": "^16.0.7",
+    "sass-loader": "^16.0.8",
     "vuepress": "2.0.0-rc.26"
   },
   "dependencies": {
-    "floating-vue": "5.2.2",
+    "floating-vue": "5.4.0",
     "lodash.clonedeep": "4.5.0",
     "luxon": "3.7.2",
     "nano-time": "1.0.0"

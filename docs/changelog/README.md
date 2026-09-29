@@ -7,6 +7,11 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 6.0.0
+
+ - Update dependencies.
+   Requires node version >= 22.9.0, hence the major version change.
+
 ## 5.2.3
 
  - Read LightSaver states from HA after reconnect. Fixes light issues after reboot.

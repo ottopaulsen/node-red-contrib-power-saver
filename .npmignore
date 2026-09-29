@@ -11,7 +11,8 @@ temp/
 donation.png
 firebase.json
 .firebaserc
-.eslintrc.js
+eslint.config.cjs
+.nvmrc
 CHANGELOG.md
 *.md
 !README.md
