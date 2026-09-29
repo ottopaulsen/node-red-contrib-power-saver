@@ -20,8 +20,41 @@ List the most significant changes.
 ## 6.0.0
 
  - Update dependencies.
-   Requires node version >= 22.9.0, hence the major version change.
- - Update search rags in doc.
+ - Remove some dependencies.
+ - Requires node version >= 22.9.0, hence the major version change.
+ - Update search tags in doc.
+ - Fix bug in strategy-functions: guard the handleStrategyInput result instead of
+      destructuring it, so a payload-less or command-only message before any
+      price data no longer crashes every strategy node.
+ - Fix bug in schedule-merger: compare the period a schedule covers instead of its last
+      collapsed entry, so saving a second strategy's schedule stops deleting the
+      first one.
+ - Fix bug in schedule-merger: look every source up at each switch point instead of
+      transposing on timestamp keys, so a source covering a longer run can no
+      longer drop out of the OR/AND merge.
+ - Fix bug in strategy-lowest-price: seed the running minimum with Infinity, not the sum
+      of all values, so negative prices no longer make it pick the most
+      expensive slot.
+ - Fix bug in utils: addEndToLast no longer reads index -1 for a single price record.
+ - Fix bug in handle-input: infer the last record's missing end instead of dereferencing
+      the next record, and plan the final period rather than dropping it.
+ - Fix bug in general-add-tariff: call substring on p.start, not on the period object,
+      so tariff periods with HH:MM starts work.
+ - Fix bug in heat-capacitor: findTemp accepts the ISO string it is given from
+      msg.payload.time, which previously compared as NaN and always returned the
+      last schedule entry.
+ - Fix bug in light-saver: rebuild the event bus subscriptions when the entities in the
+      config change, and unsubscribe from what was actually subscribed, so
+      dynamic config takes effect and no listeners leak across redeploys.
+ - Fix bug in light-saver: skip only the timeout check when a trigger is on, not the
+      whole function, so the documented Immediate level still applies.
+ - Fix bug in handle-output: wait in chunks above the 32 bit setTimeout limit, instead
+      of switching immediately for anything more than ~24.8 days ahead.
+ - Fix bug in schedule-merger: optional chaining on the msg.payload reads, and return an
+      empty schedule from makeScheduleFromMinutes when there is nothing to merge.
+ - Fix bug in strategy-fixed-schedule: fall back to outputIfNoSchedule when periods is
+      empty, instead of dereferencing undefined for every hour.
+
 
 ## 5.2.3
 
