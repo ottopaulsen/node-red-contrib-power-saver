@@ -297,16 +297,24 @@ function makeSchedule(onOff, startTimes, endTime, initial = null) {
 function addEndToLast(priceData) {
   // Add end property to the last record, that is the same as start + the difference between the last two starts, converted to ISO time
 
-  if (priceData.length > 0) {
+  if (priceData.length > 1) {
     const lastStart = DateTime.fromISO(priceData[priceData.length - 1].start);
     const secondLastStart = DateTime.fromISO(priceData[priceData.length - 2].start);
     priceData[priceData.length - 1].end = lastStart
       .plus({ milliseconds: lastStart.diff(secondLastStart, "milliseconds").milliseconds })
       .toISO();
+  } else if (priceData.length === 1 && !priceData[0].end) {
+    // A single record gives nothing to measure the period from, so assume one
+    // hour, which is the price period of every supported source.
+    priceData[0].end = DateTime.fromISO(priceData[0].start).plus({ hours: 1 }).toISO();
   }
 }
 
 function makeScheduleFromMinutes(minutes, initial = null) {
+  if (!minutes.length) {
+    // Nothing to schedule, for instance when the merger has no saved schedules
+    return [];
+  }
   addEndToLast(minutes);
 
   return makeSchedule(

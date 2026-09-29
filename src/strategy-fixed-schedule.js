@@ -64,6 +64,12 @@ function doPlanning(node, priceData) {
 }
 
 function buildAllHours(node, periods) {
+  if (!periods.length) {
+    // Nothing is scheduled without periods, so every hour falls back to the
+    // configured default. The config defaults periods to an empty array, and
+    // dynamic config can set it to one too.
+    return new Array(24).fill(node.outputIfNoSchedule);
+  }
   const sortedPeriods = structuredClone(periods);
   sortedPeriods.sort((a, b) => a.start - b.start);
   let res = [];

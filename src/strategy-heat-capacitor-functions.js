@@ -236,11 +236,16 @@ function calculateSchedule(
 }
 
 function findTemp(date, schedule) {
+  // msg.payload.time reaches this as an ISO string, while DateTime.now() is
+  // passed when there is no time in the message. Comparing a string with a
+  // DateTime coerces to NaN, so every comparison below would be false and the
+  // last entry would win, whatever the time.
+  const fromDate = typeof date === "string" ? DateTime.fromISO(date) : date;
   let closestDate = null;
   let temp = null;
   schedule.minimalSchedule.forEach((e) => {
     const testDate = DateTime.fromISO(e.startAt);
-    if (date < testDate) return;
+    if (fromDate < testDate) return;
     if (closestDate !== null) {
       if (closestDate > testDate) return; //
     }

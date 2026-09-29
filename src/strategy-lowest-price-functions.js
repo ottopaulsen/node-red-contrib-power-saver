@@ -3,7 +3,7 @@ const { sortedIndex } = require("./utils");
 // TODO (otto): This must be fixed to support minutes
 
 function getBestContinuous(values, count) {
-  let min = values.reduce((p, v) => p + v, 0);
+  let min = Infinity;
   let minIndex = 0;
   for (let i = 0; i <= values.length - count; i++) {
     let sum = 0;
