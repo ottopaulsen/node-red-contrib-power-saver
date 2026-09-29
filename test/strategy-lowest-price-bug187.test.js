@@ -1,9 +1,9 @@
-const { DateTime } = require("luxon");
-const expect = require("chai").expect;
+// const { DateTime } = require("luxon");
+// const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
-const lowestPrice = require("../src/strategy-lowest-price.js");
-const { version } = require("../package.json");
-const { makePayload } = require("./strategy-lowest-price-test-utils.js");
+// const lowestPrice = require("../src/strategy-lowest-price.js");
+// const { version } = require("../package.json");
+// const { makePayload } = require("./strategy-lowest-price-test-utils.js");
 
 helper.init(require.resolve("node-red"));
 
@@ -19,8 +19,8 @@ describe("ps-strategy-lowest-price-bugs", function () {
   });
 
   it("cannot reproduce this bug", function (done) {
-    const input = require("./data/lowest-price-bug187-input.json");
-    const result = require("./data/lowest-price-bug187.json");
+    // const input = require("./data/lowest-price-bug187-input.json");
+    // const result = require("./data/lowest-price-bug187.json");
     //   result.version = version;
     //   result.strategyNodeId = "n1";
     //   result.current = false;

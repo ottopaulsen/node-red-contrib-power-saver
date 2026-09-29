@@ -1,4 +1,3 @@
-const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
@@ -70,8 +69,6 @@ describe("ps-strategy-best-save node", function () {
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
-      const n3 = helper.getNode("n3");
-      const n4 = helper.getNode("n4");
       n2.on("input", function (msg) {
         expect(equalPlan(expected, msg.payload)).to.equal(true);
         n1.warn.should.not.be.called;
@@ -91,16 +88,17 @@ describe("ps-strategy-best-save node", function () {
       let countOn = 0;
       let countOff = 0;
       let pass = 0;
-      n2.on("input", function (msg) {
+      n2.on("input", function () {
         pass++;
         switch (pass) {
-          case 1:
+          case 1: {
             const payload = {
               ...convertedPrices,
               time: "2021-10-11T01:11:00.000+02:00",
             };
             n1.receive({ payload });
             break;
+          }
           case 2:
             setTimeout(() => {
               console.log("countOn = " + countOn + ", countOff = " + countOff);
@@ -139,7 +137,6 @@ describe("ps-strategy-best-save node", function () {
       const n2 = helper.getNode("n2");
       const n3 = helper.getNode("n3");
       const n4 = helper.getNode("n4");
-      let countOn = 0;
       let countOff = 0;
       n2.on("input", function (msg) {
         expect(equalPlan(expected, msg.payload)).to.equal(true);
@@ -156,7 +153,6 @@ describe("ps-strategy-best-save node", function () {
         done();
       });
       n3.on("input", function (msg) {
-        countOn++;
         expect(msg).to.have.deep.property("payload", true);
       });
       n4.on("input", function (msg) {
@@ -166,7 +162,7 @@ describe("ps-strategy-best-save node", function () {
           n1.receive({ payload: { config: { override: "on" }, time: plan.time } });
         }
       });
-      n1.receive({ payload: makePayload(prices, plan.time) });
+      n1.receive({ payload: makePayload(prices) });
     });
   });
   it("should send number as output", function (done) {
@@ -196,7 +192,7 @@ describe("ps-strategy-best-save node", function () {
       n4.on("input", function (msg) {
         expect(msg).to.have.deep.property("payload", 0);
       });
-      n1.receive({ payload: makePayload(prices, plan.time) });
+      n1.receive({ payload: makePayload(prices) });
     });
   });
   it("should send text as output", function (done) {
@@ -226,12 +222,12 @@ describe("ps-strategy-best-save node", function () {
       n4.on("input", function (msg) {
         expect(msg).to.have.deep.property("payload", "off");
       });
-      n1.receive({ payload: makePayload(prices, plan.time) });
+      n1.receive({ payload: makePayload(prices) });
     });
   });
 });
 
-function makePayload(prices, time) {
+function makePayload(prices) {
   const payload = structuredClone(prices);
   // payload.time = time;
   // let entryTime = DateTime.fromISO(payload.time);

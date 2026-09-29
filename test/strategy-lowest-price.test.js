@@ -200,7 +200,6 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        const config = structuredClone(resultAllDay10.config);
         expect(msg.payload).to.have.deep.property("schedule", resultAllDay10.schedule);
         n1.warn.should.not.be.called;
         done();
@@ -472,10 +471,10 @@ describe("ps-strategy-lowest-price node", function () {
           done();
         }, 100);
       });
-      n3.on("input", function (msg) {
+      n3.on("input", function () {
         countOn++;
       });
-      n4.on("input", function (msg) {
+      n4.on("input", function () {
         countOff++;
       });
 
@@ -528,10 +527,10 @@ describe("ps-strategy-lowest-price node", function () {
           done();
         }, 100);
       });
-      n3.on("input", function (msg) {
+      n3.on("input", function () {
         countOn++;
       });
-      n4.on("input", function (msg) {
+      n4.on("input", function () {
         countOff++;
       });
 

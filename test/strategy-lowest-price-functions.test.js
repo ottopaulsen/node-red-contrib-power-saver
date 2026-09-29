@@ -1,4 +1,3 @@
-const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const { getBestContinuous, getBestX } = require("../src/strategy-lowest-price-functions");
 const convertedPrices = require("./data/converted-prices.json");
@@ -31,9 +30,3 @@ describe("strategy-lowest-price-functions", () => {
     expect(getBestContinuous(values2, 3)).to.eql(structuredClone(result2).fill(true, 1, 4));
   });
 });
-
-function validatePeriod(period, start, end, count) {
-  expect(period.length).to.eql(count);
-  expect(period[0]).to.eql(start);
-  expect(period[count - 1]).to.eql(end);
-}

@@ -90,7 +90,6 @@ describe("ps-strategy-heat-capacitor node", function () {
   });
 
   it("should plan correctly", function (done) {
-    const result = 0.5;
     const flow = makeFlow();
     helper.load(node, flow, function () {
       const n1 = helper.getNode("n1");
@@ -115,13 +114,11 @@ describe("ps-strategy-heat-capacitor node", function () {
   });
 
   it("should plan correctly, multiTrade", function (done) {
-    const result = 0.5;
     const flow = makeFlow();
     helper.load(node, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       const n3 = helper.getNode("n3");
-      const n4 = helper.getNode("n4");
       const n5 = helper.getNode("n5");
       let bothReceived = false;
       n2.on("input", function (msg) {
@@ -159,7 +156,6 @@ describe("ps-strategy-heat-capacitor node", function () {
   });
 
   it("should plan correctly, NaN test", function (done) {
-    const result = 0.5;
     const flow = [
       {
         id: "n1",
@@ -183,7 +179,6 @@ describe("ps-strategy-heat-capacitor node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       const n3 = helper.getNode("n3");
-      const n4 = helper.getNode("n4");
       const n5 = helper.getNode("n5");
       let bothReceived = false;
       n2.on("input", function (msg) {
@@ -207,7 +202,6 @@ describe("ps-strategy-heat-capacitor node", function () {
   });
 
   it("should support dynamic commands", function (done) {
-    const result = 0.5;
     const flow = makeFlow();
     helper.load(node, flow, function () {
       const n1 = helper.getNode("n1");
@@ -222,19 +216,19 @@ describe("ps-strategy-heat-capacitor node", function () {
           done();
         }
       }
-      n2.on("input", function (msg) {
+      n2.on("input", function () {
         numInputs[0]++;
         testNumInputs();
       });
-      n3.on("input", function (msg) {
+      n3.on("input", function () {
         numInputs[1]++;
         testNumInputs();
       });
-      n4.on("input", function (msg) {
+      n4.on("input", function () {
         numInputs[2]++;
         testNumInputs();
       });
-      n5.on("input", function (msg) {
+      n5.on("input", function () {
         numInputs[3]++;
         testNumInputs();
       });
@@ -270,15 +264,4 @@ function makeFlow() {
     { id: "n4", type: "helper" },
     { id: "n5", type: "helper" },
   ];
-}
-
-function makePayload(prices, time) {
-  const payload = structuredClone(prices);
-  payload.time = time;
-  let entryTime = DateTime.fromISO(payload.time);
-  payload.priceData.forEach((e) => {
-    e.start = entryTime.toISO();
-    entryTime = entryTime.plus({ milliseconds: 10 });
-  });
-  return payload;
 }

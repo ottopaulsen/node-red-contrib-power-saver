@@ -4,7 +4,6 @@ const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/nordpool-3-days-prices.json");
 const result = require("./data/nordpool-3-days-result.json");
-const { testPlan: plan } = require("./test-utils");
 
 helper.init(require.resolve("node-red"));
 

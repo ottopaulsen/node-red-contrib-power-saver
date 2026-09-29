@@ -1,4 +1,3 @@
-const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 
 const {
@@ -15,7 +14,6 @@ const {
   extractPlanForDate,
   isSameDate,
   collapseArr,
-  expandArr,
   sortCollapsed,
 } = require("../src/utils");
 const testResult = require("./data/schedule-from-minutes-test-data.json");
@@ -175,32 +173,6 @@ describe("utils", () => {
         },
       ],
     };
-    const part2 = {
-      minutes: [
-        {
-          price: 0.2,
-          onOff: false,
-          start: "2021-06-21T01:50:00.180+02:00",
-          saving: 3,
-        },
-        {
-          price: 0.85,
-          onOff: true,
-          start: "2021-06-21T01:50:00.190+02:00",
-          saving: null,
-        },
-      ],
-      schedule: [
-        {
-          time: "2021-06-21T01:50:00.020+02:00",
-          value: false,
-        },
-        {
-          time: "2021-06-21T01:50:00.040+02:00",
-          value: false,
-        },
-      ],
-    };
     expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).to.eql(part1);
   });
   it("Can make schedule from minutes", () => {
@@ -212,7 +184,7 @@ describe("utils", () => {
   it("can collapse", () => {
     const arr = [1, 1, 1, 2, 2, 3, 3, 3, 3, 1, 1, 2, 2];
     const collapsed = collapseArr(arr);
-    expectedResult = [
+    const expectedResult = [
       { count: 3, startIndex: 0, value: 1 },
       { count: 2, startIndex: 3, value: 2 },
       { count: 4, startIndex: 5, value: 3 },
@@ -222,7 +194,7 @@ describe("utils", () => {
     expect(collapsed).to.eql(expectedResult);
   });
   it("can add before and after", () => {
-    collapsed = [
+    const collapsed = [
       { count: 3, startIndex: 0, value: 1 },
       { count: 2, startIndex: 3, value: 2 },
       { count: 4, startIndex: 5, value: 3 },

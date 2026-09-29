@@ -1,10 +1,9 @@
-const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const fixedSchedule = require("../src/strategy-fixed-schedule.js");
 const prices = require("./data/converted-prices.json");
 const result = require("./data/fixed-schedule-result.json");
-const { testPlan: plan, equalPlan, equalSchedule } = require("./test-utils");
+const { equalPlan, equalSchedule } = require("./test-utils");
 
 helper.init(require.resolve("node-red"));
 

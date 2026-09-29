@@ -2,6 +2,11 @@ const js = require("@eslint/js");
 const globals = require("globals");
 
 module.exports = [
+  {
+    // Generated output, all of it gitignored: the VuePress build and its
+    // caches, and the coverage report.
+    ignores: ["coverage/", "docs/.vuepress/dist/", "docs/.vuepress/.temp/", "docs/.vuepress/.cache/"],
+  },
   js.configs.recommended,
   {
     languageOptions: {

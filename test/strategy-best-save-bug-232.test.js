@@ -1,10 +1,10 @@
-const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const input = require("./data/bug-232-input.json");
 const output = require("./data/bug-232-output.json");
-const { version } = require("../package.json");
+const { makeFlow } = require("./strategy-best-save-test-utils.js");
+const { equalPlan } = require("./test-utils.js");
 
 helper.init(require.resolve("node-red"));
 

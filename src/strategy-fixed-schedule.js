@@ -1,10 +1,4 @@
-const {
-  booleanConfig,
-  calcNullSavings,
-  fixOutputValues,
-  fixPeriods,
-  saveOriginalConfig,
-} = require("./utils");
+const { booleanConfig, calcNullSavings, fixOutputValues, fixPeriods, saveOriginalConfig } = require("./utils");
 const { strategyOnInput } = require("./strategy-functions");
 const { DateTime } = require("luxon");
 

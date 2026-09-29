@@ -15,9 +15,7 @@ function getBestContinuous(values, count) {
       minIndex = i;
     }
   }
-  const onOff = new Array(values.length)
-    .fill(false)
-    .fill(true, minIndex, minIndex + count);
+  const onOff = new Array(values.length).fill(false).fill(true, minIndex, minIndex + count);
   return onOff;
 }
 
