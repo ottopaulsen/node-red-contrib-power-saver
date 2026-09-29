@@ -215,12 +215,11 @@ function validateInput(node, msg) {
     validationFailure(node, "priceData is empty");
     return;
   }
-  msg.payload.priceData.forEach((h) => {
-    if (!h.start || isNaN(h.value)) {
-      validationFailure(node, "Malformed entries in priceData. All entries must contain start and value.");
-      return;
-    }
-  });
+  const hasMalformedEntry = msg.payload.priceData.some((h) => !h.start || typeof h.value !== "number" || !Number.isFinite(h.value));
+  if (hasMalformedEntry) {
+    validationFailure(node, "Malformed entries in priceData. All entries must contain start and value.");
+    return;
+  }
   return true;
 }
 
