@@ -49,12 +49,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@vuepress/bundler-vite": "2.0.0-rc.26",
-    "@vuepress/plugin-google-analytics": "2.0.0-rc.123",
-    "@vuepress/plugin-register-components": "2.0.0-rc.123",
-    "@vuepress/plugin-search": "2.0.0-rc.123",
-    "@vuepress/theme-default": "2.0.0-rc.123",
-    "@vuepress/utils": "2.0.0-rc.26",
+    "@vuepress/bundler-vite": "2.0.0-rc.31",
+    "@vuepress/plugin-google-analytics": "2.0.0-rc.135",
+    "@vuepress/plugin-register-components": "2.0.0-rc.135",
+    "@vuepress/plugin-search": "2.0.0-rc.137",
+    "@vuepress/theme-default": "2.0.0-rc.137",
+    "@vuepress/utils": "2.0.0-rc.31",
     "chai": "6.2.2",
     "eslint": "10.11.0",
     "expect": "30.5.2",
@@ -63,9 +63,9 @@
     "node-red": "^5.0.7",
     "node-red-node-test-helper": "0.3.6",
     "prettier": "^3.8.1",
-    "sass-embedded": "^1.97.3",
-    "sass-loader": "^16.0.8",
-    "vuepress": "2.0.0-rc.26"
+    "sass-embedded": "^1.105.0",
+    "sass-loader": "^17.0.1",
+    "vuepress": "2.0.0-rc.31"
   },
   "dependencies": {
     "floating-vue": "5.4.0",
