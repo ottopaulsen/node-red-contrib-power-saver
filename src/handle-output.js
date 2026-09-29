@@ -65,6 +65,20 @@ function sendSwitch(node, onOff) {
   node.context().set("currentOutput", onOff, node.contextStorage);
 }
 
+// setTimeout fires immediately when the delay does not fit in a 32 bit signed
+// integer (about 24.8 days), so a far ahead switch would be made right away
+// instead of at its time. Wait in chunks for anything longer.
+const MAX_TIMEOUT_MS = 2147483647;
+
+function setLongTimeout(node, wait, callback) {
+  if (wait <= MAX_TIMEOUT_MS) {
+    return setTimeout(callback, wait);
+  }
+  return setTimeout(() => {
+    node.schedulingTimeout = setLongTimeout(node, wait - MAX_TIMEOUT_MS, callback);
+  }, MAX_TIMEOUT_MS);
+}
+
 function runSchedule(node, schedule, time, currentSent = false) {
   let remainingSchedule = schedule.filter((entry) => {
     return DateTime.fromISO(entry.time) > time;
@@ -77,10 +91,10 @@ function runSchedule(node, schedule, time, currentSent = false) {
       remainingSchedule[0].value ? "on" : "off"
     } at ${nextTime.toFormat("HH:mm")}`;
     node.status({ fill: "green", shape: "dot", text: statusMessage });
-    return setTimeout(() => {
+    return setLongTimeout(node, wait, () => {
       sendSwitch(node, entry.value);
       node.schedulingTimeout = runSchedule(node, remainingSchedule, nextTime);
-    }, wait);
+    });
   } else {
     const message = "No schedule";
     // node.warn(message);

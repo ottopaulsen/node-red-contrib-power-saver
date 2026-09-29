@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 
 const testPlan = {
@@ -19,7 +18,7 @@ const testPlan = {
 };
 
 function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.time = time;
   let entryTime = DateTime.fromISO(payload.time);
   payload.today.forEach((e) => {

@@ -1,6 +1,5 @@
 "use strict";
 
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const { booleanConfig, getOutputForTime, makeScheduleFromMinutes } = require("./utils");
 const { handleOutput } = require("./handle-output");
@@ -43,7 +42,7 @@ module.exports = function (RED) {
           : true;
 
       // Deep-clone minutes so we do not mutate the incoming message.
-      const minutes = cloneDeep(msg.payload.minutes);
+      const minutes = structuredClone(msg.payload.minutes);
       const forcedValue = node.turn === "on";
 
       minutes.forEach((m) => {

@@ -500,54 +500,58 @@ function checkTimeouts(config, state, node, homeAssistant, clock = null) {
   // Check if any trigger is on
   const anyOn = config.triggers.some((t) => t.state === "on");
 
+  // An immediate level applies whenever the lights have not timed out, motion
+  // or not - see the Immediate exception in docs/nodes/ps-light-saver.md - so
+  // the timeout check is skipped rather than the whole function.
+  let allTimedOut = false;
+
   if (anyOn) {
     debugLog(config, node, "At least one trigger is on, no timeout check needed");
-    return;
-  }
+  } else {
+    // All triggers are off, check if they've been off long enough
+    debugLog(config, node, "All triggers are off, checking timeouts...");
 
-  // All triggers are off, check if they've been off long enough
-  debugLog(config, node, "All triggers are off, checking timeouts...");
+    allTimedOut = true;
 
-  let allTimedOut = true;
+    for (const trigger of config.triggers) {
+      // Get timeout for this trigger (use specific timeout or fall back to lightTimeout)
+      const timeoutMinutes = trigger.timeoutMinutes !== undefined ? trigger.timeoutMinutes : config.lightTimeout;
 
-  for (const trigger of config.triggers) {
-    // Get timeout for this trigger (use specific timeout or fall back to lightTimeout)
-    const timeoutMinutes = trigger.timeoutMinutes !== undefined ? trigger.timeoutMinutes : config.lightTimeout;
+      // If trigger has no state or lastChanged, we can't check timeout
+      if (!trigger.state || !trigger.lastChanged) {
+        debugLog(config, node, `Trigger ${trigger.entity_id} has no state/lastChanged, skipping`);
+        allTimedOut = false;
+        continue;
+      }
 
-    // If trigger has no state or lastChanged, we can't check timeout
-    if (!trigger.state || !trigger.lastChanged) {
-      debugLog(config, node, `Trigger ${trigger.entity_id} has no state/lastChanged, skipping`);
-      allTimedOut = false;
-      continue;
+      // If trigger is on, not timed out
+      if (trigger.state === "on") {
+        allTimedOut = false;
+        continue;
+      }
+
+      // Calculate how long the trigger has been off
+      const lastChangedTime = parseUTCTimestamp(trigger.lastChanged);
+      const minutesOff = (now - lastChangedTime) / 1000 / 60;
+
+      debugLog(
+        config,
+        node,
+        `Trigger ${trigger.entity_id}: off for ${minutesOff.toFixed(1)} minutes, timeout is ${timeoutMinutes} minutes`,
+      );
+
+      if (minutesOff < timeoutMinutes) {
+        allTimedOut = false;
+        debugLog(config, node, `Trigger ${trigger.entity_id} has not timed out yet`);
+      }
     }
 
-    // If trigger is on, not timed out
-    if (trigger.state === "on") {
-      allTimedOut = false;
-      continue;
+    if (allTimedOut && config.triggers.length > 0 && !state.timedOut) {
+      debugLog(config, node, "All triggers have timed out, turning off lights");
+      turnOffAllLights(config, config.lights, node, homeAssistant);
+      state.timedOut = true;
+      node.status({ fill: "yellow", shape: "ring", text: "Timed out - lights off" });
     }
-
-    // Calculate how long the trigger has been off
-    const lastChangedTime = parseUTCTimestamp(trigger.lastChanged);
-    const minutesOff = (now - lastChangedTime) / 1000 / 60;
-
-    debugLog(
-      config,
-      node,
-      `Trigger ${trigger.entity_id}: off for ${minutesOff.toFixed(1)} minutes, timeout is ${timeoutMinutes} minutes`,
-    );
-
-    if (minutesOff < timeoutMinutes) {
-      allTimedOut = false;
-      debugLog(config, node, `Trigger ${trigger.entity_id} has not timed out yet`);
-    }
-  }
-
-  if (allTimedOut && config.triggers.length > 0 && !state.timedOut) {
-    debugLog(config, node, "All triggers have timed out, turning off lights");
-    turnOffAllLights(config, config.lights, node, homeAssistant);
-    state.timedOut = true;
-    node.status({ fill: "yellow", shape: "ring", text: "Timed out - lights off" });
   }
 
   // Check for immediate levels when motion is detected (timedOut = false)

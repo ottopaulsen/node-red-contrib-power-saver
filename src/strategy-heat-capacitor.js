@@ -69,10 +69,8 @@ module.exports = function (RED) {
         if ("setpoint" in msg.payload.config) node.setpoint = Number(msg.payload.config.setpoint);
         if ("maxTempAdjustment" in msg.payload.config)
           node.maxTempAdjustment = Number(msg.payload.config.maxTempAdjustment);
-        if ("boostTempHeat" in msg.payload.config)
-          node.boostTempHeat = Number(msg.payload.config.boostTempHeat);
-        if ("boostTempCool" in msg.payload.config)
-          node.boostTempCool = Number(msg.payload.config.boostTempCool);
+        if ("boostTempHeat" in msg.payload.config) node.boostTempHeat = Number(msg.payload.config.boostTempHeat);
+        if ("boostTempCool" in msg.payload.config) node.boostTempCool = Number(msg.payload.config.boostTempCool);
         if ("minSavings" in msg.payload.config) node.minSavings = Number(msg.payload.config.minSavings);
       }
 

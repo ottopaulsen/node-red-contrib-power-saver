@@ -1,10 +1,8 @@
-const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const input = require("./data/bug-231-input.json");
 const output = require("./data/bug-231-output.json");
 const lowestPrice = require("../src/strategy-lowest-price.js");
-const { version } = require("../package.json");
 const { makePayload } = require("./strategy-lowest-price-test-utils.js");
 
 helper.init(require.resolve("node-red"));

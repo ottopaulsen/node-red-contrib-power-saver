@@ -1,8 +1,6 @@
 const expect = require("chai").expect;
-const cloneDeep = require("lodash.clonedeep");
 const helper = require("node-red-node-test-helper");
-const prices = require("./data/converted-prices.json");
-const { testPlan, equalMinutes } = require("./test-utils");
+const { equalMinutes } = require("./test-utils");
 const { makeFlow, makePayload } = require("./schedule-merger-test-utils");
 const scheduleMerger = require("../src/schedule-merger.js");
 const { allOff, someOn } = require("./data/merge-schedule-data.js");

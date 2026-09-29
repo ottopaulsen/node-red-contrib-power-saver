@@ -9,7 +9,13 @@ function strategyOnInput(node, msg, doPlanning, calcSavings) {
     return;
   }
   const config = getEffectiveConfig(node, msg);
-  const { plan, commands } = handleStrategyInput(node, msg, config, doPlanning, calcSavings);
+  // handleStrategyInput returns undefined when the input is invalid or when
+  // there is no plan yet. It has already warned and set the node status.
+  const input = handleStrategyInput(node, msg, config, doPlanning, calcSavings);
+  if (!input) {
+    return;
+  }
+  const { plan, commands } = input;
   if (plan) {
     const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
     const currentOutput = node.context().get("currentOutput", node.contextStorage);

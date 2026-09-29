@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { addTariffToPrices } = require("./general-add-tariff-functions");
 const { getEffectiveConfig } = require("./utils");
 
@@ -16,7 +15,7 @@ module.exports = function (RED) {
     node.context().set("config", originalConfig);
 
     node.on("input", function (originalMessage) {
-      const msg = cloneDeep(originalMessage);
+      const msg = RED.util.cloneMessage(originalMessage);
       const effectiveConfig = getEffectiveConfig(node, msg);
       const prices = msg.payload.priceData;
       if (!prices || prices.length === 0) {

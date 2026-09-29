@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const { addEndToLast } = require("../src/utils");
 
@@ -23,7 +22,7 @@ function makeFlow(maxMinutesOff = 45, minMinutesOff = 15, recoveryPercentage = 5
 }
 
 function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.time = time;
   let entryTime = DateTime.fromISO(payload.time);
   payload.priceData.forEach((e) => {

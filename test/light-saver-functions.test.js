@@ -383,7 +383,6 @@ describe("light-saver-functions", function () {
     it("should not timeout if any trigger is on", function () {
       const config = {
         debugLog: true,
-        debugLog: true,
         triggers: [
           { entity_id: "binary_sensor.motion1", state: "on", lastChanged: "2026-01-29T15:20:00Z" },
           { entity_id: "binary_sensor.motion2", state: "off", lastChanged: "2026-01-29T15:00:00Z" },
@@ -458,7 +457,6 @@ describe("light-saver-functions", function () {
 
     it("should skip triggers without state or lastChanged", function () {
       const config = {
-        debugLog: true,
         debugLog: true,
         triggers: [
           { entity_id: "binary_sensor.motion1" }, // No state

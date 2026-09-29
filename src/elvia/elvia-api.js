@@ -1,5 +1,3 @@
-// const fetch = require("node-fetch");
-
 function ping(node, subscriptionKey, setResultStatus = true) {
   const url = "https://elvia.azure-api.net/grid-tariff/Ping";
   const headers = { "X-API-Key": subscriptionKey };

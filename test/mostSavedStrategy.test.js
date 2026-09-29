@@ -52,7 +52,7 @@ describe("mostSavedStrategy", () => {
   });
 
   it("saves correct hours", () => {
-    const values = prices.today.map((p) => p.value);
+    // const values = prices.today.map((p) => p.value);
     // expect(calculate(values, 3, 1, 1, null, 0.001)).to.eql([true, true, false, false, true, false, false, false, true, true]);
     // expect(calculate(values, 3, 1, 1, null, 0.001)).to.eql([true, true, false, false, true, false, false, false, true, true]);
     // expect(calculate(values, 2, 1, 1, null, 0.001)).to.eql([true, true, true, false, false, true, false, false, true, true]);

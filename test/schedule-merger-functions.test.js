@@ -1,15 +1,13 @@
-const { DateTime } = require("luxon");
 const expect = require("chai").expect;
-const { validateSchedule, saveSchedule, mergeSchedules, runSchedule } = require("../src/schedule-merger-functions");
+const { saveSchedule, mergeSchedules } = require("../src/schedule-merger-functions");
 const { collapseMinutes } = require("../src/handle-output");
 const bestSaveResult = require("./data/best-save-result.json");
 const mergeData = require("./data/merge-schedule-data.js");
-const cloneDeep = require("lodash.clonedeep");
 
 describe("schedule-merger-functions", () => {
   it("saveSchedule", () => {
     const node = useNodeMock();
-    const msg = { payload: cloneDeep(bestSaveResult) };
+    const msg = { payload: structuredClone(bestSaveResult) };
     msg.payload.strategyNodeId = "1";
     msg.payload.minutes[0].onOff = false;
     saveSchedule(node, msg);

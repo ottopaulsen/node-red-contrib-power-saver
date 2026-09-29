@@ -419,6 +419,18 @@ module.exports = function (RED) {
           saveOverride();
         }
 
+        // The event bus subscriptions are built from the entities in the
+        // config, so they have to be rebuilt when those entities change.
+        // Otherwise the node keeps listening to the entities it was deployed
+        // with, and never to the new ones.
+        const entitiesChanged = ["triggers", "lights", "nightSensor", "awaySensor", "brightnessSensor"].some(
+          (key) => payload.config[key] !== undefined,
+        );
+        if (entitiesChanged) {
+          subscribeToEntities();
+          debugLog("Rebuilt event bus subscriptions after config update");
+        }
+
         // Send old config
         node.send({
           payload: {
@@ -612,48 +624,56 @@ module.exports = function (RED) {
       }
     });
 
-    try {
-      // Subscribe to state_changed events for each trigger
-      nodeConfig.triggers.forEach((trigger) => {
-        const entityId = trigger.entity_id;
+    // The entities to listen to come from the config, which can be replaced
+    // while the node is running. Every subscription is recorded here so that it
+    // can be removed again, whatever the config says by then.
+    let subscriptions = [];
+
+    function subscribeToEntities() {
+      unsubscribeFromEntities();
+
+      const entities = [
+        ...nodeConfig.triggers.map((trigger) => ({ entityId: trigger.entity_id, what: "trigger" })),
+        { entityId: nodeConfig.nightSensor?.entity_id, what: "night sensor" },
+        { entityId: nodeConfig.awaySensor?.entity_id, what: "away sensor" },
+        { entityId: nodeConfig.brightnessSensor?.entity_id, what: "brightness sensor" },
+      ];
+      entities.forEach(({ entityId, what }) => {
+        if (!entityId) {
+          return;
+        }
         const eventTopic = `ha_events:state_changed:${entityId}`;
         homeAssistant.eventBus.on(eventTopic, handleStateChange);
-        debugLog(`Subscribed to ${eventTopic}`);
+        subscriptions.push({ eventTopic, handler: handleStateChange });
+        debugLog(`Subscribed to ${what}: ${eventTopic}`);
       });
-
-      // Subscribe to night sensor if configured
-      if (nodeConfig.nightSensor && nodeConfig.nightSensor.entity_id) {
-        const eventTopic = `ha_events:state_changed:${nodeConfig.nightSensor.entity_id}`;
-        homeAssistant.eventBus.on(eventTopic, handleStateChange);
-        debugLog(`Subscribed to night sensor: ${eventTopic}`);
-      }
-
-      // Subscribe to away sensor if configured
-      if (nodeConfig.awaySensor && nodeConfig.awaySensor.entity_id) {
-        const eventTopic = `ha_events:state_changed:${nodeConfig.awaySensor.entity_id}`;
-        homeAssistant.eventBus.on(eventTopic, handleStateChange);
-        debugLog(`Subscribed to away sensor: ${eventTopic}`);
-      }
-
-      // Subscribe to brightness sensor if configured
-      if (nodeConfig.brightnessSensor && nodeConfig.brightnessSensor.entity_id) {
-        const eventTopic = `ha_events:state_changed:${nodeConfig.brightnessSensor.entity_id}`;
-        homeAssistant.eventBus.on(eventTopic, handleStateChange);
-        debugLog(`Subscribed to brightness sensor: ${eventTopic}`);
-      }
 
       // Subscribe to light state changes
       nodeConfig.lights.forEach((light) => {
-        const entityId = light.entity_id;
-        const eventTopic = `ha_events:state_changed:${entityId}`;
+        const eventTopic = `ha_events:state_changed:${light.entity_id}`;
         homeAssistant.eventBus.on(eventTopic, handleLightStateChange);
+        subscriptions.push({ eventTopic, handler: handleLightStateChange });
         debugLog(`Subscribed to light: ${eventTopic}`);
       });
 
       // Resynchronise whenever Home Assistant (re)loads its states, so a
       // dropped websocket cannot leave this node acting on stale values.
       homeAssistant.eventBus.on("ha_client:states_loaded", handleStatesLoaded);
+      subscriptions.push({ eventTopic: "ha_client:states_loaded", handler: handleStatesLoaded });
       debugLog("Subscribed to ha_client:states_loaded for reconnect resync");
+    }
+
+    function unsubscribeFromEntities() {
+      if (homeAssistant && homeAssistant.eventBus) {
+        subscriptions.forEach(({ eventTopic, handler }) => {
+          homeAssistant.eventBus.removeListener(eventTopic, handler);
+        });
+      }
+      subscriptions = [];
+    }
+
+    try {
+      subscribeToEntities();
 
       const nightSensorText = nodeConfig.nightSensor ? ", 1 night sensor" : "";
       const awaySensorText = nodeConfig.awaySensor ? ", 1 away sensor" : "";
@@ -755,37 +775,7 @@ module.exports = function (RED) {
         debugLog("Cleared immediate check timeout");
       }
 
-      if (homeAssistant && homeAssistant.eventBus) {
-        nodeConfig.triggers.forEach((trigger) => {
-          const entityId = trigger.entity_id;
-          const eventTopic = `ha_events:state_changed:${entityId}`;
-          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
-        });
-
-        if (nodeConfig.nightSensor && nodeConfig.nightSensor.entity_id) {
-          const eventTopic = `ha_events:state_changed:${nodeConfig.nightSensor.entity_id}`;
-          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
-        }
-
-        if (nodeConfig.awaySensor && nodeConfig.awaySensor.entity_id) {
-          const eventTopic = `ha_events:state_changed:${nodeConfig.awaySensor.entity_id}`;
-          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
-        }
-
-        if (nodeConfig.brightnessSensor && nodeConfig.brightnessSensor.entity_id) {
-          const eventTopic = `ha_events:state_changed:${nodeConfig.brightnessSensor.entity_id}`;
-          homeAssistant.eventBus.removeListener(eventTopic, handleStateChange);
-        }
-
-        // Unsubscribe from light state changes
-        nodeConfig.lights.forEach((light) => {
-          const entityId = light.entity_id;
-          const eventTopic = `ha_events:state_changed:${entityId}`;
-          homeAssistant.eventBus.removeListener(eventTopic, handleLightStateChange);
-        });
-
-        homeAssistant.eventBus.removeListener("ha_client:states_loaded", handleStatesLoaded);
-      }
+      unsubscribeFromEntities();
       node.status({});
     });
   }

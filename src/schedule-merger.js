@@ -15,7 +15,6 @@ const {
   saveOriginalConfig,
 } = require("./utils.js");
 const { DateTime } = require("luxon");
-const nanoTime = require("nano-time");
 const { handleOutput } = require("./handle-output");
 const { addLastSwitchIfNoSchedule, getCommands } = require("./handle-input");
 
@@ -49,14 +48,18 @@ module.exports = function (RED) {
         // If payload.name is set, and does not match this nodes name, discard message
         return;
       }
-      if (msg.payload.minutes) {
+      if (msg.payload?.minutes) {
         // Delete config from strategy nodes so it does not merge
         // with config for this node.
         delete msg.payload.config;
       }
       const config = getEffectiveConfig(node, msg);
       const commands = getCommands(msg);
-      const myTime = nanoTime();
+      // A unique, monotonically increasing marker for this message. It is only
+      // ever compared with !== below to detect whether a newer schedule arrived
+      // while we were waiting, so the monotonic clock suits it better than a
+      // wall clock, and it needs no dependency.
+      const myTime = process.hrtime.bigint();
       if (msgHasSchedule(msg)) {
         const validationError = validateSchedule(msg);
         if (validationError) {
@@ -86,7 +89,7 @@ module.exports = function (RED) {
             source: node.name,
           };
 
-          const planFromTime = msg.payload.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
+          const planFromTime = msg.payload?.time ? DateTime.fromISO(msg.payload.time) : DateTime.now();
           const currentOutput = node.context().get("currentOutput", node.contextStorage);
           const plannedOutputNow = getOutputForTime(plan.schedule, planFromTime, node.outputIfNoSchedule);
 
@@ -104,7 +107,7 @@ module.exports = function (RED) {
 
           handleOutput(node, config, plan, outputCommands, planFromTime);
         },
-        commands.replan || msg.payload.config ? 0 : node.schedulingDelay,
+        commands.replan || msg.payload?.config ? 0 : node.schedulingDelay,
       );
     });
   }

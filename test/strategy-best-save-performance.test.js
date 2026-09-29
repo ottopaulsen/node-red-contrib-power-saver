@@ -1,11 +1,7 @@
-const cloneDeep = require("lodash.clonedeep");
-const { DateTime } = require("luxon");
-const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const payload = require("./data/best-save-performance-price-data.js");
 
-const { testPlan: plan, equalPlan } = require("./test-utils.js");
 const { makeFlow } = require("./strategy-best-save-test-utils.js");
 
 helper.init(require.resolve("node-red"));
@@ -31,7 +27,7 @@ describe("ps-strategy-best-save performance", function () {
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
-      n2.on("input", function (msg) {
+      n2.on("input", function () {
         n1.warn.should.not.be.called;
         done();
       });
@@ -49,7 +45,7 @@ describe("ps-strategy-best-save performance", function () {
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
-      n2.on("input", function (msg) {
+      n2.on("input", function () {
         n1.warn.should.not.be.called;
         done();
       });
@@ -67,7 +63,7 @@ describe("ps-strategy-best-save performance", function () {
     helper.load(bestSave, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
-      n2.on("input", function (msg) {
+      n2.on("input", function () {
         n1.warn.should.not.be.called;
         done();
       });

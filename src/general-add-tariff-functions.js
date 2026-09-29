@@ -98,7 +98,7 @@ function getPeriodsForDate(periods, date, timezone) {
   const result = [];
   periods.forEach((p) => {
     const hour = p.start.substring(0, 2);
-    const minute = p.start.length === 5 ? p.substring(3, 5) : "00";
+    const minute = p.start.length === 5 ? p.start.substring(3, 5) : "00";
     result.push({ start: `${date}T${hour}:${minute}:00.000${timezone}`, add: p.value });
   });
   return result;

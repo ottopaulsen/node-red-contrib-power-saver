@@ -1,13 +1,6 @@
-const {
-  booleanConfig,
-  calcNullSavings,
-  fixOutputValues,
-  fixPeriods,
-  saveOriginalConfig,
-} = require("./utils");
+const { booleanConfig, calcNullSavings, fixOutputValues, fixPeriods, saveOriginalConfig } = require("./utils");
 const { strategyOnInput } = require("./strategy-functions");
 const { DateTime } = require("luxon");
-const cloneDeep = require("lodash.clonedeep");
 
 module.exports = function (RED) {
   function StrategyFixedScheduleNode(config) {
@@ -65,7 +58,13 @@ function doPlanning(node, priceData) {
 }
 
 function buildAllHours(node, periods) {
-  const sortedPeriods = cloneDeep(periods);
+  if (!periods.length) {
+    // Nothing is scheduled without periods, so every hour falls back to the
+    // configured default. The config defaults periods to an empty array, and
+    // dynamic config can set it to one too.
+    return new Array(24).fill(node.outputIfNoSchedule);
+  }
+  const sortedPeriods = structuredClone(periods);
   sortedPeriods.sort((a, b) => a.start - b.start);
   let res = [];
   let hour = 0;

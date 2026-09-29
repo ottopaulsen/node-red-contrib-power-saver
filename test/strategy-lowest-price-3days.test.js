@@ -1,11 +1,9 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/nordpool-3-days-prices.json");
 const result = require("./data/nordpool-3-days-result.json");
-const { testPlan: plan } = require("./test-utils");
 
 helper.init(require.resolve("node-red"));
 
@@ -31,8 +29,8 @@ describe("ps-strategy-lowest-price with data day before", function () {
 
   it("should handle data from day before", function (done) {
     const flow = makeFlow(60);
-    const pricesDay1 = cloneDeep(prices);
-    const pricesDay2 = cloneDeep(prices);
+    const pricesDay1 = structuredClone(prices);
+    const pricesDay2 = structuredClone(prices);
     pricesDay1.priceData.splice(48, 24);
     pricesDay2.priceData.splice(0, 24);
     helper.load(lowestPrice, flow, function () {
@@ -57,9 +55,9 @@ describe("ps-strategy-lowest-price with data day before", function () {
 
   it("should handle new price data after midnight", function (done) {
     const flow = makeFlow(60);
-    const pricesDay1 = cloneDeep(prices);
-    const pricesDay2 = cloneDeep(prices);
-    const res = cloneDeep(result);
+    const pricesDay1 = structuredClone(prices);
+    const pricesDay2 = structuredClone(prices);
+    const res = structuredClone(result);
     res.schedule.splice(3, 2);
     res.hours.splice(48, 24);
     res.schedule[2].countMinutes = 19 * 60;
@@ -110,7 +108,7 @@ function makeFlow(minutesOn) {
 }
 
 function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.time = time;
   // let entryTime = DateTime.fromISO(payload.time);
   // payload.priceData.forEach((e) => {

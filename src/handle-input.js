@@ -1,4 +1,11 @@
-const { extractPlanForDate, loadDayData, makeSchedule, msgHasPriceData, validationFailure } = require("./utils");
+const {
+  addEndToLast,
+  extractPlanForDate,
+  loadDayData,
+  makeSchedule,
+  msgHasPriceData,
+  validationFailure,
+} = require("./utils");
 const { DateTime } = require("luxon");
 
 function handleStrategyInput(node, msg, config, doPlanning, calcSavings) {
@@ -43,14 +50,24 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
     return null;
   }
 
-  const dates = [...new Set(priceData.map((v) => DateTime.fromISO(v.start).toISODate()))];
-  const endTime = priceData[priceData.length - 1].end;
+  // The last record may have no end: validateInput only requires start and
+  // value, and price data can be given to the node directly, without the
+  // receive-price node that normally adds it. Infer it from the length of the
+  // previous period instead of planning without the last period.
+  const lastRecord = priceData[priceData.length - 1];
+  const priceDataWithEnd = lastRecord.end ? priceData : [...priceData.slice(0, -1), { ...lastRecord }];
+  if (!lastRecord.end) {
+    addEndToLast(priceDataWithEnd);
+  }
+
+  const dates = [...new Set(priceDataWithEnd.map((v) => DateTime.fromISO(v.start).toISODate()))];
+  const endTime = priceDataWithEnd[priceDataWithEnd.length - 1].end;
 
   // Load data from day before
   const dateDayBefore = DateTime.fromISO(dates[0]).plus({ days: -1 });
   const dataDayBefore = loadDataJustBefore(node, dateDayBefore);
   const priceDataDayBefore = dataDayBefore.minutes.map((h) => ({ value: h.price, start: h.start }));
-  const priceDataWithDayBefore = [...priceDataDayBefore, ...priceData];
+  const priceDataWithDayBefore = [...priceDataDayBefore, ...priceDataWithEnd];
 
   // Make plan
   // const startTimes = priceDataWithDayBefore.map((d) => d.start);
@@ -58,9 +75,15 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   const priceDatePerMinute = priceDataWithDayBefore.flatMap((d, i) => {
     const res = [];
     const start = DateTime.fromISO(d.start);
-    const end = DateTime.fromISO(d.end ?? priceDataWithDayBefore[i + 1].start);
-    if (!end) {
-      console.error("End time is missing for price data entry", d);
+    // A record without an end lasts until the next one starts.
+    const entryEnd = d.end ?? priceDataWithDayBefore[i + 1]?.start;
+    if (!entryEnd) {
+      node.warn(`End time is missing for the price data entry starting at ${d.start}`);
+      return res;
+    }
+    const end = DateTime.fromISO(entryEnd);
+    if (!end.isValid) {
+      node.warn(`Illegal end time for the price data entry starting at ${d.start}`);
       return res;
     }
     const zone = start.zone;
@@ -83,7 +106,7 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
     saving: savings[i],
   }));
   const fullSchedule = makeSchedule(onOff, startTimes, endTime);
-  const schedule = trimScheduleToStart(fullSchedule, priceData[0].start);
+  const schedule = trimScheduleToStart(fullSchedule, priceDataWithEnd[0].start);
   addLastSwitchIfNoSchedule(schedule, minutes, config);
 
   const plan = {

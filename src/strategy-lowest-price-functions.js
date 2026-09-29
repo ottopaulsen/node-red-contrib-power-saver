@@ -1,10 +1,9 @@
-const cloneDeep = require("lodash.clonedeep");
 const { sortedIndex } = require("./utils");
 
 // TODO (otto): This must be fixed to support minutes
 
 function getBestContinuous(values, count) {
-  let min = values.reduce((p, v) => p + v, 0);
+  let min = Infinity;
   let minIndex = 0;
   for (let i = 0; i <= values.length - count; i++) {
     let sum = 0;
@@ -16,15 +15,13 @@ function getBestContinuous(values, count) {
       minIndex = i;
     }
   }
-  const onOff = cloneDeep(values)
-    .fill(false)
-    .fill(true, minIndex, minIndex + count);
+  const onOff = new Array(values.length).fill(false).fill(true, minIndex, minIndex + count);
   return onOff;
 }
 
 function getBestX(values, count) {
   const sorted = sortedIndex(values);
-  const onOff = cloneDeep(values).fill(true);
+  const onOff = new Array(values.length).fill(true);
   for (let i = 0; i < sorted.length - count; i++) {
     onOff[sorted[i]] = false;
   }

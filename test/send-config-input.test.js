@@ -7,7 +7,6 @@ const result = require("./data/best-save-result.json");
 const reconfigResult = require("./data/reconfigResult");
 const { testPlan, equalPlan } = require("./test-utils");
 const { makeFlow, makePayload } = require("./strategy-best-save-test-utils");
-const cloneDeep = require("lodash.clonedeep");
 
 helper.init(require.resolve("node-red"));
 
@@ -68,7 +67,7 @@ describe("send config as input", () => {
               },
             });
             break;
-          case 2:
+          case 2: {
             pass++;
             reconfigResult.config.minHoursOnAfterMaxSequenceSaved = 5;
             expect(equalPlan(reconfigResult, msg.payload)).to.equal(true);
@@ -76,6 +75,7 @@ describe("send config as input", () => {
             payload.time = changeTime;
             n1.receive({ payload });
             break;
+          }
           case 3:
             pass++;
             expect(equalPlan(reconfigResult, msg.payload)).to.equal(true);
@@ -100,7 +100,7 @@ describe("send config as input", () => {
             expect(equalPlan(result, msg.payload)).to.equal(true);
             n1.receive({ payload: makePayloadWithConfigAndPrices(prices, testPlan.time) });
             break;
-          case 2:
+          case 2: {
             pass++;
             const priceSum = prices.priceData.reduce((prev, p) => {
               return prev + p.value;
@@ -110,6 +110,7 @@ describe("send config as input", () => {
             }, 0);
             expect(Math.round(planSum)).to.equal(Math.round(priceSum * 2));
             done();
+          }
         }
       });
       n1.receive({ payload: makePayload(prices, testPlan.time) });
@@ -128,7 +129,7 @@ describe("send config as input", () => {
       let countOn = 0;
       let countOff = 0;
       let pass = 0;
-      n2.on("input", function (msg) {
+      n2.on("input", function () {
         pass++;
         n1.warn.should.not.be.called;
         if (pass === 1) {
@@ -164,7 +165,7 @@ describe("send config as input", () => {
 });
 
 function makePayloadWithConfigAndPrices(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.priceData.forEach((e) => {
     e.value = e.value * 2;
   });
