@@ -1,5 +1,4 @@
 const expect = require("chai").expect;
-const cloneDeep = require("lodash.clonedeep");
 const helper = require("node-red-node-test-helper");
 const prices = require("./data/converted-prices.json");
 const { testPlan, equalMinutes } = require("./test-utils");

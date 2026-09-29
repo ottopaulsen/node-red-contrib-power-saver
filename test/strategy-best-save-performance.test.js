@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");

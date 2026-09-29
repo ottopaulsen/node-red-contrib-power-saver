@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
@@ -48,7 +47,7 @@ describe("ps-strategy-best-save node", function () {
       n1.warn.should.be.calledWithExactly("Illegal priceData in payload. Did you use the receive-price node?");
 
       ["start", "value"].forEach((attr) => {
-        const testData1 = cloneDeep(prices);
+        const testData1 = structuredClone(prices);
         delete testData1.priceData[3][attr];
         n1.receive({ payload: testData1 });
         n1.warn.should.be.calledWithExactly(
@@ -56,14 +55,14 @@ describe("ps-strategy-best-save node", function () {
         );
       });
 
-      n1.receive({ payload: cloneDeep(prices) });
+      n1.receive({ payload: structuredClone(prices) });
       n1.warn.should.not.be.called;
       done();
     });
   });
   it("should send new schedule on output 3", function (done) {
     const flow = makeFlow();
-    const expected = cloneDeep(result);
+    const expected = structuredClone(result);
     expected.version = version;
     expected.time = plan.time;
     expected.source = "Tibber";
@@ -129,7 +128,7 @@ describe("ps-strategy-best-save node", function () {
 
   it("should handle override", function (done) {
     const flow = makeFlow();
-    const expected = cloneDeep(result);
+    const expected = structuredClone(result);
     expected.version = version;
     expected.time = plan.time;
     expected.source = "Tibber";
@@ -233,7 +232,7 @@ describe("ps-strategy-best-save node", function () {
 });
 
 function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   // payload.time = time;
   // let entryTime = DateTime.fromISO(payload.time);
   // payload.priceData.forEach((e) => {

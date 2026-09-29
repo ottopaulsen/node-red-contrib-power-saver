@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
@@ -46,7 +45,7 @@ describe("ps-strategy-lowest-price node", function () {
       n1.warn.should.be.calledWithExactly("Illegal priceData in payload. Did you use the receive-price node?");
 
       ["start", "value"].forEach((attr) => {
-        const testData1 = cloneDeep(prices);
+        const testData1 = structuredClone(prices);
         delete testData1.priceData[3][attr];
         n1.receive({ payload: testData1 });
         n1.warn.should.be.calledWithExactly(
@@ -54,7 +53,7 @@ describe("ps-strategy-lowest-price node", function () {
         );
       });
 
-      n1.receive({ payload: cloneDeep(prices) });
+      n1.receive({ payload: structuredClone(prices) });
       n1.warn.should.not.be.called;
       done();
     });
@@ -201,7 +200,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        const config = cloneDeep(resultAllDay10.config);
+        const config = structuredClone(resultAllDay10.config);
         expect(msg.payload).to.have.deep.property("schedule", resultAllDay10.schedule);
         n1.warn.should.not.be.called;
         done();
@@ -223,7 +222,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        const config = cloneDeep(resultAllDay10.config);
+        const config = structuredClone(resultAllDay10.config);
         config.outputOutsidePeriod = true;
         expect(msg.payload).to.have.deep.property("schedule", resultAllDay10.schedule);
         n1.warn.should.not.be.called;
@@ -246,7 +245,7 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        const config = cloneDeep(resultAllDay10.config);
+        const config = structuredClone(resultAllDay10.config);
         config.outputIfNoSchedule = true;
         expect(msg.payload).to.have.deep.property("schedule", resultAllDay10.schedule);
         n1.warn.should.not.be.called;
@@ -265,8 +264,8 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        const schedule = cloneDeep(resultSplitted.schedule);
-        const config = cloneDeep(resultSplitted.config);
+        const schedule = structuredClone(resultSplitted.schedule);
+        const config = structuredClone(resultSplitted.config);
         schedule[0].value = true;
         schedule.splice(1, 0, { time: "2021-10-11T10:00:00.000+02:00", value: false, countMinutes: 10 * 60 });
         schedule.splice(4, 0, { time: "2021-10-11T20:00:00.000+02:00", value: true, countMinutes: 14 * 60 });
@@ -293,8 +292,8 @@ describe("ps-strategy-lowest-price node", function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
       n2.on("input", function (msg) {
-        const schedule = cloneDeep(resultContinuous.schedule);
-        const config = cloneDeep(resultContinuous.config);
+        const schedule = structuredClone(resultContinuous.schedule);
+        const config = structuredClone(resultContinuous.config);
         schedule[0].value = true;
         schedule.splice(1, 0, { time: "2021-10-11T10:00:00.000+02:00", value: false });
         schedule.splice(4, 0, { time: "2021-10-11T20:00:00.000+02:00", value: true });
@@ -400,7 +399,7 @@ describe("ps-strategy-lowest-price node", function () {
 
   it("should work with data for only current day", function (done) {
     const oneDayPrices = {};
-    oneDayPrices.priceData = cloneDeep(prices.priceData).filter((d) => d.start.startsWith("2021-10-11"));
+    oneDayPrices.priceData = structuredClone(prices.priceData).filter((d) => d.start.startsWith("2021-10-11"));
     oneDayPrices.priceData[oneDayPrices.priceData.length - 1].end = "2021-10-12T00:00:00.000+02:00";
     const result = [
       { time: "2021-10-11T00:00:00.000+02:00", value: false, countMinutes: 12 * 60 },

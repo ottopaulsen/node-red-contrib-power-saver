@@ -1,7 +1,6 @@
 const helper = require("node-red-node-test-helper");
 const addTariff = require("../src/general-add-tariff.js");
 const expect = require("chai").expect;
-const cloneDeep = require("lodash.clonedeep");
 
 const prices = {
   source: "Test",
@@ -71,7 +70,7 @@ describe("general-add-tariff node", function () {
       },
       { id: "n2", type: "helper" },
     ];
-    const result = cloneDeep(prices);
+    const result = structuredClone(prices);
     result.priceData[0].value = 1.0;
     result.priceData[1].value = 0.8;
     result.priceData[2].value = 0.6;
@@ -92,7 +91,7 @@ describe("general-add-tariff node", function () {
         expect(msg).to.have.deep.property("payload", result);
         done();
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.config = { abc: 123 };
       n1.receive({ payload });
     });
@@ -112,7 +111,7 @@ describe("general-add-tariff node", function () {
       },
       { id: "n2", type: "helper" },
     ];
-    const result = cloneDeep(prices);
+    const result = structuredClone(prices);
     result.priceData[0].value = 1.0;
     result.priceData[1].value = 0.8;
     result.priceData[2].value = 0.6;
@@ -133,7 +132,7 @@ describe("general-add-tariff node", function () {
         expect(msg).to.have.deep.property("payload", result);
         done();
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.config = { abc: 123 };
       n1.receive({ payload });
     });
@@ -155,7 +154,7 @@ describe("general-add-tariff node", function () {
       },
       { id: "n2", type: "helper" },
     ];
-    const result = cloneDeep(prices);
+    const result = structuredClone(prices);
     console.log(JSON.stringify(result, null, 2));
     result.priceData[0].value = 1.0;
     result.priceData[1].value = 0.8;
@@ -195,7 +194,7 @@ describe("general-add-tariff node", function () {
       },
       { id: "n2", type: "helper" },
     ];
-    const result = cloneDeep(prices);
+    const result = structuredClone(prices);
     result.priceData[0].value = 0.2;
     result.priceData[1].value = 0.3;
     result.priceData[2].value = 0.1;
@@ -230,7 +229,7 @@ describe("general-add-tariff node", function () {
       },
       { id: "n2", type: "helper" },
     ];
-    const result = cloneDeep(prices);
+    const result = structuredClone(prices);
     result.priceData[0].value = 0.7;
     result.priceData[1].value = 0.8;
     result.priceData[2].value = 0.6;
@@ -267,7 +266,7 @@ describe("general-add-tariff node", function () {
       },
       { id: "n2", type: "helper" },
     ];
-    const result = cloneDeep(singlePrice);
+    const result = structuredClone(singlePrice);
     result.priceData = [
       { value: 0.807, start: "2026-01-12T00:00:00.000+01:00" },
       { value: 0.903, start: "2026-01-12T06:00:00.000+01:00" },

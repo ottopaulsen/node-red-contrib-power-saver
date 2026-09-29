@@ -7,7 +7,6 @@ const result = require("./data/best-save-result.json");
 const reconfigResult = require("./data/reconfigResult");
 const { testPlan, equalPlan } = require("./test-utils");
 const { makeFlow, makePayload } = require("./strategy-best-save-test-utils");
-const cloneDeep = require("lodash.clonedeep");
 
 helper.init(require.resolve("node-red"));
 
@@ -164,7 +163,7 @@ describe("send config as input", () => {
 });
 
 function makePayloadWithConfigAndPrices(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.priceData.forEach((e) => {
     e.value = e.value * 2;
   });

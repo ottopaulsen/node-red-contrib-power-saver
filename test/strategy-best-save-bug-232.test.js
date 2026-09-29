@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
@@ -29,7 +28,7 @@ describe("ps-strategy-best-save bug-232", function () {
     );
     flow[0].minSaving = output.config.minSaving;
     flow[0].outputIfNoSchedule = output.config.outputIfNoSchedule;
-    const expected = cloneDeep(output);
+    const expected = structuredClone(output);
     expected.version = output.version;
     expected.time = output.time;
     expected.source = output.source;
@@ -50,7 +49,7 @@ describe("ps-strategy-best-save bug-232", function () {
 });
 
 function makePayload() {
-  const payload = cloneDeep(input);
+  const payload = structuredClone(input);
   payload.time = output.time;
   return payload;
 }

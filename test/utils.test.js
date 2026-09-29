@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 
@@ -205,7 +204,7 @@ describe("utils", () => {
     expect(extractPlanForDate(plan, "2021-06-20T01:50:00.000+02:00")).to.eql(part1);
   });
   it("Can make schedule from minutes", () => {
-    const minutes = cloneDeep(testResult.minutes);
+    const minutes = structuredClone(testResult.minutes);
     const schedule = makeScheduleFromMinutes(minutes, null);
     expect(schedule).to.eql(testResult.schedule);
   });

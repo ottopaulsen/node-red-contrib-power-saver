@@ -7,7 +7,6 @@ const {
 } = require("./utils");
 const { strategyOnInput } = require("./strategy-functions");
 const { DateTime } = require("luxon");
-const cloneDeep = require("lodash.clonedeep");
 
 module.exports = function (RED) {
   function StrategyFixedScheduleNode(config) {
@@ -65,7 +64,7 @@ function doPlanning(node, priceData) {
 }
 
 function buildAllHours(node, periods) {
-  const sortedPeriods = cloneDeep(periods);
+  const sortedPeriods = structuredClone(periods);
   sortedPeriods.sort((a, b) => a.start - b.start);
   let res = [];
   let hour = 0;

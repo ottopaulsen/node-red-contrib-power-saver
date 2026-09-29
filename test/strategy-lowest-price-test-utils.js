@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 
 function makeFlow(minutesOn, maxPrice = null, doNotSplit = true, fromHour = "10", toHour = "20") {
@@ -25,7 +24,7 @@ function makeFlow(minutesOn, maxPrice = null, doNotSplit = true, fromHour = "10"
 }
 
 function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.time = time;
   return payload;
 }

@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
@@ -31,7 +30,7 @@ describe("ps-strategy-fixed-schedule node", function () {
 
   it("should turn on 2 to 6", function (done) {
     const flow = makeFlow();
-    const expected = cloneDeep(result);
+    const expected = structuredClone(result);
     helper.load(fixedSchedule, flow, function () {
       const n1 = helper.getNode("n1");
       const n2 = helper.getNode("n2");
@@ -45,7 +44,7 @@ describe("ps-strategy-fixed-schedule node", function () {
   });
   it("should send correct if no schedule", function (done) {
     const flow = makeFlow(true);
-    const expected = cloneDeep(result);
+    const expected = structuredClone(result);
     expected.schedule.push({
       time: "2021-10-13T00:00:00.000+02:00",
       value: true,

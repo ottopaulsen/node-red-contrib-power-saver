@@ -15,7 +15,6 @@ const {
   saveOriginalConfig,
 } = require("./utils.js");
 const { DateTime } = require("luxon");
-const nanoTime = require("nano-time");
 const { handleOutput } = require("./handle-output");
 const { addLastSwitchIfNoSchedule, getCommands } = require("./handle-input");
 
@@ -56,7 +55,11 @@ module.exports = function (RED) {
       }
       const config = getEffectiveConfig(node, msg);
       const commands = getCommands(msg);
-      const myTime = nanoTime();
+      // A unique, monotonically increasing marker for this message. It is only
+      // ever compared with !== below to detect whether a newer schedule arrived
+      // while we were waiting, so the monotonic clock suits it better than a
+      // wall clock, and it needs no dependency.
+      const myTime = process.hrtime.bigint();
       if (msgHasSchedule(msg)) {
         const validationError = validateSchedule(msg);
         if (validationError) {

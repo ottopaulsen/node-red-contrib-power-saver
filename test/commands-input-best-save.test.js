@@ -1,5 +1,4 @@
 const expect = require("chai").expect;
-const cloneDeep = require("lodash.clonedeep");
 const helper = require("node-red-node-test-helper");
 const bestSave = require("../src/strategy-best-save.js");
 const prices = require("./data/converted-prices.json");
@@ -41,7 +40,7 @@ describe("send command as input to best save", () => {
             break;
         }
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-11T00:00:00.000+02:00";
       n1.receive({ payload });
     });
@@ -77,7 +76,7 @@ describe("send command as input to best save", () => {
         expect(msg).to.have.deep.property("payload", false);
       });
 
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-11T00:00:05.000+02:00";
 
       n1.receive({ payload });
@@ -95,7 +94,7 @@ describe("send command as input to best save", () => {
         n1.warn.should.be.calledWithExactly("No price data");
         done();
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-11T00:00:05.000+02:00";
       n1.receive({ payload });
     });
@@ -138,7 +137,7 @@ describe("send command as input to best save", () => {
         countOff++;
         expect(msg).to.have.deep.property("payload", false);
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-11T00:00:05.000+02:00";
       n1.receive({ payload });
     });

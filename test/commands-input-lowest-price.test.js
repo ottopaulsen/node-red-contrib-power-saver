@@ -1,5 +1,4 @@
 const expect = require("chai").expect;
-const cloneDeep = require("lodash.clonedeep");
 const helper = require("node-red-node-test-helper");
 const lowestPrice = require("../src/strategy-lowest-price.js");
 const prices = require("./data/converted-prices.json");
@@ -40,7 +39,7 @@ describe("send command as input to lowest price", () => {
             break;
         }
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-10T00:00:00.000+02:00";
       n1.receive({ payload });
     });
@@ -81,7 +80,7 @@ describe("send command as input to lowest price", () => {
         expect(msg).to.have.deep.property("payload", false);
       });
 
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-10T00:00:05.000+02:00";
       payload.commands = { runSchedule: false };
 
@@ -99,7 +98,7 @@ describe("send command as input to lowest price", () => {
         n1.warn.should.be.calledWithExactly("No price data");
         done();
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-11T00:00:05.000+02:00";
       n1.receive({ payload });
     });
@@ -141,7 +140,7 @@ describe("send command as input to lowest price", () => {
         countOff++;
         expect(msg).to.have.deep.property("payload", false);
       });
-      const payload = cloneDeep(prices);
+      const payload = structuredClone(prices);
       payload.time = "2021-10-11T00:00:05.000+02:00";
       n1.receive({ payload });
     });

@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
@@ -25,7 +24,7 @@ describe("ps-strategy-best-save overlapping savings", function () {
   it.skip("should find the best prices when overlapping savings", function (done) {
     const flow = makeFlow(12, 1, true);
     flow[0].minSaving = 0.01;
-    const expected = cloneDeep(result);
+    const expected = structuredClone(result);
     expected.version = version;
     expected.time = plan.time;
     expected.source = "Tibber";
@@ -46,7 +45,7 @@ describe("ps-strategy-best-save overlapping savings", function () {
 });
 
 function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.time = time;
   return payload;
 }

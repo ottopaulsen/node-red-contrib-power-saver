@@ -1,5 +1,4 @@
 "use strict";
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 const expect = require("chai").expect;
 const helper = require("node-red-node-test-helper");
@@ -46,7 +45,7 @@ describe("ps-strategy-heat-capacitor node", function () {
       n1.warn.should.be.calledWithExactly("Illegal priceData in payload. Did you use the receive-price node?");
 
       ["start", "value"].forEach((attr) => {
-        const testData1 = cloneDeep(prices);
+        const testData1 = structuredClone(prices);
         delete testData1.priceData[3][attr];
         n1.receive({ payload: testData1 });
         n1.warn.should.be.calledWithExactly(
@@ -54,7 +53,7 @@ describe("ps-strategy-heat-capacitor node", function () {
         );
       });
 
-      n1.receive({ payload: cloneDeep(prices) });
+      n1.receive({ payload: structuredClone(prices) });
       n1.warn.should.not.be.called;
       done();
     });
@@ -109,7 +108,7 @@ describe("ps-strategy-heat-capacitor node", function () {
         bothReceived ? done() : (bothReceived = true);
       });
       const time = DateTime.fromISO(prices.priceData[10].start);
-      const p = cloneDeep(prices);
+      const p = structuredClone(prices);
       p.time = time;
       n1.receive({ payload: p });
     });
@@ -274,7 +273,7 @@ function makeFlow() {
 }
 
 function makePayload(prices, time) {
-  const payload = cloneDeep(prices);
+  const payload = structuredClone(prices);
   payload.time = time;
   let entryTime = DateTime.fromISO(payload.time);
   payload.priceData.forEach((e) => {

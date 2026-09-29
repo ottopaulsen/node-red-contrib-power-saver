@@ -1,4 +1,3 @@
-const cloneDeep = require("lodash.clonedeep");
 const { DateTime } = require("luxon");
 
 function booleanConfig(value) {
@@ -121,7 +120,7 @@ function addNeighbours(collapsedArr) {
  */
 
 function sortCollapsed(collapsedArr) {
-  const sorted = cloneDeep(collapsedArr).sort((a, b) => {
+  const sorted = structuredClone(collapsedArr).sort((a, b) => {
     // 1. value ascending
     if (a.value !== b.value) {
       return b.value - a.value;
