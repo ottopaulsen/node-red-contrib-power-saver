@@ -1,6 +1,6 @@
 "use strict";
 const { DateTime } = require("luxon");
-const { validateInput } = require("./handle-input");
+const { toNumericPriceData, validateInput } = require("./handle-input");
 const { runBuySellAlgorithm, findTemp } = require("./strategy-heat-capacitor-functions");
 const { version } = require("../package.json");
 
@@ -76,10 +76,11 @@ module.exports = function (RED) {
 
       //merge pricedata to escape some midnight issues. Store max 72 hour history
       if ("priceData" in msg.payload) {
+        const priceData = toNumericPriceData(msg.payload.priceData);
         if ("priceData" in node) {
-          node.priceData = mergePriceData(node.priceData, msg.payload.priceData);
+          node.priceData = mergePriceData(node.priceData, priceData);
         } else {
-          node.priceData = msg.payload.priceData;
+          node.priceData = priceData;
         }
         if (node.priceData.length) {
           const latestStart = DateTime.fromISO(node.priceData[node.priceData.length - 1].start);

@@ -54,6 +54,10 @@ List the most significant changes.
       empty schedule from makeScheduleFromMinutes when there is nothing to merge.
  - Fix bug in strategy-fixed-schedule: fall back to outputIfNoSchedule when periods is
       empty, instead of dereferencing undefined for every hour.
+ - Fix bug in handle-input: malformed priceData was warned about but accepted anyway,
+      because the check returned from inside a forEach callback. Such a message is now
+      rejected. Prices given as strings are still accepted, and are converted to
+      numbers before planning. Thanks to @anupamme for reporting it.
 
 
 ## 5.2.3

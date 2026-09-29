@@ -54,8 +54,9 @@ function makePlanFromPriceData(node, msg, config, doPlanning, calcSavings) {
   // value, and price data can be given to the node directly, without the
   // receive-price node that normally adds it. Infer it from the length of the
   // previous period instead of planning without the last period.
-  const lastRecord = priceData[priceData.length - 1];
-  const priceDataWithEnd = lastRecord.end ? priceData : [...priceData.slice(0, -1), { ...lastRecord }];
+  const numericPriceData = toNumericPriceData(priceData);
+  const lastRecord = numericPriceData[numericPriceData.length - 1];
+  const priceDataWithEnd = lastRecord.end ? numericPriceData : [...numericPriceData.slice(0, -1), { ...lastRecord }];
   if (!lastRecord.end) {
     addEndToLast(priceDataWithEnd);
   }
@@ -238,18 +239,44 @@ function validateInput(node, msg) {
     validationFailure(node, "priceData is empty");
     return;
   }
-  msg.payload.priceData.forEach((h) => {
-    if (!h.start || isNaN(h.value)) {
-      validationFailure(node, "Malformed entries in priceData. All entries must contain start and value.");
-      return;
-    }
-  });
+  // A return inside a forEach callback only leaves the callback, so this used
+  // to warn about malformed entries and then accept them anyway.
+  if (msg.payload.priceData.some((h) => !h.start || !isValidPrice(h.value))) {
+    validationFailure(node, "Malformed entries in priceData. All entries must contain start and value.");
+    return;
+  }
   return true;
+}
+
+/**
+ * A price is a number, or a string holding one. Price data can be given to the
+ * node directly, without the receive-price node, and such flows may well supply
+ * the prices as strings, so those are accepted and converted before planning.
+ * Anything that is only numeric by coercion - null, booleans, [], "" - is not,
+ * and neither are NaN and Infinity.
+ */
+function isValidPrice(value) {
+  if (typeof value === "number") {
+    return Number.isFinite(value);
+  }
+  if (typeof value !== "string" || value.trim() === "") {
+    return false;
+  }
+  return Number.isFinite(Number(value));
+}
+
+/**
+ * Return the price data with every value as a number. Strings would otherwise
+ * be concatenated rather than added when the plan is calculated.
+ */
+function toNumericPriceData(priceData) {
+  return priceData.map((entry) => (typeof entry.value === "number" ? entry : { ...entry, value: Number(entry.value) }));
 }
 
 module.exports = {
   addLastSwitchIfNoSchedule,
   getCommands,
   handleStrategyInput,
+  toNumericPriceData,
   validateInput,
 };
