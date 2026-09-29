@@ -8,17 +8,18 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # The tests are timezone sensitive - 50 of them fail under UTC. Node reads
+    # TZ directly, so this replaces the szenius/set-timezone action, which is
+    # still built on the deprecated Node 20 runtime.
+    env:
+      TZ: Europe/Oslo
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
-          
-      - uses: szenius/set-timezone@v2.0
-        with:
-          timezoneLinux: "Europe/Oslo"
           
       - run: npm ci
       - run: "npm run test"
