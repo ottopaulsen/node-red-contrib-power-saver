@@ -7,6 +7,10 @@ sidebarDepth: 1
 
 List the most significant changes.
 
+## 5.2.3
+
+ - Read LightSaver states from HA after reconnect. Fixes light issues after reboot.
+
 ## 5.2.2
 
  - No change. Just testing workflow update.

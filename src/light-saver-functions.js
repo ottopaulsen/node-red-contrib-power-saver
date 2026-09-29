@@ -575,35 +575,43 @@ function checkTimeouts(config, state, node, homeAssistant, clock = null) {
 
 /**
  * Fetch current states from Home Assistant for entities that don't have state yet
+ *
+ * With force = true, every entity is re-read even if it already holds a state.
+ * That is what the caller needs after the Home Assistant websocket has
+ * reconnected: state_changed events that occurred while the connection was
+ * down were never delivered, so a cached value can be arbitrarily stale, and
+ * a stale "on" trigger would otherwise keep the lights on indefinitely.
+ *
  * @param {object} config - Configuration object with triggers, nightSensor, lightTimeout
  * @param {object} state - Mutable state object with timedOut property
  * @param {object} node - Node-RED node object for logging
  * @param {object} homeAssistant - Home Assistant integration object
  * @param {object} clock - Clock abstraction for getting current time (for testing)
+ * @param {boolean} force - Re-read entities that already have a cached state
  * @returns {boolean} True if initial timedOut value was set, false otherwise
  */
-function fetchMissingStates(config, state, node, homeAssistant, clock = null) {
+function fetchMissingStates(config, state, node, homeAssistant, clock = null, force = false) {
   const entitiesToFetch = [];
 
   // Check triggers
   config.triggers.forEach((trigger) => {
-    if (!trigger.state) {
+    if (force || !trigger.state) {
       entitiesToFetch.push({ id: trigger.entity_id, type: "trigger" });
     }
   });
 
   // Check night sensor
-  if (config.nightSensor && !config.nightSensor.state) {
+  if (config.nightSensor && (force || !config.nightSensor.state)) {
     entitiesToFetch.push({ id: config.nightSensor.entity_id, type: "nightSensor" });
   }
 
   // Check away sensor
-  if (config.awaySensor && !config.awaySensor.state) {
+  if (config.awaySensor && (force || !config.awaySensor.state)) {
     entitiesToFetch.push({ id: config.awaySensor.entity_id, type: "awaySensor" });
   }
 
   // Check brightness sensor
-  if (config.brightnessSensor && !config.brightnessSensor.state) {
+  if (config.brightnessSensor && (force || !config.brightnessSensor.state)) {
     entitiesToFetch.push({ id: config.brightnessSensor.entity_id, type: "brightnessSensor" });
   }
 

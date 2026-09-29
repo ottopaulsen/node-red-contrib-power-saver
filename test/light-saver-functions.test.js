@@ -492,6 +492,99 @@ describe("light-saver-functions", function () {
     });
   });
 
+  describe("fetchMissingStates with force (websocket reconnect resync)", function () {
+    it("should overwrite a stale cached trigger state when force is true", function () {
+      // The websocket dropped while the sensor went from on to off, so the
+      // cached "on" is stale and Home Assistant now reports "off".
+      mockWebsocket.states = {
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:00:00Z" },
+      };
+
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "on", lastChanged: "2026-01-29T14:00:00Z" }],
+        nightSensor: null,
+      };
+      const state = { timedOut: false };
+
+      funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant, mockClock, true);
+
+      expect(config.triggers[0].state).to.equal("off");
+      expect(config.triggers[0].lastChanged).to.equal("2026-01-29T15:00:00Z");
+    });
+
+    it("should leave a cached state alone when force is false", function () {
+      mockWebsocket.states = {
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T15:00:00Z" },
+      };
+
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "on", lastChanged: "2026-01-29T14:00:00Z" }],
+        nightSensor: null,
+      };
+      const state = { timedOut: false };
+
+      funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant, mockClock);
+
+      expect(config.triggers[0].state).to.equal("on");
+      expect(config.triggers[0].lastChanged).to.equal("2026-01-29T14:00:00Z");
+    });
+
+    it("should also refresh night, away and brightness sensors when force is true", function () {
+      mockWebsocket.states = {
+        "binary_sensor.night": { state: "on", last_changed: "2026-01-29T15:00:00Z" },
+        "binary_sensor.away": { state: "on", last_changed: "2026-01-29T15:01:00Z" },
+        "sensor.lux": { state: "12", last_changed: "2026-01-29T15:02:00Z" },
+      };
+
+      const config = {
+        debugLog: true,
+        triggers: [],
+        nightSensor: { entity_id: "binary_sensor.night", state: "off" },
+        awaySensor: { entity_id: "binary_sensor.away", state: "off" },
+        brightnessSensor: { entity_id: "sensor.lux", state: "900" },
+      };
+      const state = { timedOut: false };
+
+      funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant, mockClock, true);
+
+      expect(config.nightSensor.state).to.equal("on");
+      expect(config.awaySensor.state).to.equal("on");
+      expect(config.brightnessSensor.state).to.equal("12");
+    });
+
+    it("should let checkTimeouts turn the lights off once the stale state is corrected", function () {
+      // Reproduces the real failure: a trigger stuck at "on" makes checkTimeouts
+      // return early forever, so the lights stay on. After a forced resync the
+      // very next check must switch them off.
+      mockWebsocket.states = {
+        "binary_sensor.motion1": { state: "off", last_changed: "2026-01-29T14:00:00Z" },
+      };
+
+      const config = {
+        debugLog: true,
+        triggers: [{ entity_id: "binary_sensor.motion1", state: "on", lastChanged: "2026-01-29T13:00:00Z" }],
+        lights: [{ entity_id: "light.living_room" }],
+        lightTimeout: 10,
+        nightSensor: null,
+      };
+      const state = { timedOut: false };
+
+      // Before the resync the stale "on" suppresses the timeout entirely.
+      funcs.checkTimeouts(config, state, mockNode, mockHomeAssistant, mockClock);
+      expect(state.timedOut).to.be.false;
+      expect(mockWebsocket.send.called).to.be.false;
+
+      // After it, the trigger reads off for 90 minutes against a 10 minute
+      // timeout, so the lights are switched off.
+      funcs.fetchMissingStates(config, state, mockNode, mockHomeAssistant, mockClock, true);
+      funcs.checkTimeouts(config, state, mockNode, mockHomeAssistant, mockClock);
+      expect(state.timedOut).to.be.true;
+      expect(mockWebsocket.send.called).to.be.true;
+    });
+  });
+
   describe("fetchMissingStates", function () {
     it("should fetch states for triggers without state", function () {
       mockWebsocket.states = {

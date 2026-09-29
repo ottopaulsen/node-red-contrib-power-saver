@@ -296,9 +296,30 @@ module.exports = function (RED) {
       funcs.checkTimeouts(nodeConfig, state, nodeWrapper, homeAssistant);
     };
 
-    // Function to fetch current states from Home Assistant
-    const fetchMissingStates = function () {
-      funcs.fetchMissingStates(nodeConfig, state, nodeWrapper, homeAssistant);
+    // Re-synchronise every cached state from Home Assistant, then re-evaluate
+    // timeouts straight away.
+    //
+    // The node learns about the world purely from state_changed events. While
+    // the Home Assistant websocket is down no events are delivered, so any
+    // change made in that window is lost permanently: a trigger that went off
+    // during the outage still reads "on" afterwards, checkTimeouts returns
+    // early on it forever, and the lights never switch off. The reverse also
+    // bites - a node that started while Home Assistant was unreachable has no
+    // state at all, so its timeout interval is never even started.
+    //
+    // ha_client:states_loaded fires after the initial connection and again
+    // after every reconnect, once the full state set has been re-fetched, so
+    // it is the right moment to throw away what we think we know.
+    const handleStatesLoaded = function () {
+      debugLog("Home Assistant states (re)loaded - resynchronising cached states");
+      fetchMissingStates(true);
+      checkTimeouts();
+    };
+
+    // Function to fetch current states from Home Assistant.
+    // force = true re-reads entities that already have a cached state.
+    const fetchMissingStates = function (force = false) {
+      funcs.fetchMissingStates(nodeConfig, state, nodeWrapper, homeAssistant, null, force);
 
       // Fetch initial light states
       try {
@@ -629,6 +650,11 @@ module.exports = function (RED) {
         debugLog(`Subscribed to light: ${eventTopic}`);
       });
 
+      // Resynchronise whenever Home Assistant (re)loads its states, so a
+      // dropped websocket cannot leave this node acting on stale values.
+      homeAssistant.eventBus.on("ha_client:states_loaded", handleStatesLoaded);
+      debugLog("Subscribed to ha_client:states_loaded for reconnect resync");
+
       const nightSensorText = nodeConfig.nightSensor ? ", 1 night sensor" : "";
       const awaySensorText = nodeConfig.awaySensor ? ", 1 away sensor" : "";
       const brightnessSensorText = nodeConfig.brightnessSensor ? ", 1 brightness sensor" : "";
@@ -757,6 +783,8 @@ module.exports = function (RED) {
           const eventTopic = `ha_events:state_changed:${entityId}`;
           homeAssistant.eventBus.removeListener(eventTopic, handleLightStateChange);
         });
+
+        homeAssistant.eventBus.removeListener("ha_client:states_loaded", handleStatesLoaded);
       }
       node.status({});
     });
