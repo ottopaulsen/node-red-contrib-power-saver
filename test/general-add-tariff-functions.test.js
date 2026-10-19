@@ -70,6 +70,28 @@ describe("general-add-tariff-functions", () => {
     addTariffToPrices(console, config, prices);
     expect(prices).to.eql(result);
   });
+  it("adds tariff when valid from and to are empty strings", () => {
+    const config = {
+      validFrom: "",
+      validTo: "",
+      periods: [
+        { start: "22", value: "0.2379" },
+        { start: "06", value: "0.3779" },
+      ],
+      days: { Mon: true, Tue: true, Wed: true, Thu: true, Fri: true, Sat: true, Sun: true },
+    };
+    const prices = [
+      { start: "2026-10-19T00:00:00.000+02:00", value: 0.5, end: "2026-10-21T00:00:00.000+02:00" },
+    ];
+    const result = addTariffToPrices(console, config, prices);
+    expect(result).to.eql([
+      { start: "2026-10-19T00:00:00.000+02:00", value: 0.7379 },
+      { start: "2026-10-19T06:00:00.000+02:00", value: 0.8779 },
+      { start: "2026-10-19T22:00:00.000+02:00", value: 0.7379 },
+      { start: "2026-10-20T06:00:00.000+02:00", value: 0.8779 },
+      { start: "2026-10-20T22:00:00.000+02:00", value: 0.7379, end: "2026-10-21T00:00:00.000+02:00" },
+    ]);
+  });
 });
 
 function fillResult(arr, from, to, value) {

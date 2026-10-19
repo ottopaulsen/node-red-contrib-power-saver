@@ -23,8 +23,8 @@ function addTariffToPrices(node, config, prices) {
 
   const firstStart = prices[0].start;
   const lastEnd = prices[prices.length - 1].end || prices[prices.length - 1].start;
-  const validFrom = config.validFrom ?? firstStart.substring(0, 10);
-  const validTo = config.validTo ?? lastEnd.substring(0, 10);
+  const validFrom = config.validFrom || firstStart.substring(0, 10);
+  const validTo = config.validTo || lastEnd.substring(0, 10);
 
   const resultPeriods = {};
   // Add all periods for each date

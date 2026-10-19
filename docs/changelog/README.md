@@ -17,6 +17,13 @@ tags:
 
 List the most significant changes.
 
+## 6.0.1
+
+ - Fix bug in general-add-tariff: treat empty Valid from / Valid to fields as not set,
+      so the tariff is added again when the dates are left blank. Before, the
+      empty strings made every period fall outside the valid range, and the
+      prices passed through unchanged.
+
 ## 6.0.0
 
  - Update dependencies.
